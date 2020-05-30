@@ -71,7 +71,7 @@ contains
         
         do iter = 1, num_iter
         
-            call update_halo( in_field(:, :, :), increase_counters=increase_counters )
+            call update_halo( in_field, increase_counters=increase_counters )
             
             call laplacian( in_field, tmp_field, num_halo, extend=1, increase_counters=increase_counters )
  
@@ -94,11 +94,12 @@ contains
 
 
     ! compute the Laplacian
-    subroutine laplacian( in, lap, num_halo, extend, increase_counters )
+    subroutine laplacian( in_field, lap_field, num_halo, extend, increase_counters )
         implicit none
             
         ! argument
-        real (kind=wp), intent(inout) :: field(:, :, :)
+        real (kind=wp), intent(in) :: in_field(:, :, :)
+        real (kind=wp), intent(inout) :: lap_field(:, :, :)
         integer, intent(in) :: num_halo, extend
         logical, intent(in) :: increase_counters
         
@@ -108,7 +109,7 @@ contains
         do k = 1, nz
         do j = 1 + num_halo - extend, ny + num_halo + extend
         do i = 1 + num_halo - extend, nx + num_halo + extend
-            tmp_field(i, j, k) = -4._wp * in_field(i, j, k)      &
+            lap_field(i, j, k) = -4._wp * in_field(i, j, k)      &
                 + in_field(i - 1, j, k) + in_field(i + 1, j, k)  &
                 + in_field(i, j - 1, k) + in_field(i, j + 1, k)
             if (increase_counters) flop_counter = flop_counter + 5
