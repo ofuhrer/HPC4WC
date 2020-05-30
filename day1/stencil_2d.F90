@@ -146,7 +146,7 @@ contains
         do k = 1, nz
         do j = 1, ny
         do i = nx + num_halo + 1, nx + 2 * num_halo
-            field(i, j, k) = field(i - nx, j, k))
+            field(i, j, k) = field(i - nx, j, k)
             if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
         end do
