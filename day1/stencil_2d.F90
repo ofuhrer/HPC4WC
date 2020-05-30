@@ -73,42 +73,16 @@ contains
         
             call update_halo( in_field(:, :, :), increase_counters=increase_counters )
             
-            do k = 1, nz
-            do j = 1 + num_halo - 1, ny + num_halo + 1
-            do i = 1 + num_halo - 1, nx + num_halo + 1
-                tmp_field(i, j, k) = -4._wp * in_field(i, j, k)      &
-                    + in_field(i - 1, j, k) + in_field(i + 1, j, k)  &
-                    + in_field(i, j - 1, k) + in_field(i, j + 1, k)
-                if (increase_counters) then
-                    flop_counter = flop_counter + 5
-                    byte_counter = byte_counter + 6 * wp
-                end if
-            end do
-            end do
-            end do
-
-            do k = 1, nz
-            do j = 1 + num_halo, ny + num_halo
-            do i = 1 + num_halo, nx + num_halo
-                out_field(i, j, k) = -4._wp * tmp_field(i, j, k)       &
-                    + tmp_field(i - 1, j, k) + tmp_field(i + 1, j, k)  &
-                    + tmp_field(i, j - 1, k) + tmp_field(i, j + 1, k)
-                if (increase_counters) then
-                    flop_counter = flop_counter + 5
-                    byte_counter = byte_counter + 6 * wp
-                end if
-            end do
-            end do
-            end do
+            call laplacian( in_field, tmp_field, num_halo, extend=1, increase_counters=increase_counters )
+ 
+            call laplacian( tmp_field, out_field, num_halo, extend=0, increase_counters=increase_counters )
             
             if ( iter /= num_iter ) then
                 do k = 1, nz
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
                     in_field(i, j, k) = out_field(i, j, k)
-                    if (increase_counters) then
-                        byte_counter = byte_counter + 2 * wp
-                    end if
+                    if (increase_counters) byte_counter = byte_counter + 2 * wp
                 end do
                 end do
                 end do
@@ -117,6 +91,33 @@ contains
         end do
             
     end subroutine work
+
+
+    ! compute the Laplacian
+    subroutine laplacian( in, lap, num_halo, extend, increase_counters )
+        implicit none
+            
+        ! argument
+        real (kind=wp), intent(inout) :: field(:, :, :)
+        integer, intent(in) :: num_halo, extend
+        logical, intent(in) :: increase_counters
+        
+        ! local
+        integer :: i, j, k
+            
+        do k = 1, nz
+        do j = 1 + num_halo - extend, ny + num_halo + extend
+        do i = 1 + num_halo - extend, nx + num_halo + extend
+            tmp_field(i, j, k) = -4._wp * in_field(i, j, k)      &
+                + in_field(i - 1, j, k) + in_field(i + 1, j, k)  &
+                + in_field(i, j - 1, k) + in_field(i, j + 1, k)
+            if (increase_counters) flop_counter = flop_counter + 5
+            if (increase_counters) byte_counter = byte_counter + 6 * wp
+        end do
+        end do
+        end do
+
+    end subroutine laplacian
 
 
     ! implement periodic halo-updates
@@ -131,25 +132,45 @@ contains
         integer :: i, j, k
             
         ! left edge (including corners)
-        field(     1:num_halo,      :, :) =   &
-        field(nx + 1:nx + num_halo, :, :)
-            
+        do k = 1, nz
+        do j = 1, ny
+        do i = 1, num_halo
+            field(i, j, k) = field(nx + i, j, k)
+            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+        end do
+        end do
+        end do
+                
         ! right edge (including corners)
-        field(nx + num_halo + 1:nx + 2 * num_halo, :, :) =   &
-        field(                1:num_halo,          :, :)
-            
+        do k = 1, nz
+        do j = 1, ny
+        do i = nx + num_halo + 1, nx + 2 * num_halo
+            field(i, j, k) = field(i - nx, j, k))
+            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+        end do
+        end do
+        end do
+        
         ! bottom edge (without corners)
-        field(1 + num_halo:nx + num_halo,      1:num_halo,      :) =   &
-        field(1 + num_halo:nx + num_halo, ny + 1:ny + num_halo, :)
+        do k = 1, nz
+        do j = 1, num_halo
+        do i = 1 + num_halo, nx + num_halo
+            field(i, j, k) = field(i, j + ny, k)
+            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+        end do
+        end do
+        end do
             
         ! top edge (without corners)
-        field(1 + num_halo:nx + num_halo, ny + num_halo + 1:ny + 2 * num_halo, :) =   &
-        field(1 + num_halo:nx + num_halo,                 1:num_halo,          :)
+        do k = 1, nz
+        do j = ny + num_halo + 1, ny + 2 * num_halo
+        do i = 1 + num_halo, nx + num_halo
+            field(i, j, k) = field(i, j - ny, k)
+            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+        end do
+        end do
+        end do
         
-        if ( increase_counters ) then
-            byte_counter = byte_counter + 2 * wp * ( 2 * num_halo * nx + 2 * num_halo * ny + 4 * num_halo * num_halo )
-        end if
-
     end subroutine update_halo
         
 
