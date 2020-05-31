@@ -22,14 +22,10 @@ module m_utils
     character (len=28) :: tag_list(max_timing)
     
     integer :: cur_timing = 0
-    integer :: icountrate, icountmax
-    integer :: icountnew(max_timing)
-    integer :: icountold(max_timing)
     integer :: ncalls(max_timing)
     
     real (kind=dp) :: stiming(max_timing)
     real (kind=dp) :: rtiming(max_timing)
-    real (kind=dp) :: rsync(max_timing)
     
 contains
 
@@ -118,18 +114,11 @@ contains
     subroutine timer_init()
         implicit none
 
-        ! local
-        integer :: idummy
-
         ltiming         = .true.
         ltiming_list(:) = .false.
         rtiming(:)      = 0.0_dp
-        rsync(:)        = 0.0_dp
         ncalls(:)       = 0
-        icountold(:)    = -1  ! set to -1 to signal that this timer has never been used
-        stiming(:) = -1.0_dp
-        icountrate  = 0
-        icountmax   = 0
+        stiming(:)      = -1.0_dp
 
     end subroutine timer_init
 
@@ -138,7 +127,6 @@ contains
         implicit none
 
         rtiming(:) = 0.0_dp
-        rsync(:)   = 0.0_dp
         ncalls(:)  = 0
         stiming(:) = -1.0_dp
 
@@ -166,18 +154,13 @@ contains
         call error(inum < 1 .or. inum > max_timing, &
             'ERROR: Problem in start_loc_timing (inum < 1 or inum > max_timing)')
 
-        ! make sure this is the first call or previously end_loc_timing has been called
-        call error(icountold(inum) /= -1 .and. icountold(inum) /= -2, &
-            'ERROR: Problem in start_loc_timing (no previous end_loc_timing)')
-
         ! save tag if this is the first call (check tag in debug mode otherwise)
-        if (icountold(inum) == -1) then
+        if (stiming(inum) < 0.d0) then
             tag_list(inum) = trim(tag)
             ltiming_list(inum) = .true.
         end if
 
         stiming(inum) = MPI_WTIME()
-        icountold(inum) = 1
         ncalls(inum) = ncalls(inum) + 1
 
     end subroutine timer_start
@@ -191,19 +174,11 @@ contains
         integer, intent(in) :: inum
 
         ! local
-        real (kind=dp) :: etiming,ztime
+        real (kind=dp) :: ztime
         integer :: ierror
 
-        call error(icountold(inum) == -1 .or. icountold(inum) == -2, &
-            'ERROR: Problem in end_loc_timing (no matching start_loc_timing)' )
-
-        etiming = MPI_WTIME()
-        ztime = etiming - stiming(inum)
-        icountnew(inum) = 1
+        ztime = MPI_WTIME() - stiming(inum)
         rtiming(inum) = rtiming(inum) + ztime
-
-        ! release timer
-        icountold(inum) = -2 ! set to -2 to ensure a start_timing is called before next end_timing
 
     end subroutine timer_end
 
