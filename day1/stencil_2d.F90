@@ -134,7 +134,7 @@ contains
             
         ! left edge (including corners)
         do k = 1, nz
-        do j = 1, ny
+        do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
             field(i, j, k) = field(nx + i, j, k)
             if ( increase_counters ) byte_counter = byte_counter + 2 * wp
@@ -144,7 +144,7 @@ contains
                 
         ! right edge (including corners)
         do k = 1, nz
-        do j = 1, ny
+        do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
             field(i, j, k) = field(i - nx, j, k)
             if ( increase_counters ) byte_counter = byte_counter + 2 * wp
@@ -267,7 +267,7 @@ contains
 
     subroutine cleanup()
         use mpi, only : MPI_FINALIZE, MPI_COMM_WORLD, MPI_DOUBLE_PRECISION, MPI_SUM
-        use m_utils, only : error, timer_print, is_master
+        use m_utils, only : error, timer_get, timer_print, is_master
         implicit none
 
         integer :: ierror
@@ -276,9 +276,9 @@ contains
         call MPI_REDUCE(real(flop_counter, 8), global_flop_counter, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
         call MPI_REDUCE(real(byte_counter, 8), global_byte_counter, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
         if ( is_master() ) then
-            write(*, *) 'Total number of GigaFLOP = ', &
+            write(*, *) 'Counted floating-point operations [GFLOP] = ', &
                 global_flop_counter / 1024.d0 / 1024.d0 / 1024.d0
-            write(*, *) 'Total number of GByte transferred = ', &
+            write(*, *) 'Counted memory transfers [GB] = ', &
                 global_byte_counter / 1024.d0 / 1024.d0 / 1024.d0
         end if
         

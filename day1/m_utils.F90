@@ -183,6 +183,19 @@ contains
     end subroutine timer_end
 
 
+    function timer_get(inum)
+        use mpi, only : MPI_WTIME
+        implicit none
+
+        ! arguments
+        integer, intent(in) :: inum
+        real (kind=dp) :: timer_get
+
+        timer_get = rtiming(inum)
+
+    end function timer_get
+
+
     subroutine timer_print()
         use mpi, only : MPI_COMM_WORLD, MPI_DOUBLE_PRECISION, MPI_MIN, MPI_MAX, MPI_SUM
         implicit none
