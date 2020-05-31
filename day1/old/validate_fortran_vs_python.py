@@ -1,17 +1,10 @@
-# ******************************************************
-#     Program: stencil_2d
-#      Author: Oliver Fuhrer
-#       Email: oliverf@vulcan.com
-#        Date: 20.05.2020
-# Description: Simple stencil example
-# ******************************************************
-
 import time
 import numpy as np
 import click
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+plt.ioff()
 
 
 def laplacian( in_field, lap_field, num_halo, extend=0 ):
@@ -83,7 +76,10 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     alpha = 1./32.
     
     in_field = np.zeros( (nz, ny + 2 * num_halo, nx + 2 * num_halo) )
-    in_field[:, num_halo + ny // 4:num_halo + 3 * ny // 4, num_halo + nx // 4:num_halo + 3 * nx // 4] = 1.0
+    for j in range(num_halo, ny + num_halo):
+        for i in range(num_halo, nx + num_halo):
+            in_field[:, j, i] = i % 4 + j % 2
+    #in_field[:, num_halo + ny // 4:num_halo + 3 * ny // 4, num_halo + nx // 4:num_halo + 3 * nx // 4] = 1.0
     
     out_field = np.copy( in_field )
     
@@ -97,11 +93,50 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     
     print("Elapsed time for work = {} s".format(toc - tic) )
     if plot_result:
-        plt.ioff()
         plt.imshow(out_field[0, :, :], origin='lower')
         plt.colorbar()
         plt.savefig('result.png')
         plt.close()
+        
+    # validate against Fortran
+    fortran_in = np.genfromtxt('fort.777', delimiter=',')
+    fortran_out = np.genfromtxt('fort.778', delimiter=',')
+    assert fortran_in.shape == fortran_out.shape, 'Must have same size'
+    nrows, ncolumns = fortran_in.shape
+    assert nrows == (nx + 2*num_halo) * (ny + 2*num_halo), 'Number of rows does not match nx * ny'
+    assert ncolumns == 3, 'Must have 3 columns'
+    data_in = in_field.copy()
+    data_out = in_field.copy()
+    for row in range(nrows):
+        i = int( fortran_in[row, 0] )
+        val = fortran_in[row, 1]
+        j = int( fortran_in[row, 2] )
+        data_in[:, j - 1, i - 1] = val
+        i = int( fortran_out[row, 0] )
+        val = fortran_out[row, 1]
+        j = int( fortran_out[row, 2] )
+        data_out[:, j - 1, i - 1] = val
+    
+    plt.imshow(in_field[0, :, :] - data_in[0, :, :], origin='lower')
+    plt.colorbar()
+    plt.savefig('diff_in.png')
+    plt.close()
+
+    plt.imshow(out_field[0, :, :], origin='lower')
+    plt.colorbar()
+    plt.savefig('python_out.png')
+    plt.close()
+
+    plt.imshow(data_out[0, :, :], origin='lower')
+    plt.colorbar()
+    plt.savefig('fortran_out.png')
+    plt.close()
+
+    plt.imshow(out_field[0, :, :] - data_out[0, :, :], origin='lower')
+    plt.colorbar()
+    plt.savefig('diff_out.png')
+    plt.close()
+
 
 if __name__ == '__main__':
     main()

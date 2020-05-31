@@ -17,10 +17,14 @@ program main
     ! local
     integer :: nx, ny, nz, num_iter
     integer :: num_halo = 2
-    integer :: timer_work
+    real (kind=wp) :: alpha = 1.0_wp / 32.0_wp
+
     real (kind=wp), allocatable :: in_field(:, :, :)
     real (kind=wp), allocatable :: out_field(:, :, :)
+
+    integer :: timer_work
     integer :: istat
+
     integer*8 :: flop_counter = 0, byte_counter = 0
 
 #ifdef CRAYPAT
@@ -31,7 +35,7 @@ program main
     call init()
 
     ! warmup caches
-    call work(num_iter=1, increase_counters=.false.)
+    call work( num_iter=1, increase_counters=.false. )
 
 #ifdef CRAYPAT
     !call PAT_record( PAT_STATE_ON, istat )
@@ -39,7 +43,7 @@ program main
 #endif
     call timer_start('work', timer_work)
 
-    call work(num_iter=num_iter, increase_counters=.true.)
+    call work( num_iter=num_iter, increase_counters=.true. )
     
     call timer_end(timer_work)
 #ifdef CRAYPAT
@@ -64,19 +68,29 @@ contains
         integer :: iter, i, j, k
         
         ! this is only done the first time this subroutine is called (warmup)
-        if (.not. allocated(tmp_field) ) then
+        if ( .not. allocated(tmp_field) ) then
             allocate( tmp_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
             tmp_field = 0.0_wp
         end if
         
         do iter = 1, num_iter
-        
+                    
             call update_halo( in_field, increase_counters=increase_counters )
             
             call laplacian( in_field, tmp_field, num_halo, extend=1, increase_counters=increase_counters )
  
             call laplacian( tmp_field, out_field, num_halo, extend=0, increase_counters=increase_counters )
             
+            do k = 1, nz
+            do j = 1 + num_halo, ny + num_halo
+            do i = 1 + num_halo, nx + num_halo
+                out_field(i, j, k) = in_field(i, j, k) - alpha * out_field(i, j, k)
+                if (increase_counters) flop_counter = flop_counter + 2
+                if (increase_counters) byte_counter = byte_counter + 3 * wp
+            end do
+            end do
+            end do
+
             if ( iter /= num_iter ) then
                 do k = 1, nz
                 do j = 1 + num_halo, ny + num_halo
@@ -94,12 +108,12 @@ contains
 
 
     ! compute the Laplacian
-    subroutine laplacian( in_field, lap_field, num_halo, extend, increase_counters )
+    subroutine laplacian( field, lap, num_halo, extend, increase_counters )
         implicit none
             
         ! argument
-        real (kind=wp), intent(in) :: in_field(:, :, :)
-        real (kind=wp), intent(inout) :: lap_field(:, :, :)
+        real (kind=wp), intent(in) :: field(:, :, :)
+        real (kind=wp), intent(inout) :: lap(:, :, :)
         integer, intent(in) :: num_halo, extend
         logical, intent(in) :: increase_counters
         
@@ -109,9 +123,9 @@ contains
         do k = 1, nz
         do j = 1 + num_halo - extend, ny + num_halo + extend
         do i = 1 + num_halo - extend, nx + num_halo + extend
-            lap_field(i, j, k) = -4._wp * in_field(i, j, k)      &
-                + in_field(i - 1, j, k) + in_field(i + 1, j, k)  &
-                + in_field(i, j - 1, k) + in_field(i, j + 1, k)
+            lap(i, j, k) = -4._wp * field(i, j, k)      &
+                + field(i - 1, j, k) + field(i + 1, j, k)  &
+                + field(i, j - 1, k) + field(i, j + 1, k)
             if (increase_counters) flop_counter = flop_counter + 5
             if (increase_counters) byte_counter = byte_counter + 6 * wp
         end do
@@ -136,7 +150,7 @@ contains
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
-            field(i, j, k) = field(nx + i, j, k)
+            field(i, j, k) = field(i + nx, j, k)
             if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
         end do
@@ -152,20 +166,20 @@ contains
         end do
         end do
         
-        ! bottom edge (without corners)
+        ! bottom edge (including corners)
         do k = 1, nz
         do j = 1, num_halo
-        do i = 1 + num_halo, nx + num_halo
+        do i = 1, nx + 2 * num_halo
             field(i, j, k) = field(i, j + ny, k)
             if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
             
-        ! top edge (without corners)
+        ! top edge (including corners)
         do k = 1, nz
         do j = ny + num_halo + 1, ny + 2 * num_halo
-        do i = 1 + num_halo, nx + num_halo
+        do i = 1, nx + 2 * num_halo
             field(i, j, k) = field(i, j - ny, k)
             if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
@@ -193,10 +207,14 @@ contains
         call read_cmd_line_arguments()
 
         allocate( in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
-        call random_number( in_field )
+        do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
+        do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
+            in_field(i, j, :) = 1.0_wp
+        end do
+        end do
 
         allocate( out_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
-        out_field = 0.0_wp
+        out_field = in_field
 
     end subroutine init
 
