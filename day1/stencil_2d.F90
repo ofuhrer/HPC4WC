@@ -3,10 +3,10 @@
 !      Author: Oliver Fuhrer
 !       Email: oliverf@vulcan.com
 !        Date: 20.05.2020
-! Description: Simple stencil example
+! Description: Simple stencil example (4th-order diffusion)
 ! ******************************************************
 
-
+! Driver for apply_diffusion() that sets up fields and does timings
 program main
     use m_utils, only: timer_start, timer_end
     implicit none
@@ -29,26 +29,24 @@ program main
 
 #ifdef CRAYPAT
     include "pat_apif.h"
-    !call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
     call init()
 
     ! warmup caches
-    call work( num_iter=1, increase_counters=.false. )
+    call apply_diffusion( in_field, out_field, alpha, num_iter=1, increase_counters=.false. )
 
+    ! time the actual work
 #ifdef CRAYPAT
-    !call PAT_record( PAT_STATE_ON, istat )
     call PAT_region_begin(1, 'work', istat )
 #endif
     call timer_start('work', timer_work)
 
-    call work( num_iter=num_iter, increase_counters=.true. )
+    call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter, increase_counters=.true. )
     
     call timer_end(timer_work)
 #ifdef CRAYPAT
     call PAT_region_end(1, istat)
-    !call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
     call cleanup()
@@ -56,10 +54,21 @@ program main
 contains
 
 
-    subroutine work(num_iter, increase_counters)
+    ! Integrate 4th-order diffusion equation by a certain number of iterations.
+    !
+    !  in_field          -- input field (nx x ny x nz with halo in x- and y-direction)
+    !  out_field         -- result (must be same size as in_field)
+    !  alpha             -- diffusion coefficient (dimensionless)
+    !  num_iter          -- number of iterations to execute
+    !  increase_counters -- update flop and memory transfer counters?
+    !
+    subroutine apply_diffusion(in_field, out_field, alpha, num_iter, increase_counters)
         implicit none
         
         ! arguments
+        real (kind=wp), intent(inout) :: in_field(:, :, :)
+        real (kind=wp), intent(inout) :: out_field(:, :, :)
+        real (kind=wp), intent(in) :: alpha
         integer, intent(in) :: num_iter
         logical, intent(in) :: increase_counters
         
@@ -78,9 +87,9 @@ contains
             call update_halo( in_field, increase_counters=increase_counters )
             
             call laplacian( in_field, tmp_field, num_halo, extend=1, increase_counters=increase_counters )
- 
             call laplacian( tmp_field, out_field, num_halo, extend=0, increase_counters=increase_counters )
             
+            ! do forward in time step
             do k = 1, nz
             do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
@@ -91,6 +100,7 @@ contains
             end do
             end do
 
+            ! copy out to in in caes this is not the last iteration
             if ( iter /= num_iter ) then
                 do k = 1, nz
                 do j = 1 + num_halo, ny + num_halo
@@ -104,10 +114,17 @@ contains
 
         end do
             
-    end subroutine work
+    end subroutine apply_diffusion
 
 
-    ! compute the Laplacian
+    ! Compute Laplacian using 2nd-order centered differences.
+    !     
+    !  in_field          -- input field (nx x ny x nz with halo in x- and y-direction)
+    !  lap_field         -- result (must be same size as in_field)
+    !  num_halo          -- number of halo points
+    !  extend            -- extend computation into halo-zone by this number of points
+    !  increase_counters -- update flop and memory transfer counters?
+    !
     subroutine laplacian( field, lap, num_halo, extend, increase_counters )
         implicit none
             
@@ -134,8 +151,13 @@ contains
 
     end subroutine laplacian
 
-
-    ! implement periodic halo-updates
+    ! Update the halo-zone using an up/down and left/right strategy.
+    !    
+    !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
+    !  increase_counters -- update flop and memory transfer counters?
+    !
+    !  Note: corners are updated in the left/right phase of the halo-update
+    !
     subroutine update_halo( field, increase_counters )
         implicit none
             
@@ -146,6 +168,27 @@ contains
         ! local
         integer :: i, j, k
             
+        ! bottom edge (without corners)
+        do k = 1, nz
+        do j = 1, num_halo
+        do i = 1 + num_halo, nx + num_halo
+            field(i, j, k) = field(i, j + ny, k)
+            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+        end do
+        end do
+        end do
+            
+        ! top edge (without corners)
+        do k = 1, nz
+        do j = ny + num_halo + 1, ny + 2 * num_halo
+        do i = 1 + num_halo, nx + num_halo
+            field(i, j, k) = field(i, j - ny, k)
+            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+        end do
+        end do
+        end do
+        
+
         ! left edge (including corners)
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
@@ -166,29 +209,12 @@ contains
         end do
         end do
         
-        ! bottom edge (including corners)
-        do k = 1, nz
-        do j = 1, num_halo
-        do i = 1, nx + 2 * num_halo
-            field(i, j, k) = field(i, j + ny, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
-        end do
-        end do
-        end do
-            
-        ! top edge (including corners)
-        do k = 1, nz
-        do j = ny + num_halo + 1, ny + 2 * num_halo
-        do i = 1, nx + 2 * num_halo
-            field(i, j, k) = field(i, j - ny, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
-        end do
-        end do
-        end do
-        
     end subroutine update_halo
         
 
+    ! initialize at program start
+    ! (init MPI, init timers, read command line arguments, 
+    !  allocate memory, initialize fields)
     subroutine init()
         use mpi, only : MPI_INIT
         use m_utils, only : error, is_master, timer_init
@@ -219,6 +245,9 @@ contains
     end subroutine init
 
 
+    ! read and parse the command line arguments
+    ! (read values, convert type, ensure all required arguments are present,
+    !  ensure values are reasonable)
     subroutine read_cmd_line_arguments()
         use m_utils, only : error
         implicit none
@@ -283,6 +312,8 @@ contains
     end subroutine read_cmd_line_arguments
 
 
+    ! cleanup at end of program
+    ! (report counters, report timers, finalize MPI)
     subroutine cleanup()
         use mpi, only : MPI_FINALIZE, MPI_COMM_WORLD, MPI_DOUBLE_PRECISION, MPI_SUM
         use m_utils, only : error, timer_get, timer_print, is_master
