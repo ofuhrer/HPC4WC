@@ -22,10 +22,10 @@ program main
     real (kind=wp), allocatable :: in_field(:, :, :)
     real (kind=wp), allocatable :: out_field(:, :, :)
 
-    integer :: timer_work
+    integer :: timer_work = -999
     integer :: istat
 
-    integer*8 :: flop_counter = 0, byte_counter = 0
+    integer (kind=8) :: flop_counter = 0, byte_counter = 0
 
 #ifdef CRAYPAT
     include "pat_apif.h"
