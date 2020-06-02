@@ -13,11 +13,11 @@ OBJS := $(SRCS:.F90=.o)
 
 ifeq "$(HOSTNAME)" "daint"
   F90 = ftn
-  FFLAGS = -eZ -ffree -N255 -ec -eC -eI -eF
+  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm
 endif
 ifeq "$(HOSTNAME)" "nid"
   F90 = ftn
-  FFLAGS = -eZ -ffree -N255 -ec -eC -eI -eF
+  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm
 endif
 ifeq "$(HOSTNAME)" "papaya"
   F90 = mpif90 -cpp 
