@@ -75,7 +75,7 @@ program main
         runtime = timer_get( timer_work )
         if ( is_master() ) &
             write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
-                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '] \'
+                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
 
     end do
 

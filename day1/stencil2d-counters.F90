@@ -76,12 +76,12 @@ program main
         call cleanup()
 
         runtime = timer_get( timer_work )
-        global_flop_counter = get_counter( flop_counter )
-        global_byte_counter = get_counter( byte_counter )
+        global_flop_counter = get_global_counter( flop_counter )
+        global_byte_counter = get_global_counter( byte_counter )
         if ( is_master() ) &
             write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a, e15.7, a, e15.7, a)') &
                 '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, &
-                ',', global_flop_counter, ',', global_byte_counter, '] \'
+                ',', global_flop_counter, ',', global_byte_counter, '], \'
 
     end do
 
@@ -378,23 +378,27 @@ contains
 
 
     ! get a global counter
-    function get_counter( counter )
+    function get_global_counter( counter, average )
         use mpi, only : MPI_COMM_WORLD, MPI_DOUBLE_PRECISION, MPI_SUM
         use m_utils, only : num_rank
         implicit none
 
         ! argument
+        real (kind=8) :: get_global_counter
         integer (kind=8) :: counter
-        real (kind=8) :: get_counter
+        logical, optional :: average
 
         ! local
         real (kind=8) :: global_counter
         integer :: ierror
 
         call MPI_REDUCE( dble( counter ), global_counter, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror )
-        get_counter = global_counter / dble( num_rank() )
+        if ( present(average) ) then
+            if ( average ) global_counter = global_counter / dble( num_rank() )
+        end if
+        get_global_counter = global_counter
 
-    end function
+    end function get_global_counter
 
 
     ! cleanup at end of work
