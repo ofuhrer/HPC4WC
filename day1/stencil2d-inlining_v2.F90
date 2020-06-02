@@ -111,8 +111,8 @@ contains
         real (kind=wp) :: laplap
         integer :: iter, i, j, k
         
-        a1  =        - 1._wp * alpha
-        a2  =        - 2._wp * alpha
+        a1  =        -  1._wp * alpha
+        a2  =        -  2._wp * alpha
         a8  =           8._wp * alpha
         a20 = 1.0_wp - 20._wp * alpha
         
@@ -136,14 +136,14 @@ contains
                         +  a2 * in_field(i-1, j+1, k) &
                         +  a8 * in_field(i  , j+1, k) &
                         +  a2 * in_field(i+1, j+1, k) &
-                        +  a1 * in_field(i  , j+2, k)                    
+                        +  a1 * in_field(i  , j+2, k)
                 end do
                 end do
 
                 if ( iter /= num_iter ) then
                     do j = 1 + num_halo, ny + num_halo
                     do i = 1 + num_halo, nx + num_halo
-                        in_field(i, j, k)  = out_field(i, j, k)
+                        in_field(i, j, k) = out_field(i, j, k)
                     end do
                     end do
                 end if
