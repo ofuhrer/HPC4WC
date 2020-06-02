@@ -8,7 +8,7 @@
 
 ! Driver for apply_diffusion() that sets up fields and does timings
 program main
-    use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank
+    use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
     implicit none
 
     ! constants
@@ -56,6 +56,9 @@ program main
 
         call setup()
 
+        if ( .not. scan .and. is_master() ) &
+            call write_field_to_file( in_field, num_halo, "in_field.dat" )
+
         ! warmup caches
         call apply_diffusion( in_field, out_field, alpha, num_iter=1, increase_counters=.false. )
 
@@ -72,6 +75,9 @@ program main
 #ifdef CRAYPAT
         call PAT_region_end(1, istat)
 #endif
+
+        if ( .not. scan .and. is_master() ) &
+            call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
         call cleanup()
 
