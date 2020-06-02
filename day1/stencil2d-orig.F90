@@ -1,5 +1,5 @@
 ! ******************************************************
-!     Program: stencil_2d
+!     Program: stencil2d
 !      Author: Oliver Fuhrer
 !       Email: oliverf@vulcan.com
 !        Date: 20.05.2020
@@ -25,8 +25,6 @@ program main
     integer :: timer_work = -999
     integer :: istat
 
-    integer (kind=8) :: flop_counter = 0, byte_counter = 0
-
 #ifdef CRAYPAT
     include "pat_apif.h"
 #endif
@@ -34,7 +32,7 @@ program main
     call init()
 
     ! warmup caches
-    call apply_diffusion( in_field, out_field, alpha, num_iter=1, increase_counters=.false. )
+    call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
 
     ! time the actual work
 #ifdef CRAYPAT
@@ -42,7 +40,7 @@ program main
 #endif
     call timer_start('work', timer_work)
 
-    call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter, increase_counters=.true. )
+    call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter )
     
     call timer_end(timer_work)
 #ifdef CRAYPAT
@@ -60,9 +58,8 @@ contains
     !  out_field         -- result (must be same size as in_field)
     !  alpha             -- diffusion coefficient (dimensionless)
     !  num_iter          -- number of iterations to execute
-    !  increase_counters -- update flop and memory transfer counters?
     !
-    subroutine apply_diffusion(in_field, out_field, alpha, num_iter, increase_counters)
+    subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
         implicit none
         
         ! arguments
@@ -70,7 +67,6 @@ contains
         real (kind=wp), intent(inout) :: out_field(:, :, :)
         real (kind=wp), intent(in) :: alpha
         integer, intent(in) :: num_iter
-        logical, intent(in) :: increase_counters
         
         ! local
         real (kind=wp), save, allocatable :: tmp_field(:, :, :)
@@ -84,18 +80,16 @@ contains
         
         do iter = 1, num_iter
                     
-            call update_halo( in_field, increase_counters=increase_counters )
+            call update_halo( in_field )
             
-            call laplacian( in_field, tmp_field, num_halo, extend=1, increase_counters=increase_counters )
-            call laplacian( tmp_field, out_field, num_halo, extend=0, increase_counters=increase_counters )
+            call laplacian( in_field, tmp_field, num_halo, extend=1 )
+            call laplacian( tmp_field, out_field, num_halo, extend=0 )
             
             ! do forward in time step
             do k = 1, nz
             do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
                 out_field(i, j, k) = in_field(i, j, k) - alpha * out_field(i, j, k)
-                if (increase_counters) flop_counter = flop_counter + 2
-                if (increase_counters) byte_counter = byte_counter + 3 * wp
             end do
             end do
             end do
@@ -106,7 +100,6 @@ contains
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
                     in_field(i, j, k) = out_field(i, j, k)
-                    if (increase_counters) byte_counter = byte_counter + 2 * wp
                 end do
                 end do
                 end do
@@ -123,16 +116,14 @@ contains
     !  lap_field         -- result (must be same size as in_field)
     !  num_halo          -- number of halo points
     !  extend            -- extend computation into halo-zone by this number of points
-    !  increase_counters -- update flop and memory transfer counters?
     !
-    subroutine laplacian( field, lap, num_halo, extend, increase_counters )
+    subroutine laplacian( field, lap, num_halo, extend )
         implicit none
             
         ! argument
         real (kind=wp), intent(in) :: field(:, :, :)
         real (kind=wp), intent(inout) :: lap(:, :, :)
         integer, intent(in) :: num_halo, extend
-        logical, intent(in) :: increase_counters
         
         ! local
         integer :: i, j, k
@@ -143,8 +134,6 @@ contains
             lap(i, j, k) = -4._wp * field(i, j, k)      &
                 + field(i - 1, j, k) + field(i + 1, j, k)  &
                 + field(i, j - 1, k) + field(i, j + 1, k)
-            if (increase_counters) flop_counter = flop_counter + 5
-            if (increase_counters) byte_counter = byte_counter + 6 * wp
         end do
         end do
         end do
@@ -154,16 +143,14 @@ contains
     ! Update the halo-zone using an up/down and left/right strategy.
     !    
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
-    !  increase_counters -- update flop and memory transfer counters?
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
-    subroutine update_halo( field, increase_counters )
+    subroutine update_halo( field )
         implicit none
             
         ! argument
         real (kind=wp), intent(inout) :: field(:, :, :)
-        logical, intent(in) :: increase_counters
         
         ! local
         integer :: i, j, k
@@ -173,7 +160,6 @@ contains
         do j = 1, num_halo
         do i = 1 + num_halo, nx + num_halo
             field(i, j, k) = field(i, j + ny, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
@@ -183,18 +169,15 @@ contains
         do j = ny + num_halo + 1, ny + 2 * num_halo
         do i = 1 + num_halo, nx + num_halo
             field(i, j, k) = field(i, j - ny, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
         
-
         ! left edge (including corners)
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
             field(i, j, k) = field(i + nx, j, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
@@ -204,7 +187,6 @@ contains
         do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
             field(i, j, k) = field(i - nx, j, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
@@ -313,24 +295,14 @@ contains
 
 
     ! cleanup at end of program
-    ! (report counters, report timers, finalize MPI)
+    ! (report timers, finalize MPI)
     subroutine cleanup()
         use mpi, only : MPI_FINALIZE, MPI_COMM_WORLD, MPI_DOUBLE_PRECISION, MPI_SUM
         use m_utils, only : error, timer_get, timer_print, is_master
         implicit none
 
         integer :: ierror
-        real(kind=8) :: global_flop_counter, global_byte_counter
 
-        call MPI_REDUCE(real(flop_counter, 8), global_flop_counter, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
-        call MPI_REDUCE(real(byte_counter, 8), global_byte_counter, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
-        if ( is_master() ) then
-            write(*, *) 'Counted floating-point operations [GFLOP] = ', &
-                global_flop_counter / 1024.d0 / 1024.d0 / 1024.d0
-            write(*, *) 'Counted memory transfers [GB] = ', &
-                global_byte_counter / 1024.d0 / 1024.d0 / 1024.d0
-        end if
-        
         call timer_print()
 
         call MPI_FINALIZE(ierror)

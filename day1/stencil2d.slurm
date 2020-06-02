@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH --job-name="stencil_2d.$USER"
+#SBATCH --job-name="stencil2d.$USER"
 #SBATCH --time=00:10:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-core=1
@@ -12,7 +12,7 @@
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 export CRAY_CUDA_MPS=1
 
-exe=stencil_2d.x
+exe=stencil2d.x
 nx=128
 ny=128
 nz=64

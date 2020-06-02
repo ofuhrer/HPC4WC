@@ -1,5 +1,5 @@
 # ******************************************************
-#     Program: stencil_2d
+#     Program: stencil2d
 #      Author: Oliver Fuhrer
 #       Email: oliverf@vulcan.com
 #        Date: 20.05.2020

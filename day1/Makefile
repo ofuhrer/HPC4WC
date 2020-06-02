@@ -1,10 +1,12 @@
 SHELL = /bin/sh
 HOSTNAME = $(shell hostname | sed 's/[0-1]//g' | sed 's/\..*//g')
 
-TARGET = stencil_2d.x
+VERSION ?= orig
+
+TARGET = stencil2d-$(VERSION).x
 
 SRCS = m_utils.F90 \
-       stencil_2d.F90
+       stencil2d-$(VERSION).F90
 
 # create object file list
 OBJS := $(SRCS:.F90=.o)
@@ -30,6 +32,7 @@ endif
 
 $(TARGET): $(OBJS)
 	$(F90) $(FFLAGS) $(OBJS) -o $(TARGET)
+	cp $(TARGET) stencil2d.x
 
 clean: 
 	-$(RM) -rf *~ *.o *.mod *.MOD *.i *.x *.x+orig *.x+[0-9]* core.* *.out
