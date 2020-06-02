@@ -184,14 +184,19 @@ contains
 
 
     function timer_get(inum)
-        use mpi, only : MPI_WTIME
+        use mpi, only : MPI_WTIME, MPI_DOUBLE_PRECISION, MPI_SUM
         implicit none
 
         ! arguments
         integer, intent(in) :: inum
         real (kind=dp) :: timer_get
 
-        timer_get = rtiming(inum)
+        ! local
+        real (kind=dp) :: ztime_sum
+        integer :: ierror
+
+        call MPI_REDUCE(rtiming(inum), ztime_sum, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
+        timer_get = ztime_sum / REAL(num_rank(), dp)
 
     end function timer_get
 
