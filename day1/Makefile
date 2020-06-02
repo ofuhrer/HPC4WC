@@ -1,5 +1,5 @@
 SHELL = /bin/sh
-HOSTNAME = $(shell hostname | sed 's/[0-1]//g' | sed 's/\..*//g')
+HOSTNAME = $(shell hostname | sed 's/[0-9]*//g' | sed 's/\..*//g')
 
 VERSION ?= orig
 
@@ -15,6 +15,10 @@ ifeq "$(HOSTNAME)" "daint"
   F90 = ftn
   FFLAGS = -eZ -ffree -N255 -ec -eC -eI -eF
 endif
+ifeq "$(HOSTNAME)" "nid"
+  F90 = ftn
+  FFLAGS = -eZ -ffree -N255 -ec -eC -eI -eF
+endif
 ifeq "$(HOSTNAME)" "papaya"
   F90 = mpif90 -cpp 
   FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
@@ -23,7 +27,7 @@ ifeq "$(HOSTNAME)" "papaya"
     -finit-integer=9999999 -finit-logical=true -finit-character=35
 endif
 ifndef F90
-  $(error F90 is not set)
+  $(error F90 is not set for $(HOSTNAME))
 endif
 
 # definition of phony targets

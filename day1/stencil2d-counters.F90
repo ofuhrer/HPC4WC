@@ -73,27 +73,33 @@ contains
         logical, intent(in) :: increase_counters
         
         ! local
-        real (kind=wp), save, allocatable :: tmp_field(:, :, :)
+        real (kind=wp), save, allocatable :: tmp1_field(:, :, :)
+        real (kind=wp), save, allocatable :: tmp2_field(:, :, :)
         integer :: iter, i, j, k
         
         ! this is only done the first time this subroutine is called (warmup)
-        if ( .not. allocated(tmp_field) ) then
-            allocate( tmp_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
-            tmp_field = 0.0_wp
+        if ( .not. allocated(tmp1_field) ) then
+            allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+            tmp1_field = 0.0_wp
         end if
+        if ( .not. allocated(tmp2_field) ) then
+            allocate( tmp2_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+            tmp2_field = 0.0_wp
+        end if
+
         
         do iter = 1, num_iter
                     
             call update_halo( in_field, increase_counters=increase_counters )
             
-            call laplacian( in_field, tmp_field, num_halo, extend=1, increase_counters=increase_counters )
-            call laplacian( tmp_field, out_field, num_halo, extend=0, increase_counters=increase_counters )
+            call laplacian( in_field, tmp1_field, num_halo, extend=1, increase_counters=increase_counters )
+            call laplacian( tmp1_field, tmp2_field, num_halo, extend=0, increase_counters=increase_counters )
             
             ! do forward in time step
             do k = 1, nz
             do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
-                out_field(i, j, k) = in_field(i, j, k) - alpha * out_field(i, j, k)
+                out_field(i, j, k) = in_field(i, j, k) - alpha * tmp2_field(i, j, k)
                 if (increase_counters) flop_counter = flop_counter + 2
                 if (increase_counters) byte_counter = byte_counter + 3 * wp
             end do

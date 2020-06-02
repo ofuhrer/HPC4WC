@@ -69,47 +69,50 @@ contains
         integer, intent(in) :: num_iter
         
         ! local
-        real (kind=wp), save, allocatable :: tmp1_field(:, :, :)
-        real (kind=wp), save, allocatable :: tmp2_field(:, :, :)
+        real (kind=wp), save, allocatable :: tmp1_field(:, :)
+        real (kind=wp), save, allocatable :: tmp2_field(:, :)
         integer :: iter, i, j, k
         
         ! this is only done the first time this subroutine is called (warmup)
         if ( .not. allocated(tmp1_field) ) then
-            allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+            allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo) )
             tmp1_field = 0.0_wp
         end if
         if ( .not. allocated(tmp2_field) ) then
-            allocate( tmp2_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+            allocate( tmp2_field(nx + 2 * num_halo, ny + 2 * num_halo) )
             tmp2_field = 0.0_wp
         end if
         
-        do iter = 1, num_iter
-                    
-            call update_halo( in_field )
-            
-            call laplacian( in_field, tmp1_field, num_halo, extend=1 )
-            call laplacian( tmp1_field, tmp2_field, num_halo, extend=0 )
-            
-            ! do forward in time step
+        do iter = 1, num_iter            
             do k = 1, nz
-            do j = 1 + num_halo, ny + num_halo
-            do i = 1 + num_halo, nx + num_halo
-                out_field(i, j, k) = in_field(i, j, k) - alpha * tmp2_field(i, j, k)
-            end do
-            end do
-            end do
 
-            ! copy out to in in caes this is not the last iteration
-            if ( iter /= num_iter ) then
-                do k = 1, nz
+                call update_halo_2d( in_field(:, :, k) )            
+
+                do j = 1 + num_halo - 1, ny + num_halo + 1
+                do i = 1 + num_halo - 1, nx + num_halo + 1
+                    tmp1_field(i, j) = -4._wp * in_field(i, j, k)        &
+                        + in_field(i - 1, j, k) + in_field(i + 1, j, k)  &
+                        + in_field(i, j - 1, k) + in_field(i, j + 1, k)
+                end do
+                end do
+
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
-                    in_field(i, j, k) = out_field(i, j, k)
+                
+                    tmp2_field(i, j) = -4._wp * tmp1_field(i, j)       &
+                        + tmp1_field(i - 1, j) + tmp1_field(i + 1, j)  &
+                        + tmp1_field(i, j - 1) + tmp1_field(i, j + 1)
+                        
+                    if ( iter == num_iter ) then
+                        out_field(i, j, k) = in_field(i, j, k) - alpha * tmp2_field(i, j)
+                    else
+                        in_field(i, j, k)  = in_field(i, j, k) - alpha * tmp2_field(i, j)
+                    end if
+                    
                 end do
                 end do
-                end do
-            end if
 
+            end do
         end do
             
     end subroutine apply_diffusion
@@ -122,28 +125,26 @@ contains
     !  num_halo          -- number of halo points
     !  extend            -- extend computation into halo-zone by this number of points
     !
-    subroutine laplacian( field, lap, num_halo, extend )
+    subroutine laplacian_2d( field, lap, num_halo, extend )
         implicit none
             
         ! argument
-        real (kind=wp), intent(in) :: field(:, :, :)
-        real (kind=wp), intent(inout) :: lap(:, :, :)
+        real (kind=wp), intent(in) :: field(:, :)
+        real (kind=wp), intent(inout) :: lap(:, :)
         integer, intent(in) :: num_halo, extend
         
         ! local
-        integer :: i, j, k
+        integer :: i, j
             
-        do k = 1, nz
         do j = 1 + num_halo - extend, ny + num_halo + extend
         do i = 1 + num_halo - extend, nx + num_halo + extend
-            lap(i, j, k) = -4._wp * field(i, j, k)      &
-                + field(i - 1, j, k) + field(i + 1, j, k)  &
-                + field(i, j - 1, k) + field(i, j + 1, k)
-        end do
+            lap(i, j) = -4._wp * field(i, j)      &
+                + field(i - 1, j) + field(i + 1, j)  &
+                + field(i, j - 1) + field(i, j + 1)
         end do
         end do
 
-    end subroutine laplacian
+    end subroutine laplacian_2d
 
     ! Update the halo-zone using an up/down and left/right strategy.
     !    
@@ -151,52 +152,44 @@ contains
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
-    subroutine update_halo( field )
+    subroutine update_halo_2d( field )
         implicit none
             
         ! argument
-        real (kind=wp), intent(inout) :: field(:, :, :)
+        real (kind=wp), intent(inout) :: field(:, :)
         
         ! local
-        integer :: i, j, k
+        integer :: i, j
             
         ! bottom edge (without corners)
-        do k = 1, nz
         do j = 1, num_halo
         do i = 1 + num_halo, nx + num_halo
-            field(i, j, k) = field(i, j + ny, k)
-        end do
+            field(i, j) = field(i, j + ny)
         end do
         end do
             
         ! top edge (without corners)
-        do k = 1, nz
         do j = ny + num_halo + 1, ny + 2 * num_halo
         do i = 1 + num_halo, nx + num_halo
-            field(i, j, k) = field(i, j - ny, k)
-        end do
+            field(i, j) = field(i, j - ny)
         end do
         end do
         
         ! left edge (including corners)
-        do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
-            field(i, j, k) = field(i + nx, j, k)
-        end do
+            field(i, j) = field(i + nx, j)
         end do
         end do
                 
         ! right edge (including corners)
-        do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
-            field(i, j, k) = field(i - nx, j, k)
-        end do
+            field(i, j) = field(i - nx, j)
         end do
         end do
         
-    end subroutine update_halo
+    end subroutine update_halo_2d
         
 
     ! initialize at program start
@@ -307,7 +300,7 @@ contains
         implicit none
 
         integer :: ierror
-
+        
         call timer_print()
 
         call MPI_FINALIZE(ierror)

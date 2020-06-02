@@ -207,11 +207,7 @@ contains
 
         if (ltiming) then
 
-            if (is_master()) print *, '--------------------------------------------------------------------------'
-            if (is_master()) print *, ' Timers:'
-            if (is_master()) WRITE(*, "(A,I4)") '   number of workers = ', num_rank()
-            if (is_master()) print *, '--------------------------------------------------------------------------'
-            if (is_master()) print *, ' Id      Tag                     #calls        min[s]        max[s]       mean[s] '
+            if (is_master()) print *, ' Timer   Tag                     #calls        min[s]        max[s]       mean[s] '
 
             do inum = 1, max_timing
 
@@ -230,7 +226,6 @@ contains
 
                 end if
             end do
-            if (is_master()) print *, '--------------------------------------------------------------------------'
 
         end if
 
