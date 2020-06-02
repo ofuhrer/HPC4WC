@@ -106,20 +106,18 @@ contains
         
         ! local
         real (kind=wp), save, allocatable :: tmp1_field(:, :)
-        real (kind=wp), save, allocatable :: tmp2_field(:, :)
+        real (kind=wp) :: laplap
         integer :: iter, i, j, k
         
         ! this is only done the first time this subroutine is called (warmup)
         ! or when the dimensions of the fields change
         if ( allocated(tmp1_field) .and. &
             any( shape(tmp1_field) /= (/nx + 2 * num_halo, ny + 2 * num_halo/) ) ) then
-            deallocate( tmp1_field, tmp2_field )
+            deallocate( tmp1_field )
         end if
         if ( .not. allocated(tmp1_field) ) then
             allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo) )
-            allocate( tmp2_field(nx + 2 * num_halo, ny + 2 * num_halo) )
             tmp1_field = 0.0_wp
-            tmp2_field = 0.0_wp
         end if
         
         do iter = 1, num_iter
@@ -138,14 +136,14 @@ contains
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
                 
-                    tmp2_field(i, j) = -4._wp * tmp1_field(i, j)       &
+                    laplap = -4._wp * tmp1_field(i, j)       &
                         + tmp1_field(i - 1, j) + tmp1_field(i + 1, j)  &
                         + tmp1_field(i, j - 1) + tmp1_field(i, j + 1)
                         
                     if ( iter == num_iter ) then
-                        out_field(i, j, k) = in_field(i, j, k) - alpha * tmp2_field(i, j)
+                        out_field(i, j, k) = in_field(i, j, k) - alpha * laplap
                     else
-                        in_field(i, j, k)  = in_field(i, j, k) - alpha * tmp2_field(i, j)
+                        in_field(i, j, k)  = in_field(i, j, k) - alpha * laplap
                     end if
                     
                 end do
