@@ -107,6 +107,8 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     
     out_field = np.copy( in_field )
     
+    np.save('in_field', in_field)
+    
     # warmup caches
     apply_diffusion( in_field, out_field, alpha, num_halo )
 
@@ -116,6 +118,9 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     toc = time.time()
     
     print("Elapsed time for work = {} s".format(toc - tic) )
+
+    np.save('out_field', out_field)
+
     if plot_result:
         plt.ioff()
         plt.imshow(out_field[0, :, :], origin='lower')
