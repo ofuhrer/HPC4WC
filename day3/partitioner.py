@@ -17,19 +17,33 @@ class Partitioner:
         self.__setup_domain(domain, num_halo)
     
 
-    def is_master(self):
-        """Returns True for the master rank"""
-        return self.rank == 0
+    def shape(self):
+        """Returns the shape of a local field (including halo points)"""
+        return self.shape
     
     
-    def compute_domain(self):
-        """Return domain without halo"""
-        return [self.domain[0] + self.num_halo, self.domain[1] + self.num_halo, \
-                self.domain[2] - self.num_halo, self.domain[3] - self.num_halo]
-
-
+    def left(self):
+        """Returns the rank of the left neighbor"""
+        return self.left_neighbor
+    
+    
+    def right(self):
+        """Returns the rank of the left neighbor"""
+        return self.right_neighbor
+    
+    
+    def top(self):
+        """Returns the rank of the left neighbor"""
+        return self.top_neighbor
+    
+    
+    def bottom(self):
+        """Returns the rank of the left neighbor"""
+        return self.bottom_neighbor
+    
+    
     def scatter(self, field, root=0):
-        """Scatter a global field from a root rank to workers"""
+        """Scatter a global field from a root rank to the workers"""
         if self.rank == root:
             assert np.any(field.shape[0] == np.array(self.global_shape[0])), \
                 "Field does not have correct shape"
@@ -73,6 +87,12 @@ class Partitioner:
         return global_field
                 
     
+    def compute_domain(self):
+        """Return position of subdomain without halo on the global domain"""
+        return [self.domain[0] + self.num_halo, self.domain[1] + self.num_halo, \
+                self.domain[2] - self.num_halo, self.domain[3] - self.num_halo]
+
+
     def __setup_grid(self):
         """Distribute ranks onto a Cartesian grid of workers"""
         for ranks_x in range(math.floor( math.sqrt(self.num_ranks) ), 0, -1):
