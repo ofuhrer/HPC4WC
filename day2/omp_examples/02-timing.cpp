@@ -19,5 +19,5 @@ int main(int argc, char const* argv[]) {
     if(omp_get_thread_num() == 0)
       std::cout << omp_get_num_threads() << "\t" << tock - tick << std::endl;
   }
-  return 1;
+  return 0;
 }
