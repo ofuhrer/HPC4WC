@@ -1,0 +1,2 @@
+cupy-cuda101
+mpi4py
