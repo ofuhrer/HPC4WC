@@ -119,6 +119,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     
     print("Elapsed time for work = {} s".format(toc - tic) )
 
+    update_halo(out_field, num_halo)
     np.save('out_field', out_field)
 
     if plot_result:
