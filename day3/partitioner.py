@@ -6,148 +6,186 @@ class Partitioner:
        grid among MPI ranks on a communicator."""
     
     
-    def __init__(self, comm, domain, num_halo):
-        self.comm = comm
-        self.num_ranks = comm.Get_size()
-        self.rank = comm.Get_rank()
-        self.num_halo = num_halo
-        self.global_shape = [domain[0], domain[1] + 2 * num_halo, domain[2] + 2 * num_halo]
+    def __init__(self, comm, domain, num_halo, periodic = (True, True)):
+        self.__comm = comm
+        self.__num_halo = num_halo
+        self.__periodic = periodic
+
+        self.__rank = comm.Get_rank()
+        self.__num_ranks = comm.Get_size()
+        self.__global_shape = [domain[0], domain[1] + 2 * num_halo, domain[2] + 2 * num_halo]
 
         self.__setup_grid()
         self.__setup_domain(domain, num_halo)
+        
+    def comm(self):
+        """Returns the MPI communicator use to setup this partitioner"""
+        return self.__comm
     
+    
+    def num_halo(self):
+        """Returns the number of halo points"""
+        return self.__num_halo
+    
+    
+    def periodic(self, dim=None):
+        """Returns the periodicity of individual or all dimensions"""
+        if dim is not None:
+            return self.__periodic[dim]
+        else:
+            return self.__periodic
 
+        
+    def rank(self):
+        """Returns the rank of the current MPI worker"""
+        return self.__rank
+    
+    
+    def num_ranks(self):
+        """Returns the number of ranks that have been distributed by this partitioner"""
+        return self.__num_ranks
+    
+        
     def shape(self):
         """Returns the shape of a local field (including halo points)"""
-        return self.shape
+        return self.__shape
     
     
+    def global_shape(self):
+        """Returns the shape of a local field (including halo points)"""
+        return self.__global_shape
+    
+
+    def grid_size(self):
+        """Dimensions of the two-dimensional worker grid"""
+        return self.__grid_size
+    
+    
+    def grid_position(self):
+        """Position of current rank on two-dimensional worker grid"""
+        return self.__rank_to_position(self.__rank)
+
+
     def left(self):
         """Returns the rank of the left neighbor"""
-        return self.left_neighbor
+        return self.__get_neighbor_rank( [0, -1] )
     
     
     def right(self):
         """Returns the rank of the left neighbor"""
-        return self.right_neighbor
+        return self.__get_neighbor_rank( [0, +1] )
     
     
     def top(self):
         """Returns the rank of the left neighbor"""
-        return self.top_neighbor
+        return self.__get_neighbor_rank( [+1, 0] )
     
     
     def bottom(self):
         """Returns the rank of the left neighbor"""
-        return self.bottom_neighbor
+        return self.__get_neighbor_rank( [-1, 0] )
     
     
     def scatter(self, field, root=0):
         """Scatter a global field from a root rank to the workers"""
-        if self.rank == root:
-            assert np.any(field.shape[0] == np.array(self.global_shape[0])), \
+        if self.__rank == root:
+            assert np.any(field.shape[0] == np.array(self.__global_shape[0])), \
                 "Field does not have correct shape"
-        assert 0 <= root < self.num_ranks, "Root processor must be a valid rank"
-        if self.num_ranks == 1:
+        assert 0 <= root < self.__num_ranks, "Root processor must be a valid rank"
+        if self.__num_ranks == 1:
             return field
         sendbuf = None
-        if self.rank == root:
-            sendbuf = np.empty( [self.num_ranks,] + self.__max_shape, dtype=field.dtype )
-            for rank in range(self.num_ranks):
-                j_start, i_start, j_end, i_end = self.__domain[rank]
+        if self.__rank == root:
+            sendbuf = np.empty( [self.__num_ranks,] + self.__max_shape, dtype=field.dtype )
+            for rank in range(self.__num_ranks):
+                j_start, i_start, j_end, i_end = self.__domains[rank]
                 sendbuf[rank, :, :j_end-j_start, :i_end-i_start] = field[:, j_start:j_end, i_start:i_end]
         recvbuf = np.empty(self.__max_shape, dtype=field.dtype)
-        self.comm.Scatter(sendbuf, recvbuf, root=root)
-        j_start, i_start, j_end, i_end = self.domain
+        self.__comm.Scatter(sendbuf, recvbuf, root=root)
+        j_start, i_start, j_end, i_end = self.__domain
         return recvbuf[:, :j_end-j_start, :i_end-i_start].copy()
         
     
     def gather(self, field, root=0):
         """Gather a distributed fields from workers to a single global field on a root rank"""
-        assert np.any(field.shape == np.array(self.shape)), "Field does not have correct shape"
-        assert -1 <= root < self.num_ranks, "Root processor must be -1 (all) or a valid rank"
-        if self.num_ranks == 1:
+        assert np.any(field.shape == np.array(self.__shape)), "Field does not have correct shape"
+        assert -1 <= root < self.__num_ranks, "Root processor must be -1 (all) or a valid rank"
+        if self.__num_ranks == 1:
             return field
-        j_start, i_start, j_end, i_end = self.domain
+        j_start, i_start, j_end, i_end = self.__domain
         sendbuf = np.empty( self.__max_shape, dtype=field.dtype )
         sendbuf[:, :j_end-j_start, :i_end-i_start] = field
         recvbuf = None
-        if self.rank == root or root == -1:
-            recvbuf = np.empty( [self.num_ranks,] + self.__max_shape, dtype=field.dtype )
+        if self.__rank == root or root == -1:
+            recvbuf = np.empty( [self.__num_ranks,] + self.__max_shape, dtype=field.dtype )
         if root > -1:
-            self.comm.Gather(sendbuf, recvbuf, root=root)
+            self.__comm.Gather(sendbuf, recvbuf, root=root)
         else:
-            self.comm.Allgather(sendbuf, recvbuf)
+            self.__comm.Allgather(sendbuf, recvbuf)
         global_field = None
-        if self.rank == root or root == -1:
-            global_field = np.empty(self.global_shape, dtype=field.dtype)
-            for rank in range(self.num_ranks):
-                j_start, i_start, j_end, i_end = self.__domain[rank]
+        if self.__rank == root or root == -1:
+            global_field = np.empty(self.__global_shape, dtype=field.dtype)
+            for rank in range(self.__num_ranks):
+                j_start, i_start, j_end, i_end = self.__domains[rank]
                 global_field[:, j_start:j_end, i_start:i_end] = recvbuf[rank, :, :j_end-j_start, :i_end-i_start]
         return global_field
                 
     
     def compute_domain(self):
         """Return position of subdomain without halo on the global domain"""
-        return [self.domain[0] + self.num_halo, self.domain[1] + self.num_halo, \
-                self.domain[2] - self.num_halo, self.domain[3] - self.num_halo]
+        return [self.__domain[0] + self.__num_halo, self.__domain[1] + self.__num_halo, \
+                self.__domain[2] - self.__num_halo, self.__domain[3] - self.__num_halo]
 
 
     def __setup_grid(self):
         """Distribute ranks onto a Cartesian grid of workers"""
-        for ranks_x in range(math.floor( math.sqrt(self.num_ranks) ), 0, -1):
-            if self.num_ranks % ranks_x == 0:
+        for ranks_x in range(math.floor( math.sqrt(self.__num_ranks) ), 0, -1):
+            if self.__num_ranks % ranks_x == 0:
                 break
-        self.size = (self.num_ranks // ranks_x, ranks_x)
-        self.position = self.__rank_to_position(self.rank)
-
-        self.left_neighbor = self.__get_neighbor_rank( [0, -1] )
-        self.right_neighbor = self.__get_neighbor_rank( [0, +1] )
-        self.top_neighbor = self.__get_neighbor_rank( [+1, 0] )
-        self.bottom_neighbor = self.__get_neighbor_rank( [-1, 0] )
-
+        self.__grid_size = (self.__num_ranks // ranks_x, ranks_x)
+        
 
     def __get_neighbor_rank(self, offset):
         """Get the rank ID of a neighboring rank at a certain offset relative to the current rank"""
-        pos_y = self.__cyclic_offset(self.position[0], offset[0], self.size[0])
-        pos_x = self.__cyclic_offset(self.position[1], offset[1], self.size[1])
+        position = self.__rank_to_position(self.__rank)
+        pos_y = self.__cyclic_offset(position[0], offset[0], self.__grid_size[0], self.__periodic[0])
+        pos_x = self.__cyclic_offset(position[1], offset[1], self.__grid_size[1], self.__periodic[1])
         return self.__position_to_rank( [pos_y, pos_x] )
 
 
-    def __cyclic_offset(self, position, offset, size):
+    def __cyclic_offset(self, position, offset, size, periodic=True):
         """Add offset with cyclic boundary conditions"""
         pos = position + offset
-        while pos < 0:
-            pos += size
-        while pos > size - 1:
-            pos -= size
-        return pos
+        if periodic:
+            while pos < 0:
+                pos += size
+            while pos > size - 1:
+                pos -= size
+        return pos if -1 < pos < size else None
 
 
     def __setup_domain(self, shape, num_halo):
         """Distribute the points of the computational grid onto the Cartesian grid of workers"""
         assert len(shape) == 3, "Must pass a 3-dimensional shape"
         size_z = shape[0]
-        size_y = self.__distribute_to_bins(shape[1], self.size[0])
-        size_x = self.__distribute_to_bins(shape[2], self.size[1])
+        size_y = self.__distribute_to_bins(shape[1], self.__grid_size[0])
+        size_x = self.__distribute_to_bins(shape[2], self.__grid_size[1])
 
         pos_y = self.__cumsum(size_y, initial_value=num_halo)
         pos_x = self.__cumsum(size_x, initial_value=num_halo)
 
-        compute = []
-        domain = []
-        shape = []
-        for rank in range(self.num_ranks):
+        domains = []
+        shapes = []
+        for rank in range(self.__num_ranks):
             pos = self.__rank_to_position(rank)
-            compute += [[ pos_y[pos[0]], pos_x[pos[1]],  pos_y[pos[0] + 1], pos_x[pos[1] + 1] ]]
-            domain += [[ compute[rank][0] - num_halo, compute[rank][1] - num_halo, \
-                         compute[rank][2] + num_halo, compute[rank][3] + num_halo ]]
-            shape += [[ size_z, domain[rank][2] - domain[rank][0], \
-                                domain[rank][3] - domain[rank][1] ]]
-
-        self.__domain, self.__shape =  domain, shape
-        self.__max_shape = self.__find_max_shape( self.__shape )
-        self.domain, self.shape = domain[self.rank], shape[self.rank]
+            domains += [[ pos_y[pos[0]] - num_halo, pos_x[pos[1]] - num_halo, \
+                          pos_y[pos[0] + 1] + num_halo, pos_x[pos[1] + 1] + num_halo ]]
+            shapes += [[ size_z, domains[rank][2] - domains[rank][0], \
+                                 domains[rank][3] - domains[rank][1] ]]
+        self.__domains, self.__shapes =  domains, shapes
+        
+        self.__domain, self.__shape = domains[self.__rank], shapes[self.__rank]
+        self.__max_shape = self.__find_max_shape( self.__shapes )
 
 
     def __distribute_to_bins(self, number, bins):
@@ -180,11 +218,11 @@ class Partitioner:
 
     def __rank_to_position(self, rank):
         """Find position of rank on worker grid"""
-        return ( rank // self.size[1], rank % self.size[1] )
+        return ( rank // self.__grid_size[1], rank % self.__grid_size[1] )
     
 
     def __position_to_rank(self, position):
         """Find rank given a position on the worker grid"""
-        return position[0] * self.size[1] + position[1]
+        return position[0] * self.__grid_size[1] + position[1]
     
 

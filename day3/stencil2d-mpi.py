@@ -38,7 +38,7 @@ def laplacian( in_field, lap_field, num_halo, extend=0 ):
         + in_field[:, jb - 1:je - 1, ib:ie] + in_field[:, jb + 1:je + 1 if je != -1 else None, ib:ie]
 
 
-def update_halo( field, num_halo ):
+def update_halo( field, num_halo, p=None ):
     """Update the halo-zone using an up/down and left/right strategy.
     
     field    -- input/output field (nz x ny x nx with halo in x- and y-direction)
@@ -47,20 +47,41 @@ def update_halo( field, num_halo ):
     Note: corners are updated in the left/right phase of the halo-update
     """
     
-    # bottom edge (without corners)
-    field[:, 0:num_halo, num_halo:-num_halo] = field[:, -2 * num_halo:-num_halo, num_halo:-num_halo]
+    # bottom-top edge (without corners)
+    b_sndbuf = field[:, -2 * num_halo:-num_halo, num_halo:-num_halo].copy()
+    b_rcvbuf = b_sndbuf.copy()
+    req1 = p.comm().Irecv(b_rcvbuf, source=p.bottom(), tag=100)
+    req2 = p.comm().Isend(b_sndbuf, dest=p.top(), tag=100)
+    t_sndbuf = field[:, num_halo:2 * num_halo, num_halo:-num_halo].copy()
+    t_rcvbuf = t_sndbuf.copy()
+    req3 = p.comm().Irecv(t_rcvbuf, source=p.top(), tag=101)
+    req4 = p.comm().Isend(t_sndbuf, dest=p.bottom(), tag=101)
     
-    # top edge (without corners)
-    field[:, -num_halo:, num_halo:-num_halo] = field[:, num_halo:2 * num_halo, num_halo:-num_halo]
+    req1.wait()
+    req2.wait()
+    field[:, 0:num_halo, num_halo:-num_halo] = b_rcvbuf
+    req3.wait()
+    req4.wait()
+    field[:, -num_halo:, num_halo:-num_halo] = t_rcvbuf
 
-    # left edge (including corners)
-    field[:, :, 0:num_halo] = field[:, :, -2 * num_halo:-num_halo]
+    # left-right edge (including corners)
+    l_sndbuf = field[:, :, -2 * num_halo:-num_halo].copy()
+    l_rcvbuf = l_sndbuf.copy()
+    req1 = p.comm().Irecv(l_rcvbuf, source=p.left(), tag=102)
+    req2 = p.comm().Isend(l_sndbuf, dest=p.right(), tag=102)
+    r_sndbuf = field[:, :, num_halo:2 * num_halo].copy()
+    r_rcvbuf = r_sndbuf.copy()
+    req3 = p.comm().Irecv(r_rcvbuf, source=p.right(), tag=103)
+    req4 = p.comm().Isend(r_sndbuf, dest=p.left(), tag=103)
     
-    # right edge (including corners)
-    field[:, :, -num_halo:] = field[:, :, num_halo:2 * num_halo]
+    req1.wait()
+    req2.wait()
+    field[:, :, 0:num_halo] = l_rcvbuf
+    req3.wait()
+    req4.wait()
+    field[:, :, -num_halo:] = r_rcvbuf
 
-
-def apply_diffusion( in_field, out_field, alpha, num_halo, num_iter=1 ):
+def apply_diffusion( in_field, out_field, alpha, num_halo, num_iter=1, p=None ):
     """Integrate 4th-order diffusion equation by a certain number of iterations.
     
     in_field  -- input field (nz x ny x nx with halo in x- and y-direction)
@@ -75,7 +96,7 @@ def apply_diffusion( in_field, out_field, alpha, num_halo, num_iter=1 ):
     
     for n in range(num_iter):
         
-        update_halo( in_field, num_halo )
+        update_halo( in_field, num_halo, p )
         
         laplacian( in_field, tmp_field, num_halo=num_halo, extend=1 )
         laplacian( tmp_field, out_field, num_halo=num_halo, extend=0 )
@@ -119,13 +140,13 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     np.save('in_field', p.gather(in_field))
     
     # warmup caches
-    apply_diffusion( in_field, out_field, alpha, num_halo )
+    apply_diffusion( in_field, out_field, alpha, num_halo, p=p )
 
     comm.Barrier()
     
     # time the actual work
     tic = time.time()
-    apply_diffusion( in_field, out_field, alpha, num_halo, num_iter=num_iter )
+    apply_diffusion( in_field, out_field, alpha, num_halo, num_iter=num_iter, p=p )
     toc = time.time()
     
     comm.Barrier()
@@ -133,6 +154,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     if comm.Get_rank() == 0:
         print("Elapsed time for work = {} s".format(toc - tic) )
 
+    update_halo(out_field, num_halo, p)
     np.save('out_field', p.gather(out_field))
 
     if plot_result:
