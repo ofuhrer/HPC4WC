@@ -40,7 +40,7 @@ program main
 
     if ( is_master() ) then
         write(*, '(a)') '# ranks nx ny ny nz num_iter time'
-        write(*, '(a)') 'data = np.array( [ \ '
+        write(*, '(a)') 'data = np.array( [ \'
     end if
 
     if ( scan ) num_setups = size(nx_setups) * size(ny_setups)
@@ -74,14 +74,14 @@ program main
 #endif
 
         if ( .not. scan .and. is_master() ) &
-            call write_field_to_fil(e out_field, num_halo, "out_field.dat" )
+            call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
         call cleanup()
 
         runtime = timer_get( timer_work )
         if ( is_master() ) &
             write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
-                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \ '
+                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
 
     end do
 
