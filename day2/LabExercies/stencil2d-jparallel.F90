@@ -139,7 +139,7 @@ contains
         
             do k = 1, nz
 
-                !$omp parallel do
+                !$omp parallel do default(none) shared(nx, ny, num_halo, num_iter, alpha, in_field, tmp1_field)
                 do j = 1 + num_halo - 1, ny + num_halo + 1
                 do i = 1 + num_halo - 1, nx + num_halo + 1
                     tmp1_field(i, j) = -4._wp * in_field(i, j, k)        &
@@ -149,7 +149,7 @@ contains
                 end do
                 !$omp end parallel do
                 
-                !$omp parallel do
+                !$omp parallel do default(none) shared(nx, ny, num_halo, num_iter, alpha, in_field, tmp1_field, out_field) private(laplap)
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
                 

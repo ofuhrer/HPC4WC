@@ -126,6 +126,7 @@ contains
         real (kind=wp) :: laplap
         integer :: iter, i, j, k
         
+        
         ! this is only done the first time this subroutine is called (warmup)
         ! or when the dimensions of the fields change
         if ( allocated(tmp1_field) .and. &
@@ -136,12 +137,12 @@ contains
             allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo) )
             tmp1_field = 0.0_wp
         end if
-        
+
         do iter = 1, num_iter
                     
             call update_halo( in_field )
         
-            !$omp parallel do
+            !$omp parallel do default(none) shared(nx, ny, nz, num_halo, num_iter, alpha, in_field, out_field) private(laplap, tmp1_field)
             do k = 1, nz
 
                 do j = 1 + num_halo - 1, ny + num_halo + 1
@@ -172,7 +173,7 @@ contains
             !$omp end parallel do
             
         end do
-            
+                    
     end subroutine apply_diffusion
 
 
