@@ -26,7 +26,6 @@ program main
 
     integer :: timer_work
     real (kind=8) :: runtime
-    integer :: istat
 
     integer :: cur_setup, num_setups = 1
     integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
@@ -37,6 +36,8 @@ program main
 
 #ifdef CRAYPAT
     include "pat_apif.h"
+    integer :: istat
+    call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
     call init()
@@ -64,7 +65,7 @@ program main
 
         ! time the actual work
 #ifdef CRAYPAT
-        call PAT_region_begin(1, 'work', istat )
+        call PAT_record( PAT_STATE_ON, istat )
 #endif
         timer_work = -999
         call timer_start('work', timer_work)
@@ -73,7 +74,7 @@ program main
         
         call timer_end( timer_work )
 #ifdef CRAYPAT
-        call PAT_region_end(1, istat)
+        call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
         call update_halo( out_field )
