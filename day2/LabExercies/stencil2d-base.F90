@@ -37,7 +37,7 @@ program main
 #endif
 
     call init()
-    
+
     if ( is_master() ) then
         write(*, '(a)') '# ranks nx ny ny nz num_iter time'
         write(*, '(a)') 'data = np.array( [ \'
@@ -128,8 +128,8 @@ contains
         end if
         
         do iter = 1, num_iter
-        
-            call update_halo( in_field )            
+                    
+            call update_halo( in_field )
         
             do k = 1, nz
 
@@ -163,6 +163,7 @@ contains
     end subroutine apply_diffusion
 
 
+    
     ! Update the halo-zone using an up/down and left/right strategy.
     !    
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)

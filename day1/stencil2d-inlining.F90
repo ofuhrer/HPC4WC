@@ -40,7 +40,7 @@ program main
 
     if ( is_master() ) then
         write(*, '(a)') '# ranks nx ny ny nz num_iter time'
-        write(*, '(a)') 'data = np.array( [ \ '
+        write(*, '(a)') 'data = np.array( [ \'
     end if
 
     if ( scan ) num_setups = size(nx_setups) * size(ny_setups)
@@ -73,15 +73,16 @@ program main
         call PAT_region_end(1, istat)
 #endif
 
+        call update_halo( out_field )
         if ( .not. scan .and. is_master() ) &
-            call write_field_to_fil(e out_field, num_halo, "out_field.dat" )
+            call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
         call cleanup()
 
         runtime = timer_get( timer_work )
         if ( is_master() ) &
             write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
-                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \ '
+                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
 
     end do
 
@@ -127,9 +128,10 @@ contains
         end if
         
         do iter = 1, num_iter
+                    
+            call update_halo( in_field )
+        
             do k = 1, nz
-
-                call update_halo_2d( in_field(:, :, k) )            
 
                 do j = 1 + num_halo - 1, ny + num_halo + 1
                 do i = 1 + num_halo - 1, nx + num_halo + 1
@@ -161,50 +163,59 @@ contains
     end subroutine apply_diffusion
 
 
+    
     ! Update the halo-zone using an up/down and left/right strategy.
     !    
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
-    subroutine update_halo_2d( field )
+    subroutine update_halo( field )
         implicit none
             
         ! argument
-        real (kind=wp), intent(inout) :: field(:, :)
+        real (kind=wp), intent(inout) :: field(:, :, :)
         
         ! local
-        integer :: i, j
+        integer :: i, j, k
             
         ! bottom edge (without corners)
+        do k = 1, nz
         do j = 1, num_halo
         do i = 1 + num_halo, nx + num_halo
-            field(i, j) = field(i, j + ny)
+            field(i, j, k) = field(i, j + ny, k)
+        end do
         end do
         end do
             
         ! top edge (without corners)
+        do k = 1, nz
         do j = ny + num_halo + 1, ny + 2 * num_halo
         do i = 1 + num_halo, nx + num_halo
-            field(i, j) = field(i, j - ny)
+            field(i, j, k) = field(i, j - ny, k)
+        end do
         end do
         end do
         
         ! left edge (including corners)
+        do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
-            field(i, j) = field(i + nx, j)
+            field(i, j, k) = field(i + nx, j, k)
+        end do
         end do
         end do
                 
         ! right edge (including corners)
+        do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
-            field(i, j) = field(i - nx, j)
+            field(i, j, k) = field(i - nx, j, k)
+        end do
         end do
         end do
         
-    end subroutine update_halo_2d
+    end subroutine update_halo
         
 
     ! initialize at program start

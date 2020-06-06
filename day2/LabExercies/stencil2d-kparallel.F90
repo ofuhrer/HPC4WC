@@ -138,9 +138,9 @@ contains
         end if
         
         do iter = 1, num_iter
+                    
+            call update_halo( in_field )
         
-            call update_halo( in_field )   
-            
             !$omp parallel do
             do k = 1, nz
 
@@ -176,6 +176,7 @@ contains
     end subroutine apply_diffusion
 
 
+    
     ! Update the halo-zone using an up/down and left/right strategy.
     !    
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
