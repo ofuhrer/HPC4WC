@@ -8,6 +8,7 @@
 
 ! Driver for apply_diffusion() that sets up fields and does timings
 program main
+    !$ use omp_lib
     use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
     implicit none
 
@@ -31,13 +32,22 @@ program main
     integer :: cur_setup, num_setups = 1
     integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
     integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
+    
+    !$ integer :: num_threads = 1
 
 #ifdef CRAYPAT
     include "pat_apif.h"
 #endif
 
+    !$omp parallel
+    !$ num_threads = omp_get_num_threads()
+    !$omp master
+    !$ write(*, '(a,i)') '# threads = ', num_threads
+    !$omp end master
+    !$omp end parallel
+
     call init()
-    
+
     if ( is_master() ) then
         write(*, '(a)') '# ranks nx ny ny nz num_iter time'
         write(*, '(a)') 'data = np.array( [ \'
@@ -129,8 +139,9 @@ contains
         
         do iter = 1, num_iter
         
-            call update_halo( in_field )            
-        
+            call update_halo( in_field )   
+            
+            !$omp parallel do
             do k = 1, nz
 
                 do j = 1 + num_halo - 1, ny + num_halo + 1
@@ -158,6 +169,8 @@ contains
                 end do
 
             end do
+            !$omp end parallel do
+            
         end do
             
     end subroutine apply_diffusion
