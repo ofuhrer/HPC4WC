@@ -7,5 +7,7 @@ int main() {
   {
     std::cout << "I am processor " << omp_get_thread_num() << std::endl;
   }
+    
   return 0;
+    
 }

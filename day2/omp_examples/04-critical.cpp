@@ -8,5 +8,7 @@ int main() {
 #pragma omp critical(output)
     std::cout << "I am processor " << omp_get_thread_num() << std::endl;
   }
+    
   return 0;
+    
 }

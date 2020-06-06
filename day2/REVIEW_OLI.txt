@@ -1,0 +1,12 @@
+Slides and 01-OpenMP.ipynb
+
+- I made some minor cleanups that I commited directly.
+
+- I would take a lot of time explaining the different example codes and what is actually happening.
+  e.g. show 01-demoparallel.cpp code, explain which sections are run in on only one core and which sections will be run on multiple cores, ...
+
+- I would move Amdahl's law to the end of the slides and to the end of the demo. Maybe before caching.
+
+- I am missing a simple example where you discuss the private(x) and shared(x) clause and you show its effect. I would put this after Race Conditions and Synchronization.
+
+- The caching example is not entirely clear to me what you want to show. "Here we see the implication of caching in a multithreaded environment" is not clear.
