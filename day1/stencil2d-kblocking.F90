@@ -73,6 +73,7 @@ program main
         call PAT_region_end(1, istat)
 #endif
 
+        call update_halo( out_field )
         if ( .not. scan .and. is_master() ) &
             call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
@@ -128,10 +129,11 @@ contains
             tmp2_field = 0.0_wp
         end if
         
-        do iter = 1, num_iter            
-            do k = 1, nz
+        do iter = 1, num_iter
+                    
+            call update_halo( in_field )
 
-                call update_halo_2d( in_field(:, :, k) )            
+            do k = 1, nz
 
                 call laplacian_2d( in_field(:, :, k), tmp1_field, num_halo, extend=1 )
                 call laplacian_2d( tmp1_field, tmp2_field, num_halo, extend=0 )
@@ -193,44 +195,52 @@ contains
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
-    subroutine update_halo_2d( field )
+    subroutine update_halo( field )
         implicit none
             
         ! argument
-        real (kind=wp), intent(inout) :: field(:, :)
+        real (kind=wp), intent(inout) :: field(:, :, :)
         
         ! local
-        integer :: i, j
+        integer :: i, j, k
             
         ! bottom edge (without corners)
+        do k = 1, nz
         do j = 1, num_halo
         do i = 1 + num_halo, nx + num_halo
-            field(i, j) = field(i, j + ny)
+            field(i, j, k) = field(i, j + ny, k)
+        end do
         end do
         end do
             
         ! top edge (without corners)
+        do k = 1, nz
         do j = ny + num_halo + 1, ny + 2 * num_halo
         do i = 1 + num_halo, nx + num_halo
-            field(i, j) = field(i, j - ny)
+            field(i, j, k) = field(i, j - ny, k)
+        end do
         end do
         end do
         
         ! left edge (including corners)
+        do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
-            field(i, j) = field(i + nx, j)
+            field(i, j, k) = field(i + nx, j, k)
+        end do
         end do
         end do
                 
         ! right edge (including corners)
+        do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
-            field(i, j) = field(i - nx, j)
+            field(i, j, k) = field(i - nx, j, k)
+        end do
         end do
         end do
         
-    end subroutine update_halo_2d
+    end subroutine update_halo
         
 
     ! initialize at program start

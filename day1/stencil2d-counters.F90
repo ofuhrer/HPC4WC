@@ -76,6 +76,7 @@ program main
         call PAT_region_end(1, istat)
 #endif
 
+        call update_halo( out_field )
         if ( .not. scan .and. is_master() ) &
             call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
