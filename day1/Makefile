@@ -39,10 +39,10 @@ $(TARGET): $(OBJS)
 	cp $(TARGET) stencil2d.x
 
 clean: 
-	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]*
+	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report
 
-distclean:
-	-$(RM) -rf *.png *.dat *.npy *.x *.x+orig *.x+[0-9]*
+distclean: clean
+	-$(RM) -rf *.png *.dat *.npy *.x *.x+orig* *.x+[0-9]*
 
 %.o: %.F90
 	$(F90) $(FFLAGS) -c $*.F90

@@ -8,7 +8,6 @@
 
 ! Driver for apply_diffusion() that sets up fields and does timings
 program main
-    !$ use omp_lib
     use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
     implicit none
 
@@ -27,22 +26,20 @@ program main
 
     integer :: timer_work
     real (kind=8) :: runtime
-    integer :: istat
 
     integer :: cur_setup, num_setups = 1
     integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
     integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
-    
-    !$ integer :: num_threads = 1
 
 #ifdef CRAYPAT
     include "pat_apif.h"
+    integer :: istat
+    call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
     !$omp parallel
-    !$ num_threads = omp_get_num_threads()
     !$omp master
-    !$ write(*, '(a,i)') '# threads = ', num_threads
+    write(*,'(a,i)') '# threads = ', omp_get_num_threads()
     !$omp end master
     !$omp end parallel
 
@@ -70,8 +67,11 @@ program main
         call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
 
         ! time the actual work
+        !$omp parallel
+        !$omp barrier
+        !$omp end parallel
 #ifdef CRAYPAT
-        call PAT_region_begin(1, 'work', istat )
+        call PAT_record( PAT_STATE_ON, istat )
 #endif
         timer_work = -999
         call timer_start('work', timer_work)
@@ -80,7 +80,7 @@ program main
         
         call timer_end( timer_work )
 #ifdef CRAYPAT
-        call PAT_region_end(1, istat)
+        call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
         call update_halo( out_field )
