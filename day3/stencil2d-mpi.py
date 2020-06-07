@@ -81,6 +81,28 @@ def update_halo( field, num_halo, p=None ):
     req4.wait()
     field[:, :, -num_halo:] = r_rcvbuf
 
+def update_halo( field, num_halo, p ):
+    """Update the halo-zone using an up/down and left/right strategy.
+    
+    field    -- input/output field (nz x ny x nx with halo in x- and y-direction)
+    num_halo -- number of halo points
+    
+    Note: corners are updated in the left/right phase of the halo-update
+    """
+    
+    # bottom edge (without corners)
+    field[:, 0:num_halo, num_halo:-num_halo] = field[:, -2 * num_halo:-num_halo, num_halo:-num_halo]
+    
+    # top edge (without corners)
+    field[:, -num_halo:, num_halo:-num_halo] = field[:, num_halo:2 * num_halo, num_halo:-num_halo]
+
+    # left edge (including corners)
+    field[:, :, 0:num_halo] = field[:, :, -2 * num_halo:-num_halo]
+    
+    # right edge (including corners)
+    field[:, :, -num_halo:] = field[:, :, num_halo:2 * num_halo]
+            
+
 def apply_diffusion( in_field, out_field, alpha, num_halo, num_iter=1, p=None ):
     """Integrate 4th-order diffusion equation by a certain number of iterations.
     
@@ -142,7 +164,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     f = p.gather(in_field)
     if rank == 0:
-        np.save('in_field', global_f)
+        np.save('in_field', f)
         if plot_result:
             plt.ioff()
             plt.imshow(f[in_field.shape[0]//2, :, :], origin='lower')

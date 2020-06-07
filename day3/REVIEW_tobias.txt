@@ -8,7 +8,4 @@ mpi barrier similar to omp barrier, draw analogy?
 collective communication:
 pictures for things?
 
-03:
-solution does not print the local a of 0, might be misleading?
-
 
