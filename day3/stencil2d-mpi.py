@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from mpi4py import MPI
 from partitioner import Partitioner
 
-    
+
 def laplacian( in_field, lap_field, num_halo, extend=0 ):
     """Compute Laplacian using 2nd-order centered differences.
     
@@ -127,17 +127,28 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     alpha = 1./32.
     
     comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+
     p = Partitioner(comm, [nz, ny, nx], num_halo)
     
-    if comm.Get_rank() == 0:
+    if rank == 0:
         f = np.zeros( (nz, ny + 2 * num_halo, nx + 2 * num_halo) )
-        f[:, num_halo + ny // 4:num_halo + 3 * ny // 4, num_halo + nx // 4:num_halo + 3 * nx // 4] = 1.0
+        f[nz // 4:3 * nz // 4, num_halo + ny // 4:num_halo + 3 * ny // 4, num_halo + nx // 4:num_halo + 3 * nx // 4] = 1.0
     else:
         f = np.empty(1)
     in_field = p.scatter(f)
+    
     out_field = np.copy( in_field )
 
-    np.save('in_field', p.gather(in_field))
+    f = p.gather(in_field)
+    if rank == 0:
+        np.save('in_field', global_f)
+        if plot_result:
+            plt.ioff()
+            plt.imshow(f[0, :, :], origin='lower')
+            plt.colorbar()
+            plt.savefig('in_field.png')
+            plt.close()
     
     # warmup caches
     apply_diffusion( in_field, out_field, alpha, num_halo, p=p )
@@ -151,19 +162,18 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     
     comm.Barrier()
     
-    if comm.Get_rank() == 0:
+    if rank == 0:
         print("Elapsed time for work = {} s".format(toc - tic) )
 
     update_halo(out_field, num_halo, p)
-    np.save('out_field', p.gather(out_field))
 
-    if plot_result:
-        f = p.gather(out_field)
-        if comm.Get_rank() == 0:
-            plt.ioff()
+    f = p.gather(out_field)
+    if rank == 0:
+        np.save('out_field', f)
+        if plot_result:
             plt.imshow(f[0, :, :], origin='lower')
             plt.colorbar()
-            plt.savefig('result.png')
+            plt.savefig('out_field.png')
             plt.close()
 
 

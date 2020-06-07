@@ -103,11 +103,17 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     alpha = 1./32.
     
     in_field = np.zeros( (nz, ny + 2 * num_halo, nx + 2 * num_halo) )
-    in_field[:, num_halo + ny // 4:num_halo + 3 * ny // 4, num_halo + nx // 4:num_halo + 3 * nx // 4] = 1.0
+    in_field[nz // 4:3 * nz // 4, num_halo + ny // 4:num_halo + 3 * ny // 4, num_halo + nx // 4:num_halo + 3 * nx // 4] = 1.0
     
     out_field = np.copy( in_field )
     
     np.save('in_field', in_field)
+    if plot_result:
+        plt.ioff()
+        plt.imshow(in_field[0, :, :], origin='lower')
+        plt.colorbar()
+        plt.savefig('in_field.png')
+        plt.close()
     
     # warmup caches
     apply_diffusion( in_field, out_field, alpha, num_halo )
@@ -120,13 +126,12 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     print("Elapsed time for work = {} s".format(toc - tic) )
 
     update_halo(out_field, num_halo)
-    np.save('out_field', out_field)
 
+    np.save('out_field', out_field)
     if plot_result:
-        plt.ioff()
         plt.imshow(out_field[0, :, :], origin='lower')
         plt.colorbar()
-        plt.savefig('result.png')
+        plt.savefig('out_field.png')
         plt.close()
 
 
