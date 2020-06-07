@@ -110,7 +110,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     np.save('in_field', in_field)
     if plot_result:
         plt.ioff()
-        plt.imshow(in_field[0, :, :], origin='lower')
+        plt.imshow(in_field[in_field.shape[0]//2, :, :], origin='lower')
         plt.colorbar()
         plt.savefig('in_field.png')
         plt.close()
@@ -129,7 +129,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     np.save('out_field', out_field)
     if plot_result:
-        plt.imshow(out_field[0, :, :], origin='lower')
+        plt.imshow(out_field[out_field.shape[0]//2, :, :], origin='lower')
         plt.colorbar()
         plt.savefig('out_field.png')
         plt.close()

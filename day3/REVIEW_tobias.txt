@@ -1,54 +1,14 @@
-MPI notes:
-Learning goals:
-Be able stat nur able
-
 02:
-top does not work
-
-communicators:
-	- do we want to show an example of a sub-comm?
-    
-openMP could not print, cout was messed up. do we need to explain why it is fine now?
-
 
 MPI errors:
 - switching size to 4: the first two values are defined
 
-- interrupt kernel has shortcut I I
-restart requires loading imports, calling comm, getting rank from three different places. Should we simplify?
-
 mpi barrier similar to omp barrier, draw analogy?
 
 collective communication:
-
 pictures for things?
 
 03:
-sequential execution: add the format in the end
-
-```
-length = 3 * num_ranks
-global_a = None
-global_b = None
-def work(data):
-    """Do some work on each element of the data array"""
-    return np.sin(data)
-if rank == 0:
-    global_a = np.random.rand(length)
-    print("Working on {} elements on rank {}".format(global_a.size, rank))
-    global_b = work(global_a)
-else:
-    print("Not doing any work on rank {}".format(rank))
-    global_b = None
-```
-
-Decomposition picture uses fortran language, should we replace?
-
 solution does not print the local a of 0, might be misleading?
 
-gather and validation: else global_c = None is redundant 
 
-Halo Points:
-should we turn autopx off initially?
-
-exercise 7, should there be an empty box to try?

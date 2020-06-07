@@ -7,6 +7,12 @@ class Partitioner:
     
     
     def __init__(self, comm, domain, num_halo, periodic = (True, True)):
+        assert len(domain) == 3, \
+            "Must specify a three-dimensional domain"
+        assert domain[0] > 0 and domain[1] > 0 and domain[2] > 0, \
+            "Invalid domain specification (negative size)"
+        assert num_halo >= 0, "Number of halo points must be zero or positive"
+
         self.__comm = comm
         self.__num_halo = num_halo
         self.__periodic = periodic
@@ -15,7 +21,8 @@ class Partitioner:
         self.__num_ranks = comm.Get_size()
         self.__global_shape = [domain[0], domain[1] + 2 * num_halo, domain[2] + 2 * num_halo]
 
-        self.__setup_grid()
+        size = self.__setup_grid()
+        assert domain[1] >= size[0] and domain[2] >= size[1], "Domain is too small for number of ranks"
         self.__setup_domain(domain, num_halo)
         
     def comm(self):
@@ -143,6 +150,7 @@ class Partitioner:
             if self.__num_ranks % ranks_x == 0:
                 break
         self.__grid_size = (self.__num_ranks // ranks_x, ranks_x)
+        return self.__grid_size
         
 
     def __get_neighbor_rank(self, offset):
@@ -223,6 +231,9 @@ class Partitioner:
 
     def __position_to_rank(self, position):
         """Find rank given a position on the worker grid"""
-        return position[0] * self.__grid_size[1] + position[1]
+        if position[0] is None or position[1] is None:
+            return None
+        else:
+            return position[0] * self.__grid_size[1] + position[1]
     
 
