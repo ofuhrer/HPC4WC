@@ -26,14 +26,15 @@ program main
 
     integer :: timer_work
     real (kind=8) :: runtime
-    integer :: istat
 
     integer :: cur_setup, num_setups = 1
     integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
     integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
-    
+
 #ifdef CRAYPAT
     include "pat_apif.h"
+    integer :: istat
+    call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
     !$omp parallel
@@ -67,7 +68,7 @@ program main
 
         ! time the actual work
 #ifdef CRAYPAT
-        call PAT_region_begin(1, 'work', istat )
+        call PAT_record( PAT_STATE_ON, istat )
 #endif
         timer_work = -999
         call timer_start('work', timer_work)
@@ -76,7 +77,7 @@ program main
         
         call timer_end( timer_work )
 #ifdef CRAYPAT
-        call PAT_region_end(1, istat)
+        call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
         call update_halo( out_field )
@@ -168,7 +169,6 @@ contains
                 !$omp end parallel do
 
             end do
-            
         end do
             
     end subroutine apply_diffusion
@@ -260,9 +260,12 @@ contains
         call timer_init()
 
         allocate( in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+        in_field = 0.0_wp
+        do k = 1 + nz / 4, 3 * nz / 4
         do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
         do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
             in_field(i, j, :) = 1.0_wp
+        end do
         end do
         end do
 
