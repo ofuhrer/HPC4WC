@@ -255,7 +255,7 @@ contains
         implicit none
 
         ! local
-        integer :: i, j
+        integer :: i, j, k
 
         call timer_init()
 
