@@ -63,12 +63,12 @@ class Partitioner:
         return self.__global_shape
     
 
-    def grid_size(self):
+    def size(self):
         """Dimensions of the two-dimensional worker grid"""
-        return self.__grid_size
+        return self.__size
     
     
-    def grid_position(self):
+    def position(self):
         """Position of current rank on two-dimensional worker grid"""
         return self.__rank_to_position(self.__rank)
 
@@ -149,15 +149,15 @@ class Partitioner:
         for ranks_x in range(math.floor( math.sqrt(self.__num_ranks) ), 0, -1):
             if self.__num_ranks % ranks_x == 0:
                 break
-        self.__grid_size = (self.__num_ranks // ranks_x, ranks_x)
-        return self.__grid_size
+        self.__size = (self.__num_ranks // ranks_x, ranks_x)
+        return self.__size
         
 
     def __get_neighbor_rank(self, offset):
         """Get the rank ID of a neighboring rank at a certain offset relative to the current rank"""
         position = self.__rank_to_position(self.__rank)
-        pos_y = self.__cyclic_offset(position[0], offset[0], self.__grid_size[0], self.__periodic[0])
-        pos_x = self.__cyclic_offset(position[1], offset[1], self.__grid_size[1], self.__periodic[1])
+        pos_y = self.__cyclic_offset(position[0], offset[0], self.__size[0], self.__periodic[0])
+        pos_x = self.__cyclic_offset(position[1], offset[1], self.__size[1], self.__periodic[1])
         return self.__position_to_rank( [pos_y, pos_x] )
 
 
@@ -176,8 +176,8 @@ class Partitioner:
         """Distribute the points of the computational grid onto the Cartesian grid of workers"""
         assert len(shape) == 3, "Must pass a 3-dimensional shape"
         size_z = shape[0]
-        size_y = self.__distribute_to_bins(shape[1], self.__grid_size[0])
-        size_x = self.__distribute_to_bins(shape[2], self.__grid_size[1])
+        size_y = self.__distribute_to_bins(shape[1], self.__size[0])
+        size_x = self.__distribute_to_bins(shape[2], self.__size[1])
 
         pos_y = self.__cumsum(size_y, initial_value=num_halo)
         pos_x = self.__cumsum(size_x, initial_value=num_halo)
@@ -226,7 +226,7 @@ class Partitioner:
 
     def __rank_to_position(self, rank):
         """Find position of rank on worker grid"""
-        return ( rank // self.__grid_size[1], rank % self.__grid_size[1] )
+        return ( rank // self.__size[1], rank % self.__size[1] )
     
 
     def __position_to_rank(self, position):
@@ -234,6 +234,6 @@ class Partitioner:
         if position[0] is None or position[1] is None:
             return None
         else:
-            return position[0] * self.__grid_size[1] + position[1]
+            return position[0] * self.__size[1] + position[1]
     
 

@@ -77,7 +77,7 @@ program main
         call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
-        call update_halo( out_field )
+        call update_halo( out_field, increase_counters=.false. )
         if ( .not. scan .and. is_master() ) &
             call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
