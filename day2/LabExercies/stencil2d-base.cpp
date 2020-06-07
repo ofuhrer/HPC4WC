@@ -5,40 +5,46 @@
 
 #include "utils.h"
 
-void updateHalo2d(Storage3D<double>& inField, int k) {
+void updateHalo(Storage3D<double>& inField) {
   int xInterior = inField.xMax() - inField.xMin();
   int yInterior = inField.yMax() - inField.yMin();
 
   // bottom edge (without corners)
+  for(std::size_t k = 0; k < inField.zMin(); ++k) {
     for(std::size_t j = 0; j < inField.yMin(); ++j) {
-        for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-      inField(i, j, k) = inField(i, j + yInterior, k);
+      for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
+        inField(i, j, k) = inField(i, j + yInterior, k);
+      }
     }
   }
 
   // top edge (without corners)
-  
+  for(std::size_t k = 0; k < inField.zMin(); ++k) {
     for(std::size_t j = inField.yMax(); j < inField.ySize(); ++j) {
-        for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-      inField(i, j, k) = inField(i, j - yInterior, k);
+      for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
+        inField(i, j, k) = inField(i, j - yInterior, k);
+      }
     }
   }
 
   // left edge (including corners)
-  
+  for(std::size_t k = 0; k < inField.zMin(); ++k) {
     for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-        for(std::size_t i = 0; i < inField.xMin(); ++i) {
-      inField(i, j, k) = inField(i + xInterior, j, k);
+      for(std::size_t i = 0; i < inField.xMin(); ++i) {
+        inField(i, j, k) = inField(i + xInterior, j, k);
+      }
     }
   }
 
   // right edge (including corners)
-  
+  for(std::size_t k = 0; k < inField.zMin(); ++k) {
     for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-        for(std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
-      inField(i, j, k) = inField(i - xInterior, j, k);
+      for(std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
+        inField(i, j, k) = inField(i - xInterior, j, k);
+      }
     }
   }
+
 }
 
 void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, double alpha,
@@ -47,9 +53,11 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
   Storage3D<double> tmp1Field(x, y, z, halo);
 
   for(std::size_t iter = 0; iter < numIter; ++iter) {
- #pragma omp parallel for schedule (static,1)
+
+    updateHalo(inField);
+
+#pragma omp parallel for schedule (static,1)
     for(std::size_t k = 0; k < inField.zMax(); ++k) {
-      updateHalo2d(inField, k);
 
       // apply the initial laplacian
       for(std::size_t j = inField.yMin() - 1; j < inField.yMax() + 1; ++j) {
@@ -113,6 +121,7 @@ int main(int argc, char const* argv[]) {
 
   auto end = std::chrono::steady_clock::now();
 
+  updateHalo(output);
   fout.open("out_field.dat", std::ios::binary | std::ofstream::trunc);
   output.writeFile(fout);
   fout.close();

@@ -8,7 +8,6 @@
 
 ! Driver for apply_diffusion() that sets up fields and does timings
 program main
-    !$ use omp_lib
     use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
     implicit none
 
@@ -27,22 +26,20 @@ program main
 
     integer :: timer_work
     real (kind=8) :: runtime
-    integer :: istat
 
     integer :: cur_setup, num_setups = 1
     integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
     integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
-    
-    !$ integer :: num_threads = 1
 
 #ifdef CRAYPAT
     include "pat_apif.h"
+    integer :: istat
+    call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
     !$omp parallel
-    !$ num_threads = omp_get_num_threads()
     !$omp master
-    !$ write(*, '(a,i)') '# threads = ', num_threads
+    write(*,'(a,i)') '# threads = ', omp_get_num_threads()
     !$omp end master
     !$omp end parallel
 
@@ -70,8 +67,11 @@ program main
         call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
 
         ! time the actual work
+        !$omp parallel
+        !$omp barrier
+        !$omp end parallel
 #ifdef CRAYPAT
-        call PAT_region_begin(1, 'work', istat )
+        call PAT_record( PAT_STATE_ON, istat )
 #endif
         timer_work = -999
         call timer_start('work', timer_work)
@@ -80,7 +80,7 @@ program main
         
         call timer_end( timer_work )
 #ifdef CRAYPAT
-        call PAT_region_end(1, istat)
+        call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
         call update_halo( out_field )
@@ -126,6 +126,7 @@ contains
         real (kind=wp) :: laplap
         integer :: iter, i, j, k
         
+        
         ! this is only done the first time this subroutine is called (warmup)
         ! or when the dimensions of the fields change
         if ( allocated(tmp1_field) .and. &
@@ -136,12 +137,12 @@ contains
             allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo) )
             tmp1_field = 0.0_wp
         end if
-        
+
         do iter = 1, num_iter
                     
             call update_halo( in_field )
         
-            !$omp parallel do
+            !$omp parallel do default(none) shared(nx, ny, nz, num_halo, num_iter, alpha, in_field, out_field) private(laplap, tmp1_field)
             do k = 1, nz
 
                 do j = 1 + num_halo - 1, ny + num_halo + 1
@@ -172,7 +173,7 @@ contains
             !$omp end parallel do
             
         end do
-            
+                    
     end subroutine apply_diffusion
 
 

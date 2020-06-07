@@ -10,3 +10,24 @@ Slides and 01-OpenMP.ipynb
 - I am missing a simple example where you discuss the private(x) and shared(x) clause and you show its effect. I would put this after Race Conditions and Synchronization.
 
 - The caching example is not entirely clear to me what you want to show. "Here we see the implication of caching in a multithreaded environment" is not clear.
+
+LabExercises and openMP.ipynb
+
+- I made some minor cleanups that I commited directly.
+
+- I would move everything out of this folder into the day2 folder. Then we have the same structure everywhere.
+
+- I think it makes sense to run the base code only on 1 core (using srun -n 1). I changed it accordingly.
+
+- I moved the halo update out of the k loop (both on day1 and on day2 in Fortran and C++). I think it does not make sense to have it inside the k-loop from a weather and climate perspective.
+
+- In the first part of the lab, I added more guidance and explanation and also also more questions and activities.
+
+- I still think it is fundamentally flawed to start by putting two omp parallel pragmas on two loops. (see for example https://stackoverflow.com/questions/10540760/openmp-nested-parallel-for-loops-vs-inner-parallel-for/10541890 or https://crd.lbl.gov/assets/Uploads/ECP18-Roofline-6-stencil.pdf or https://livebook.manning.com/book/parallel-and-high-performance-computing/chapter-7/v-5/143). I changed the exercise accordingly.
+
+- We should have a discussion about everything after "Setting the number of threads". 
+  - I don't think that collapsing loops makes sense. We cannot collapse kj and parallelizing i is a very bad idea. If at all, we could collapse the kj in the halo update.
+  - I also don't think it makes sense to investigate scheduling for a workload that is constant for every iteration of the do-loop. I would reduce this section to trying out three schedules and comparing runtime.
+  - I would move the parallelizing the halo-update up to "Setting the number of threads"
+
+PS. My solutions for kparallel and jparallel are checked-in.

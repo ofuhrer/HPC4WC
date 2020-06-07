@@ -26,16 +26,21 @@ program main
 
     integer :: timer_work
     real (kind=8) :: runtime
+    integer :: istat
 
     integer :: cur_setup, num_setups = 1
     integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
     integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
-
+    
 #ifdef CRAYPAT
     include "pat_apif.h"
-    integer :: istat
-    call PAT_record( PAT_STATE_OFF, istat )
 #endif
+
+    !$omp parallel
+    !$omp master
+    write(*,'(a,i)') '# threads = ', omp_get_num_threads()
+    !$omp end master
+    !$omp end parallel
 
     call init()
 
@@ -62,7 +67,7 @@ program main
 
         ! time the actual work
 #ifdef CRAYPAT
-        call PAT_record( PAT_STATE_ON, istat )
+        call PAT_region_begin(1, 'work', istat )
 #endif
         timer_work = -999
         call timer_start('work', timer_work)
@@ -71,7 +76,7 @@ program main
         
         call timer_end( timer_work )
 #ifdef CRAYPAT
-        call PAT_record( PAT_STATE_OFF, istat )
+        call PAT_region_end(1, istat)
 #endif
 
         call update_halo( out_field )
@@ -134,6 +139,7 @@ contains
         
             do k = 1, nz
 
+                !$omp parallel do default(none) shared(nx, ny, num_halo, num_iter, alpha, in_field, tmp1_field)
                 do j = 1 + num_halo - 1, ny + num_halo + 1
                 do i = 1 + num_halo - 1, nx + num_halo + 1
                     tmp1_field(i, j) = -4._wp * in_field(i, j, k)        &
@@ -141,7 +147,9 @@ contains
                         + in_field(i, j - 1, k) + in_field(i, j + 1, k)
                 end do
                 end do
-
+                !$omp end parallel do
+                
+                !$omp parallel do default(none) shared(nx, ny, num_halo, num_iter, alpha, in_field, tmp1_field, out_field) private(laplap)
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
                 
@@ -157,8 +165,10 @@ contains
                     
                 end do
                 end do
+                !$omp end parallel do
 
             end do
+            
         end do
             
     end subroutine apply_diffusion
