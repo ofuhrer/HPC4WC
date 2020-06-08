@@ -167,7 +167,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
         np.save('in_field', f)
         if plot_result:
             plt.ioff()
-            plt.imshow(f[in_field.shape[0]//2, :, :], origin='lower')
+            plt.imshow(f[in_field.shape[0] // 2, :, :], origin='lower')
             plt.colorbar()
             plt.savefig('in_field.png')
             plt.close()
@@ -193,7 +193,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     if rank == 0:
         np.save('out_field', f)
         if plot_result:
-            plt.imshow(f[out_field.shape[0]//2, :, :], origin='lower')
+            plt.imshow(f[out_field.shape[0] // 2, :, :], origin='lower')
             plt.colorbar()
             plt.savefig('out_field.png')
             plt.close()
