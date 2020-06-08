@@ -107,6 +107,8 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
 
         if n < num_iter - 1:
             in_field, out_field = out_field, in_field
+        else:
+            update_halo(out_field, num_halo)
 
 
 @click.command()
@@ -145,7 +147,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     in_field = cp.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))
     in_field[
-        :,
+        nz // 4 : 3 * nz // 4,
         num_halo + ny // 4 : num_halo + 3 * ny // 4,
         num_halo + nx // 4 : num_halo + 3 * nx // 4,
     ] = 1.0
@@ -156,6 +158,18 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
         np.save("in_field", in_field.get())
     except AttributeError:
         np.save("in_field", in_field)
+
+    if plot_result:
+        plt.ioff()
+
+        try:
+            plt.imshow(in_field[0, :, :].get(), origin="lower")
+        except AttributeError:
+            plt.imshow(in_field[0, :, :], origin="lower")
+
+        plt.colorbar()
+        plt.savefig("in_field.png")
+        plt.close()
 
     # warmup caches
     apply_diffusion(in_field, out_field, alpha, num_halo)
@@ -181,7 +195,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
             plt.imshow(out_field[0, :, :], origin="lower")
 
         plt.colorbar()
-        plt.savefig("result.png")
+        plt.savefig("out_field.png")
         plt.close()
 
 

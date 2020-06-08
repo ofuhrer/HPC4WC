@@ -42,37 +42,6 @@ def copy_defs(src: Field["dtype"], dst: Field["dtype"]):
         dst = src
 
 
-# def update_halo(field, num_halo):
-#     """ Update the halo-zone using an up/down and left/right strategy.
-#
-#     Parameters
-#     ----------
-#     field : array-like
-#         Input/output field (nz x ny x nx with halo in x- and y-direction).
-#     num_halo : int
-#         Number of halo points.
-#
-#     Note
-#     ----
-#         Corners are updated in the left/right phase of the halo-update.
-#     """
-#     # bottom edge (without corners)
-#     field[num_halo:-num_halo, :num_halo] = field[
-#         num_halo:-num_halo, -2 * num_halo : -num_halo
-#     ]
-#
-#     # top edge (without corners)
-#     field[num_halo:-num_halo, -num_halo:] = field[
-#         num_halo:-num_halo, num_halo : 2 * num_halo
-#     ]
-#
-#     # left edge (including corners)
-#     field[:num_halo, :] = field[-2 * num_halo : -num_halo, :]
-#
-#     # right edge (including corners)
-#     field[-num_halo:, :] = field[num_halo : 2 * num_halo, :]
-
-
 def update_halo(copy_stencil, field, num_halo):
     nx = field.shape[0] - 2 * num_halo
     ny = field.shape[1] - 2 * num_halo
@@ -138,6 +107,9 @@ def apply_diffusion(
         if n < num_iter - 1:
             # swap input and output fields
             in_field, out_field = out_field, in_field
+        else:
+            # halo update
+            update_halo(copy_stencil, out_field, num_halo)
 
 
 @click.command()
@@ -199,12 +171,20 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
     in_field[
         num_halo + nx // 4 : num_halo + 3 * nx // 4,
         num_halo + ny // 4 : num_halo + 3 * ny // 4,
-        :,
+        nz // 4 : 3 * nz // 4,
     ] = 1.0
 
     # write input field to file
     # swap first and last axes for compliance with F-layout
-    np.save("in_field", np.swapaxes(np.asarray(in_field), 0, 2))
+    np.save("in_field", np.swapaxes(in_field, 0, 2))
+
+    if plot_result:
+        # plot initial field
+        plt.ioff()
+        plt.imshow(in_field[:, :, 0], origin="lower")
+        plt.colorbar()
+        plt.savefig("in_field.png")
+        plt.close()
 
     # compile diffusion stencil
     kwargs = {"verbose": True} if backend in ("gtx86", "gtmc", "gtcuda") else {}
@@ -247,14 +227,14 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
 
     # save output field
     # swap first and last axes for compliance with F-layout
-    np.save("out_field", np.swapaxes(np.asarray(out_field), 0, 2))
+    np.save("out_field", np.swapaxes(out_field, 0, 2))
 
     if plot_result:
-        # plot
+        # plot the output field
         plt.ioff()
-        plt.imshow(np.asarray(out_field[:, :, 0]), origin="lower")
+        plt.imshow(out_field[:, :, 0], origin="lower")
         plt.colorbar()
-        plt.savefig("result.png")
+        plt.savefig("out_field.png")
         plt.close()
 
 
