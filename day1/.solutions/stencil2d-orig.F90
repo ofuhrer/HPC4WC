@@ -31,9 +31,6 @@ program main
     integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
     integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
 
-    integer (kind=8) :: flop_counter = 0, byte_counter = 0
-    real (kind=8) :: global_flop_counter, global_byte_counter
-
 #ifdef CRAYPAT
     include "pat_apif.h"
     integer :: istat
@@ -43,7 +40,7 @@ program main
     call init()
 
     if ( is_master() ) then
-        write(*, '(a)') '# ranks nx ny ny nz num_iter time flop byte'
+        write(*, '(a)') '# ranks nx ny ny nz num_iter time'
         write(*, '(a)') 'data = np.array( [ \'
     end if
 
@@ -61,7 +58,7 @@ program main
             call write_field_to_file( in_field, num_halo, "in_field.dat" )
 
         ! warmup caches
-        call apply_diffusion( in_field, out_field, alpha, num_iter=1, increase_counters=.false. )
+        call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
 
         ! time the actual work
 #ifdef CRAYPAT
@@ -70,26 +67,23 @@ program main
         timer_work = -999
         call timer_start('work', timer_work)
 
-        call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter, increase_counters=.true. )
+        call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter )
         
         call timer_end( timer_work )
 #ifdef CRAYPAT
         call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
-        call update_halo( out_field, increase_counters=.false. )
+        call update_halo( out_field )
         if ( .not. scan .and. is_master() ) &
             call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
         call cleanup()
 
         runtime = timer_get( timer_work )
-        global_flop_counter = get_global_counter( flop_counter )
-        global_byte_counter = get_global_counter( byte_counter )
         if ( is_master() ) &
-            write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a, e15.7, a, e15.7, a)') &
-                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, &
-                ',', global_flop_counter, ',', global_byte_counter, '], \'
+            write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
+                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
 
     end do
 
@@ -108,9 +102,8 @@ contains
     !  out_field         -- result (must be same size as in_field)
     !  alpha             -- diffusion coefficient (dimensionless)
     !  num_iter          -- number of iterations to execute
-    !  increase_counters -- update flop and memory transfer counters?
     !
-    subroutine apply_diffusion( in_field, out_field, alpha, num_iter, increase_counters )
+    subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
         implicit none
         
         ! arguments
@@ -118,7 +111,6 @@ contains
         real (kind=wp), intent(inout) :: out_field(:, :, :)
         real (kind=wp), intent(in) :: alpha
         integer, intent(in) :: num_iter
-        logical, intent(in) :: increase_counters
         
         ! local
         real (kind=wp), save, allocatable :: tmp1_field(:, :, :)
@@ -140,18 +132,16 @@ contains
         
         do iter = 1, num_iter
                     
-            call update_halo( in_field, increase_counters=increase_counters )
+            call update_halo( in_field )
             
-            call laplacian( in_field, tmp1_field, num_halo, extend=1, increase_counters=increase_counters )
-            call laplacian( tmp1_field, tmp2_field, num_halo, extend=0, increase_counters=increase_counters )
+            call laplacian( in_field, tmp1_field, num_halo, extend=1 )
+            call laplacian( tmp1_field, tmp2_field, num_halo, extend=0 )
             
             ! do forward in time step
             do k = 1, nz
             do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
                 out_field(i, j, k) = in_field(i, j, k) - alpha * tmp2_field(i, j, k)
-                if (increase_counters) flop_counter = flop_counter + 2
-                if (increase_counters) byte_counter = byte_counter + 3 * wp
             end do
             end do
             end do
@@ -162,7 +152,6 @@ contains
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
                     in_field(i, j, k) = out_field(i, j, k)
-                    ! TODO
                 end do
                 end do
                 end do
@@ -179,16 +168,14 @@ contains
     !  lap_field         -- result (must be same size as in_field)
     !  num_halo          -- number of halo points
     !  extend            -- extend computation into halo-zone by this number of points
-    !  increase_counters -- update flop and memory transfer counters?
     !
-    subroutine laplacian( field, lap, num_halo, extend, increase_counters )
+    subroutine laplacian( field, lap, num_halo, extend )
         implicit none
             
         ! argument
         real (kind=wp), intent(in) :: field(:, :, :)
         real (kind=wp), intent(inout) :: lap(:, :, :)
         integer, intent(in) :: num_halo, extend
-        logical, intent(in) :: increase_counters
         
         ! local
         integer :: i, j, k
@@ -199,7 +186,6 @@ contains
             lap(i, j, k) = -4._wp * field(i, j, k)      &
                 + field(i - 1, j, k) + field(i + 1, j, k)  &
                 + field(i, j - 1, k) + field(i, j + 1, k)
-            ! TODO
         end do
         end do
         end do
@@ -210,16 +196,14 @@ contains
     ! Update the halo-zone using an up/down and left/right strategy.
     !    
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
-    !  increase_counters -- update flop and memory transfer counters?
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
-    subroutine update_halo( field, increase_counters )
+    subroutine update_halo( field )
         implicit none
             
         ! argument
         real (kind=wp), intent(inout) :: field(:, :, :)
-        logical, intent(in) :: increase_counters
         
         ! local
         integer :: i, j, k
@@ -229,7 +213,6 @@ contains
         do j = 1, num_halo
         do i = 1 + num_halo, nx + num_halo
             field(i, j, k) = field(i, j + ny, k)
-            ! TODO
         end do
         end do
         end do
@@ -239,7 +222,6 @@ contains
         do j = ny + num_halo + 1, ny + 2 * num_halo
         do i = 1 + num_halo, nx + num_halo
             field(i, j, k) = field(i, j - ny, k)
-            ! TODO
         end do
         end do
         end do
@@ -249,7 +231,6 @@ contains
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
             field(i, j, k) = field(i + nx, j, k)
-            ! TODO
         end do
         end do
         end do
@@ -259,7 +240,6 @@ contains
         do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
             field(i, j, k) = field(i - nx, j, k)
-            ! TODO
         end do
         end do
         end do
@@ -387,34 +367,9 @@ contains
     end subroutine read_cmd_line_arguments
 
 
-    ! get a global counter
-    function get_global_counter( counter, average )
-        use mpi, only : MPI_COMM_WORLD, MPI_DOUBLE_PRECISION, MPI_SUM
-        use m_utils, only : num_rank
-        implicit none
-
-        ! argument
-        real (kind=8) :: get_global_counter
-        integer (kind=8) :: counter
-        logical, optional :: average
-
-        ! local
-        real (kind=8) :: global_counter
-        integer :: ierror
-
-        call MPI_REDUCE( dble( counter ), global_counter, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror )
-        if ( present(average) ) then
-            if ( average ) global_counter = global_counter / dble( num_rank() )
-        end if
-        get_global_counter = global_counter
-
-    end function get_global_counter
-
-
     ! cleanup at end of work
-    ! (report counters, report timers, free memory)
+    ! (report timers, free memory)
     subroutine cleanup()
-        use mpi, only : MPI_FINALIZE
         implicit none
         
         deallocate(in_field, out_field)
