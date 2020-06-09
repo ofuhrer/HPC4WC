@@ -167,7 +167,7 @@ contains
     
     ! Update the halo-zone using an up/down and left/right strategy.
     !    
-    !  field             -- input/output fiel.43719d (nz x ny x nx with halo in x- and y-direction)
+    !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
@@ -245,13 +245,13 @@ contains
         implicit none
 
         ! local
-        integer :: i, j
+        integer :: i, j, k
 
         call timer_init()
 
         allocate( in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
         in_field = 0.0_wp
-        do k = 1 + nz / 4 , 3 * nz / 4
+        do k = 1 + nz / 4, 3 * nz / 4
         do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
         do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
             in_field(i, j, k) = 1.0_wp
