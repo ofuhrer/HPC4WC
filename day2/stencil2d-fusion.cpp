@@ -59,21 +59,17 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
 
     for(std::size_t k = 0; k < inField.zMax(); ++k) {
 
-      // apply the initial laplacian
+      // apply the computation
       for(/* loopbounds here */;;) {
         for(/* loopbounds here */;;) {
           // implementation here...
         }
       }
 
-      // apply the second laplacian
+      // update the field
       for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
         for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-
-          // and update the field
-          if(iter == numIter - 1) {
-            outField(i, j, k) = 0; // one variable here...
-          } else {
+          if(iter != numIter - 1) {
             inField(i, j, k) = 0; // one variable here...
           }
         }
