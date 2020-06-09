@@ -37,12 +37,6 @@ program main
     call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
-    !$omp parallel
-    !$omp master
-    write(*,'(a,i)') '# threads = ', omp_get_num_threads()
-    !$omp end master
-    !$omp end parallel
-
     call init()
 
     if ( is_master() ) then
@@ -67,9 +61,6 @@ program main
         call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
 
         ! time the actual work
-        !$omp parallel
-        !$omp barrier
-        !$omp end parallel
 #ifdef CRAYPAT
         call PAT_record( PAT_STATE_ON, istat )
 #endif
@@ -126,7 +117,6 @@ contains
         real (kind=wp) :: laplap
         integer :: iter, i, j, k
         
-        
         ! this is only done the first time this subroutine is called (warmup)
         ! or when the dimensions of the fields change
         if ( allocated(tmp1_field) .and. &
@@ -137,43 +127,32 @@ contains
             allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo) )
             tmp1_field = 0.0_wp
         end if
-
+        
         do iter = 1, num_iter
                     
             call update_halo( in_field )
         
-            !$omp parallel do default(none) shared(nx, ny, nz, num_halo, num_iter, alpha, in_field, out_field) private(laplap, tmp1_field)
             do k = 1, nz
 
-                do j = 1 + num_halo - 1, ny + num_halo + 1
-                do i = 1 + num_halo - 1, nx + num_halo + 1
-                    tmp1_field(i, j) = -4._wp * in_field(i, j, k)        &
-                        + in_field(i - 1, j, k) + in_field(i + 1, j, k)  &
-                        + in_field(i, j - 1, k) + in_field(i, j + 1, k)
+                do j = 1,2! loopbounds here ...
+                do i = 1,2! loopbounds here ...
+                    ! implementation here .......
                 end do
                 end do
 
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
-                
-                    laplap = -4._wp * tmp1_field(i, j)       &
-                        + tmp1_field(i - 1, j) + tmp1_field(i + 1, j)  &
-                        + tmp1_field(i, j - 1) + tmp1_field(i, j + 1)
-                        
                     if ( iter == num_iter ) then
-                        out_field(i, j, k) = in_field(i, j, k) - alpha * laplap
+                        out_field(i, j, k) = 0 ! one variable here...
                     else
-                        in_field(i, j, k)  = in_field(i, j, k) - alpha * laplap
-                    end if
+                        in_field(i, j, k)  = 0 ! one variable here...
                     
                 end do
                 end do
+
             end do
-            !$omp end parallel do
-            
-            
         end do
-                    
+            
     end subroutine apply_diffusion
 
 
@@ -264,7 +243,7 @@ contains
 
         allocate( in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
         in_field = 0.0_wp
-        do k = 1 + nz / 4 , 3 * nz / 4
+        do k = 1 + nz / 4, 3 * nz / 4
         do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
         do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
             in_field(i, j, k) = 1.0_wp

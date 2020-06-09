@@ -3,7 +3,6 @@
 #include <ostream>
 #include <vector>
 
-
 template <typename T>
 class Storage3D {
 public:
@@ -12,20 +11,6 @@ public:
         data_((x + 2 * nhalo) * (y + 2 * nhalo) * (z + 2 * nhalo), value) {}
 
   T& operator()(int i, int j, int k) { return data_[i + j * xsize_ + k * xsize_ * ysize_]; }
-
-  void print(std::ostream& os, bool withHalo = false) {
-    for(std::size_t k = 0; k < zsize_; ++k) {
-      os << "[";
-      for(std::size_t j = 0 + withHalo * halosize_; j < ysize_ - withHalo * halosize_; ++j) {
-        os << "[";
-        for(std::size_t i = 0 + withHalo * halosize_; i < xsize_ - withHalo * halosize_; ++i) {
-          os << operator()(i, j, k) << "  ";
-        }
-        os << "]" << std::endl;
-      }
-      os << "]" << std::endl << std::endl;
-    }
-  }
 
   void writeFile(std::ostream& os) {
     int32_t three = 3;
@@ -51,7 +36,7 @@ public:
   }
 
   void initialize() {
-    for(std::size_t k = 0; k < zsize_; ++k) {
+    for(std::size_t k = zsize_ / 4.0; k < 3 * zsize_ / 4.0; ++k) {
       for(std::size_t j = halosize_ + xsize_ / 4.; j < halosize_ + 3. / 4. * xsize_; ++j) {
         for(std::size_t i = halosize_ + xsize_ / 4.; i < halosize_ + 3. / 4. * xsize_; ++i) {
           operator()(i, j, k) = 1;
@@ -60,14 +45,14 @@ public:
     }
   }
 
-  std::size_t xMin() const { return halosize_; }
-  std::size_t xMax() const { return xsize_ - halosize_; }
-  std::size_t xSize() const { return xsize_; }
-  std::size_t yMin() const { return halosize_; }
-  std::size_t yMax() const { return ysize_ - halosize_; }
-  std::size_t ySize() const { return ysize_; }
-  std::size_t zMin() const { return 0; }
-  std::size_t zMax() const { return zsize_; }
+  const std::size_t xMin() const { return halosize_; }
+  const std::size_t xMax() const { return xsize_ - halosize_; }
+  const std::size_t xSize() const { return xsize_; }
+  const std::size_t yMin() const { return halosize_; }
+  const std::size_t yMax() const { return ysize_ - halosize_; }
+  const std::size_t ySize() const { return ysize_; }
+  const std::size_t zMin() const { return 0; }
+  const std::size_t zMax() const { return zsize_; }
 
 private:
   int32_t xsize_, ysize_, zsize_, halosize_;

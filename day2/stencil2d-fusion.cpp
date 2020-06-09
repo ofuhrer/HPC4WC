@@ -7,8 +7,6 @@
 #include "pat_api.h"
 #include "utils.h"
 
-namespace {
-
 void updateHalo(Storage3D<double>& inField) {
   const int xInterior = inField.xMax() - inField.xMin();
   const int yInterior = inField.yMax() - inField.yMin();
@@ -62,24 +60,21 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
     for(std::size_t k = 0; k < inField.zMax(); ++k) {
 
       // apply the initial laplacian
-      for(std::size_t j = inField.yMin() - 1; j < inField.yMax() + 1; ++j) {
-        for(std::size_t i = inField.xMin() - 1; i < inField.xMax() + 1; ++i) {
-          tmp1Field(i, j, 0) = -4.0 * inField(i, j, k) + inField(i - 1, j, k) +
-                               inField(i + 1, j, k) + inField(i, j - 1, k) + inField(i, j + 1, k);
+      for(/* loopbounds here */;;) {
+        for(/* loopbounds here */;;) {
+          // implementation here...
         }
       }
 
       // apply the second laplacian
       for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
         for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-          double laplap = -4.0 * tmp1Field(i, j, 0) + tmp1Field(i - 1, j, 0) +
-                          tmp1Field(i + 1, j, 0) + tmp1Field(i, j - 1, 0) + tmp1Field(i, j + 1, 0);
 
           // and update the field
           if(iter == numIter - 1) {
-            outField(i, j, k) = inField(i, j, k) - alpha * laplap;
+            outField(i, j, k) = 0; // one variable here...
           } else {
-            inField(i, j, k) = inField(i, j, k) - alpha * laplap;
+            inField(i, j, k) = 0; // one variable here...
           }
         }
       }
@@ -100,7 +95,6 @@ void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
             << diff << "],\n";
   std::cout << "] )" << std::endl;
 }
-} // namespace
 
 int main(int argc, char const* argv[]) {
 #ifdef CRAYPAT
