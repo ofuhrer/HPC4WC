@@ -5,7 +5,6 @@
 
 int main(int argc, char const* argv[]) {
 
-      // enable different numbers of threads
 #pragma omp parallel num_threads(2)
   {
     int size = omp_get_num_threads();
@@ -13,7 +12,4 @@ int main(int argc, char const* argv[]) {
 #pragma omp critical(output)
     std::cout << "I am rank " << rank << " of a total of " << size << " threads" << std::endl;
   }
-
-    
 }
-

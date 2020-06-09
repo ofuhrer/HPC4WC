@@ -12,7 +12,4 @@ int main(int argc, char const* argv[]) {
     std::cout << "This is iteration " << i << " executed from thread " << omp_get_thread_num()
               << std::endl;
   }
-
-    
 }
-

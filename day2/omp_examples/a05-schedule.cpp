@@ -5,21 +5,18 @@
 
 int main(int argc, char const* argv[]) {
 
-    std::cout << "schedule(static, 2)" << std::endl;
+  std::cout << "schedule(static, 2)" << std::endl;
 #pragma omp parallel for schedule(static, 2)
-  for(int i = 0; i < 10; ++i) {
-#pragma omp critical (output)
+  for(std::size_t i = 0; i < 10; ++i) {
+#pragma omp critical(output)
     std::cout << "This is iteration " << i << " executed from thread " << omp_get_thread_num()
               << std::endl;
   }
-    std::cout << "schedule(static, 1)" << std::endl;
+  std::cout << "schedule(static, 1)" << std::endl;
 #pragma omp parallel for schedule(static, 1)
-  for(int i = 0; i < 10; ++i) {
-      #pragma omp critical (output)
+  for(std::size_t i = 0; i < 10; ++i) {
+#pragma omp critical(output)
     std::cout << "This is iteration " << i << " executed from thread " << omp_get_thread_num()
               << std::endl;
   }
-
-    
 }
-

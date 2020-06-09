@@ -11,7 +11,4 @@ int main(int argc, char const* argv[]) {
 #pragma omp critical(output)
     std::cout << "I am rank " << rank << " of a total of " << size << " threads" << std::endl;
   }
-
-    
 }
-
