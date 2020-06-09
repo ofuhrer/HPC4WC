@@ -279,7 +279,7 @@ contains
         do k = 1 + nz / 4, 3 * nz / 4
         do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
         do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
-            in_field(i, j, :) = 1.0_wp
+            in_field(i, j, k) = 1.0_wp
         end do
         end do
         end do
