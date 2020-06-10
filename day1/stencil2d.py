@@ -88,7 +88,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     num_iter : `int`, optional
         Number of iterations to execute.
     """
-    tmp_field = cp.empty_like(in_field)
+    tmp_field = np.empty_like(in_field)
 
     for n in range(num_iter):
         halo_update(in_field, num_halo)
@@ -141,14 +141,14 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     ), "Your have to specify a reasonable number of halo points"
     alpha = 1.0 / 32.0
 
-    in_field = cp.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))
+    in_field = np.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))
     in_field[
         nz // 4 : 3 * nz // 4,
         num_halo + ny // 4 : num_halo + 3 * ny // 4,
         num_halo + nx // 4 : num_halo + 3 * nx // 4,
     ] = 1.0
 
-    out_field = cp.copy(in_field)
+    out_field = np.copy(in_field)
 
     np.save("in_field", in_field)
 

@@ -15,8 +15,10 @@ import time
 
 try:
     import cupy as xp
+    print("Running on GPU with cupy")
 except ImportError:
     xp = np
+    print("Running on CPU with numpy")
 
 
 def get_asnumpy(z):
@@ -99,7 +101,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     num_iter : `int`, optional
         Number of iterations to execute.
     """
-    tmp_field = cp.empty_like(in_field)
+    tmp_field = xp.empty_like(in_field)
 
     for n in range(num_iter):
         halo_update(in_field, num_halo)
@@ -152,14 +154,14 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     ), "Your have to specify a reasonable number of halo points"
     alpha = 1.0 / 32.0
 
-    in_field = cp.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))
+    in_field = xp.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))
     in_field[
         nz // 4 : 3 * nz // 4,
         num_halo + ny // 4 : num_halo + 3 * ny // 4,
         num_halo + nx // 4 : num_halo + 3 * nx // 4,
     ] = 1.0
 
-    out_field = cp.copy(in_field)
+    out_field = xp.copy(in_field)
 
     np.save("in_field", get_asnumpy(in_field))
 
@@ -184,7 +186,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     if plot_result:
         plt.ioff()
-        plt.imshow(get_asnumpy(out_field[out_field.shape[0] // 2), :, :], origin="lower")
+        plt.imshow(get_asnumpy(out_field[out_field.shape[0] // 2, :, :]), origin="lower")
         plt.colorbar()
         plt.savefig("out_field.png")
         plt.close()
