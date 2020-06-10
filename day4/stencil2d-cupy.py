@@ -1,7 +1,7 @@
 # ******************************************************
 #     Program: stencil2d-cupy
-#      Author: Stefano Ubbiali
-#       Email: subbiali@phys.ethz.ch
+#      Author: Stefano Ubbiali, Oliver Fuhrer
+#       Email: subbiali@phys.ethz.ch, ofuhrer@ethz.ch
 #        Date: 04.06.2020
 # Description: CuPy implementation of 4th-order diffusion
 # ******************************************************
@@ -14,9 +14,16 @@ import numpy as np
 import time
 
 try:
-    import cupy as cp
+    import cupy as xp
 except ImportError:
-    cp = np
+    xp = np
+
+
+def get_asnumpy(z):
+    try:
+        return z.get()
+    except AttributeError:
+        return z
 
 
 def laplacian(in_field, lap_field, num_halo, extend=0):
@@ -47,7 +54,7 @@ def laplacian(in_field, lap_field, num_halo, extend=0):
     )
 
 
-def update_halo(field, num_halo):
+def halo_update(field, num_halo):
     """ Update the halo-zone using an up/down and left/right strategy.
 
     Parameters
@@ -95,7 +102,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     tmp_field = cp.empty_like(in_field)
 
     for n in range(num_iter):
-        update_halo(in_field, num_halo)
+        halo_update(in_field, num_halo)
 
         laplacian(in_field, tmp_field, num_halo=num_halo, extend=1)
         laplacian(tmp_field, out_field, num_halo=num_halo, extend=0)
@@ -108,7 +115,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
         if n < num_iter - 1:
             in_field, out_field = out_field, in_field
         else:
-            update_halo(out_field, num_halo)
+            halo_update(out_field, num_halo)
 
 
 @click.command()
@@ -154,19 +161,11 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     out_field = cp.copy(in_field)
 
-    try:
-        np.save("in_field", in_field.get())
-    except AttributeError:
-        np.save("in_field", in_field)
+    np.save("in_field", get_asnumpy(in_field))
 
     if plot_result:
         plt.ioff()
-
-        try:
-            plt.imshow(in_field[0, :, :].get(), origin="lower")
-        except AttributeError:
-            plt.imshow(in_field[0, :, :], origin="lower")
-
+        plt.imshow(get_asnumpy(in_field[in_field.shape[0] // 2, :, :]), origin="lower")
         plt.colorbar()
         plt.savefig("in_field.png")
         plt.close()
@@ -181,19 +180,11 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     print(f"Elapsed time for work = {toc - tic} s")
 
-    try:
-        np.save("out_field", out_field.get())
-    except AttributeError:
-        np.save("out_field", out_field)
+    np.save("out_field", get_asnumpy(out_field))
 
     if plot_result:
         plt.ioff()
-
-        try:
-            plt.imshow(out_field[0, :, :].get(), origin="lower")
-        except AttributeError:
-            plt.imshow(out_field[0, :, :], origin="lower")
-
+        plt.imshow(get_asnumpy(out_field[out_field.shape[0] // 2), :, :], origin="lower")
         plt.colorbar()
         plt.savefig("out_field.png")
         plt.close()
