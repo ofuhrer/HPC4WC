@@ -46,61 +46,44 @@ def update_halo( field, num_halo, p=None ):
     
     Note: corners are updated in the left/right phase of the halo-update
     """
-    
-    # bottom-top edge (without corners)
+
+    # allocate recv buffers and pre-post the receives (top and bottom edge, without corners)
+    b_rcvbuf = np.empty_like(field[:, 0:num_halo, num_halo:-num_halo])
+    t_rcvbuf = np.empty_like(field[:, -num_halo:, num_halo:-num_halo])
+    reqs_tb = []
+    reqs_tb.append(p.comm().Irecv(b_rcvbuf, source = p.bottom()))
+    reqs_tb.append(p.comm().Irecv(t_rcvbuf, source = p.top()))
+
+    # allocate recv buffers and pre-post the receives (left and right edge, including corners)
+    l_rcvbuf = np.empty_like(field[:, :, 0:num_halo])
+    r_rcvbuf = np.empty_like(field[:, :, -num_halo:])
+    reqs_lr = []
+    reqs_lr.append(p.comm().Irecv(l_rcvbuf, source = p.left()))
+    reqs_lr.append(p.comm().Irecv(r_rcvbuf, source = p.right()))
+
+    # pack and send (top and bottom edge, without corners)
     b_sndbuf = field[:, -2 * num_halo:-num_halo, num_halo:-num_halo].copy()
-    b_rcvbuf = b_sndbuf.copy()
-    req1 = p.comm().Irecv(b_rcvbuf, source=p.bottom(), tag=100)
-    req2 = p.comm().Isend(b_sndbuf, dest=p.top(), tag=100)
+    reqs_tb.append(p.comm().Isend(b_sndbuf, dest = p.top()))
     t_sndbuf = field[:, num_halo:2 * num_halo, num_halo:-num_halo].copy()
-    t_rcvbuf = t_sndbuf.copy()
-    req3 = p.comm().Irecv(t_rcvbuf, source=p.top(), tag=101)
-    req4 = p.comm().Isend(t_sndbuf, dest=p.bottom(), tag=101)
+    reqs_tb.append(p.comm().Isend(t_sndbuf, dest = p.bottom()))
     
-    req1.wait()
-    req2.wait()
+    # wait and unpack
+    for req in reqs_tb:
+        req.wait()
     field[:, 0:num_halo, num_halo:-num_halo] = b_rcvbuf
-    req3.wait()
-    req4.wait()
     field[:, -num_halo:, num_halo:-num_halo] = t_rcvbuf
-
-    # left-right edge (including corners)
+    
+    # pack and send (left and right edge, including corners)
     l_sndbuf = field[:, :, -2 * num_halo:-num_halo].copy()
-    l_rcvbuf = l_sndbuf.copy()
-    req1 = p.comm().Irecv(l_rcvbuf, source=p.left(), tag=102)
-    req2 = p.comm().Isend(l_sndbuf, dest=p.right(), tag=102)
+    reqs_lr.append(p.comm().Isend(l_sndbuf, dest = p.right()))
     r_sndbuf = field[:, :, num_halo:2 * num_halo].copy()
-    r_rcvbuf = r_sndbuf.copy()
-    req3 = p.comm().Irecv(r_rcvbuf, source=p.right(), tag=103)
-    req4 = p.comm().Isend(r_sndbuf, dest=p.left(), tag=103)
-    
-    req1.wait()
-    req2.wait()
+    reqs_lr.append(p.comm().Isend(r_sndbuf, dest = p.left()))
+
+    # wait and unpack
+    for req in reqs_lr:
+        req.wait()
     field[:, :, 0:num_halo] = l_rcvbuf
-    req3.wait()
-    req4.wait()
     field[:, :, -num_halo:] = r_rcvbuf
-
-def update_halo( field, num_halo, p ):
-    """Update the halo-zone using an up/down and left/right strategy.
-    
-    field    -- input/output field (nz x ny x nx with halo in x- and y-direction)
-    num_halo -- number of halo points
-    
-    Note: corners are updated in the left/right phase of the halo-update
-    """
-    
-    # bottom edge (without corners)
-    field[:, 0:num_halo, num_halo:-num_halo] = field[:, -2 * num_halo:-num_halo, num_halo:-num_halo]
-    
-    # top edge (without corners)
-    field[:, -num_halo:, num_halo:-num_halo] = field[:, num_halo:2 * num_halo, num_halo:-num_halo]
-
-    # left edge (including corners)
-    field[:, :, 0:num_halo] = field[:, :, -2 * num_halo:-num_halo]
-    
-    # right edge (including corners)
-    field[:, :, -num_halo:] = field[:, :, num_halo:2 * num_halo]
             
 
 def apply_diffusion( in_field, out_field, alpha, num_halo, num_iter=1, p=None ):
