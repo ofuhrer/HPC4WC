@@ -23,9 +23,9 @@ def main(src, trg, rtol=1e-5, atol=1e-8):
     trg_f = np.load(trg)
 
     if np.allclose(src_f, trg_f, rtol=rtol, atol=atol, equal_nan=True):
-        print(f"HOORAY! '{src}' and '{trg}' are equal!")
+        print(f"HOORAY! Your code is validated!")
     else:
-        print(f"{src} and {trg} are not equal.")
+        print(f"Sorry, there seems to be something wrong going on in your code.")
 
 
 if __name__ == "__main__":
