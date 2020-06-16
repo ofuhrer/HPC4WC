@@ -3,12 +3,15 @@
 !> Ported from partioner.py
 !>
 !> @author Michal Sudwoj
+!> @author Oliver Fuhrer
 !> @date 2020-06-15
 module m_partitioner
   use, intrinsic :: iso_fortran_env, only: REAL32, REAL64, error_unit
   use mpi, only: &
     MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, &
-    MPI_Comm_Rank, MPI_Comm_Size, MPI_Scatter, MPI_Gather, MPI_Allgather, MPI_Barrier
+    MPI_Comm_Rank, MPI_Comm_Size, MPI_Barrier
+    ! MPI_Scatter, MPI_Gather, MPI_Allgather
+    ! see https://github.com/pmodels/mpich/issues/3568
   use m_utils, only: error
 
   implicit none
@@ -79,8 +82,7 @@ contains
 
     integer :: ierror
     logical :: periodic_(2)
-    integer :: size(2)
-    integer :: irank
+    integer :: rank
 
     if (present(periodic)) then
       periodic_ = periodic
@@ -109,30 +111,34 @@ contains
     call this%setup_domain(domain, num_halo)
 
     if (debug) then
-      call flush(error_unit)
       call MPI_Barrier(this%comm_, ierror)
+
       if (this%rank_ == 0) then
-        write(error_unit, *) '====== Global information ======='
-        write(error_unit, '(a30, 3(i6))') 'Domain size (nx,ny,nz): ', this%global_shape_ - [2*num_halo, 2*num_halo, 0]
-        write(error_unit, '(a30, 1(i6))') 'Halo width: ', this%num_halo_
-        write(error_unit, '(a30, 2(l6))') 'Periodicity (x,y): ', this%periodic_
+        write(error_unit, '(a33, /, a30, 3(i6), /, a30, 1(i6), /, a30, 2(l6))') &
+          '====== Global information =======', &
+          'Domain size (nx,ny,nz): ', this%global_shape_ - [2 * num_halo, 2 * num_halo, 0], &
+          'Halo width: ', this%num_halo_, &
+          'Periodicity (x,y): ', this%periodic_
       end if
-      do irank = 0, this%num_ranks_ - 1
-        call flush(error_unit)
+
+      do rank = 0, this%num_ranks_ - 1
         call MPI_Barrier(this%comm_, ierror)
-        if (this%rank_ == irank) then
+        if (this%rank_ == rank) then
           call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Barrier', code = ierror)
-          write(error_unit, *) '====== Rank ', irank, ' ======='
-          write(error_unit, '(a30, 2(i6))') 'Position (x,y): ', this%position()
-          write(error_unit, '(a30, 3(i6))') 'Subdomain size (nx,ny,nz): ', this%shape() - [2*num_halo, 2*num_halo, 0]
-          write(error_unit, '(a30, 4(i6))') 'Position on global grid: ', this%compute_domain()
-          write(error_unit, '(a30, 4(i6))') 'Neighbors (trbl): ', this%top(), this%right(), this%bottom(), this%left()
+          write(error_unit, '(a12, i13, a8, /, a30, 2(i6), /, a30, 3(i6), /, a30, 4(i6), / a30, 4(i6))') &
+          '====== Rank ', rank, ' =======', &
+          'Position (x,y): ', this%position(), &
+          'Subdomain size (nx,ny,nz): ', this%shape() - [2 * num_halo, 2 * num_halo, 0], &
+          'Position on global grid: ', this%compute_domain(), &
+          'Neighbors (trbl): ', this%top(), this%right(), this%bottom(), this%left()
         end if
-        call flush(error_unit)
         call MPI_Barrier(this%comm_, ierror)
       end do
-      if (this%rank_ == 0) write(error_unit, *) '================================='
-      call flush(error_unit)
+
+      if (this%rank_ == 0) then
+        write(error_unit, '(a33)') '================================='
+      end if
+
       call MPI_Barrier(this%comm_, ierror)
     end if
 
@@ -209,29 +215,33 @@ end function
   !> @brief Returns the rank of the left neighbor
   integer pure function left(this) result(rank)
     class(Partitioner), intent(in) :: this
+    integer, parameter :: position(2) = [-1, 0]
 
-    rank = this%get_neighbor_rank([-1, 0])
+    rank = this%get_neighbor_rank(position)
   end function
 
   !> @brief Returns the rank of the right neighbor
   integer pure function right(this) result(rank)
     class(Partitioner), intent(in) :: this
+    integer, parameter :: position(2) = [+1, 0]
 
-    rank = this%get_neighbor_rank([+1, 0])
+    rank = this%get_neighbor_rank(position)
   end function
 
   !> @brief Returns the rank of the top neighbor
   integer pure function top(this) result(rank)
     class(Partitioner), intent(in) :: this
+    integer, parameter :: position(2) = [0, +1]
 
-    rank = this%get_neighbor_rank([0, +1])
+    rank = this%get_neighbor_rank(position)
   end function
 
   !> @brief Returns the rank of the bottom neighbor
   integer pure function bottom(this) result(rank)
     class(Partitioner), intent(in) :: this
+    integer, parameter :: position(2) = [0, -1]
 
-    rank = this%get_neighbor_rank([0, -1])
+    rank = this%get_neighbor_rank(position)
   end function
 
   !> @brief Scatter a global field from a root rank to the workers (f32)
@@ -552,13 +562,14 @@ end function
     class(Partitioner), intent(in) :: this
     integer, intent(in) :: offset(2)
 
-    integer :: pos(2), pos_x, pos_y
+    integer :: pos(2)
+    integer :: pos_offset(2)
 
     pos = this%rank_to_position(this%rank_)
-    pos_x = this%cyclic_offset(pos(1), offset(1), this%size_(1), this%periodic_(1))
-    pos_y = this%cyclic_offset(pos(2), offset(2), this%size_(2), this%periodic_(2))
+    pos_offset(1) = this%cyclic_offset(pos(1), offset(1), this%size_(1), this%periodic_(1))
+    pos_offset(2) = this%cyclic_offset(pos(2), offset(2), this%size_(2), this%periodic_(2))
 
-    rank = this%position_to_rank([pos_x, pos_y])
+    rank = this%position_to_rank(pos_offset)
   end function
 
   !> @brief Add offset with cyclic boundary conditions
@@ -706,4 +717,4 @@ end function
 
 end module m_partitioner
 
-! vim: set filetype=fortran expandtab tabstop=2 :
+! vim: set filetype=fortran expandtab tabstop=2 softtabstop=2 :
