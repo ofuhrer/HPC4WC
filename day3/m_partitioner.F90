@@ -5,12 +5,16 @@
 !> @author Michal Sudwoj
 !> @date 2020-06-15
 module m_partitioner
-  use, intrinsic :: iso_fortran_env, only: REAL32, REAL64
-  use mpi!, only: MPI_Comm_Rank, MPI_Comm_Size, MPI_Scatter, MPI_Gather, MPI_Allgather, MPI_FLOAT
+  use, intrinsic :: iso_fortran_env, only: REAL32, REAL64, error_unit
+  use mpi, only: &
+    MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, &
+    MPI_Comm_Rank, MPI_Comm_Size, MPI_Scatter, MPI_Gather, MPI_Allgather, MPI_Barrier
   use m_utils, only: error
 
   implicit none
   private
+
+  logical, parameter :: debug = .true.
 
   !> @brief 2-dimensional domain decomposition of a 3-dimensional computational grid among MPI ranks on a communicator.
   type, public :: Partitioner
@@ -64,7 +68,9 @@ module m_partitioner
   interface Partitioner
     module procedure constructor
   end interface
+
 contains
+
   type(Partitioner) function constructor(comm, domain, num_halo, periodic) result(this)
     integer, intent(in) :: comm
     integer, intent(in) :: domain(3)
@@ -74,6 +80,7 @@ contains
     integer :: ierror
     logical :: periodic_(2)
     integer :: size(2)
+    integer :: irank
 
     if (present(periodic)) then
       periodic_ = periodic
@@ -98,9 +105,37 @@ contains
     this%global_shape_(2) = domain(2) + 2 * num_halo
     this%global_shape_(3) = domain(3)
 
-    size = this%setup_grid()
+    call this%setup_grid()
     call this%setup_domain(domain, num_halo)
-  end function
+
+    if (debug) then
+      call flush(error_unit)
+      call MPI_Barrier(this%comm_, ierror)
+      if (this%rank_ == 0) then
+        write(error_unit, *) '====== Global information ======='
+        write(error_unit, '(a30, 3(i6))') 'Domain size (nx,ny,nz): ', this%global_shape_ - [2*num_halo, 2*num_halo, 0]
+        write(error_unit, '(a30, 1(i6))') 'Halo width: ', this%num_halo_
+        write(error_unit, '(a30, 2(l6))') 'Periodicity (x,y): ', this%periodic_
+      end if
+      do irank = 0, this%num_ranks_ - 1
+        call flush(error_unit)
+        call MPI_Barrier(this%comm_, ierror)
+        if (this%rank_ == irank) then
+          call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Barrier', code = ierror)
+          write(error_unit, *) '====== Rank ', irank, ' ======='
+          write(error_unit, '(a30, 2(i6))') 'Position (x,y): ', this%position()
+          write(error_unit, '(a30, 3(i6))') 'Subdomain size (nx,ny,nz): ', this%shape() - [2*num_halo, 2*num_halo, 0]
+          write(error_unit, '(a30, 4(i6))') 'Position on global grid: ', this%compute_domain()
+        end if
+        call flush(error_unit)
+        call MPI_Barrier(this%comm_, ierror)
+      end do
+      if (this%rank_ == 0) write(error_unit, *) '============================='
+      call flush(error_unit)
+      call MPI_Barrier(this%comm_, ierror)
+    end if
+
+end function
 
   !> @brief Returns the MPI communicator used to setup the partioner
   integer pure function comm(this)
@@ -108,7 +143,7 @@ contains
 
     comm = this%comm_
   end function
-  
+
   !> @brief Returns the number of halo points
   integer pure function num_halo(this)
     class(Partitioner), intent(in) :: this
@@ -131,7 +166,7 @@ contains
     rank = this%rank_
   end function
 
-  !> @brief Returns the numer of ranks that have been distributed by this partitioner  
+  !> @brief Returns the numer of ranks that have been distributed by this partitioner
   integer pure function num_ranks(this)
     class(Partitioner), intent(in) :: this
 
@@ -143,7 +178,7 @@ contains
     class(Partitioner), intent(in) :: this
     integer :: shape_f(3)
 
-    shape_f = this%shape_(3)
+    shape_f = this%shape_
   end function
 
   !> @brief Returns the shape of a global field (including halo points)
@@ -232,7 +267,7 @@ contains
     end if
 
     if (this%rank_ == root_) then
-      allocate(sendbuf(0:this%num_ranks_ - 1, this%max_shape_(1), this%max_shape_(2), this%max_shape_(3)))
+      allocate(sendbuf(this%max_shape_(1), this%max_shape_(2), this%max_shape_(3), 0:this%num_ranks_ - 1))
 
       do rank = 0, this%num_ranks_ - 1
         i_start = this%domains_(rank, 1) + 1
@@ -240,7 +275,7 @@ contains
         i_end   = this%domains_(rank, 3)
         j_end   = this%domains_(rank, 4)
 
-        sendbuf(rank, :i_end - i_start + 1, :j_end - j_start + 1, :) = field(i_start:i_end, j_start:j_end, :)
+        sendbuf(:i_end - i_start + 1, :j_end - j_start + 1, :, rank) = field(i_start:i_end, j_start:j_end, :)
       end do
     else
       allocate(sendbuf(0, 0, 0, 0))
@@ -254,8 +289,8 @@ contains
     )
     call error(ierror /= 0, 'Problem with MPI_Scatter', code = ierror)
 
-    i_start = this%domain_(1) + 1
-    j_start = this%domain_(2) + 1
+    i_start = this%domain_(1)
+    j_start = this%domain_(2)
     i_end   = this%domain_(3)
     j_end   = this%domain_(4)
 
@@ -296,7 +331,7 @@ contains
     end if
 
     if (this%rank_ == root_) then
-      allocate(sendbuf(0:this%num_ranks_ - 1, this%max_shape_(1), this%max_shape_(2), this%max_shape_(3)))
+      allocate(sendbuf(this%max_shape_(1), this%max_shape_(2), this%max_shape_(3), 0:this%num_ranks_ - 1))
 
       do rank = 0, this%num_ranks_ - 1
         i_start = this%domains_(rank, 1) + 1
@@ -304,7 +339,7 @@ contains
         i_end   = this%domains_(rank, 3)
         j_end   = this%domains_(rank, 4)
 
-        sendbuf(rank, :i_end - i_start + 1, :j_end - j_start + 1, :) = field(i_start:i_end, j_start:j_end, :)
+        sendbuf(:i_end - i_start + 1, :j_end - j_start + 1, :, rank) = field(i_start:i_end, j_start:j_end, :)
       end do
     else
       allocate(sendbuf(0, 0, 0, 0))
@@ -318,8 +353,8 @@ contains
     )
     call error(ierror /= 0, 'Problem with MPI_Scatter', code = ierror)
 
-    i_start = this%domain_(1) + 1
-    j_start = this%domain_(2) + 1
+    i_start = this%domain_(1)
+    j_start = this%domain_(2)
     i_end   = this%domain_(3)
     j_end   = this%domain_(4)
 
@@ -358,8 +393,8 @@ contains
       return
     end if
 
-    i_start = this%domain_(1) + 1
-    j_start = this%domain_(2) + 1
+    i_start = this%domain_(1)
+    j_start = this%domain_(2)
     i_end   = this%domain_(3)
     j_end   = this%domain_(4)
 
@@ -367,7 +402,7 @@ contains
     sendbuf(:i_end - i_start + 1, :j_end - j_start + 1, :) = field
 
     if (this%rank_ == root_ .or. root_ == -1) then
-      allocate(recvbuf(0:this%num_ranks_ - 1, this%max_shape_(1), this%max_shape_(2), this%max_shape_(3)))
+      allocate(recvbuf(this%max_shape_(1), this%max_shape_(2), this%max_shape_(3), 0:this%num_ranks_ - 1))
     else
       allocate(recvbuf(0, 0, 0, 0))
     end if
@@ -396,13 +431,12 @@ contains
         i_end   = this%domains_(rank, 3)
         j_end   = this%domains_(rank, 4)
 
-        global_field(i_start:i_end, j_start:j_end, :) = recvbuf(rank, :i_end - i_start + 1, :j_end - j_start + 1, :)
+        global_field(i_start:i_end, j_start:j_end, :) = recvbuf(:i_end - i_start + 1, :j_end - j_start + 1, :, rank)
       end do
 
       r = global_field
     else
       allocate(r(0, 0, 0))
-      ! r = field
     end if
   end function
 
@@ -438,8 +472,8 @@ contains
       return
     end if
 
-    i_start = this%domain_(1) + 1
-    j_start = this%domain_(2) + 1
+    i_start = this%domain_(1)
+    j_start = this%domain_(2)
     i_end   = this%domain_(3)
     j_end   = this%domain_(4)
 
@@ -447,7 +481,7 @@ contains
     sendbuf(:i_end - i_start + 1, :j_end - j_start + 1, :) = field
 
     if (this%rank_ == root_ .or. root_ == -1) then
-      allocate(recvbuf(0:this%num_ranks_ - 1, this%max_shape_(1), this%max_shape_(2), this%max_shape_(3)))
+      allocate(recvbuf(this%max_shape_(1), this%max_shape_(2), this%max_shape_(3), 0:this%num_ranks_ - 1))
     else
       allocate(recvbuf(0, 0, 0, 0))
     end if
@@ -476,13 +510,12 @@ contains
         i_end   = this%domains_(rank, 3)
         j_end   = this%domains_(rank, 4)
 
-        global_field(i_start:i_end, j_start:j_end, :) = recvbuf(rank, :i_end - i_start + 1, :j_end - j_start + 1, :)
+        global_field(i_start:i_end, j_start:j_end, :) = recvbuf(:i_end - i_start + 1, :j_end - j_start + 1, :, rank)
       end do
 
       r = global_field
     else
       allocate(r(0, 0, 0))
-      ! r = field
     end if
   end function
 
@@ -490,7 +523,7 @@ contains
   pure function compute_domain(this) result(subdomain)
     class(Partitioner), intent(in) :: this
     integer :: subdomain(4)
-    
+
     subdomain(1) = this%domain_(1) + this%num_halo_
     subdomain(2) = this%domain_(2) + this%num_halo_
     subdomain(3) = this%domain_(3) - this%num_halo_
@@ -498,9 +531,8 @@ contains
   end function
 
   !> @brief Distribute ranks onto a Cartesion grid of workers
-  function setup_grid(this) result(size)
+  subroutine setup_grid(this)
     class(Partitioner), intent(inout) :: this
-    integer :: size(2)
 
     integer :: ranks_x
 
@@ -510,10 +542,9 @@ contains
       end if
     end do
 
-    this%size_(1) = this%num_ranks_ / ranks_x
-    this%size_(2) = ranks_x
-    size = this%size_
-  end function
+    this%size_(1) = ranks_x
+    this%size_(2) = this%num_ranks_ / ranks_x
+  end subroutine
 
   !> @brief Get the rank ID of a neighboring rank at a certain offset relative to the current rank
   integer pure function get_neighbor_rank(this, offset) result(rank)
@@ -523,7 +554,7 @@ contains
     integer :: pos(2)
     integer :: pos_y(2)
     integer :: pos_x(2)
-    
+
     pos = this%rank_to_position(this%rank_)
     pos_y = this%cyclic_offset(pos(1), offset(1), this%size_(1), this%periodic_(1))
     pos_x = this%cyclic_offset(pos(2), offset(2), this%size_(2), this%periodic_(2))
@@ -572,22 +603,21 @@ contains
     size_y = this%distribute_to_bins(shape(2), this%size_(2))
     size_z = shape(3)
 
-    pos_x = this%cumsum(size_x, num_halo)
-    pos_y = this%cumsum(size_y, num_halo)
+    pos_x = this%cumsum(size_x, 1 + num_halo)
+    pos_y = this%cumsum(size_y, 1 + num_halo)
 
     allocate(this%domains_(0:this%num_ranks_ - 1, 4))
     allocate(this%shapes_(0:this%num_ranks_ - 1, 3))
 
     do rank = 0, this%num_ranks_ - 1
       pos = this%rank_to_position(rank)
-
       this%domains_(rank, 1) = pos_x(pos(1)) - num_halo
       this%domains_(rank, 2) = pos_y(pos(2)) - num_halo
-      this%domains_(rank, 3) = pos_x(pos(1) + 1) + num_halo
-      this%domains_(rank, 4) = pos_y(pos(2) + 1) + num_halo
+      this%domains_(rank, 3) = pos_x(pos(1) + 1) + num_halo - 1
+      this%domains_(rank, 4) = pos_y(pos(2) + 1) + num_halo - 1
 
-      this%shapes_(rank, 1) = this%domains_(rank, 3) - this%domains_(rank, 1)
-      this%shapes_(rank, 2) = this%domains_(rank, 4) - this%domains_(rank, 2)
+      this%shapes_(rank, 1) = this%domains_(rank, 3) - this%domains_(rank, 1) + 1
+      this%shapes_(rank, 2) = this%domains_(rank, 4) - this%domains_(rank, 2) + 1
       this%shapes_(rank, 3) = size_z
     end do
 
@@ -612,8 +642,8 @@ contains
     bin_size = n
     extend = num - n * bins
     if (extend > 0) then
-      start_extend = bins / 2 - extend / 2
-      bin_size(start_extend:start_extend + extend) = bin_size(start_extend:start_extend + extend) + 1
+      start_extend = bins / 2 - extend / 2 + 1
+      bin_size(start_extend:start_extend + extend - 1) = bin_size(start_extend:start_extend + extend - 1) + 1
     end if
   end function
 
@@ -640,7 +670,7 @@ contains
     end do
   end function
 
-  ! TODO: documentation
+  !> @brief Find maximum dimensions of subdomains across all ranks
   function find_max_shape(shapes) result(max_shape)
     integer, intent(in) :: shapes(:, :)
     integer :: max_shape(3)
@@ -663,8 +693,8 @@ contains
     integer, intent(in) :: rank
     integer :: pos(2)
 
-    pos(1) = mod(rank, this%size_(2)) + 1
-    pos(2) = rank / this%size_(2) + 1
+    pos(1) = mod(rank, this%size_(1)) + 1
+    pos(2) = rank / this%size_(1) + 1
   end function
 
   !> @brief Find rank given a position on the worker grid
@@ -673,7 +703,8 @@ contains
     integer, intent(in) :: pos(2)
 
     rank = (pos(1) - 1) * this%size_(1) + (pos(2) - 1)
-  end function  
+  end function
+
 end module m_partitioner
 
 ! vim: set filetype=fortran expandtab tabstop=2 :
