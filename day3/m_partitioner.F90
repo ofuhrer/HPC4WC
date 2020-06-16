@@ -17,7 +17,7 @@ module m_partitioner
   implicit none
   private
 
-  logical, parameter :: debug = .true.
+  logical, parameter :: debug = .false.
 
   !> @brief 2-dimensional domain decomposition of a 3-dimensional computational grid among MPI ranks on a communicator.
   type, public :: Partitioner
