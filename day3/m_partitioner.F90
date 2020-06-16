@@ -131,7 +131,7 @@ contains
         call flush(error_unit)
         call MPI_Barrier(this%comm_, ierror)
       end do
-      if (this%rank_ == 0) write(error_unit, *) '============================='
+      if (this%rank_ == 0) write(error_unit, *) '================================='
       call flush(error_unit)
       call MPI_Barrier(this%comm_, ierror)
     end if
