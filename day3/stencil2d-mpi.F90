@@ -15,11 +15,11 @@ program main
 
     ! constants
     integer, parameter :: wp = 4
-    
+
     ! local
-    integer :: nx, ny, nz, num_iter
+    integer :: global_nx, global_ny, global_nz, num_iter
     logical :: scan
-    
+
     integer :: num_halo = 2
     real (kind=wp) :: alpha = 1.0_wp / 32.0_wp
 
@@ -54,23 +54,23 @@ program main
         call timer_init()
 
         if ( scan ) then
-            nx = nx_setups( modulo(cur_setup, size(ny_setups) ) + 1 )
-            ny = ny_setups( cur_setup / size(ny_setups) + 1 )
+            global_nx = nx_setups( modulo(cur_setup, size(ny_setups) ) + 1 )
+            global_ny = ny_setups( cur_setup / size(ny_setups) + 1 )
         end if
 
         if ( is_master() ) &
             call setup()
-        
+
         if ( .not. scan .and. is_master() ) &
             call write_field_to_file( in_field, num_halo, "in_field.dat" )
 
-        p = Partitioner(MPI_COMM_WORLD, (/nx, ny, nz/), num_halo, periodic=(/.true., .true./))
+        p = Partitioner(MPI_COMM_WORLD, (/global_nx, global_ny, global_nz/), num_halo, periodic=(/.true., .true./))
 
         f_in = p%scatter(in_field, root=0)
         allocate(f_out, source=f_in)
 
         ! warmup caches
-        call apply_diffusion( f_in, f_out, alpha, num_iter=1 )
+        call apply_diffusion( f_in, f_out, alpha, num_iter=1, p=p )
 
         ! time the actual work
 #ifdef CRAYPAT
@@ -79,14 +79,14 @@ program main
         timer_work = -999
         call timer_start('work', timer_work)
 
-        call apply_diffusion( f_in, f_out, alpha, num_iter=num_iter )
-        
+        call apply_diffusion( f_in, f_out, alpha, num_iter=num_iter, p=p )
+
         call timer_end( timer_work )
 #ifdef CRAYPAT
         call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
-        call update_halo( f_out )
+        call update_halo( f_out, p )
 
         out_field = p%gather(f_out, root=0)
 
@@ -99,7 +99,8 @@ program main
         runtime = timer_get( timer_work )
         if ( is_master() ) &
             write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
-                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
+                '[', num_rank(), ',', global_nx, ',', global_ny, ',', global_nz, &
+                ',', num_iter, ',', runtime, '], \'
 
     end do
 
@@ -119,20 +120,27 @@ contains
     !  alpha             -- diffusion coefficient (dimensionless)
     !  num_iter          -- number of iterations to execute
     !
-    subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
+    subroutine apply_diffusion( in_field, out_field, alpha, num_iter, p )
         implicit none
-        
+
         ! arguments
         real (kind=wp), intent(inout) :: in_field(:, :, :)
         real (kind=wp), intent(inout) :: out_field(:, :, :)
         real (kind=wp), intent(in) :: alpha
         integer, intent(in) :: num_iter
-        
+        type(Partitioner), intent(in) :: p
+
         ! local
         real (kind=wp), save, allocatable :: tmp1_field(:, :, :)
         real (kind=wp), save, allocatable :: tmp2_field(:, :, :)
         integer :: iter, i, j, k
-        
+        integer :: dims(3), nx, ny, nz
+
+        dims = p%shape()
+        nx = dims(1) - 2 * p%num_halo()
+        ny = dims(2) - 2 * p%num_halo()
+        nz = dims(3)
+
         ! this is only done the first time this subroutine is called (warmup)
         ! or when the dimensions of the fields change
         if ( allocated(tmp1_field) .and. &
@@ -145,14 +153,14 @@ contains
             tmp1_field = 0.0_wp
             tmp2_field = 0.0_wp
         end if
-        
+
         do iter = 1, num_iter
-                    
-            call update_halo( in_field )
-            
+
+            call update_halo( in_field, p )
+
             call laplacian( in_field, tmp1_field, num_halo, extend=1 )
             call laplacian( tmp1_field, tmp2_field, num_halo, extend=0 )
-            
+
             ! do forward in time step
             do k = lbound(out_field,3), ubound(out_field,3)
             do j = lbound(out_field,2) + num_halo, ubound(out_field,2) - num_halo
@@ -174,12 +182,12 @@ contains
             end if
 
         end do
-            
+
     end subroutine apply_diffusion
 
 
     ! Compute Laplacian using 2nd-order centered differences.
-    !     
+    !
     !  in_field          -- input field (nx x ny x nz with halo in x- and y-direction)
     !  lap_field         -- result (must be same size as in_field)
     !  num_halo          -- number of halo points
@@ -187,17 +195,15 @@ contains
     !
     subroutine laplacian( field, lap, num_halo, extend )
         implicit none
-            
+
         ! argument
         real (kind=wp), intent(in) :: field(:, :, :)
         real (kind=wp), intent(inout) :: lap(:, :, :)
         integer, intent(in) :: num_halo, extend
-        
+
         ! local
         integer :: i, j, k
 
-
-            
         do k = lbound(field,3), ubound(field,3)
         do j = lbound(field,2) + num_halo - extend, ubound(field,2) - num_halo + extend
         do i = lbound(field,1) + num_halo - extend, ubound(field,1) - num_halo + extend
@@ -212,58 +218,140 @@ contains
 
 
     ! Update the halo-zone using an up/down and left/right strategy.
-    !    
+    !
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
-    subroutine update_halo( field )
+    subroutine update_halo( field, p )
+        use mpi, only : MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, MPI_STATUS_SIZE, &
+            MPI_Irecv, MPI_Isend, MPI_Waitall
+        use m_utils, only : error
         implicit none
-            
+
         ! argument
         real (kind=wp), intent(inout) :: field(:, :, :)
-        
+        type(Partitioner), intent(in) :: p
+
         ! local
         integer :: i, j, k
-            
-        ! ! bottom edge (without corners)
-        ! do k = 1, nz
-        ! do j = 1, num_halo
-        ! do i = 1 + num_halo, nx + num_halo
-        !     field(i, j, k) = field(i, j + ny, k)
-        ! end do
-        ! end do
-        ! end do
-            
-        ! ! top edge (without corners)
-        ! do k = 1, nz
-        ! do j = ny + num_halo + 1, ny + 2 * num_halo
-        ! do i = 1 + num_halo, nx + num_halo
-        !     field(i, j, k) = field(i, j - ny, k)
-        ! end do
-        ! end do
-        ! end do
-        
-        ! ! left edge (including corners)
-        ! do k = 1, nz
-        ! do j = 1, ny + 2 * num_halo
-        ! do i = 1, num_halo
-        !     field(i, j, k) = field(i + nx, j, k)
-        ! end do
-        ! end do
-        ! end do
-                
-        ! ! right edge (including corners)
-        ! do k = 1, nz
-        ! do j = 1, ny + 2 * num_halo
-        ! do i = nx + num_halo + 1, nx + 2 * num_halo
-        !     field(i, j, k) = field(i - nx, j, k)
-        ! end do
-        ! end do
-        ! end do
-        
+        integer :: dims(3), nx, ny, nz
+        integer :: lr_size, tb_size, dtype
+        integer :: tb_req(4), lr_req(4)
+        integer :: ierror, status(MPI_STATUS_SIZE, 4), icount
+        real (kind=wp), save, allocatable :: sndbuf_l(:), sndbuf_r(:), sndbuf_t(:), sndbuf_b(:)
+        real (kind=wp), save, allocatable :: rcvbuf_l(:), rcvbuf_r(:), rcvbuf_t(:), rcvbuf_b(:)
+
+        ! set datatype
+        if (wp == 4) then
+            dtype = MPI_FLOAT
+        else
+            dtype = MPI_DOUBLE
+        end if
+
+        ! get dimensions
+        dims = p%shape()
+        nx = dims(1) - 2 * p%num_halo()
+        ny = dims(2) - 2 * p%num_halo()
+        nz = dims(3)
+
+        ! compute sizes of buffers
+        tb_size = nz * num_halo * nx
+        lr_size = nz * num_halo * (ny + 2 * num_halo)
+
+        ! this is only done the first time this subroutine is called (warmup)
+        ! or when the dimensions of the fields change
+        if ( allocated(sndbuf_l) .and. &
+            ( ( size(sndbuf_l) /= lr_size ) .or. ( size(sndbuf_t) /= tb_size ) ) ) then
+            deallocate( sndbuf_l, sndbuf_r, sndbuf_t, sndbuf_b )
+            deallocate( rcvbuf_l, rcvbuf_r, rcvbuf_t, rcvbuf_b )
+        end if
+        if ( .not. allocated(sndbuf_l) ) then
+            allocate( sndbuf_l(lr_size), sndbuf_r(lr_size), sndbuf_t(tb_size), sndbuf_b(tb_size) )
+            allocate( rcvbuf_l(lr_size), rcvbuf_r(lr_size), rcvbuf_t(tb_size), rcvbuf_b(tb_size) )
+            sndbuf_l = 0.0_wp; sndbuf_r = 0.0_wp; sndbuf_t = 0.0_wp; sndbuf_b = 0.0_wp
+            rcvbuf_l = 0.0_wp; rcvbuf_r = 0.0_wp; rcvbuf_t = 0.0_wp; rcvbuf_b = 0.0_wp
+        end if
+
+        ! pre-post the receives
+        call MPI_Irecv(rcvbuf_b, tb_size, dtype, p%bottom(), 1000, p%comm(), tb_req(1), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(bottom)', code=ierror)
+        call MPI_Irecv(rcvbuf_t, tb_size, dtype, p%top(), 1001, p%comm(), tb_req(2), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(top)', code=ierror)
+        call MPI_Irecv(rcvbuf_l, lr_size, dtype, p%left(), 1002, p%comm(), lr_req(1), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(left)', code=ierror)
+        call MPI_Irecv(rcvbuf_r, lr_size, dtype, p%right(), 1003, p%comm(), lr_req(2), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(right)', code=ierror)
+
+        ! pack the tb-buffers (without corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, num_halo
+        do i = 1 + num_halo, nx + num_halo
+            icount = icount + 1
+            sndbuf_t(icount) = field(i, j + ny, k)
+            sndbuf_b(icount) = field(i, j + num_halo, k)
+        end do
+        end do
+        end do
+
+        ! send lr-buffers
+        call MPI_Isend(sndbuf_t, tb_size, dtype, p%top(), 1000, p%comm(), tb_req(3), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(top)', code=ierror)
+        call MPI_Isend(sndbuf_b, tb_size, dtype, p%bottom(), 1001, p%comm(), tb_req(4), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(bottom)', code=ierror)
+
+        ! wait for lr-comm to finish
+        call MPI_Waitall(4, tb_req, status, ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Waitall(tb)', code=ierror)
+
+        ! pack the lr-buffers (including corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, ny + 2 * num_halo
+        do i = 1, num_halo
+            icount = icount + 1
+            sndbuf_r(icount) = field(i + nx, j, k)
+            sndbuf_l(icount) = field(i + num_halo, j, k)
+        end do
+        end do
+        end do
+
+        call MPI_Isend(sndbuf_r, lr_size, dtype, p%right(), 1002, p%comm(), lr_req(3), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(right)', code=ierror)
+        call MPI_Isend(sndbuf_l, lr_size, dtype, p%left(), 1003, p%comm(), lr_req(4), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(left)', code=ierror)
+
+        ! unpack the tb-buffers (without corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, num_halo
+        do i = 1 + num_halo, nx + num_halo
+            icount = icount + 1
+            field(i, j, k) = rcvbuf_b(icount)
+            field(i, j + num_halo + ny, k) = rcvbuf_t(icount)
+        end do
+        end do
+        end do
+
+        ! wait for tb-comm to finish
+        call MPI_Waitall(4, lr_req, status, ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Waitall(lr)', code=ierror)
+
+        ! unpack the lr-buffers (with corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, ny + 2 * num_halo
+        do i = 1, num_halo
+            icount = icount + 1
+            field(i, j, k) = rcvbuf_l(icount)
+            field(i + num_halo + nx, j, k) = rcvbuf_r(icount)
+        end do
+        end do
+        end do
+
     end subroutine update_halo
-        
+
 
     ! initialize at program start
     ! (init MPI, read command line arguments)
@@ -292,17 +380,17 @@ contains
         ! local
         integer :: i, j, k
 
-        allocate( in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+        allocate( in_field(global_nx + 2 * num_halo, global_ny + 2 * num_halo, global_nz) )
         in_field = 0.0_wp
-        do k = 1 + nz / 4, 3 * nz / 4
-        do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
-        do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
+        do k = 1 + global_nz / 4, 3 * global_nz / 4
+        do j = 1 + num_halo + global_ny / 4, num_halo + 3 * global_ny / 4
+        do i = 1 + num_halo + global_nx / 4, num_halo + 3 * global_nx / 4
             in_field(i, j, k) = 1.0_wp
         end do
         end do
         end do
 
-        allocate( out_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+        allocate( out_field(global_nx + 2 * num_halo, global_ny + 2 * num_halo, global_nz) )
         out_field = in_field
 
     end subroutine setup
@@ -320,9 +408,9 @@ contains
         character(len=256) :: arg, arg_val
 
         ! setup defaults
-        nx = -1
-        ny = -1
-        nz = -1
+        global_nx = -1
+        global_ny = -1
+        global_nz = -1
         num_iter = -1
         scan = .false.
 
@@ -332,27 +420,27 @@ contains
             call get_command_argument(iarg, arg)
             select case (arg)
             case ("--nx")
-                call error(iarg + 1 > num_arg, "Missing value for -nx argument")
+                call error(iarg + 1 > num_arg, "Missing value for --nx argument")
                 call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -nx argument")
-                read(arg_val, *) nx
+                call error(arg_val(1:1) == "-", "Missing value for --nx argument")
+                read(arg_val, *) global_nx
                 iarg = iarg + 1
             case ("--ny")
-                call error(iarg + 1 > num_arg, "Missing value for -ny argument")
+                call error(iarg + 1 > num_arg, "Missing value for --ny argument")
                 call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -ny argument")
-                read(arg_val, *) ny
+                call error(arg_val(1:1) == "-", "Missing value for --ny argument")
+                read(arg_val, *) global_ny
                 iarg = iarg + 1
             case ("--nz")
-                call error(iarg + 1 > num_arg, "Missing value for -nz argument")
+                call error(iarg + 1 > num_arg, "Missing value for --nz argument")
                 call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -nz argument")
-                read(arg_val, *) nz
+                call error(arg_val(1:1) == "-", "Missing value for --nz argument")
+                read(arg_val, *) global_nz
                 iarg = iarg + 1
             case ("--num_iter")
-                call error(iarg + 1 > num_arg, "Missing value for -num_iter argument")
+                call error(iarg + 1 > num_arg, "Missing value for --num_iter argument")
                 call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -num_iter argument")
+                call error(arg_val(1:1) == "-", "Missing value for --num_iter argument")
                 read(arg_val, *) num_iter
                 iarg = iarg + 1
             case ("--scan")
@@ -365,18 +453,18 @@ contains
 
         ! make sure everything is set
         if (.not. scan) then
-            call error(nx == -1, 'You have to specify nx')
-            call error(ny == -1, 'You have to specify ny')
+            call error(global_nx == -1, 'You have to specify nx')
+            call error(global_ny == -1, 'You have to specify ny')
         end if
-        call error(nz == -1, 'You have to specify nz')
+        call error(global_nz == -1, 'You have to specify nz')
         call error(num_iter == -1, 'You have to specify num_iter')
 
         ! check consistency of values
         if (.not. scan) then
-            call error(nx < 0 .or. nx > 1024*1024, "Please provide a reasonable value of nx")
-            call error(ny < 0 .or. ny > 1024*1024, "Please provide a reasonable value of ny")
+            call error(global_nx < 0 .or. global_nx > 1024*1024, "Please provide a reasonable value of nx")
+            call error(global_ny < 0 .or. global_ny > 1024*1024, "Please provide a reasonable value of ny")
         end if
-        call error(nz < 0 .or. nz > 1024, "Please provide a reasonable value of nz")
+        call error(global_nz < 0 .or. global_nz > 1024, "Please provide a reasonable value of nz")
         call error(num_iter < 1 .or. num_iter > 1024*1024, "Please provide a reasonable value of num_iter")
 
     end subroutine read_cmd_line_arguments
@@ -386,7 +474,7 @@ contains
     ! (report timers, free memory)
     subroutine cleanup()
         implicit none
-        
+
         deallocate(in_field, out_field)
 
     end subroutine cleanup

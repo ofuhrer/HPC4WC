@@ -126,6 +126,7 @@ contains
           write(error_unit, '(a30, 2(i6))') 'Position (x,y): ', this%position()
           write(error_unit, '(a30, 3(i6))') 'Subdomain size (nx,ny,nz): ', this%shape() - [2*num_halo, 2*num_halo, 0]
           write(error_unit, '(a30, 4(i6))') 'Position on global grid: ', this%compute_domain()
+          write(error_unit, '(a30, 4(i6))') 'Neighbors (trbl): ', this%top(), this%right(), this%bottom(), this%left()
         end if
         call flush(error_unit)
         call MPI_Barrier(this%comm_, ierror)
@@ -209,28 +210,28 @@ end function
   integer pure function left(this) result(rank)
     class(Partitioner), intent(in) :: this
 
-    rank = this%get_neighbor_rank([0, -1])
+    rank = this%get_neighbor_rank([-1, 0])
   end function
 
   !> @brief Returns the rank of the right neighbor
   integer pure function right(this) result(rank)
     class(Partitioner), intent(in) :: this
 
-    rank = this%get_neighbor_rank([0, +1])
+    rank = this%get_neighbor_rank([+1, 0])
   end function
 
   !> @brief Returns the rank of the top neighbor
   integer pure function top(this) result(rank)
     class(Partitioner), intent(in) :: this
 
-    rank = this%get_neighbor_rank([+1, 0])
+    rank = this%get_neighbor_rank([0, +1])
   end function
 
   !> @brief Returns the rank of the bottom neighbor
   integer pure function bottom(this) result(rank)
     class(Partitioner), intent(in) :: this
 
-    rank = this%get_neighbor_rank([-1, 0])
+    rank = this%get_neighbor_rank([0, -1])
   end function
 
   !> @brief Scatter a global field from a root rank to the workers (f32)
@@ -551,15 +552,13 @@ end function
     class(Partitioner), intent(in) :: this
     integer, intent(in) :: offset(2)
 
-    integer :: pos(2)
-    integer :: pos_y(2)
-    integer :: pos_x(2)
+    integer :: pos(2), pos_x, pos_y
 
     pos = this%rank_to_position(this%rank_)
-    pos_y = this%cyclic_offset(pos(1), offset(1), this%size_(1), this%periodic_(1))
-    pos_x = this%cyclic_offset(pos(2), offset(2), this%size_(2), this%periodic_(2))
+    pos_x = this%cyclic_offset(pos(1), offset(1), this%size_(1), this%periodic_(1))
+    pos_y = this%cyclic_offset(pos(2), offset(2), this%size_(2), this%periodic_(2))
 
-    rank = this%position_to_rank([pos_y, pos_x])
+    rank = this%position_to_rank([pos_x, pos_y])
   end function
 
   !> @brief Add offset with cyclic boundary conditions
@@ -571,18 +570,18 @@ end function
 
     p = pos + offset
     if (periodic) then
-      do while (p < 0)
+      do while (p < 1)
         p = p + size
       end do
-      do while (p > size - 1)
+      do while (p > size)
         p = p - size
       end do
     end if
 
-    if (-1 < p .and. p < size) then
-    else
+    if (p < 1 .or. p > size) then
       p = -1
     end if
+
   end function
 
   !> @brief Distribute the points of the computational grid onto the Cartesion grid of workers
@@ -702,7 +701,7 @@ end function
     class(Partitioner), intent(in) :: this
     integer, intent(in) :: pos(2)
 
-    rank = (pos(1) - 1) * this%size_(1) + (pos(2) - 1)
+    rank = (pos(2) - 1) * this%size_(1) + (pos(1) - 1)
   end function
 
 end module m_partitioner
