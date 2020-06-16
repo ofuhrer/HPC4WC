@@ -120,9 +120,10 @@ contains
           'Halo width: ', this%num_halo_, &
           'Periodicity (x,y): ', this%periodic_
       end if
+      call flush(error_unit)
+      call MPI_Barrier(this%comm_, ierror)
 
       do rank = 0, this%num_ranks_ - 1
-        call MPI_Barrier(this%comm_, ierror)
         if (this%rank_ == rank) then
           call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Barrier', code = ierror)
           write(error_unit, '(a12, i13, a8, /, a30, 2(i6), /, a30, 3(i6), /, a30, 4(i6), / a30, 4(i6))') &
@@ -132,13 +133,14 @@ contains
           'Position on global grid: ', this%compute_domain(), &
           'Neighbors (trbl): ', this%top(), this%right(), this%bottom(), this%left()
         end if
+        call flush(error_unit)
         call MPI_Barrier(this%comm_, ierror)
       end do
 
       if (this%rank_ == 0) then
         write(error_unit, '(a33)') '================================='
       end if
-
+      call flush(error_unit)
       call MPI_Barrier(this%comm_, ierror)
     end if
 
