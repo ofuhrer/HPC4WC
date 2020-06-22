@@ -224,7 +224,7 @@ contains
         real (kind=wp), intent(inout) :: field(:, :, :)
         
         ! local
-        integer :: i, j, k
+        ! integer :: i, j, k
             
         ! ! bottom edge (without corners)
         ! do k = 1, nz

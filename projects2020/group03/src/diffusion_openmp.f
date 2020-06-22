@@ -39,8 +39,8 @@ module m_diffusion_openmp
 
       !$omp parallel &
       !$omp   default(none) &
-      !$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01) &
-      !$omp   private(iter)
+      !$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, p) &
+      !$omp   private(iter, i, j, k)
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
 

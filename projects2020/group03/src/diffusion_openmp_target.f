@@ -7,7 +7,7 @@ module m_diffusion_openmp_target
     subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter)
       use, intrinsic :: iso_fortran_env, only: REAL32
       use m_partitioner, only: Partitioner
-      use m_halo_mpi, only: update_halo
+      use m_halo, only: update_halo
 
       real(kind = REAL32), intent(inout) :: in_field(:, :, :)
       real(kind = REAL32), intent(inout) :: out_field(:, :, :)
@@ -37,16 +37,16 @@ module m_diffusion_openmp_target
       alpha_02 =  -2 * alpha
       alpha_01 =  -1 * alpha
 
-      !$omp target parallel &
-      !$omp   default(none) &
-      !$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01) &
-      !$omp   private(iter)
+      !$omp target data map(to: in_field) map(from: out_field) map(alloc: i, j, k)
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
 
-        !$omp teams distribute do
+        !$omp target teams distribute &
+        !$omp private(k)
         do k = 1, nz
-          !$omp simd collapse(2)
+          !$omp parallel do simd collapse(2) &
+          !$omp   shared(nx, ny, num_halo, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, k) &
+          !$omp   private(i, j)
           do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
               out_field(i, j, k) = &
@@ -65,23 +65,27 @@ module m_diffusion_openmp_target
                 + alpha_01 * in_field(i,     j + 2, k)
             end do
           end do
+          !$omp end parallel do simd
 
           if (iter /= num_iter) then
-            !$omp simd collapse(2)
+            !$omp parallel do simd collapse(2) default(none) &
+            !$omp   shared(nx, ny, num_halo, in_field, out_field, k) &
+            !$omp   private(i, j)
             do j = 1 + num_halo, ny + num_halo
               do i = 1 + num_halo, nx + num_halo
                 in_field(i, j, k) = out_field(i, j, k)
               end do
             end do
+            !$omp end parallel do simd
           end if
         end do
-        !$omp end teams distribute do
+        !$omp end target teams distribute
 
         if (iter == num_iter) then
           call update_halo(out_field, num_halo, p)
         end if
       end do
-      !$omp end target parallel
+      !$omp end target data
     end subroutine
 end module
 
