@@ -1,4 +1,4 @@
-module m_diffusion_openacc
+module m_diffusion_openmp_target
   implicit none
   private
 
@@ -37,15 +37,16 @@ module m_diffusion_openacc
       alpha_02 =  -2 * alpha
       alpha_01 =  -1 * alpha
 
-      !$acc enter data create(in_field, out_field)
-      !$acc update device(in_field, out_field)
-      !$acc parallel
+      !$omp target parallel &
+      !$omp   default(none) &
+      !$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01) &
+      !$omp   private(iter)
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
 
-        !$acc loop gang
+        !$omp teams distribute do
         do k = 1, nz
-          !$acc loop vector collapse(2)
+          !$omp simd collapse(2)
           do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
               out_field(i, j, k) = &
@@ -66,7 +67,7 @@ module m_diffusion_openacc
           end do
 
           if (iter /= num_iter) then
-            !$acc loop vector collapse(2)
+            !$omp simd collapse(2)
             do j = 1 + num_halo, ny + num_halo
               do i = 1 + num_halo, nx + num_halo
                 in_field(i, j, k) = out_field(i, j, k)
@@ -74,14 +75,13 @@ module m_diffusion_openacc
             end do
           end if
         end do
+        !$omp end teams distribute do
 
         if (iter == num_iter) then
           call update_halo(out_field, num_halo, p)
         end if
       end do
-      !$acc end parallel
-      !$acc update host(out_field)
-      !$acc exit data delete(in_field, out_field)
+      !$omp end target parallel
     end subroutine
 end module
 

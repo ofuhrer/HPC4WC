@@ -3,10 +3,15 @@ add_executable (
 		stencil2d.f
 		m_utils.f
 		m_partitioner.f
+
+		diffusion_seq.f
 		diffusion_openacc.f
-		halo_mpi.f
-		halo_openmp.f
+		diffusion_openmp.f
+		diffusion_openmp_target.f
+
 		halo_seq.f
+		halo_openmp.f
+		halo_mpi.f
 )
 
 target_link_libraries (
