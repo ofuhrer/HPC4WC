@@ -86,7 +86,7 @@ contains
     subroutine calc(in_field, out_field, num_halo, alpha, num_iter)
         use, intrinsic :: iso_fortran_env, only: REAL32
         use m_partitioner, only: Partitioner
-        use m_diffusion_openmp_target, only: apply_diffusion
+        use m_diffusion, only: apply_diffusion
 
         real(kind = REAL32), intent(in) :: in_field(:, :, :)
         real(kind = REAL32), intent(out) :: out_field(:, :, :)

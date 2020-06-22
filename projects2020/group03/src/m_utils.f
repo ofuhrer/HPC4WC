@@ -45,7 +45,6 @@ contains
 
         ! local
         integer :: iunit = 42
-        integer :: i, j, k
 
         open(iunit, file=trim(filename), access="stream")
         write(iunit) 2, 32, num_halo
@@ -66,7 +65,6 @@ contains
 
         ! local
         integer :: iunit = 42
-        integer :: i, j, k
 
         open(iunit, file=trim(filename), access="stream")
         write(iunit) 3, 32, num_halo
@@ -87,7 +85,6 @@ contains
 
         ! local
         integer :: iunit = 42
-        integer :: i, j, k
 
         open(iunit, file=trim(filename), access="stream")
         write(iunit) 2, 64, num_halo
@@ -108,7 +105,6 @@ contains
 
         ! local
         integer :: iunit = 42
-        integer :: i, j, k
 
         open(iunit, file=trim(filename), access="stream")
         write(iunit) 3, 64, num_halo
@@ -231,7 +227,6 @@ contains
         integer, intent(inout) :: inum
 
         ! local
-        integer :: ierror
 
         ! assign new index
         if (inum <= 0) then
@@ -264,7 +259,6 @@ contains
 
         ! local
         real (kind=dp) :: ztime
-        integer :: ierror
 
         ztime = MPI_WTIME() - stiming(inum)
         rtiming(inum) = rtiming(inum) + ztime
