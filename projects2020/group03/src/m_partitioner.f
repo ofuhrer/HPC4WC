@@ -7,9 +7,9 @@
 !> @date 2020-06-15
 module m_partitioner
   use, intrinsic :: iso_fortran_env, only: REAL32, REAL64, error_unit
-  use mpi, only: &
-    MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, &
-    MPI_Comm_Rank, MPI_Comm_Size, MPI_Barrier
+  use mpi !, only: &
+    ! MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, &
+    ! MPI_Comm_Rank, MPI_Comm_Size, MPI_Barrier
     ! MPI_Scatter, MPI_Gather, MPI_Allgather
     ! see https://github.com/pmodels/mpich/issues/3568
   use m_utils, only: error

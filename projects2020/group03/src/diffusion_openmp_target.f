@@ -44,7 +44,7 @@ module m_diffusion_openmp_target
         !$omp target teams distribute &
         !$omp private(k)
         do k = 1, nz
-          !$omp parallel do simd collapse(2) &
+          !$omp parallel do collapse(2) &
           !$omp   shared(nx, ny, num_halo, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, k) &
           !$omp   private(i, j)
           do j = 1 + num_halo, ny + num_halo
@@ -65,10 +65,10 @@ module m_diffusion_openmp_target
                 + alpha_01 * in_field(i,     j + 2, k)
             end do
           end do
-          !$omp end parallel do simd
+          !$omp end parallel do
 
           if (iter /= num_iter) then
-            !$omp parallel do simd collapse(2) default(none) &
+            !$omp parallel do collapse(2) default(none) &
             !$omp   shared(nx, ny, num_halo, in_field, out_field, k) &
             !$omp   private(i, j)
             do j = 1 + num_halo, ny + num_halo
@@ -76,7 +76,7 @@ module m_diffusion_openmp_target
                 in_field(i, j, k) = out_field(i, j, k)
               end do
             end do
-            !$omp end parallel do simd
+            !$omp end parallel do
           end if
         end do
         !$omp end target teams distribute
