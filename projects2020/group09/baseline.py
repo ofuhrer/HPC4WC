@@ -9,7 +9,6 @@ import numpy as np
 from datetime import datetime
 import xarray as xr
 from scipy.ndimage.filters import generic_filter
-from sklearn.utils.random import sample_without_replacement
 
 shape = (3, 30, 72, 140) # real shape is (22, 3653, 720, 1440)
 frac_missing = 0.42
@@ -20,9 +19,7 @@ data = xr.DataArray(np.random.rand(*shape), dims=['variables', 'time', 'lat', 'l
 
 # real data has missing values, artificially introducing some
 print(f'randomly deleting {frac_missing} percent of the data')
-n_samples = data.size * frac_missing
-idxs = sample_without_replacement(data.size, n_samples)
-data.values.flat[idxs] = np.nan
+data.values[np.random.rand(*data.shape) < frac_missing] = np.nan
 
 # gapfilling the missing values with spatiotemporal mean
 print('gapfilling missing values with spatiotemporal mean')
