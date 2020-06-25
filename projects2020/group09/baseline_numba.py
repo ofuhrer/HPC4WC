@@ -13,14 +13,15 @@ from numba_nanmean import nbnanmean
 
 shape = (3, 30, 72, 140) # real shape is (22, 3653, 720, 1440)
 frac_missing = 0.42
+filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
 # create example array
 print(f'create data array with shape {shape}')
-data = xr.DataArray(np.random.rand(*shape), dims=['variables', 'time', 'lat', 'lon'])
+data = xr.open_dataarray(filepath)
 
-# real data has missing values, artificially introducing some
-print(f'randomly deleting {frac_missing} percent of the data')
-data.values[np.random.rand(*data.shape) < frac_missing] = np.nan
+# subset more for speedup of first tests
+print(f'subset even more because very large dataset')
+data = data[:,::10,:,:]
 
 # gapfilling the missing values with spatiotemporal mean
 print('gapfilling missing values with spatiotemporal mean')
