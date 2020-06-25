@@ -1,18 +1,18 @@
 add_executable (
-	stencil2d_seq
+	stencil2d_openmp
 		stencil2d.f
-		m_utils.f
-		m_partitioner.f
-		diffusion_seq.f
-		halo_mpi.f
+		diffusion_openmp.f
 )
 target_compile_definitions (
-	stencil2d_seq PRIVATE
-		-D m_halo=m_halo_mpi
-		-D m_diffusion=m_diffusion_seq
+	stencil2d_openmp PRIVATE
+		-D m_diffusion=m_diffusion_openmp
 )
 target_link_libraries (
-	stencil2d_seq
+	stencil2d_openmp
+		utils
+		partitioner
+		halo_mpi
+		OpenMP::OpenMP_Fortran
 		MPI::MPI_Fortran
 )
 
