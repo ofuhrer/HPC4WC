@@ -1,11 +1,10 @@
 add_executable (
-	stencil2d-mpi
-		stencil2d-mpi.f
-		m_utils.f
-		m_partitioner.f
+	stencil2d-orig
+		stencil2d-orig.f
 )
 target_link_libraries (
-	stencil2d-mpi
+	stencil2d-orig
+		utils
 		MPI::MPI_Fortran
 )
 

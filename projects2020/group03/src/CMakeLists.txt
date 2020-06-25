@@ -1,9 +1,15 @@
-include (stencil2d-mpi.cmake)
-include (stencil2d-orig.cmake)
+set (CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-include (stencil2d_seq.cmake)
-include (stencil2d_openmp.cmake)
-include (stencil2d_openmp_target.cmake)
-# include (stencil2d_openacc.cmake)
+include (utils.cmake)
+include (partitioner.cmake)
+
+add_subdirectory (halo)
+
+add_subdirectory (mpi)
+add_subdirectory (orig)
+
+add_subdirectory (openmp)
+add_subdirectory (openmp_target)
+# add_subdirectory (openacc)
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 shiftwidth=2 :
