@@ -56,7 +56,9 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 		FORCE
 	)
 	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS "-fopenmp")
+	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  "-fopenmp")
 	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS "-fopenacc")
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  "-fopenacc")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 	set (
 		CMAKE_Fortran_FLAGS
@@ -83,6 +85,7 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 		FORCE
 	)
 	set_property (TARGET OpenMP::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS "-qopenmp")
+	set_property (TARGET OpenMP::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  "-qopenmp")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray") 
 	set (
 		CMAKE_Fortran_FLAGS
@@ -109,7 +112,9 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
 		FORCE
 	)
 	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS "-h omp")
+	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  "-h omp")
 	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS "-h acc")
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  "-h acc")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 	set (
 		CMAKE_Fortran_FLAGS
@@ -136,7 +141,9 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 		FORCE
 	)
 	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS "-mp")
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS "-acc -ta=tesla")
+	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  "-mp")
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -acc -ta=tesla)
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -acc -ta=tesla)
 endif ()
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 :

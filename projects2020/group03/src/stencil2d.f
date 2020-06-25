@@ -17,7 +17,7 @@ program main
     ! local
     integer :: nx, ny, nz, num_iter, rank
     logical :: scan
-    
+
     integer :: num_halo = 2
     real(kind = REAL32) :: alpha = 1.0_REAL32 / 32.0_REAL32
 
@@ -86,7 +86,7 @@ contains
     subroutine calc(in_field, out_field, num_halo, alpha, num_iter)
         use, intrinsic :: iso_fortran_env, only: REAL32
         use m_partitioner, only: Partitioner
-        use m_diffusion_openacc, only: apply_diffusion
+        use m_diffusion, only: apply_diffusion
 
         real(kind = REAL32), intent(in) :: in_field(:, :, :)
         real(kind = REAL32), intent(out) :: out_field(:, :, :)
@@ -122,7 +122,7 @@ contains
         call timer_start('work', timer_work)
 
         call apply_diffusion(in_field_p, out_field_p, num_halo, alpha, p, num_iter)
-        
+
         call timer_end(timer_work)
 #ifdef CRAYPAT
         call PAT_record(PAT_STATE_OFF, istat)
@@ -268,4 +268,4 @@ contains
     end subroutine
 end program
 
-! vim: filetype=fortran expandtab tabstop=4 :
+! vim: filetype=fortran expandtab tabstop=4 softtabstop=4 shiftwidth=4 :

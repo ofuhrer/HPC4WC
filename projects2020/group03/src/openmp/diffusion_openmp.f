@@ -1,4 +1,4 @@
-module m_diffusion_openacc
+module m_diffusion_openmp
   implicit none
   private
 
@@ -8,7 +8,7 @@ module m_diffusion_openacc
       use, intrinsic :: iso_fortran_env, only: REAL32
       use m_partitioner, only: Partitioner
       use m_halo_mpi, only: update_halo
-      
+
       real(kind = REAL32), intent(inout) :: in_field(:, :, :)
       real(kind = REAL32), intent(inout) :: out_field(:, :, :)
       integer, intent(in) :: num_halo
@@ -37,21 +37,16 @@ module m_diffusion_openacc
       alpha_02 =  -2 * alpha
       alpha_01 =  -1 * alpha
 
-      !!$acc enter data create(in_field, out_field)
-      !!$acc update device(in_field, out_field)
-      !!$acc parallel
-      !!$omp parallel &
-      !!$omp   default(none) &
-      !!$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01) &
-      !!$omp   private(iter)
+      !$omp parallel &
+      !$omp   default(none) &
+      !$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, p) &
+      !$omp   private(iter, i, j, k)
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
-        
-        !!$acc loop gang
-        !!$omp do schedule(dynamic)
+
+        !$omp do schedule(dynamic)
         do k = 1, nz
-          !!$acc loop vector collapse(2)
-          !!$omp simd collapse(2)
+          !$omp simd collapse(2)
           do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
               out_field(i, j, k) = &
@@ -70,28 +65,24 @@ module m_diffusion_openacc
                 + alpha_01 * in_field(i,     j + 2, k)
             end do
           end do
-          
+
           if (iter /= num_iter) then
-            !!$acc loop vector collapse(2)
-            !!$omp simd collapse(2)
+            !$omp simd collapse(2)
             do j = 1 + num_halo, ny + num_halo
-            do i = 1 + num_halo, nx + num_halo
-              in_field(i, j, k) = out_field(i, j, k)
-            end do
+              do i = 1 + num_halo, nx + num_halo
+                in_field(i, j, k) = out_field(i, j, k)
+              end do
             end do
           end if
         end do
-        !!$omp end do
+        !$omp end do
 
         if (iter == num_iter) then
           call update_halo(out_field, num_halo, p)
         end if
       end do
-      !!$acc end parallel
-      !!$acc update host(out_field)
-      !!$acc exit data delete(in_field, out_field)
-      !!$omp end parallel
+      !$omp end parallel
     end subroutine
 end module
 
-! vim: set filetype=fortran expandtab tabstop=2 softtabstop=2 :
+! vim: set filetype=fortran expandtab tabstop=2 softtabstop=2 shiftwidth=2 :

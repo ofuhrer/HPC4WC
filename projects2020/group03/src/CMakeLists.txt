@@ -1,39 +1,15 @@
-add_executable (
-	stencil2d
-		stencil2d.f
-		m_utils.f
-		m_partitioner.f
-		diffusion_openacc.f
-		halo_mpi.f
-		halo_openmp.f
-		halo_seq.f
-)
+set (CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-target_link_libraries (
-	stencil2d
-		OpenMP::OpenMP_Fortran
-		MPI::MPI_Fortran
-)
+include (utils.cmake)
+include (partitioner.cmake)
 
-add_executable (
-	stencil2d-mpi
-		stencil2d-mpi.f
-		m_utils.f
-		m_partitioner.f
-)
-target_link_libraries (
-	stencil2d-mpi
-		MPI::MPI_Fortran
-)
+add_subdirectory (halo)
 
-add_executable (
-	stencil2d-orig
-		stencil2d-orig.f
-		m_utils.f
-)
-target_link_libraries (
-	stencil2d-orig
-		MPI::MPI_Fortran
-)
+add_subdirectory (mpi)
+add_subdirectory (orig)
+
+add_subdirectory (openmp)
+add_subdirectory (openmp_target)
+add_subdirectory (openacc)
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 shiftwidth=2 :
