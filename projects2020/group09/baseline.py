@@ -6,6 +6,7 @@ Example for workflow for gapfilling remote sensing data from diverse sources
 """
 
 import numpy as np
+from datetime import datetime
 import xarray as xr
 from scipy.ndimage.filters import generic_filter
 from sklearn.utils.random import sample_without_replacement
@@ -27,7 +28,10 @@ data.values.flat[idxs] = np.nan
 print('gapfilling missing values with spatiotemporal mean')
 footprint = np.ones((1,5,5,5))
 footprint[0,2,2,2] = 0 
+tic = datetime.now()
 tmp = generic_filter(data, np.nanmean, footprint=footprint, mode='nearest') # THIS IS SLOW!
+toc = datetime.now()
+print(f'this filter function took {toc-tic}')
 data = data.fillna(tmp)
 
 # my PhD Project goes on with:
