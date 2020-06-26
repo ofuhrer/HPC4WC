@@ -5,7 +5,7 @@
 #include <omp.h>
 
 // #include "pat_api.h"
-#include "utils.h"
+#include "../utils.h"
 
 namespace {
 
