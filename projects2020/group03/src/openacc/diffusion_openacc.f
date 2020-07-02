@@ -39,10 +39,10 @@ module m_diffusion_openacc
 
       !$acc enter data create(in_field, out_field)
       !$acc update device(in_field, out_field)
-      !$acc parallel
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
 
+        !$acc parallel
         !$acc loop gang
         do k = 1, nz
           !$acc loop vector collapse(2)
@@ -74,12 +74,12 @@ module m_diffusion_openacc
             end do
           end if
         end do
+        !$acc end parallel
 
         if (iter == num_iter) then
           call update_halo(out_field, num_halo, p)
         end if
       end do
-      !$acc end parallel
       !$acc update host(out_field)
       !$acc exit data delete(in_field, out_field)
     end subroutine
