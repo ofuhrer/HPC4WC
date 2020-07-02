@@ -1,60 +1,18 @@
-#include <omp.h>
-
 #include <cassert>
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <omp.h>
 
 // #include "pat_api.h"
 #include "../utils.h"
 
 namespace {
 
-// deprecated older version of the function, here for ... documentation reasons?
-void updateHalo(Storage3D<double> &inField) {
-  const int xInterior = inField.xMax() - inField.xMin();
-  const int yInterior = inField.yMax() - inField.yMin();
-
-  // bottom edge (without corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
-    for (std::size_t j = 0; j < inField.yMin(); ++j) {
-      for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-        inField(i, j, k) = inField(i, j + yInterior, k);
-      }
-    }
-  }
-
-  // top edge (without corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
-    for (std::size_t j = inField.yMax(); j < inField.ySize(); ++j) {
-      for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-        inField(i, j, k) = inField(i, j - yInterior, k);
-      }
-    }
-  }
-
-  // left edge (including corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
-    for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-      for (std::size_t i = 0; i < inField.xMin(); ++i) {
-        inField(i, j, k) = inField(i + xInterior, j, k);
-      }
-    }
-  }
-
-  // right edge (including corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
-    for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-      for (std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
-        inField(i, j, k) = inField(i - xInterior, j, k);
-      }
-    }
-  }
-}
-
-// overloaded function with cstd arrays
+// todo : add open acc calls here, straightforward
 void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
                 int32_t halosize) {
+
   std::size_t xMin = halosize;
   std::size_t xMax = xsize - halosize;
   std::size_t yMin = halosize;
@@ -118,45 +76,6 @@ void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
   }
 }
 
-// deprecated older version of the function, here for ... documentation reasons?
-void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
-                     double alpha, unsigned numIter, int x, int y, int z,
-                     int halo) {
-  Storage3D<double> tmp1Field(x, y, z, halo);
-
-  for (std::size_t iter = 0; iter < numIter; ++iter) {
-    updateHalo(inField);
-
-    for (std::size_t k = 0; k < inField.zMax(); ++k) {
-      // apply the initial laplacian
-      for (std::size_t j = inField.yMin() - 1; j < inField.yMax() + 1; ++j) {
-        for (std::size_t i = inField.xMin() - 1; i < inField.xMax() + 1; ++i) {
-          tmp1Field(i, j, 0) = -4.0 * inField(i, j, k) + inField(i - 1, j, k) +
-                               inField(i + 1, j, k) + inField(i, j - 1, k) +
-                               inField(i, j + 1, k);
-        }
-      }
-
-      // apply the second laplacian
-      for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-        for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-          double laplap = -4.0 * tmp1Field(i, j, 0) + tmp1Field(i - 1, j, 0) +
-                          tmp1Field(i + 1, j, 0) + tmp1Field(i, j - 1, 0) +
-                          tmp1Field(i, j + 1, 0);
-
-          // and update the field
-          if (iter == numIter - 1) {
-            outField(i, j, k) = inField(i, j, k) - alpha * laplap;
-          } else {
-            inField(i, j, k) = inField(i, j, k) - alpha * laplap;
-          }
-        }
-      }
-    }
-  }
-}
-
-// overloaded function with cstd arrays
 void apply_diffusion(double *inField, double *outField, double alpha,
                      unsigned numIter, int x, int y, int z, int halo) {
   std::size_t xsize = x;
@@ -170,55 +89,73 @@ void apply_diffusion(double *inField, double *outField, double alpha,
   std::size_t zMin = 0;
   std::size_t zMax = z;
 
-  for (std::size_t iter = 0; iter < numIter; ++iter) {
-    updateHalo(inField, xsize, ysize, z, halo);
+  // Storage3D<double> tmp1Field(x, y, z, halo);
+  std::size_t sizeOf2DField = (xsize) * (ysize);
+  std::size_t sizeOf3DField = (xsize) * (ysize)*z;
 
-    for (std::size_t k = 0; k < zMax; ++k) {
-      // apply the initial laplacian
-      // for(std::size_t j = yMin - 1; j < yMax + 1; ++j) {
-      //   for(std::size_t i = xMin - 1; i < xMax + 1; ++i) {
-      for (std::size_t j = yMin; j < yMax; ++j) {
-        for (std::size_t i = xMin; i < xMax; ++i) {
-          std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-          std::size_t ip1jk = (i + 1) + (j * xsize) + (k * xsize * ysize);
-          std::size_t im1jk = (i - 1) + (j * xsize) + (k * xsize * ysize);
-          std::size_t ijp1k = i + ((j + 1) * xsize) + (k * xsize * ysize);
-          std::size_t ijm1k = i + ((j - 1) * xsize) + (k * xsize * ysize);
-          std::size_t im1jm1k = i - 1 + ((j - 1) * xsize) + k * (xsize * ysize);
-          std::size_t im1jp1k = i - 1 + ((j + 1) * xsize) + k * (xsize * ysize);
-          std::size_t ip1jm1k = i + 1 + ((j - 1) * xsize) + k * (xsize * ysize);
-          std::size_t ip1jp1k = i + 1 + ((j + 1) * xsize) + k * (xsize * ysize);
-          std::size_t im2jk = (i - 2) + (j * xsize) + k * (xsize * ysize);
-          std::size_t ip2jk = (i + 2) + (j * xsize) + k * (xsize * ysize);
-          std::size_t ijm2k = i + ((j - 2) * xsize) + k * (xsize * ysize);
-          std::size_t ijp2k = i + ((j + 2) * xsize) + k * (xsize * ysize);
+  double *tmp1Field = new double[sizeOf2DField];
 
-          double partial_laplap =
-              // 20*inField[ijk] -
-              -8 * (inField[im1jk] + inField[ip1jk] + inField[ijm1k] +
-                    inField[ijp1k]) +
-              2 * (inField[im1jm1k] + inField[ip1jm1k] + inField[im1jp1k] +
-                   inField[ip1jp1k]) +
-              1 * (inField[im2jk] + inField[ip2jk] + inField[ijm2k] +
-                   inField[ijp2k]);
+#pragma acc data copyin(inField [0:sizeOf3DField])                             \
+    copy(outField [0:sizeOf3DField]) create(tmp1Field[sizeOf2DField])
+  {
+    for (std::size_t iter = 0; iter < numIter; ++iter) {
 
-          // outField[ijk] = inField[ijk] - alpha * laplap;
-          inField[ijk] =
-              (1 - 20 * alpha) * inField[ijk] - alpha * partial_laplap;
-        }
-      }
-    }
-    if (iter = numIter - 1) {
+      // TODO : make this an acc routine
+      // todo : turn this into a cuda kernel and call from acc???
+      updateHalo(inField, xsize, ysize, z, halo);
+      // todo : if this is not on the gpu, the gpu copy needs to be updated?
+      // # pragma acc update device(inField[0:n])
+
       for (std::size_t k = 0; k < zMax; ++k) {
+#pragma acc parallel present(inField, tmp1Field) loop gang vector collapse(2)
+        for (std::size_t j = yMin - 1; j < yMax + 1; ++j) {
+          for (std::size_t i = xMin - 1; i < xMax + 1; ++i) {
+
+            std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
+            std::size_t ip1jk = (i + 1) + (j * xsize) + (k * xsize * ysize);
+            std::size_t im1jk = (i - 1) + (j * xsize) + (k * xsize * ysize);
+            std::size_t ijp1k = i + ((j + 1) * xsize) + (k * xsize * ysize);
+            std::size_t ijm1k = i + ((j - 1) * xsize) + (k * xsize * ysize);
+
+            tmp1Field[j * xsize + i] = -4.0 * inField[ijk] + inField[im1jk] +
+                                       inField[ip1jk] + inField[ijm1k] +
+                                       inField[ijp1k];
+          }
+        }
+#pragma acc parallel present(inField, tmp1Field) loop gang vector collapse(2)
         for (std::size_t j = yMin; j < yMax; ++j) {
           for (std::size_t i = xMin; i < xMax; ++i) {
+
+            std::size_t ij = i + (j * xsize);
+            std::size_t ip1j = (i + 1) + (j * xsize);
+            std::size_t im1j = (i - 1) + (j * xsize);
+            std::size_t ijp1 = i + ((j + 1) * xsize);
+            std::size_t ijm1 = i + ((j - 1) * xsize);
+
+            double laplap = -4.0 * tmp1Field[ij] + tmp1Field[im1j] +
+                            tmp1Field[ip1j] + tmp1Field[ijm1] + tmp1Field[ijp1];
+
+            // and update the field
             std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-            outField[ijk] = inField[ijk];
+            inField[ijk] = inField[ijk] - alpha * laplap;
+          }
+        }
+      }
+      if (iter == numIter - 1) {
+#pragma acc parallel present(inField, outField)                                \
+    loop independent gang worker vector(1024) collapse(3)
+        for (std::size_t k = 0; k < zMax; ++k) {
+          for (std::size_t j = yMin; j < yMax; ++j) {
+            for (std::size_t i = xMin; i < xMax; ++i) {
+              std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
+              outField[ijk] = inField[ijk];
+            }
           }
         }
       }
     }
   }
+  delete[] tmp1Field;
 }
 
 void reportTime(const Storage3D<double> &storage, int nIter, double diff) {
