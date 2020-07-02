@@ -11,7 +11,7 @@ target_link_libraries (
 	stencil2d_openmp
 		utils
 		partitioner
-		halo_mpi
+		halo_openmp
 		OpenMP::OpenMP_Fortran
 		MPI::MPI_Fortran
 )
