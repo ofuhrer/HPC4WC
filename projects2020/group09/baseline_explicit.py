@@ -32,7 +32,7 @@ footprint[0,2,2,2] = 0
 tic = datetime.now()
 result = np.zeros(shape)
 result[:,:,:,:] = np.nan
-for var in range(2,shape[0]-2):
+for var in range(0,shape[0]):
     for t in range(2,shape[1]-2):
         for i in range(2,shape[2]-2):
             for j in range(2,shape[3]-2):
@@ -41,7 +41,7 @@ for var in range(2,shape[0]-2):
                 values = data[var,t-2:t+2,i-2:i+1,j-2:j+2]
                 print(np.shape(data), np.shape(values))
                 values[t,i,j] = 0
-                values = np.flatten(values)
+                values = values.values.flatten()
                 for v in values:
                     if ~np.isnan(v):
                         tmp = tmp + v
