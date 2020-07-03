@@ -32,24 +32,31 @@ footprint[0,2,2,2] = 0
 tic = datetime.now()
 result = np.zeros(shape)
 result[:,:,:,:] = np.nan
-for var in range(0,shape[0]):
-    for t in range(0,shape[1]):
-        for i in range(0,shape[2]):
-            for j in range(0,shape[3]):
+for var in range(2,shape[0]-2):
+    for t in range(2,shape[1]-2):
+        for i in range(2,shape[2]-2):
+            for j in range(2,shape[3]-2):
                 tmp = 0
                 k = 0
                 values = data[var,t-2:t+2,i-2:i+1,j-2:j+2]
-                values[var,t,i,j] = 0
+                print(np.shape(data), np.shape(values))
+                values[t,i,j] = 0
                 values = np.flatten(values)
                 for v in values:
                     if ~np.isnan(v):
                         tmp = tmp + v
                         k = k + 1
-                    if k != 0:
-                        result[var,t,i,j] = tmp / max(k,1)
+                if k != 0:
+                    result[var,t,i,j] = tmp / max(k,1)
 toc = datetime.now()
 print(f'this filter function took {toc-tic}')
-data = data.fillna(tmp)
+data = data.fillna(result)
+
+# test if results are the same as in "ground truth"
+from unittest_simple import test_simple
+res = xr.open_dataarray('baseline_result.nc')
+test_simple(data, res)
+
 
 # my PhD Project goes on with:
 # gapfill each variable by regressing over all the others

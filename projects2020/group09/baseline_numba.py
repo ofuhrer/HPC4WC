@@ -15,7 +15,7 @@ frac_missing = 0.42
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
 # create example array
-print(f'create data array with shape {shape}')
+print(f'create data array')
 data = xr.open_dataarray(filepath)
 
 # subset more for speedup of first tests
