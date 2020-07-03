@@ -11,7 +11,6 @@ import xarray as xr
 from scipy.ndimage.filters import generic_filter
 from numba_nanmean import nbnanmean
 
-shape = (3, 30, 72, 140) # real shape is (22, 3653, 720, 1440)
 frac_missing = 0.42
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
@@ -35,8 +34,7 @@ toc = datetime.now()
 print(f'this filter function took {toc-tic}')
 data = data.fillna(tmp)
 
-# my PhD Project goes on with:
-# gapfill each variable by regressing over all the others
-# in an iterative EM-like fashion 
-# with spatiotemporal gapfill as initial guess
-# until estimates for missing values converge
+# test if results are the same as in "ground truth"
+from unittest_simple import test_simple
+res = xr.open_dataarray('baseline_result.nc')
+test_simple(data, res)
