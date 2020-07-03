@@ -39,8 +39,8 @@ for var in range(0,shape[0]):
                 tmp = 0
                 k = 0
                 values = data[var,t-2:t+2,i-2:i+1,j-2:j+2]
-                print(np.shape(data), np.shape(values))
-                values[t,i,j] = 0
+                #print(np.shape(data), np.shape(values))
+                values[2,2,2] = 0
                 values = values.values.flatten()
                 for v in values:
                     if ~np.isnan(v):
@@ -55,6 +55,7 @@ data = data.fillna(result)
 # test if results are the same as in "ground truth"
 from unittest_simple import test_simple
 res = xr.open_dataarray('baseline_result.nc')
+import IPython; IPython.embed()
 test_simple(data, res)
 
 
