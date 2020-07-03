@@ -29,8 +29,8 @@ mean_fct = LowLevelCallable(nbnanmean.ctypes)
 footprint = np.ones((1,5,5,5))
 footprint[0,2,2,2] = 0 
 tic = datetime.now()
-tmp = generic_filter(data, mean_fct, footprint=footprint, mode='nearest') # THIS IS SLOW!
-toc = datetime.now()
+tmp = generic_filter(data, mean_fct, footprint=footprint, mode='nearest') # THIS IS SLOW!  
+toc = datetime.now() print(f'this filter function took {toc-tic}')
 print(f'this filter function took {toc-tic}')
 data = data.fillna(tmp)
 
