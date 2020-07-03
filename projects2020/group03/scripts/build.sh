@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+# set -euo pipefail
 IFS=$'\n\t'
 
 compilers=(
@@ -24,6 +24,11 @@ for compiler in ${compilers[@]}; do
 	cd ${compiler}
 
 	module switch ${PRGENV} PrgEnv-${compiler}
+	if [[ "${compiler}" == "gnu" ]]; then
+		module unload perftools-lite-gpu
+	else
+		module load perftools-lite-gpu
+	fi
 	if [[ "${compiler}" == "gnu" || "${compiler}" == "cray" ]]; then
 		module load craype-accel-nvidia60
 	else

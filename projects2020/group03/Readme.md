@@ -12,7 +12,7 @@
 
 ## Running
 ```bash
-	sourc scripts/daint.sh
+	source scripts/daint.sh
 	sbatch scripts/run.sh
 ```
 

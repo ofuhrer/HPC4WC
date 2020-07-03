@@ -42,6 +42,7 @@ module m_diffusion_openacc
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
 
+        ! TODO cray Debug build
         !$acc parallel
         !$acc loop gang
         do k = 1, nz

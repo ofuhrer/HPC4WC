@@ -23,7 +23,7 @@ module m_halo_openmp
       nz = size(field, 3)
 
       !$omp single
-      
+
       ! north
       !$omp task
       do k = 1, nz
@@ -34,7 +34,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! south
       !$omp task
       do k = 1, nz
@@ -45,7 +45,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! east
       !$omp task
       do k = 1, nz
@@ -56,7 +56,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! west
       !$omp task
       do k = 1, nz
@@ -67,7 +67,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! northeast
       !$omp task
       do k = 1, nz
@@ -78,7 +78,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! northwest
       !$omp task
       do k = 1, nz
@@ -89,7 +89,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! southeast
       !$omp task
       do k = 1, nz
@@ -100,7 +100,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! southwest
       !$omp task
       do k = 1, nz
@@ -111,7 +111,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       !$omp taskwait
       !$omp end single
     end subroutine

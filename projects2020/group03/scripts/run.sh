@@ -20,13 +20,16 @@ versions=(
 	"mpi/stencil2d-mpi"
 	"openmp/stencil2d_openmp"
 	"openmp_target/stencil2d_openmp_target"
+	"openmp_split/stencil2d_openmp_split"
 	"openacc/stencil2d_openacc"
+	"openacc_split/stencil2d_openacc_split"
 )
 
 IFS=' '
 args="--nx 128 --ny 128 --nz 64 --num_iter 1024"
 
 PRGENV=$(module list 2>&1 | sed -E -n -e 's!.*(PrgEnv-\w+).*!\1!p')
+OMP_TARGET_OFFLOAD="MANDATORY"
 
 # cd $(dirname ${BASH_SOURCE[0]})/../build
 cd /users/$(whoami)/HPC4WC/projects2020/group03/build

@@ -37,14 +37,21 @@ module m_diffusion_openmp_target
       alpha_02 =  -2 * alpha
       alpha_01 =  -1 * alpha
 
-      !$omp target data map(to: in_field) map(from: out_field) map(alloc: i, j, k)
+      !$omp target data &
+      !$omp   map(to: in_field) &
+      !$omp   map(from: out_field) &
+      !$omp   map(alloc: i, j, k)
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
+        ! TODO: update halo on GPU from host
 
         !$omp target teams distribute &
-        !$omp private(k)
+        !$omp   default(none) &
+        !$omp   shared(iter, nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01) &
+        !$omp   private(i, j, k)
         do k = 1, nz
           !$omp parallel do collapse(2) &
+          !$omp   default(none) &
           !$omp   shared(nx, ny, num_halo, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, k) &
           !$omp   private(i, j)
           do j = 1 + num_halo, ny + num_halo
@@ -68,7 +75,8 @@ module m_diffusion_openmp_target
           !$omp end parallel do
 
           if (iter /= num_iter) then
-            !$omp parallel do collapse(2) default(none) &
+            !$omp parallel do collapse(2) &
+            !$omp   default(none) &
             !$omp   shared(nx, ny, num_halo, in_field, out_field, k) &
             !$omp   private(i, j)
             do j = 1 + num_halo, ny + num_halo
@@ -80,6 +88,7 @@ module m_diffusion_openmp_target
           end if
         end do
         !$omp end target teams distribute
+        ! TODO get halo from GPU to send to other ranks
 
         if (iter == num_iter) then
           call update_halo(out_field, num_halo, p)

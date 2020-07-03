@@ -1,4 +1,4 @@
-module m_diffusion_openmp
+module m_diffusion_openmp_split
   implicit none
   private
 
@@ -27,26 +27,74 @@ module m_diffusion_openmp
       integer :: nx
       integer :: ny
       integer :: nz
+      integer :: z_split
 
       nx = size(in_field, 1) - 2 * num_halo
       ny = size(in_field, 2) - 2 * num_halo
       nz = size(in_field, 3)
+      z_split = floor(0.85 * nz)
 
       alpha_20 = -20 * alpha + 1
       alpha_08 =   8 * alpha
       alpha_02 =  -2 * alpha
       alpha_01 =  -1 * alpha
 
-      ! TODO: crashes on intel
+      !$omp target data &
+      !$omp   map(to: in_field(:, :, :z_split)) &
+      !$omp   map(from: out_field(:, :, :z_split))
+      !!$omp target update &
+      !!$omp   to(in_field(:, :, :z_split))
       !$omp parallel &
       !$omp   default(none) &
-      !$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, p) &
-      !$omp   private(iter, i, j, k)
+      !$omp   shared(iter, nx, ny, nz, z_split, num_halo, num_iter) &
+      !$omp   shared(in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, p) &
+      !$omp   private(i, j, k)
       do iter = 1, num_iter
-        call update_halo(in_field, num_halo)
+        ! call update_halo(in_field, num_halo, p)
 
-        !$omp do schedule(dynamic)
-        do k = 1, nz
+        ! GPU
+        !$omp target teams distribute nowait &
+        !$omp   private(k)
+        do k = 1, z_split
+          !$omp parallel &
+          !$omp   default(none) &
+          !$omp   shared(iter, nx, ny, num_halo, num_iter) &
+          !$omp   shared(in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, k) &
+          !$omp   private(i, j)
+          !$omp do simd collapse(2)
+          do j = 1 + num_halo, ny + num_halo
+            do i = 1 + num_halo, nx + num_halo
+              out_field(i, j, k) = &
+                + alpha_20 * in_field(i,     j,     k) &
+                + alpha_08 * in_field(i - 1, j,     k) &
+                + alpha_08 * in_field(i + 1, j,     k) &
+                + alpha_08 * in_field(i,     j - 1, k) &
+                + alpha_08 * in_field(i,     j + 1, k) &
+                + alpha_02 * in_field(i - 1, j - 1, k) &
+                + alpha_02 * in_field(i - 1, j + 1, k) &
+                + alpha_02 * in_field(i + 1, j - 1, k) &
+                + alpha_02 * in_field(i + 1, j + 1, k) &
+                + alpha_01 * in_field(i - 2, j,     k) &
+                + alpha_01 * in_field(i + 2, j,     k) &
+                + alpha_01 * in_field(i,     j - 2, k) &
+                + alpha_01 * in_field(i,     j + 2, k)
+            end do
+          end do
+
+          if (iter /= num_iter) then
+            !$omp do simd collapse(2)
+            do j = 1 + num_halo, ny + num_halo
+              do i = 1 + num_halo, nx + num_halo
+                in_field(i, j, k) = out_field(i, j, k)
+              end do
+            end do
+          end if
+          !$omp end parallel
+        end do
+
+        ! CPU
+        !$omp do
+        do k = z_split + 1, nz
           !$omp simd collapse(2)
           do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
@@ -76,13 +124,20 @@ module m_diffusion_openmp
             end do
           end if
         end do
-        !$omp end do
+
+        !$omp barrier
+
+        ! TODO: node halo copy for MPI update
+        !       probably allocate buffers for GPU halos
 
         if (iter == num_iter) then
-          call update_halo(out_field, num_halo)
+          ! call update_halo(out_field, num_halo, p)
         end if
       end do
       !$omp end parallel
+      !!$omp target update &
+      !!$omp   from(out_field(:, :, :z_split))
+      !$omp end target data
     end subroutine
 end module
 

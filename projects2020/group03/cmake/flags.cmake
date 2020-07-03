@@ -33,7 +33,7 @@ add_library (OpenACC::Fortran INTERFACE IMPORTED)
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 	set (
 		CMAKE_Fortran_FLAGS
-		"-std=f2018 -ffree-form -cpp -Wall -Wextra -Wpedantic -Wsurprising -Wno-maybe-uninitialized"
+		"-std=gnu -ffree-form -ffree-line-length-none -cpp -Wall -Wextra -Wpedantic -Wsurprising -Wno-maybe-uninitialized -save-temps=obj"
 		CACHE STRING "Flags used by the Fortran compiler during all build types."
 		FORCE
 	)
@@ -89,7 +89,7 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray") 
 	set (
 		CMAKE_Fortran_FLAGS
-		"-f free -J. -ec -eC -em -ef -en -eT -m1 -M7405,7418"
+		"-f free -J. -ec -eC -em -ef -en -eT -eZ -eI -m1 -M7405,7418"
 		CACHE STRING "Flags used by the Fortran compiler during all build types."
 		FORCE
 	)
@@ -111,10 +111,10 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS -h omp)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  "-h omp")
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -h acc)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  "-h acc")
+	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS -homp)
+	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  -homp)
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -hacc)
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -hacc)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 	set (
 		CMAKE_Fortran_FLAGS
