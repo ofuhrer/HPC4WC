@@ -10,12 +10,11 @@ from datetime import datetime
 import xarray as xr
 from scipy.ndimage.filters import generic_filter
 
-shape = (3, 30, 72, 140) # real shape is (22, 3653, 720, 1440)
 frac_missing = 0.42
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
 # create example array
-print(f'create data array with shape {shape}')
+print(f'read data array')
 data = xr.open_dataarray(filepath)
 
 # subset more for speedup of first tests
@@ -31,6 +30,9 @@ tmp = generic_filter(data, np.nanmean, footprint=footprint, mode='nearest') # TH
 toc = datetime.now()
 print(f'this filter function took {toc-tic}')
 data = data.fillna(tmp)
+
+# save result as "ground truth" for testing other approaches
+data.to_netcdf('baseline_result.nc')
 
 # my PhD Project goes on with:
 # gapfill each variable by regressing over all the others
