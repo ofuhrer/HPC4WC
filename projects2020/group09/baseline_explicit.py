@@ -27,8 +27,6 @@ shape = np.shape(data)
 
 # gapfilling the missing values with spatiotemporal mean
 print('gapfilling missing values with spatiotemporal mean')
-footprint = np.ones((1,5,5,5))
-footprint[0,2,2,2] = 0 
 tic = datetime.now()
 result = np.zeros(shape)
 result[:,:,:,:] = np.nan
@@ -39,7 +37,7 @@ for var in range(0,shape[0]):
             for j in range(2,shape[3]-2):
                 tmp = 0
                 k = 0
-                values = data[var,t-2:t+2,i-2:i+1,j-2:j+2]
+                values = data[var,t-2:t+3,i-2:i+3,j-2:j+3]
                 #print(np.shape(data), np.shape(values))
                 values[2,2,2] = np.nan # changed this to nan so that it gets ignored
                 values = values.values.flatten()
