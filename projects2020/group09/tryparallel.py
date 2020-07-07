@@ -4,6 +4,8 @@ Explicit stencil filter
 
     @author: verena bessenbacher
     @date: 12 06 2020
+
+Run with: mpirun -np 3 python tryparallel.py
 """
 
 import numpy as np
@@ -30,13 +32,14 @@ nz = 100
 frac_missing = 0.42
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
+# Every rank is reading in the file. This is probably not optimal, rather one rank should read the file and send each variable to a different rank.
 # create example array
 print(f'create data array')
 data_0 = xr.open_dataarray(filepath)
 
 # subset more for speedup of first tests
 print(f'subset even more because very large dataset')
-data_0 = data_0[:,::1000,:,:]
+data_0 = data_0[:,::10,:,:]
 
 shape = np.shape(data_0)
 
@@ -76,13 +79,17 @@ for t in range(2,shape[1]-2):
                     k = k + 1
             if k != 0:
                 result[t,i,j] = tmp / max(k,1)
+                # for debugging
+                if rank !=0 and np.isnan(data_0[var,t,i,j]):
+                    print('At '+str(var)+', '+str(t)+', '+str(i)+', '+str(j)+' we have '+str(result[t,i,j]))
+
 
 toc = datetime.now()
 print(f'this filter function took {toc-tic}')
 
 recvbuf = None
 if rank == 0:
-    recvbuf = np.empty(3, np.shape(result)[0], np.shape(result)[1], np.shape(result)[2])
+    recvbuf = np.empty((3, np.shape(result)[0], np.shape(result)[1], np.shape(result)[2]))
     print(np.shape(recvbuf))
 comm.Gather(result, recvbuf, root=0)
 
@@ -91,11 +98,13 @@ comm.Gather(result, recvbuf, root=0)
 #        assert np.allclose(recvbuf[i,:], i)
 
 if rank == 0:
+    data = data_0.copy() # TODO: remove, for debug
     data_0 = data_0.fillna(recvbuf)
     from unittest_simple import test_simple
     res = xr.open_dataarray('baseline_result.nc')
-    test_simple(recvbuf, res)
+    #import IPython; IPython.embed()
+    # test if results are the same as in "ground truth"
+    test_simple(data_0, res)
 
-# test if results are the same as in "ground truth"
 print(rank)
 
