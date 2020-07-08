@@ -5,6 +5,12 @@ module m_halo_openmp_mpi
   public :: update_halo
   contains
     subroutine update_halo(field, num_halo, p)
+#ifdef _CRAYC
+      !DIR$ INLINEALWAYS update_halo
+#endif
+#ifdef __INTEL_COMPILER
+      !DIR$ ATTRIBUTES FORCEINLINE :: update_halo
+#endif
       use, intrinsic :: iso_fortran_env, only: REAL32
       use mpi, only: &
         MPI_SUCCESS, MPI_FLOAT, MPI_STATUS_IGNORE

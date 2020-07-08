@@ -1,5 +1,7 @@
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 	message (WARNING "OpenMP offloading not supported by Intel compiler")
+elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
+	message (WARNING "openmp target nowait not supported by PGI compiler")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	message (WARNING "OpenMP offloading not supported on Cray debug builds")
 else ()

@@ -2,7 +2,7 @@
 
 #SBATCH --constraint gpu
 #SBATCH --nodes      1
-#SBATCH --time       00:10:00
+#SBATCH --time       00:20:00
 #SBATCH --partition  debug
 
 # set -euo pipefail
@@ -47,7 +47,9 @@ for compiler in ${compilers[@]}; do
 	for version in ${versions[@]}; do
 		if [[ -e ./${version} && -x ./${version} ]]; then
 			echo "Running ${compiler} ${version%/*}"
-			srun ./${version} ${args}
+			cd ${version%/*}
+			srun --time 00:02:00 ./${version#*/} ${args}
+			cd ..
 		fi
 	done
 

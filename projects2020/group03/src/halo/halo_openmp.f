@@ -5,7 +5,12 @@ module m_halo_openmp
   public :: update_halo
   contains
     subroutine update_halo(field, num_halo)
+#ifdef _CRAYC
       !DIR$ INLINEALWAYS update_halo
+#endif
+#ifdef __INTEL_COMPILER
+      !DIR$ ATTRIBUTES FORCEINLINE :: update_halo
+#endif
       use, intrinsic :: iso_fortran_env, only: REAL32
 
       real(kind = REAL32), intent(inout) :: field(:, :, :)

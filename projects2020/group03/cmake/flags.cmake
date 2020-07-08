@@ -45,7 +45,7 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELEASE
-		"-UDEBUG -DNDEBUG=1 -O3 -flto -fno-fat-lto-objects -fomit-frame-pointer -fopt-info"
+		"-UDEBUG -DNDEBUG=1 -O3 -Ofast -funroll-loops -flto -fno-fat-lto-objects -fomit-frame-pointer -fopt-info"
 		CACHE STRING "Flags used by the Fortran compiler during Release builds."
 		FORCE
 	)
@@ -68,13 +68,13 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 	)
 	set (
 		CMAKE_Fortran_FLAGS_DEBUG
-		"-DDEBUG=1 -UNDEBUG -O0 -g -check all -ftrapuv -fp-speculation safe"
+		"-DDEBUG=1 -UNDEBUG -O0 -g -debug all -check all -ftrapuv -fp-speculation safe"
 		CACHE STRING "Flags used by the Fortran compiler during Debug builds."
 		FORCE
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELEASE
-		"-UDEBUG -DNDEBUG=1 -O3" # TODO: vec-report?
+		"-UDEBUG -DNDEBUG=1 -O3 -unroll-aggressive -qopt-prefetch -qopt-report3"
 		CACHE STRING "Flags used by the Fortran compiler during Release builds."
 		FORCE
 	)
@@ -95,19 +95,19 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
 	)
 	set (
 		CMAKE_Fortran_FLAGS_DEBUG
-		"-DDEBUG=1 -UNDEBUG -eD -h develop -R bcdps -K trap=denorm,divz,fp,inexact,inv,ovf,unf"
+		"-DDEBUG=1 -UNDEBUG -G0 -eD -h develop -R bcdps -K trap=denorm,divz,fp,inexact,inv,ovf,unf"
 		CACHE STRING "Flags used by the Fortran compiler during Debug builds."
 		FORCE
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELEASE
-		"-UDEBUG -DNDEBUG=1 -ra"
+		"-UDEBUG -DNDEBUG=1 -O3 -hfp2 -ra" # TODO errors on -hfp3
 		CACHE STRING "Flags used by the Fortran compiler during Release builds."
 		FORCE
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-		"-UDEBUG -DNDEBUG=1" # TODO
+		"-UDEBUG -DNDEBUG=1 -G02" # TODO
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
@@ -130,7 +130,7 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELEASE
-		"-UDEBUG -DNDEBUG=1 -O3 -fast -Mlist"
+		"-UDEBUG -DNDEBUG=1 -O3 -fast -Munroll -Minline -Mmovnt -Mconcur -Mipa=fast,inline -Mlist -Minfo=all"
 		CACHE STRING "Flags used by the Fortran compiler during Release builds."
 		FORCE
 	)
@@ -140,10 +140,10 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS -mp)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  -mp)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -acc -ta=tesla)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -acc -ta=tesla)
+	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS -mp=nonuma)
+	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  -mp=nonuma)
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -acc -ta=tesla,cc60)
+	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -acc -ta=tesla,cc60)
 endif ()
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 :

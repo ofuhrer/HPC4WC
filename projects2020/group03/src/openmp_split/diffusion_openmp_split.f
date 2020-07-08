@@ -42,17 +42,16 @@ module m_diffusion_openmp_split
       !$omp target data &
       !$omp   map(to: in_field(:, :, :z_split)) &
       !$omp   map(from: out_field(:, :, :z_split))
-      !!$omp target update &
-      !!$omp   to(in_field(:, :, :z_split))
       !$omp parallel &
       !$omp   default(none) &
-      !$omp   shared(iter, nx, ny, nz, z_split, num_halo, num_iter) &
+      !$omp   shared(nx, ny, nz, z_split, num_halo, num_iter) &
       !$omp   shared(in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, p) &
-      !$omp   private(i, j, k)
+      !$omp   private(iter, i, j, k)
       do iter = 1, num_iter
-        ! call update_halo(in_field, num_halo, p)
+        call update_halo(in_field, num_halo, p)
 
         ! GPU
+        !$omp single
         !$omp target teams distribute nowait &
         !$omp   private(k)
         do k = 1, z_split
@@ -91,6 +90,7 @@ module m_diffusion_openmp_split
           end if
           !$omp end parallel
         end do
+        !$omp end single nowait
 
         ! CPU
         !$omp do
@@ -131,12 +131,10 @@ module m_diffusion_openmp_split
         !       probably allocate buffers for GPU halos
 
         if (iter == num_iter) then
-          ! call update_halo(out_field, num_halo, p)
+          call update_halo(out_field, num_halo, p)
         end if
       end do
       !$omp end parallel
-      !!$omp target update &
-      !!$omp   from(out_field(:, :, :z_split))
       !$omp end target data
     end subroutine
 end module
