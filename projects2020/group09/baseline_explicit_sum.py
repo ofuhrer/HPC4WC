@@ -35,7 +35,7 @@ for var in range(0,shape[0]):
         print('new time t ='+str(t))
         for i in range(2,shape[2]-2):
             for j in range(2,shape[3]-2):
-                values = data[var,t-2:t+3,i-2:i+3,j-2:j+3]
+                values = data[var,t-2:t+3,i-2:i+3,j-2:j+3].copy()
                 #print(np.shape(data), np.shape(values))
                 values[2,2,2] = np.nan
                 summed = np.sum(np.isnan(values))
