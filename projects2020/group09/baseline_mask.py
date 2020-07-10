@@ -22,6 +22,7 @@ data = xr.open_dataarray(filepath)
 # subset more for speedup of first tests
 print(f'subset even more because very large dataset')
 data = data[:,::10,:,:]
+data_orig = data.copy()
 
 shape = np.shape(data)
 # create a mask of nans
@@ -42,7 +43,7 @@ for var in range(0,shape[0]):
                     continue
                 tmp = 0
                 k = 0
-                values = data[var,t-2:t+3,i-2:i+3,j-2:j+3]
+                values = data[var,t-2:t+3,i-2:i+3,j-2:j+3].copy()
                 #print(np.shape(data), np.shape(values))
                 values[2,2,2] = np.nan # changed this to nan so that it gets ignored
                 values = values.values.flatten()

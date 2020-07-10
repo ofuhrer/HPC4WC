@@ -69,7 +69,7 @@ for t in range(2,shape[1]-2):
         for j in range(2,shape[3]-2):
             tmp = 0
             k = 0
-            values = data_0[var,t-2:t+2,i-2:i+1,j-2:j+2]
+            values = data_0[var,t-2:t+2,i-2:i+1,j-2:j+2].copy()
             #print(np.shape(data), np.shape(values))
             values[2,2,2] = np.nan # changed this to nan so that it gets ignored
             values = values.values.flatten()
