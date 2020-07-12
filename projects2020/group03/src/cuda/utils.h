@@ -8,7 +8,7 @@ class Storage3D {
 public:
   Storage3D(int x, int y, int z, int nhalo, T value = 0)
       : xsize_(x + 2 * nhalo), ysize_(y + 2 * nhalo), zsize_(z), halosize_(nhalo),
-        data_((x + 2 * nhalo) * (y + 2 * nhalo) * (z + 2 * nhalo), value) {}
+        data_((x + 2 * nhalo) * (y + 2 * nhalo) * z, value) {}
 
   T& operator()(int i, int j, int k) { return data_[i + j * xsize_ + k * xsize_ * ysize_]; }
 
