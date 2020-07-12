@@ -53,43 +53,92 @@ void updateHalo(Storage3D<double>& inField) {
   }
 }
 
+__global__
+void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xSize, int yMin, int yMax, int ySize, int zMax, double alpha) {
+  // apply the initial laplacian
+  __shared__ double buffer[16][16][8];
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  int j = blockDim.y * blockIdx.y + threadIdx.y;
+  int k = blockDim.z * blockIdx.z + threadIdx.z;
+  int li = threadIdx.x;
+  int lj = threadIdx.y;
+  int lk = threadIdx.z;
+  int index = i + j * xSize + k * xSize * ySize;
+
+  // apply the initial laplacian
+  if (i >= xMin - 1 && i < xMax + 1 &&
+      j >= yMin - 1 && j < yMax + 1 && k < zMax) {
+    double value = -4.0 * infield[index]
+                        + infield[index - 1]
+                        + infield[index + 1]
+                        + infield[index - xSize]
+                        + infield[index + xSize];
+    buffer[li][lj][lk] = value;
+  }
+  __syncthreads();
+
+  // apply the second laplacian
+  if (i >= xMin && i < xMax &&
+      j >= yMin && j < yMax && k < zMax) {
+    double value = -4.0 * buffer[li][lj][lk]
+                        + buffer[li - 1][lj][lk]
+                        + buffer[li + 1][lj][lk]
+                        + buffer[li][lj - 1][lk]
+                        + buffer[li][lj + 1][lk];
+    outfield[index] = buffer[li][lj][lk] - alpha * value;
+  }
+}
+
 void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField,
                          double alpha, unsigned numIter, int x, int y, int z, int halo) {
+  // Utils
+  std::size_t const xSize = inField.xSize();
+  std::size_t const ySize = inField.ySize();
+  std::size_t const xMin = inField.xMin();
+  std::size_t const yMin = inField.yMin();
+  std::size_t const xMax = inField.xMax();
+  std::size_t const yMax = inField.yMax();
+  std::size_t const zMin = inField.zMin();
+  std::size_t const zMax = inField.zMax();
+  std::size_t const size = sizeof(double) * xSize * ySize * zMax;
+
+  // Allocate space on device memory and copy data from host
+  double *infield, *outfield;
+  //cuInit(0);
+  cudaMalloc((void **)&infield, size);
+  cudaMalloc((void **)&outfield, size);
+  cudaMemcpy(infield, &inField(0, 0, 0), size, cudaMemcpyHostToDevice);
+
+  dim3 blockDim(8, 8, 4);
+  dim3 gridDim((xSize + blockDim.x - 1) / blockDim.x,
+               (ySize + blockDim.y - 1) / blockDim.y,
+               (zMax  + blockDim.z - 1) / blockDim.z);
+
   cudaEvent_t tic, toc;
   cudaEventCreate(&tic);
   cudaEventCreate(&toc);
-
-  // Allocate space on device memory and copy data from host
-  double *field;
-  std::size_t const nx = inField.xSize();
-  std::size_t const ny = inField.ySize();
-  std::size_t const nz = inField.zMax();
-  std::size_t const size = sizeof(double) * nx * ny * nz;
-
-  cudaMalloc((void **)&field, size);
-  cudaMemcpy(field, &inField(0, 0, 0), size, cudaMemcpyHostToDevice);
-
-  dim3 blockDim(1, 1, 1); // TODO
-  dim3 gridDim(1, 1);     // TODO
-
   cudaEventRecord(tic);
+
   for(std::size_t iter = 0; iter < numIter; ++iter) {
-    //apply_stencil_step_1<<<gridDim, blockDim>>>(n_x, n_y, n_z, field);
-    //apply_stencil_step_2<<<gridDim, blockDim>>>(n_x, n_y, n_z, field, alpha);
+    apply_stencil<<<gridDim, blockDim>>>(infield, outfield, xMin, xMax, xSize, yMin, yMax, ySize, zMax, alpha);
+    cudaDeviceSynchronize();
+    if ( iter != numIter - 1 ) std::swap(infield, outfield);
   }
+
   cudaEventRecord(toc);
   cudaEventSynchronize(toc);
-  //cudaThreadSynchronize();
-
-  // Copy result from device to host and free device memory
-  cudaMemcpy(&outField(0, 0, 0), field, size, cudaMemcpyDeviceToHost);
-  cudaFree(field);
-
   float telapsed = -1;
   cudaEventElapsedTime(&telapsed, tic, toc);
+  std::cout << "telapsed: " << telapsed << std::endl;
   cudaEventDestroy(tic);
   cudaEventDestroy(toc);
+
+  // Copy result from device to host and free device memory
+  cudaMemcpy(&outField(0, 0, 0), outfield, size, cudaMemcpyDeviceToHost);
+  cudaFree(infield);
+  cudaFree(outfield);
 }
+
 
 void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, double alpha,
                      unsigned numIter, int x, int y, int z, int halo) {
@@ -127,6 +176,7 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
     }
   }
 }
+
 
 void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
