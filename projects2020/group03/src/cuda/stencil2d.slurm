@@ -11,4 +11,4 @@
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-srun ./stencil2d_cuda.x
+srun ./stencil2d_cuda.x --nx 128 --ny 128 --nz 64 --niters 1024
