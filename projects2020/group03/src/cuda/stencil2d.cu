@@ -85,7 +85,7 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
                         + buffer[li + 1][lj][lk]
                         + buffer[li][lj - 1][lk]
                         + buffer[li][lj + 1][lk];
-    outfield[index] = buffer[li][lj][lk] - alpha * value;
+    outfield[index] = infield[index] - alpha * value;
   }
 }
 
@@ -108,6 +108,7 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
   cudaMalloc((void **)&infield, size);
   cudaMalloc((void **)&outfield, size);
   cudaMemcpy(infield, &inField(0, 0, 0), size, cudaMemcpyHostToDevice);
+  cudaMemcpy(outfield, infield, size, cudaMemcpyDeviceToDevice);
 
   dim3 blockDim(8, 8, 4);
   dim3 gridDim((xSize + blockDim.x - 1) / blockDim.x,
