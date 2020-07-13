@@ -8,6 +8,8 @@ add_subdirectory (halo)
 add_subdirectory (mpi)
 add_subdirectory (orig)
 
+add_subdirectory (seq)
+
 add_subdirectory (openmp)
 add_subdirectory (openmp_target)
 add_subdirectory (openmp_split)

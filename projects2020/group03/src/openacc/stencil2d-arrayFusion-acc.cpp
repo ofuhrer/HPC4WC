@@ -5,7 +5,9 @@
 #include <fstream>
 #include <iostream>
 
-// #include "pat_api.h"
+#ifdef CRAYPAT
+#include "pat_api.h"
+#endif
 #include "../utils.h"
 
 namespace {
@@ -31,8 +33,8 @@ void inline updateHalo(double *inField, int32_t xsize, int32_t ysize,
   {
 #pragma acc enter data copyin(inField [0:sizeOf3DField])
     // bottom edge (without corners)
-#pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector collapse(3) async(1)
+#pragma acc parallel present(inField) async(1)
+#pragma acc loop independent gang worker vector collapse(3)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = 0; j < yMin; ++j) {
         for (std::size_t i = xMin; i < xMax; ++i) {
@@ -47,8 +49,8 @@ void inline updateHalo(double *inField, int32_t xsize, int32_t ysize,
     }
 
     // top edge (without corners)
-#pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector collapse(3) async(2)
+#pragma acc parallel present(inField) async(2)
+#pragma acc loop independent gang worker vector collapse(3)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = yMax; j < ysize; ++j) {
         for (std::size_t i = xMin; i < xMax; ++i) {
@@ -63,8 +65,8 @@ void inline updateHalo(double *inField, int32_t xsize, int32_t ysize,
     }
 
     // left edge (including corners)
-#pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector collapse(3) async(3)
+#pragma acc parallel present(inField) async(3)
+#pragma acc loop independent gang worker vector collapse(3)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = yMin; j < yMax; ++j) {
         for (std::size_t i = 0; i < xMin; ++i) {
@@ -78,8 +80,8 @@ void inline updateHalo(double *inField, int32_t xsize, int32_t ysize,
     }
 
     // right edge (including corners)
-#pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector collapse(3) async(4)
+#pragma acc parallel present(inField) async(4)
+#pragma acc loop independent gang worker vector collapse(3)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = yMin; j < yMax; ++j) {
         for (std::size_t i = xMax; i < xsize; ++i) {
@@ -117,8 +119,9 @@ void apply_diffusion(double *inField, double *outField, double alpha,
   // #pragma acc data copyin(inField [0:sizeOf3DField])                             \
   //     copy(outField [0:sizeOf3DField])
 
-#pragma acc enter data copyin(inField [0:sizeOf3DField])                       \
-    copyin(outField [0:sizeOf3DField])
+#pragma acc enter data \
+	copyin(inField [0:sizeOf3DField]) \
+	copyin(outField [0:sizeOf3DField])
   for (std::size_t iter = 0; iter < numIter; ++iter) {
 
     // TODO : make this an acc routine
@@ -128,7 +131,8 @@ void apply_diffusion(double *inField, double *outField, double alpha,
     // todo : if this is not on the gpu, the gpu copy needs to be updated?
     // # pragma acc update device(inField[0:n])
 
-#pragma acc parallel present(inField) loop gang worker vector collapse(3)
+#pragma acc parallel present(inField)
+#pragma acc loop gang worker vector collapse(3)
     for (std::size_t k = 0; k < zMax; ++k) {
       for (std::size_t j = yMin; j < yMax; ++j) {
         for (std::size_t i = xMin; i < xMax; ++i) {
@@ -162,8 +166,8 @@ void apply_diffusion(double *inField, double *outField, double alpha,
       }
     }
     if (iter = numIter - 1) {
-#pragma acc parallel present(inField, outField)                                \
-    loop independent gang worker vector collapse(3)
+#pragma acc parallel present(inField, outField)
+#pragma acc loop independent gang worker vector collapse(3)
       for (std::size_t k = 0; k < zMax; ++k) {
         for (std::size_t j = yMin; j < yMax; ++j) {
           for (std::size_t i = xMin; i < xMax; ++i) {
@@ -174,8 +178,9 @@ void apply_diffusion(double *inField, double *outField, double alpha,
       }
     }
   }
-#pragma acc exit data copyout(outField [0:sizeOf3DField]) delete (             \
-    inField [0:sizeOf3DField])
+#pragma acc exit data \
+	copyout(outField[0:sizeOf3DField]) \
+	delete(inField[0:sizeOf3DField])
 } // namespace
 
 void reportTime(const Storage3D<double> &storage, int nIter, double diff) {

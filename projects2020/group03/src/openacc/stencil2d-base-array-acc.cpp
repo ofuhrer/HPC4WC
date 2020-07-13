@@ -4,7 +4,9 @@
 #include <iostream>
 #include <omp.h>
 
-// #include "pat_api.h"
+#ifdef CRAYPAT
+#include "pat_api.h"
+#endif
 #include "../utils.h"
 
 namespace {
@@ -95,8 +97,10 @@ void apply_diffusion(double *inField, double *outField, double alpha,
 
   double *tmp1Field = new double[sizeOf2DField];
 
-#pragma acc data copyin(inField [0:sizeOf3DField])                             \
-    copy(outField [0:sizeOf3DField]) create(tmp1Field[sizeOf2DField])
+#pragma acc data \
+	copyin(inField [0:sizeOf3DField]) \
+	copy(outField [0:sizeOf3DField]) \
+	create(tmp1Field[0:sizeOf2DField])
   {
     for (std::size_t iter = 0; iter < numIter; ++iter) {
 
@@ -107,7 +111,8 @@ void apply_diffusion(double *inField, double *outField, double alpha,
       // # pragma acc update device(inField[0:n])
 
       for (std::size_t k = 0; k < zMax; ++k) {
-#pragma acc parallel present(inField, tmp1Field) loop gang vector collapse(2)
+#pragma acc parallel present(inField, tmp1Field)
+#pragma acc loop gang vector collapse(2)
         for (std::size_t j = yMin - 1; j < yMax + 1; ++j) {
           for (std::size_t i = xMin - 1; i < xMax + 1; ++i) {
 
@@ -122,7 +127,8 @@ void apply_diffusion(double *inField, double *outField, double alpha,
                                        inField[ijp1k];
           }
         }
-#pragma acc parallel present(inField, tmp1Field) loop gang vector collapse(2)
+#pragma acc parallel present(inField, tmp1Field)
+#pragma acc loop gang vector collapse(2)
         for (std::size_t j = yMin; j < yMax; ++j) {
           for (std::size_t i = xMin; i < xMax; ++i) {
 
@@ -142,8 +148,8 @@ void apply_diffusion(double *inField, double *outField, double alpha,
         }
       }
       if (iter == numIter - 1) {
-#pragma acc parallel present(inField, outField)                                \
-    loop independent gang worker vector collapse(3)
+#pragma acc parallel present(inField, outField)
+#pragma acc loop independent gang worker vector collapse(3)
         for (std::size_t k = 0; k < zMax; ++k) {
           for (std::size_t j = yMin; j < yMax; ++j) {
             for (std::size_t i = xMin; i < xMax; ++i) {

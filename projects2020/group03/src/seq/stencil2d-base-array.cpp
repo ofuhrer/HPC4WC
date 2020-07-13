@@ -4,7 +4,9 @@
 #include <iostream>
 #include <omp.h>
 
-// #include "pat_api.h"
+#ifdef CRAYPAT
+#include "pat_api.h"
+#endif
 #include "../utils.h"
 
 namespace {

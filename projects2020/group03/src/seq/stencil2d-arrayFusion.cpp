@@ -5,7 +5,9 @@
 #include <fstream>
 #include <iostream>
 
-// #include "pat_api.h"
+#ifdef CRAYPAT
+#include "pat_api.h"
+#endif
 #include "../utils.h"
 
 namespace {
@@ -208,7 +210,7 @@ void apply_diffusion(double *inField, double *outField, double alpha,
         }
       }
     }
-    if (iter = numIter - 1) {
+    if (iter == numIter - 1) {
       for (std::size_t k = 0; k < zMax; ++k) {
         for (std::size_t j = yMin; j < yMax; ++j) {
           for (std::size_t i = xMin; i < xMax; ++i) {
