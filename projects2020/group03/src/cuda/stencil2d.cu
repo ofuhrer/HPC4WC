@@ -62,7 +62,7 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   int k = blockDim.z * blockIdx.z + threadIdx.z;
   int li = threadIdx.x + 1;
   int lj = threadIdx.y + 1;
-  int lk = threadIdx.z + 1;
+  int lk = threadIdx.z;
   int index = i + j * xSize + k * xSize * ySize;
   int xInterior = xMax - xMin;
   int yInterior = yMax - yMin;
