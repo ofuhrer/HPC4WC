@@ -55,7 +55,6 @@ void updateHalo(Storage3D<double>& inField) {
 
 __global__
 void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xSize, int yMin, int yMax, int ySize, int zMax, double alpha) {
-  // apply the initial laplacian
   __shared__ double buffer1[8][8][4];
   __shared__ double buffer2[8][8][4];
   int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -68,9 +67,9 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   int xInterior = xMax - xMin;
   int yInterior = yMax - yMin;
 
-  // halo update (local)
+  // perform halo update (local)
   if (i >= xMin && i < xMax &&
-      j >= 0    && j < yMin && k < zMax){
+      j >= 0    && j < yMin && k < zMax) {
     buffer1[li][lj][lk] = infield[index + yInterior * xSize];
   } else if (i >= xMin && i < xMax &&
              j >= yMax && j < ySize && k < zMax) {
@@ -81,7 +80,7 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   } else if (i >= xMax && i < xSize &&
              j >= yMin && j < yMax && k < zMax) {
     buffer1[li][lj][lk] = infield[index - xInterior];
-  } else if ( i < xSize && j < ySize && k < zMax ) {
+  } else if (i < xSize && j < ySize && k < zMax) {
     buffer1[li][lj][lk] = infield[index];
   } else {
     // pass
