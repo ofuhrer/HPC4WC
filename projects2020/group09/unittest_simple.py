@@ -11,13 +11,13 @@ def test_simple(mod, obs):
 
     assert mod.shape == obs.shape, 'shapes are not the same'
 
-    assert (np.isnan(obs)[:,2:-3,2:-3,2:-3] == np.isnan(mod)[:,2:-3,2:-3,2:-3]).all(), 'nan masks outside boundaries are not the same'
+    assert (np.isnan(obs)[:,2:-3,2:-3,2:-3] == np.isnan(mod)[:,2:-3,2:-3,2:-3]).all(), 'nan masks outside halo are not the same'
     
-    assert np.isclose(np.nan_to_num(mod)[:,2:-3,2:-3,2:-3], np.nan_to_num(obs)[:,2:-3,2:-3,2:-3], equal_nan=True).all(), 'non-nan values outside boundaries are not the same within tolerance'
+    assert np.isclose(np.nan_to_num(mod)[:,2:-3,2:-3,2:-3], np.nan_to_num(obs)[:,2:-3,2:-3,2:-3], equal_nan=True).all(), 'non-nan values outside halo are not the same within tolerance'
 
-    assert np.isclose(mod[:,2:-3,2:-3,2:-3], obs[:,2:-3,2:-3,2:-3], equal_nan=True).all(), 'values outside boundaries are not the same within tolerance'
+    assert np.isclose(mod[:,2:-3,2:-3,2:-3], obs[:,2:-3,2:-3,2:-3], equal_nan=True).all(), 'values outside halo are not the same within tolerance'
 
-    print('unittest outside boundaries passed')
+    print('unittest outside halo passed')
 
     assert (np.isnan(obs) == np.isnan(mod)).all(), 'nan masks are not the same'
 
@@ -26,4 +26,3 @@ def test_simple(mod, obs):
     assert np.isclose(mod, obs, equal_nan=True).all(), 'values are not the same within tolerance'
 
     print('unittest passed')
-    # TODO make special case for boundaries
