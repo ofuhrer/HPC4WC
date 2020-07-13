@@ -154,9 +154,83 @@ def _nanmean(v, w):
             w[+1,-2,-2] + w[+1,-1,-2] + w[+1,0,-2] + w[+1,+1,-2] + w[+1,+2,-2] +
             w[+2,-2,-2] + w[+2,-1,-2] + w[+2,0,-2] + w[+2,+1,-2] + w[+2,+2,-2],1)
 
+@numba.stencil
+def _weightsum(w):
+    return (w[-2,-2,2] + w[-2,-1,2] + w[-2,0,2] + w[-2,+1,2] + w[-2,+2,2] +
+            w[-1,-2,2] + w[-1,-1,2] + w[-1,0,2] + w[-1,+1,2] + w[-1,+2,2] +
+            w[0,-2,2] + w[0,-1,2] + w[0,0,2] + w[0,+1,2] + w[0,+2,2] +
+            w[+1,-2,2] + w[+1,-1,2] + w[+1,0,2] + w[+1,+1,2] + w[+1,+2,2] +
+            w[+2,-2,2] + w[+2,-1,2] + w[+2,0,2] + w[+2,+1,2] + w[+2,+2,2] + 
+
+            w[-2,-2,1] + w[-2,-1,1] + w[-2,0,1] + w[-2,+1,1] + w[-2,+2,1] +
+            w[-1,-2,1] + w[-1,-1,1] + w[-1,0,1] + w[-1,+1,1] + w[-1,+2,1] +
+            w[0,-2,1] + w[0,-1,1] + w[0,0,1] + w[0,+1,1] + w[0,+2,1] +
+            w[+1,-2,1] + w[+1,-1,1] + w[+1,0,1] + w[+1,+1,1] + w[+1,+2,1] +
+            w[+2,-2,1] + w[+2,-1,1] + w[+2,0,1] + w[+2,+1,1] + w[+2,+2,1] + 
+
+            w[-2,-2,0] + w[-2,-1,0] + w[-2,0,0] + w[-2,+1,0] + w[-2,+2,0] +
+            w[-1,-2,0] + w[-1,-1,0] + w[-1,0,0] + w[-1,+1,0] + w[-1,+2,0] +
+            w[0,-2,0] + w[0,-1,0] + w[0,+1,0] + w[0,+2,0] + # w/o point itself!
+            w[+1,-2,0] + w[+1,-1,0] + w[+1,0,0] + w[+1,+1,0] + w[+1,+2,0] +
+            w[+2,-2,0] + w[+2,-1,0] + w[+2,0,0] + w[+2,+1,0] + w[+2,+2,0] + 
+
+            w[-2,-2,-1] + w[-2,-1,-1] + w[-2,0,-1] + w[-2,+1,-1] + w[-2,+2,-1] +
+            w[-1,-2,-1] + w[-1,-1,-1] + w[-1,0,-1] + w[-1,+1,-1] + w[-1,+2,-1] +
+            w[0,-2,-1] + w[0,-1,-1] + w[0,0,-1] + w[0,+1,-1] + w[0,+2,-1] +
+            w[+1,-2,-1] + w[+1,-1,-1] + w[+1,0,-1] + w[+1,+1,-1] + w[+1,+2,-1] +
+            w[+2,-2,-1] + w[+2,-1,-1] + w[+2,0,-1] + w[+2,+1,-1] + w[+2,+2,-1] + 
+
+            w[-2,-2,-2] + w[-2,-1,-2] + w[-2,0,-2] + w[-2,+1,-2] + w[-2,+2,-2] +
+            w[-1,-2,-2] + w[-1,-1,-2] + w[-1,0,-2] + w[-1,+1,-2] + w[-1,+2,-2] +
+            w[0,-2,-2] + w[0,-1,-2] + w[0,0,-2] + w[0,+1,-2] + w[0,+2,-2] +
+            w[+1,-2,-2] + w[+1,-1,-2] + w[+1,0,-2] + w[+1,+1,-2] + w[+1,+2,-2] +
+            w[+2,-2,-2] + w[+2,-1,-2] + w[+2,0,-2] + w[+2,+1,-2] + w[+2,+2,-2])
+
+@numba.stencil
+def _nanmean_simple(v, w):
+    return (v[-1,0,0] * w[-1,0,0] + v[+1,0,0] * w[+1,0,0] +
+            v[0,-1,0] * w[0,-1,0] + v[0,+1,0] * w[0,+1,0] +
+            v[-1,-1,0] * w[-1,-1,0] + v[+1,+1,0] * w[+1,+1,0] +
+            v[-1,+1,0] * w[-1,+1,0] + v[+1,-1,0] * w[+1,-1,0] +
+
+            v[-1,0,1] * w[-1,0,1] + v[+1,0,1] * w[+1,0,1] +
+            v[0,-1,1] * w[0,-1,1] + v[0,+1,1] * w[0,+1,1] +
+            v[-1,-1,1] * w[-1,-1,1] + v[+1,+1,1] * w[+1,+1,1] +
+            v[-1,+1,1] * w[-1,+1,1] + v[+1,-1,1] * w[+1,-1,1] +
+            v[0,0,1] * w[0,0,1] +
+
+            v[-1,0,-1] * w[-1,0,-1] + v[+1,0,-1] * w[+1,0,-1] +
+            v[0,-1,-1] * w[0,-1,-1] + v[0,+1,-1] * w[0,+1,-1] +
+            v[-1,-1,-1] * w[-1,-1,-1] + v[+1,+1,-1] * w[+1,+1,-1] +
+            v[-1,+1,-1] * w[-1,+1,-1] + v[+1,-1,-1] * w[+1,-1,-1] +
+            v[0,0,-1] * w[0,0,-1]) #/ max(w[-1,0,0] + 
+            
+            #w[+1,0,0] + w[0,-1,0] + w[0,+1,0] +
+            #w[-1,-1,0] + w[+1,+1,0] + w[-1,+1,0] + w[+1,-1,0] +
+
+            #w[-1,0,1] + w[+1,0,1] + w[0,-1,1] + w[0,+1,1] +
+            #w[-1,-1,1] + w[+1,+1,1] + w[-1,+1,1] + w[+1,-1,1] +
+            #w[0,0,1] +
+
+            #w[-1,0,-1] + w[+1,0,-1] + w[0,-1,-1] + w[0,+1,-1] +
+            #w[-1,-1,-1] + w[+1,+1,-1] + w[-1,+1,-1] + w[+1,-1,-1] +
+            #w[0,0,-1],1)
+
+@numba.stencil
+def _debug(v, w):
+    return (v[0,0,0] * w[0,0,0] + v[-1,0,0] * w[-1,0,0])
+
 @numba.njit
 def nanmean(v,w):
     return _nanmean(v,w)
+
+@numba.njit
+def nanmean_simple(v,w):
+    return _nanmean_simple(v,w)
+
+@numba.njit
+def weightsum(w):
+    return _weightsum(w)
 
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
@@ -170,7 +244,7 @@ data = data[:,::10,:,:]
 shape = np.shape(data)
 
 # create a mask of nans
-mask = ~np.isnan(data) # nan values have zero weight (i.e. are False)
+mask = ~np.isnan(data)*1 # nan values have zero weight (i.e. are False)
 
 # gapfilling the missing values with spatiotemporal mean
 print('gapfilling missing values with spatiotemporal mean')
@@ -183,9 +257,17 @@ print('gapfilling missing values with spatiotemporal mean')
 #print(f'this filter function took {toc-tic}')
 tic = datetime.now() # slightly slower
 result = np.full(shape, np.nan)
+weights = np.full(shape, np.nan)
+import IPython; IPython.embed()
 result[0,:,:,:] = nanmean(data.values[0,:,:,:], mask.values[0,:,:,:])
 result[1,:,:,:] = nanmean(data.values[1,:,:,:], mask.values[1,:,:,:])
 result[2,:,:,:] = nanmean(data.values[2,:,:,:], mask.values[2,:,:,:])
+
+weights[0,:,:,:] = weightsum(mask.values[0,:,:,:])
+weights[1,:,:,:] = weightsum(mask.values[1,:,:,:])
+weights[2,:,:,:] = weightsum(mask.values[2,:,:,:])
+
+result = np.where(weights == 0, np.nan, result)
 toc = datetime.now()
 print(f'this filter function took {toc-tic}')
 data = data.fillna(result)
