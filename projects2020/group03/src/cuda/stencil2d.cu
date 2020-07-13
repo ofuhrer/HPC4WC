@@ -92,24 +92,18 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   }
   __syncthreads();
 
-  // halo update (local)
-  if (i >= xMin && i < xMax &&
-      j >= 0    && j < yMin && k < zMax) {
-    buffer1[li][lj][lk] = infield[index + yInterior * xSize];
-  } else if (i >= xMin && i < xMax &&
-             j >= yMax && j < ySize && k < zMax) {
-    buffer1[li][lj][lk] = infield[index - yInterior * xSize];
-  } else if (i >= 0    && i < xMin &&
-             j >= yMin && j < yMax && k < zMax) {
-    buffer1[li][lj][lk] = infield[index + xInterior];
-  } else if (i >= xMax && i < xSize &&
-             j >= yMin && j < yMax && k < zMax) {
-    buffer1[li][lj][lk] = infield[index - xInterior];
-  } else if (i < xSize && j < ySize && k < zMax) {
-    buffer1[li][lj][lk] = infield[index];
-  } else {
-    // pass
-  }
+  bool south = (j >= 0    && j < yMin  && i >= xMin && i < xMax  && k < zMax);
+  bool north = (j >= yMax && j < ySize && i >= xMin && i < xMax  && k < zMax);
+  bool east  = (i >= 0    && i < xMin  && j >= yMin && j < yMax  && k < zMax);
+  bool west  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
+  bool other = (i < xSize && j < ySize && k < zMax);
+
+  // fill buffer1 considering halo update
+  if      (south) { buffer1[li][lj][lk] = infield[index + yInterior * xSize]; }
+  else if (north) { buffer1[li][lj][lk] = infield[index - yInterior * xSize]; }
+  else if (east)  { buffer1[li][lj][lk] = infield[index + xInterior]; }
+  else if (west)  { buffer1[li][lj][lk] = infield[index - xInterior]; }
+  else if (other) { buffer1[li][lj][lk] = infield[index]; }
   __syncthreads();
 
   // apply the initial laplacian
