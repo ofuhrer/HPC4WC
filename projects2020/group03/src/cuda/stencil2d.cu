@@ -55,19 +55,44 @@ void updateHalo(Storage3D<double>& inField) {
 
 __global__
 void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xSize, int yMin, int yMax, int ySize, int zMax, double alpha) {
-  __shared__ double buffer1[8][8][4];
-  __shared__ double buffer2[8][8][4];
+  __shared__ double buffer1[10][10][4];
+  __shared__ double buffer2[10][10][4];
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   int j = blockDim.y * blockIdx.y + threadIdx.y;
   int k = blockDim.z * blockIdx.z + threadIdx.z;
-  int li = threadIdx.x;
-  int lj = threadIdx.y;
-  int lk = threadIdx.z;
+  int li = threadIdx.x + 1;
+  int lj = threadIdx.y + 1;
+  int lk = threadIdx.z + 1;
   int index = i + j * xSize + k * xSize * ySize;
   int xInterior = xMax - xMin;
   int yInterior = yMax - yMin;
 
-  // perform halo update (local)
+  // initialize shared memory
+  buffer1[li][lj][lk] = 0.0;
+  buffer2[li][lj][lk] = 0.0;
+  // top and bottom boundary initialization
+  if (threadIdx.x == 0) {
+    buffer1[li-1][lj][lk] = 0.0;
+    buffer2[li-1][lj][lk] = 0.0;
+  } else if (threadIdx.x == blockDim.x - 1) {
+    buffer1[li+1][lj][lk] = 0.0;
+    buffer2[li+1][lj][lk] = 0.0;
+  } else {
+    // pass
+  }
+  // left and right boundary initialization
+  if (threadIdx.y == 0) {
+    buffer1[li][lj-1][lk] = 0.0;
+    buffer2[li][lj-1][lk] = 0.0;
+  } else if (threadIdx.y == blockDim.y - 1) {
+    buffer1[li][lj+1][lk] = 0.0;
+    buffer2[li][lj+1][lk] = 0.0;
+  } else {
+    // pass
+  }
+  __syncthreads();
+
+  // halo update (local)
   if (i >= xMin && i < xMax &&
       j >= 0    && j < yMin && k < zMax) {
     buffer1[li][lj][lk] = infield[index + yInterior * xSize];
@@ -107,7 +132,7 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
                         + buffer2[li + 1][lj][lk]
                         + buffer2[li][lj - 1][lk]
                         + buffer2[li][lj + 1][lk];
-    outfield[index] = infield[index] - alpha * value;
+    outfield[index] = buffer1[li][lj][lk] - alpha * value;
   }
 }
 

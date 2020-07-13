@@ -11,4 +11,11 @@
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-srun ./stencil2d_cuda.x --nx 128 --ny 128 --nz 64 --niters 1024
+nx=128
+ny=128
+nz=64
+niters=1024
+
+srun               ./stencil2d_cuda.x --nx $nx --ny $ny --nz $nz --niters $niters
+srun nvprof        ./stencil2d_cuda.x --nx $nx --ny $ny --nz $nz --niters $niters
+srun cuda-memcheck ./stencil2d_cuda.x --nx $nx --ny $ny --nz $nz --niters $niters
