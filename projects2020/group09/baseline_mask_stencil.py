@@ -232,6 +232,17 @@ def nanmean_simple(v,w):
 def weightsum(w):
     return _weightsum(w)
 
+def halo_update(v, num_halo=2):
+
+    # bottom edge without corners
+
+    # top edge without corners
+
+    # left edge with corners
+
+    # right edge with corners
+    pass
+
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
 # open data
@@ -240,11 +251,9 @@ data = xr.open_dataarray(filepath)
 
 # subset more for speedup of first tests
 print(f'subset even more because very large dataset')
-data = data[:,::10,:,:]
+#data = data[:,::10,:,:]
 shape = np.shape(data)
 
-# create a mask of nans
-mask = ~np.isnan(data)*1 # nan values have zero weight (i.e. are False)
 
 # gapfilling the missing values with spatiotemporal mean
 print('gapfilling missing values with spatiotemporal mean')
@@ -256,16 +265,16 @@ print('gapfilling missing values with spatiotemporal mean')
 #toc = datetime.now()
 #print(f'this filter function took {toc-tic}')
 tic = datetime.now() # slightly slower
+mask = ~np.isnan(data.values)*1 # nan values have zero weight (i.e. are False)
 result = np.full(shape, np.nan)
 weights = np.full(shape, np.nan)
-import IPython; IPython.embed()
-result[0,:,:,:] = nanmean(data.values[0,:,:,:], mask.values[0,:,:,:])
-result[1,:,:,:] = nanmean(data.values[1,:,:,:], mask.values[1,:,:,:])
-result[2,:,:,:] = nanmean(data.values[2,:,:,:], mask.values[2,:,:,:])
+result[0,:,:,:] = nanmean(np.nan_to_num(data[0,:,:,:]), mask[0,:,:,:])
+result[1,:,:,:] = nanmean(np.nan_to_num(data[1,:,:,:]), mask[1,:,:,:])
+result[2,:,:,:] = nanmean(np.nan_to_num(data[2,:,:,:]), mask[2,:,:,:])
 
-weights[0,:,:,:] = weightsum(mask.values[0,:,:,:])
-weights[1,:,:,:] = weightsum(mask.values[1,:,:,:])
-weights[2,:,:,:] = weightsum(mask.values[2,:,:,:])
+weights[0,:,:,:] = weightsum(mask[0,:,:,:])
+weights[1,:,:,:] = weightsum(mask[1,:,:,:])
+weights[2,:,:,:] = weightsum(mask[2,:,:,:])
 
 result = np.where(weights == 0, np.nan, result)
 toc = datetime.now()
@@ -275,7 +284,6 @@ data = data.fillna(result)
 # test if results are the same as in "ground truth"
 from unittest_simple import test_simple
 res = xr.open_dataarray('baseline_result.nc')
-import IPython; IPython.embed()
 test_simple(data, res) # test fails bec one dim missing
 
 # my PhD Project goes on with:
