@@ -56,7 +56,8 @@ void updateHalo(Storage3D<double>& inField) {
 __global__
 void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xSize, int yMin, int yMax, int ySize, int zMax, double alpha) {
   // apply the initial laplacian
-  __shared__ double buffer[16][16][8];
+  __shared__ double buffer1[8][8][4];
+  __shared__ double buffer2[8][8][4];
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   int j = blockDim.y * blockIdx.y + threadIdx.y;
   int k = blockDim.z * blockIdx.z + threadIdx.z;
@@ -64,27 +65,49 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   int lj = threadIdx.y;
   int lk = threadIdx.z;
   int index = i + j * xSize + k * xSize * ySize;
+  int xInterior = xMax - xMin;
+  int yInterior = yMax - yMin;
+
+  // halo update (local)
+  if (i >= xMin && i < xMax &&
+      j >= 0    && j < yMin && k < zMax){
+    buffer1[li][lj][lk] = infield[index + yInterior * xSize];
+  } else if (i >= xMin && i < xMax &&
+             j >= yMax && j < ySize && k < zMax) {
+    buffer1[li][lj][lk] = infield[index - yInterior * xSize];
+  } else if (i >= 0    && i < xMin &&
+             j >= yMin && j < yMax && k < zMax) {
+    buffer1[li][lj][lk] = infield[index + xInterior];
+  } else if (i >= xMax && i < xSize &&
+             j >= yMin && j < yMax && k < zMax) {
+    buffer1[li][lj][lk] = infield[index - xInterior];
+  } else if ( i < xSize && j < ySize && k < zMax ) {
+    buffer1[li][lj][lk] = infield[index];
+  } else {
+    // pass
+  }
+  __syncthreads();
 
   // apply the initial laplacian
   if (i >= xMin - 1 && i < xMax + 1 &&
       j >= yMin - 1 && j < yMax + 1 && k < zMax) {
-    double value = -4.0 * infield[index]
-                        + infield[index - 1]
-                        + infield[index + 1]
-                        + infield[index - xSize]
-                        + infield[index + xSize];
-    buffer[li][lj][lk] = value;
+    double value = -4.0 * buffer1[li][lj][lk]
+                        + buffer1[li - 1][lj][lk]
+                        + buffer1[li + 1][lj][lk]
+                        + buffer1[li][lj - 1][lk]
+                        + buffer1[li][lj + 1][lk];
+    buffer2[li][lj][lk] = value;
   }
   __syncthreads();
 
   // apply the second laplacian
   if (i >= xMin && i < xMax &&
       j >= yMin && j < yMax && k < zMax) {
-    double value = -4.0 * buffer[li][lj][lk]
-                        + buffer[li - 1][lj][lk]
-                        + buffer[li + 1][lj][lk]
-                        + buffer[li][lj - 1][lk]
-                        + buffer[li][lj + 1][lk];
+    double value = -4.0 * buffer2[li][lj][lk]
+                        + buffer2[li - 1][lj][lk]
+                        + buffer2[li + 1][lj][lk]
+                        + buffer2[li][lj - 1][lk]
+                        + buffer2[li][lj + 1][lk];
     outfield[index] = infield[index] - alpha * value;
   }
 }
