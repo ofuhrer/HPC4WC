@@ -11,9 +11,9 @@
 namespace {
 
 // overloaded function with cstd arrays
-#pragma acc routine
-void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
-                int32_t halosize) {
+// #pragma acc routine seq
+void inline updateHalo(double *inField, int32_t xsize, int32_t ysize,
+                       int32_t zsize, int32_t halosize) {
   std::size_t xMin = halosize;
   std::size_t xMax = xsize - halosize;
   std::size_t yMin = halosize;
@@ -24,15 +24,15 @@ void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
   const int xInterior = xMax - xMin;
   const int yInterior = yMax - yMin;
 
-  std::size_t sizeOf3DField = (xsize) * (ysize)*zsize;
+  std::size_t sizeOf3DField = (xsize) * (ysize) * (zsize);
 
   // todo : do you need the copy in?
   // #pragma acc data copyin(inField [0:sizeOf3DField])
   {
-
+#pragma acc enter data copyin(inField [0:sizeOf3DField])
     // bottom edge (without corners)
 #pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector(1024) collapse(3) async(1)
+    loop independent gang worker vector collapse(3) async(1)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = 0; j < yMin; ++j) {
         for (std::size_t i = xMin; i < xMax; ++i) {
@@ -48,7 +48,7 @@ void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
 
     // top edge (without corners)
 #pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector(1024) collapse(3) async(2)
+    loop independent gang worker vector collapse(3) async(2)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = yMax; j < ysize; ++j) {
         for (std::size_t i = xMin; i < xMax; ++i) {
@@ -64,7 +64,7 @@ void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
 
     // left edge (including corners)
 #pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector(1024) collapse(3) async(3)
+    loop independent gang worker vector collapse(3) async(3)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = yMin; j < yMax; ++j) {
         for (std::size_t i = 0; i < xMin; ++i) {
@@ -79,7 +79,7 @@ void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
 
     // right edge (including corners)
 #pragma acc parallel present(inField)                                          \
-    loop independent gang worker vector(1024) collapse(3) async(4)
+    loop independent gang worker vector collapse(3) async(4)
     for (std::size_t k = 0; k < zMin; ++k) {
       for (std::size_t j = yMin; j < yMax; ++j) {
         for (std::size_t i = xMax; i < xsize; ++i) {
@@ -92,6 +92,8 @@ void updateHalo(double *inField, int32_t xsize, int32_t ysize, int32_t zsize,
       }
     }
   }
+#pragma acc exit data copyout(inField [0:sizeOf3DField])
+
 } // namespace
 
 // overloaded function with cstd arrays
@@ -112,69 +114,69 @@ void apply_diffusion(double *inField, double *outField, double alpha,
 
   std::size_t sizeOf3DField = (xsize) * (ysize)*z;
 
-#pragma acc data copyin(inField [0:sizeOf3DField])                             \
-    copy(outField [0:sizeOf3DField])
-  {
-    for (std::size_t iter = 0; iter < numIter; ++iter) {
+  // #pragma acc data copyin(inField [0:sizeOf3DField])                             \
+  //     copy(outField [0:sizeOf3DField])
 
-      // TODO : make this an acc routine
-      // todo : turn this into a cuda kernel and call from acc???
-      updateHalo(inField, xsize, ysize, z, halo);
-      // todo : if this is not on the gpu, the gpu copy needs to be updated?
-      // # pragma acc update device(inField[0:n])
+#pragma acc enter data copyin(inField [0:sizeOf3DField])                       \
+    copyin(outField [0:sizeOf3DField])
+  for (std::size_t iter = 0; iter < numIter; ++iter) {
+
+    // TODO : make this an acc routine
+    // todo : turn this into a cuda kernel and call from acc???
+    // #pragma acc parallel present(inField)
+    updateHalo(inField, xsize, ysize, z, halo);
+    // todo : if this is not on the gpu, the gpu copy needs to be updated?
+    // # pragma acc update device(inField[0:n])
 
 #pragma acc parallel present(inField) loop gang worker vector collapse(3)
+    for (std::size_t k = 0; k < zMax; ++k) {
+      for (std::size_t j = yMin; j < yMax; ++j) {
+        for (std::size_t i = xMin; i < xMax; ++i) {
+          std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
+          std::size_t ip1jk = (i + 1) + (j * xsize) + (k * xsize * ysize);
+          std::size_t im1jk = (i - 1) + (j * xsize) + (k * xsize * ysize);
+          std::size_t ijp1k = i + ((j + 1) * xsize) + (k * xsize * ysize);
+          std::size_t ijm1k = i + ((j - 1) * xsize) + (k * xsize * ysize);
+          std::size_t im1jm1k = i - 1 + ((j - 1) * xsize) + k * (xsize * ysize);
+          std::size_t im1jp1k = i - 1 + ((j + 1) * xsize) + k * (xsize * ysize);
+          std::size_t ip1jm1k = i + 1 + ((j - 1) * xsize) + k * (xsize * ysize);
+          std::size_t ip1jp1k = i + 1 + ((j + 1) * xsize) + k * (xsize * ysize);
+          std::size_t im2jk = (i - 2) + (j * xsize) + k * (xsize * ysize);
+          std::size_t ip2jk = (i + 2) + (j * xsize) + k * (xsize * ysize);
+          std::size_t ijm2k = i + ((j - 2) * xsize) + k * (xsize * ysize);
+          std::size_t ijp2k = i + ((j + 2) * xsize) + k * (xsize * ysize);
+
+          double partial_laplap =
+              // 20*inField[ijk] -
+              -8 * (inField[im1jk] + inField[ip1jk] + inField[ijm1k] +
+                    inField[ijp1k]) +
+              2 * (inField[im1jm1k] + inField[ip1jm1k] + inField[im1jp1k] +
+                   inField[ip1jp1k]) +
+              1 * (inField[im2jk] + inField[ip2jk] + inField[ijm2k] +
+                   inField[ijp2k]);
+
+          // TODO : check if independent
+          outField[ijk] =
+              (1 - 20 * alpha) * inField[ijk] - alpha * partial_laplap;
+        }
+      }
+    }
+    if (iter = numIter - 1) {
+#pragma acc parallel present(inField, outField)                                \
+    loop independent gang worker vector collapse(3)
       for (std::size_t k = 0; k < zMax; ++k) {
         for (std::size_t j = yMin; j < yMax; ++j) {
           for (std::size_t i = xMin; i < xMax; ++i) {
             std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-            std::size_t ip1jk = (i + 1) + (j * xsize) + (k * xsize * ysize);
-            std::size_t im1jk = (i - 1) + (j * xsize) + (k * xsize * ysize);
-            std::size_t ijp1k = i + ((j + 1) * xsize) + (k * xsize * ysize);
-            std::size_t ijm1k = i + ((j - 1) * xsize) + (k * xsize * ysize);
-            std::size_t im1jm1k =
-                i - 1 + ((j - 1) * xsize) + k * (xsize * ysize);
-            std::size_t im1jp1k =
-                i - 1 + ((j + 1) * xsize) + k * (xsize * ysize);
-            std::size_t ip1jm1k =
-                i + 1 + ((j - 1) * xsize) + k * (xsize * ysize);
-            std::size_t ip1jp1k =
-                i + 1 + ((j + 1) * xsize) + k * (xsize * ysize);
-            std::size_t im2jk = (i - 2) + (j * xsize) + k * (xsize * ysize);
-            std::size_t ip2jk = (i + 2) + (j * xsize) + k * (xsize * ysize);
-            std::size_t ijm2k = i + ((j - 2) * xsize) + k * (xsize * ysize);
-            std::size_t ijp2k = i + ((j + 2) * xsize) + k * (xsize * ysize);
-
-            double partial_laplap =
-                // 20*inField[ijk] -
-                -8 * (inField[im1jk] + inField[ip1jk] + inField[ijm1k] +
-                      inField[ijp1k]) +
-                2 * (inField[im1jm1k] + inField[ip1jm1k] + inField[im1jp1k] +
-                     inField[ip1jp1k]) +
-                1 * (inField[im2jk] + inField[ip2jk] + inField[ijm2k] +
-                     inField[ijp2k]);
-
-            // TODO : check if independent
-            inField[ijk] =
-                (1 - 20 * alpha) * inField[ijk] - alpha * partial_laplap;
-          }
-        }
-      }
-      if (iter = numIter - 1) {
-#pragma acc parallel present(inField, outField)                                \
-    loop independent gang worker vector(1024) collapse(3)
-        for (std::size_t k = 0; k < zMax; ++k) {
-          for (std::size_t j = yMin; j < yMax; ++j) {
-            for (std::size_t i = xMin; i < xMax; ++i) {
-              std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-              outField[ijk] = inField[ijk];
-            }
+            inField[ijk] = outField[ijk];
           }
         }
       }
     }
   }
-}
+#pragma acc exit data copyout(outField [0:sizeOf3DField]) delete (             \
+    inField [0:sizeOf3DField])
+} // namespace
 
 void reportTime(const Storage3D<double> &storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";

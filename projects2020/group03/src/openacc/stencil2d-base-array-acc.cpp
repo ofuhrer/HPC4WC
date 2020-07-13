@@ -143,7 +143,7 @@ void apply_diffusion(double *inField, double *outField, double alpha,
       }
       if (iter == numIter - 1) {
 #pragma acc parallel present(inField, outField)                                \
-    loop independent gang worker vector(1024) collapse(3)
+    loop independent gang worker vector collapse(3)
         for (std::size_t k = 0; k < zMax; ++k) {
           for (std::size_t j = yMin; j < yMax; ++j) {
             for (std::size_t i = xMin; i < xMax; ++i) {
