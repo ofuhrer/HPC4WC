@@ -5,6 +5,11 @@
 ! Description: generic_filter-np.nanmean example in fortran
 ! ******************************************************
 
+! To compile with netcdf (pgf90 is way slower than gfortran, though):
+! module load pgi/9.0-1
+! module load netcdf/3.6.3-pgf90
+! pgf90 -I/usr/local/netcdf-3.6.3-pgf90/include baseline_fortran.f90
+
 program main
     
     implicit none
@@ -12,11 +17,11 @@ program main
     integer, parameter :: wp = 4
     integer, parameter :: nhalo = 2
 
-    integer :: nvar, nx, ny, nz
+    integer :: nvar, nx, ny, nz, blockx, blocky, blockz
     integer :: ivar
 
     integer :: start_time, stop_time
-    real :: count_rate
+    integer :: count_rate
 
     real(kind=wp), allocatable :: in_field(:,:,:,:)
     real(kind=wp), allocatable :: out_field(:,:,:,:)
@@ -27,6 +32,9 @@ program main
     nx = 30
     ny = 720
     nz = 1440
+    blockx = 5
+    blocky = 10
+    blockz = 10
 
     CALL setup()
 
@@ -34,7 +42,7 @@ program main
     call system_clock(start_time, count_rate)
 
     do ivar = 1, nvar
-        CALL weightsum(mask(ivar,:,:,:), weights(ivar,:,:,:))
+        CALL weightsum_blocking(mask(ivar,:,:,:), weights(ivar,:,:,:))
         CALL nanmean(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
         write(*,*) 'ivar = ', ivar
     end do
@@ -66,6 +74,39 @@ contains
         end do
 
     end subroutine weightsum
+
+    subroutine weightsum_blocking(mask, weights)
+        ! sum surrounding mask points into the weights
+        implicit none
+
+        ! argument
+        real(kind=wp), intent(in) :: mask(:,:,:)
+        real(kind=wp), intent(inout) :: weights(:,:,:)
+
+        ! local
+        integer :: i, j, k, block_i, block_j, block_k, k_local, j_local, i_local
+
+        do block_k = 1, nz/blockz
+        do block_j = 1, ny/blocky
+        do block_i = 1, nx/blockx
+        do k_local = 1, blockz
+        do j_local = 1, blocky
+        do i_local = 1, blockx
+            k = blockz*block_k + k_local
+            j = blocky*block_j + j_local
+            i = blockx*block_i + i_local
+            if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
+                    continue
+            end if
+            CALL weights_stencil(mask(i-2:i+2,j-2:j+2,k-2:k+2), weights(i,j,k))
+        end do
+        end do
+        end do
+        end do
+        end do
+        end do
+
+    end subroutine weightsum_blocking
 
     subroutine nanmean(in_field, weights, mask, out_field)
         ! loop over all points of a certain var-field and compute generic_filter for each
@@ -125,7 +166,7 @@ contains
         weights = 0.0_wp
 
 
-        write(*,*) 'done'
+        write(*,*) 'done with setup'
 
     end subroutine setup
 
@@ -288,5 +329,17 @@ contains
             w(5,1,1) + w(5,2,1) + w(5,3,1) + w(5,4,1) + w(5,5,1)
 
     end subroutine
+
+!    subroutine writegrid(outfile,xpos,ypos,idata,nx,ny)
+        ! http://home.chpc.utah.edu/~thorne/computing/Examples_netCDF.pdf
+!        USE netcdf
+!        IMPLICIT NONE
+!        real (kind=wp), intent(in):: xpos, nx, ny
+!        real (kind=wp), intent(in):: ypos
+!        real (kind=wp), intent(in) :: idata(:,:,:)
+!        character (len=50), intent(in):: outfile
+!
+!        ! TODO: write this
+!    end subroutine
 
 end program main
