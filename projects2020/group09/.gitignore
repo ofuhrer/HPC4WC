@@ -1,1 +1,4 @@
 *.nc
+.*.swp
+.nfs*
+a.out
