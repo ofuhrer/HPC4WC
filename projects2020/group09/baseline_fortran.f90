@@ -10,6 +10,8 @@
 ! module load netcdf/3.6.3-pgf90
 ! pgf90 -I/usr/local/netcdf-3.6.3-pgf90/include baseline_fortran.f90
 
+!module load perftools-lite
+
 program main
     
     implicit none
@@ -32,9 +34,9 @@ program main
     nx = 30
     ny = 720
     nz = 1440
-    blockx = 5
-    blocky = 10
-    blockz = 10
+    blockx = 30
+    blocky = 600
+    blockz = 600
 
     CALL setup()
 
@@ -42,7 +44,7 @@ program main
     call system_clock(start_time, count_rate)
 
     do ivar = 1, nvar
-        CALL weightsum_blocking(mask(ivar,:,:,:), weights(ivar,:,:,:))
+        CALL weightsum(mask(ivar,:,:,:), weights(ivar,:,:,:))
         CALL nanmean(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
         write(*,*) 'ivar = ', ivar
     end do
@@ -96,7 +98,7 @@ contains
             j = blocky*block_j + j_local
             i = blockx*block_i + i_local
             if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
-                    continue
+               continue
             end if
             CALL weights_stencil(mask(i-2:i+2,j-2:j+2,k-2:k+2), weights(i,j,k))
         end do
@@ -128,9 +130,42 @@ contains
         end do
         end do
         end do
-
-
     end subroutine nanmean
+
+    subroutine nanmean_blocking(in_field, weights, mask, out_field)
+        ! loop over all points of a certain var-field and compute generic_filter for each
+        implicit none
+
+        ! argument
+        real(kind=wp), intent(in) :: in_field(:,:,:)
+        real(kind=wp), intent(in) :: mask(:,:,:)
+        real(kind=wp), intent(in) :: weights(:,:,:)
+        real(kind=wp), intent(inout) :: out_field(:,:,:)
+
+        ! local
+        integer :: i, j, k, block_i, block_j, block_k, k_local, j_local, i_local
+
+        do block_k = 1, nz/blockz
+        do block_j = 1, ny/blocky
+        do block_i = 1, nx/blockx
+        do k_local = 1, blockz
+        do j_local = 1, blocky
+        do i_local = 1, blockx
+            k = blockz*block_k + k_local
+            j = blocky*block_j + j_local
+            i = blockx*block_i + i_local
+            if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
+               cycle
+            end if
+            !write(*,*) i,j,k
+            CALL nanmean_stencil(in_field(i-2:i+2,j-2:j+2,k-2:k+2), mask(i-2:i+2,j-2:j+2,k-2:k+2), weights(i,j,k), out_field(i,j,k))
+        end do
+        end do
+        end do
+        end do
+        end do
+        end do
+    end subroutine nanmean_blocking
 
 
     ! setup everything before work
