@@ -5,6 +5,10 @@
 ! Description: generic_filter-np.nanmean example in fortran
 ! ******************************************************
 
+! To compile with netcdf:
+! module load netcdf
+! gfortran -I /usr/local/netcdf-4.6.1-4.4.4-gnu-7.4.1/include/ -L /usr/local/netcdf-4.6.1-4.4.4-gnu-7.4.1/lib/ -lnetcdf -lnetcdff baseline_fortran.f90
+
 ! To compile with netcdf (pgf90 is way slower than gfortran, though):
 ! module load pgi/9.0-1
 ! module load netcdf/3.6.3-pgf90
@@ -14,6 +18,8 @@
 
 program main
     
+    USE netcdf 
+
     implicit none
 
     integer, parameter :: wp = 4
@@ -30,27 +36,43 @@ program main
     real(kind=wp), allocatable :: weights(:,:,:,:)
     real(kind=wp), allocatable :: mask(:,:,:,:)
 
+    character(len=7) :: outfile
+
     nvar = 3
     nx = 30
-    ny = 720
-    nz = 1440
+    ny = 72
+    nz = 14
     blockx = 30
-    blocky = 600
-    blockz = 600
+    blocky = 50
+    blockz = 10
 
     CALL setup()
+
+    !WRITE(*,*) in_field
+
+    outfile = 'foin.nc'
+    CALL writegrid(outfile,in_field)
+
+    outfile = 'fmas.nc'
+    CALL writegrid(outfile,mask)
 
     ! start timer 
     call system_clock(start_time, count_rate)
 
     do ivar = 1, nvar
-        CALL weightsum(mask(ivar,:,:,:), weights(ivar,:,:,:))
-        CALL nanmean(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
+        CALL weightsum_blocking(mask(ivar,:,:,:), weights(ivar,:,:,:))
+        CALL nanmean_blocking(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
         write(*,*) 'ivar = ', ivar
     end do
-    
+
     ! stop timer
     call system_clock(stop_time)
+    
+    outfile = 'fwei.nc'
+    CALL writegrid(outfile,weights)
+
+    outfile = 'fout.nc'
+    CALL writegrid(outfile,out_field)
 
     write(*,*) 'This function took ', (stop_time - start_time)/count_rate, "seconds"
 
@@ -88,9 +110,9 @@ contains
         ! local
         integer :: i, j, k, block_i, block_j, block_k, k_local, j_local, i_local
 
-        do block_k = 1, nz/blockz
-        do block_j = 1, ny/blocky
-        do block_i = 1, nx/blockx
+        do block_k = 0, nz/blockz+1
+        do block_j = 0, ny/blocky+1
+        do block_i = 0, nx/blockx+1
         do k_local = 1, blockz
         do j_local = 1, blocky
         do i_local = 1, blockx
@@ -98,9 +120,10 @@ contains
             j = blocky*block_j + j_local
             i = blockx*block_i + i_local
             if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
-               continue
+               cycle
             end if
             CALL weights_stencil(mask(i-2:i+2,j-2:j+2,k-2:k+2), weights(i,j,k))
+            !write(*,*) weights(i,j,k)
         end do
         end do
         end do
@@ -145,19 +168,21 @@ contains
         ! local
         integer :: i, j, k, block_i, block_j, block_k, k_local, j_local, i_local
 
-        do block_k = 1, nz/blockz
-        do block_j = 1, ny/blocky
-        do block_i = 1, nx/blockx
+        do block_k = 0, nz/blockz+1 ! for decimals that cut off a block +1
+        do block_j = 0, ny/blocky+1 ! TODO: this could probably be done in a smarter way
+        do block_i = 0, nx/blockx+1 ! but looping over too many should not be very expensive
         do k_local = 1, blockz
         do j_local = 1, blocky
         do i_local = 1, blockx
             k = blockz*block_k + k_local
             j = blocky*block_j + j_local
             i = blockx*block_i + i_local
+            !write(*,*) i,j,k,1+nhalo,nz-nhalo,ny-nhalo,nx-nhalo
             if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
                cycle
             end if
-            !write(*,*) i,j,k
+            !write(*,*) 'b'
+            !write(*,*) weights(i,j,k)
             CALL nanmean_stencil(in_field(i-2:i+2,j-2:j+2,k-2:k+2), mask(i-2:i+2,j-2:j+2,k-2:k+2), weights(i,j,k), out_field(i,j,k))
         end do
         end do
@@ -180,15 +205,19 @@ contains
         !call timer_init()
 
         allocate( in_field(nvar, nx, ny, nz) )
-        in_field = 1.0_wp
+        in_field(:,:,:,:) = 1.0_wp
         allocate( mask(nvar, nx, ny, nz))
-        mask = 0.0_wp
+        mask = 1.0_wp
+        CALL RANDOM_NUMBER(in_field)
         do k = 1, nz
         do j = 1, ny
         do i = 1, nx
         do h = 1, nvar
-            in_field(h, i, j, k) = (h+k)/(i+j+1) ! random filling
-            if (in_field(h,i,j,k) < 0.5) mask(h,i,j,k) = 1.0_wp
+                ! Since fortran does not have nans, we set all values below 0.5 to 0 and treat them as nans here
+                if (in_field(h,i,j,k) < 0.5) then
+                        mask(h,i,j,k) = 0.0_wp
+                        in_field(h,i,j,k) = 0.0_wp
+                end if 
         end do
         end do
         end do
@@ -363,18 +392,62 @@ contains
             w(4,1,1) + w(4,2,1) + w(4,3,1) + w(4,4,1) + w(4,5,1) + &
             w(5,1,1) + w(5,2,1) + w(5,3,1) + w(5,4,1) + w(5,5,1)
 
+            ! Seems correct: WRITE(*,*) outvalue
     end subroutine
 
-!    subroutine writegrid(outfile,xpos,ypos,idata,nx,ny)
+    SUBROUTINE check(iret)
+            IMPLICIT NONE
+            INTEGER(KIND=wp) iret
+            IF (iret .NE. NF90_NOERR) THEN
+                  WRITE(*,*) nf90_strerror(iret)    
+            ENDIF       
+    END SUBROUTINE check
+
+    subroutine writegrid(outfile,idata)
         ! http://home.chpc.utah.edu/~thorne/computing/Examples_netCDF.pdf
-!        USE netcdf
-!        IMPLICIT NONE
-!        real (kind=wp), intent(in):: xpos, nx, ny
-!        real (kind=wp), intent(in):: ypos
-!        real (kind=wp), intent(in) :: idata(:,:,:)
-!        character (len=50), intent(in):: outfile
+        IMPLICIT NONE
+        real (kind=wp), dimension(nx):: xpos
+        real (kind=wp), dimension(ny):: ypos
+        real (kind=wp), dimension(nz):: tpos
+        real (kind=wp), intent(in) :: idata(:,:,:,:)
+        integer(kind=wp), dimension(4) :: dimids
+        character (len=7), intent(in):: outfile
+
+        integer(kind=wp) :: ncid, x_dimid, y_dimid, t_dimid, var_dimid
+        integer(kind=wp) :: x_varid, y_varid, var_varid, t_varid, varid
+
+        ! Dummy for now, TODO: fill these with sensible values
+        xpos(:) = 4
+        ypos(:) = 5
+        tpos(:) = 5
+
+        ! Create the netcdf file
+        CALL check(nf90_create(outfile, NF90_CLOBBER, ncid))
+
+        ! Define the dimensions
+        CALL check(nf90_def_dim(ncid, "lon", nx, x_dimid))
+        CALL check(nf90_def_dim(ncid, "lat", ny, y_dimid))
+        CALL check(nf90_def_dim(ncid, "time", nz, t_dimid))
+        CALL check(nf90_def_dim(ncid, "var", nvar, var_dimid))
+
+        ! Define coordinate variables
+        !CALL check(nf90_def_var(ncid, "lon", NF90_REAL, x_dimid, x_varid))
+        !CALL check(nf90_def_var(ncid, "lat", NF90_REAL, y_dimid, y_varid))
+        !CALL check(nf90_def_var(ncid, "time", NF90_REAL, t_dimid, t_varid))
+        !CALL check(nf90_def_var(ncid, "var", NF90_REAL, var_dimid, var_varid))
+        dimids = (/ var_dimid, x_dimid, y_dimid, t_dimid /) !TODO: is this the right order?
+
+        ! Define variable
+        CALL check(nf90_def_var(ncid, "Data", NF90_FLOAT, dimids, varid))
+        CALL check(nf90_enddef(ncid)) !End Definitions
+
+        ! Write Data
+        !CALL check(nf90_put_var(ncid, x_varid, xpos))
+        !CALL check(nf90_put_var(ncid, y_varid, ypos))
+        !CALL check(nf90_put_var(ncid, t_varid, tpos))
+        CALL check(nf90_put_var(ncid, varid, idata))
+        CALL check(nf90_close(ncid))
 !
-!        ! TODO: write this
-!    end subroutine
+    end subroutine
 
 end program main
