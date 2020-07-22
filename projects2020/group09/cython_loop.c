@@ -1791,9 +1791,18 @@ static const char __pyx_k_numpy[] = "numpy";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_start[] = "start";
+static const char __pyx_k_blocki[] = "blocki";
+static const char __pyx_k_blockj[] = "blockj";
+static const char __pyx_k_blockk[] = "blockk";
+static const char __pyx_k_blockx[] = "blockx";
+static const char __pyx_k_blocky[] = "blocky";
+static const char __pyx_k_blockz[] = "blockz";
 static const char __pyx_k_encode[] = "encode";
 static const char __pyx_k_format[] = "format";
+static const char __pyx_k_iblock[] = "iblock";
 static const char __pyx_k_import[] = "__import__";
+static const char __pyx_k_jblock[] = "jblock";
+static const char __pyx_k_kblock[] = "kblock";
 static const char __pyx_k_name_2[] = "__name__";
 static const char __pyx_k_pickle[] = "pickle";
 static const char __pyx_k_reduce[] = "__reduce__";
@@ -1801,6 +1810,9 @@ static const char __pyx_k_struct[] = "struct";
 static const char __pyx_k_unpack[] = "unpack";
 static const char __pyx_k_update[] = "update";
 static const char __pyx_k_fortran[] = "fortran";
+static const char __pyx_k_i_local[] = "i_local";
+static const char __pyx_k_j_local[] = "j_local";
+static const char __pyx_k_k_local[] = "k_local";
 static const char __pyx_k_memview[] = "memview";
 static const char __pyx_k_Ellipsis[] = "Ellipsis";
 static const char __pyx_k_getstate[] = "__getstate__";
@@ -1809,6 +1821,9 @@ static const char __pyx_k_pyx_type[] = "__pyx_type";
 static const char __pyx_k_setstate[] = "__setstate__";
 static const char __pyx_k_TypeError[] = "TypeError";
 static const char __pyx_k_enumerate[] = "enumerate";
+static const char __pyx_k_iblocklen[] = "iblocklen";
+static const char __pyx_k_jblocklen[] = "jblocklen";
+static const char __pyx_k_kblocklen[] = "kblocklen";
 static const char __pyx_k_pyx_state[] = "__pyx_state";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
 static const char __pyx_k_IndexError[] = "IndexError";
@@ -1834,6 +1849,7 @@ static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
 static const char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
+static const char __pyx_k_stencil_loop_blocking[] = "stencil_loop_blocking";
 static const char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
 static const char __pyx_k_MemoryView_of_r_at_0x_x[] = "<MemoryView of %r at 0x%x>";
 static const char __pyx_k_contiguous_and_indirect[] = "<contiguous and indirect>";
@@ -1883,6 +1899,12 @@ static PyObject *__pyx_n_s_View_MemoryView;
 static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_array;
 static PyObject *__pyx_n_s_base;
+static PyObject *__pyx_n_s_blocki;
+static PyObject *__pyx_n_s_blockj;
+static PyObject *__pyx_n_s_blockk;
+static PyObject *__pyx_n_s_blockx;
+static PyObject *__pyx_n_s_blocky;
+static PyObject *__pyx_n_s_blockz;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
 static PyObject *__pyx_n_s_class;
@@ -1905,12 +1927,21 @@ static PyObject *__pyx_n_u_fortran;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_kp_s_got_differing_extents_in_dimensi;
 static PyObject *__pyx_n_s_i;
+static PyObject *__pyx_n_s_i_local;
+static PyObject *__pyx_n_s_iblock;
+static PyObject *__pyx_n_s_iblocklen;
 static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
 static PyObject *__pyx_n_s_j;
+static PyObject *__pyx_n_s_j_local;
+static PyObject *__pyx_n_s_jblock;
+static PyObject *__pyx_n_s_jblocklen;
 static PyObject *__pyx_n_s_k;
+static PyObject *__pyx_n_s_k_local;
+static PyObject *__pyx_n_s_kblock;
+static PyObject *__pyx_n_s_kblocklen;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_mode;
@@ -1946,6 +1977,7 @@ static PyObject *__pyx_n_s_shape;
 static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_start;
 static PyObject *__pyx_n_s_stencil_loop;
+static PyObject *__pyx_n_s_stencil_loop_blocking;
 static PyObject *__pyx_n_s_step;
 static PyObject *__pyx_n_s_stop;
 static PyObject *__pyx_kp_s_strided_and_direct;
@@ -1959,6 +1991,7 @@ static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
 static PyObject *__pyx_pf_11cython_loop_stencil_loop(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_A); /* proto */
+static PyObject *__pyx_pf_11cython_loop_2stencil_loop_blocking(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_A); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -2029,13 +2062,15 @@ static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__18;
 static PyObject *__pyx_tuple__19;
 static PyObject *__pyx_tuple__21;
-static PyObject *__pyx_tuple__22;
 static PyObject *__pyx_tuple__23;
 static PyObject *__pyx_tuple__24;
 static PyObject *__pyx_tuple__25;
 static PyObject *__pyx_tuple__26;
+static PyObject *__pyx_tuple__27;
+static PyObject *__pyx_tuple__28;
 static PyObject *__pyx_codeobj__20;
-static PyObject *__pyx_codeobj__27;
+static PyObject *__pyx_codeobj__22;
+static PyObject *__pyx_codeobj__29;
 /* Late includes */
 
 /* "cython_loop.pyx":9
@@ -2622,6 +2657,8 @@ static PyObject *__pyx_pf_11cython_loop_stencil_loop(CYTHON_UNUSED PyObject *__p
  *                                A[i,j,k-1]
  * 
  *     return np.array(C)             # <<<<<<<<<<<<<<
+ * 
+ * 
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
@@ -2668,6 +2705,652 @@ static PyObject *__pyx_pf_11cython_loop_stencil_loop(CYTHON_UNUSED PyObject *__p
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
   __Pyx_AddTraceback("cython_loop.stencil_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_A, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_C, 1);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "cython_loop.pyx":39
+ * 
+ * 
+ * def stencil_loop_blocking( float[:,:,:] A):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int i = 0
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_11cython_loop_3stencil_loop_blocking(PyObject *__pyx_self, PyObject *__pyx_arg_A); /*proto*/
+static PyMethodDef __pyx_mdef_11cython_loop_3stencil_loop_blocking = {"stencil_loop_blocking", (PyCFunction)__pyx_pw_11cython_loop_3stencil_loop_blocking, METH_O, 0};
+static PyObject *__pyx_pw_11cython_loop_3stencil_loop_blocking(PyObject *__pyx_self, PyObject *__pyx_arg_A) {
+  CYTHON_UNUSED __Pyx_memviewslice __pyx_v_A = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("stencil_loop_blocking (wrapper)", 0);
+  assert(__pyx_arg_A); {
+    __pyx_v_A = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_float(__pyx_arg_A, PyBUF_WRITABLE); if (unlikely(!__pyx_v_A.memview)) __PYX_ERR(0, 39, __pyx_L3_error)
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("cython_loop.stencil_loop_blocking", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_11cython_loop_2stencil_loop_blocking(__pyx_self, __pyx_v_A);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_11cython_loop_2stencil_loop_blocking(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_A) {
+  int __pyx_v_i;
+  int __pyx_v_j;
+  int __pyx_v_k;
+  CYTHON_UNUSED int __pyx_v_nhalo;
+  int __pyx_v_nx;
+  int __pyx_v_ny;
+  int __pyx_v_nz;
+  int __pyx_v_blockx;
+  int __pyx_v_blocky;
+  int __pyx_v_blockz;
+  int __pyx_v_blocki;
+  int __pyx_v_blockj;
+  int __pyx_v_blockk;
+  int __pyx_v_iblock;
+  int __pyx_v_jblock;
+  int __pyx_v_kblock;
+  int __pyx_v_iblocklen;
+  int __pyx_v_jblocklen;
+  int __pyx_v_kblocklen;
+  __Pyx_memviewslice __pyx_v_C = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_v_i_local;
+  int __pyx_v_j_local;
+  int __pyx_v_k_local;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  __Pyx_memviewslice __pyx_t_6 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_7;
+  int __pyx_t_8;
+  int __pyx_t_9;
+  int __pyx_t_10;
+  int __pyx_t_11;
+  int __pyx_t_12;
+  int __pyx_t_13;
+  int __pyx_t_14;
+  int __pyx_t_15;
+  int __pyx_t_16;
+  int __pyx_t_17;
+  int __pyx_t_18;
+  int __pyx_t_19;
+  int __pyx_t_20;
+  int __pyx_t_21;
+  int __pyx_t_22;
+  int __pyx_t_23;
+  int __pyx_t_24;
+  int __pyx_t_25;
+  Py_ssize_t __pyx_t_26;
+  Py_ssize_t __pyx_t_27;
+  Py_ssize_t __pyx_t_28;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("stencil_loop_blocking", 0);
+
+  /* "cython_loop.pyx":41
+ * def stencil_loop_blocking( float[:,:,:] A):
+ * 
+ *     cdef int i = 0             # <<<<<<<<<<<<<<
+ *     cdef int j = 0
+ *     cdef int k = 0
+ */
+  __pyx_v_i = 0;
+
+  /* "cython_loop.pyx":42
+ * 
+ *     cdef int i = 0
+ *     cdef int j = 0             # <<<<<<<<<<<<<<
+ *     cdef int k = 0
+ * 
+ */
+  __pyx_v_j = 0;
+
+  /* "cython_loop.pyx":43
+ *     cdef int i = 0
+ *     cdef int j = 0
+ *     cdef int k = 0             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int nhalo = 2 # size of array
+ */
+  __pyx_v_k = 0;
+
+  /* "cython_loop.pyx":45
+ *     cdef int k = 0
+ * 
+ *     cdef int nhalo = 2 # size of array             # <<<<<<<<<<<<<<
+ *     cdef int nx = 37
+ *     cdef int ny = 72
+ */
+  __pyx_v_nhalo = 2;
+
+  /* "cython_loop.pyx":46
+ * 
+ *     cdef int nhalo = 2 # size of array
+ *     cdef int nx = 37             # <<<<<<<<<<<<<<
+ *     cdef int ny = 72
+ *     cdef int nz = 144
+ */
+  __pyx_v_nx = 37;
+
+  /* "cython_loop.pyx":47
+ *     cdef int nhalo = 2 # size of array
+ *     cdef int nx = 37
+ *     cdef int ny = 72             # <<<<<<<<<<<<<<
+ *     cdef int nz = 144
+ * 
+ */
+  __pyx_v_ny = 72;
+
+  /* "cython_loop.pyx":48
+ *     cdef int nx = 37
+ *     cdef int ny = 72
+ *     cdef int nz = 144             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int blockx = 3 # regular block sizes
+ */
+  __pyx_v_nz = 0x90;
+
+  /* "cython_loop.pyx":50
+ *     cdef int nz = 144
+ * 
+ *     cdef int blockx = 3 # regular block sizes             # <<<<<<<<<<<<<<
+ *     cdef int blocky = 50
+ *     cdef int blockz = 50
+ */
+  __pyx_v_blockx = 3;
+
+  /* "cython_loop.pyx":51
+ * 
+ *     cdef int blockx = 3 # regular block sizes
+ *     cdef int blocky = 50             # <<<<<<<<<<<<<<
+ *     cdef int blockz = 50
+ * 
+ */
+  __pyx_v_blocky = 50;
+
+  /* "cython_loop.pyx":52
+ *     cdef int blockx = 3 # regular block sizes
+ *     cdef int blocky = 50
+ *     cdef int blockz = 50             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int blocki = nx//blockx+1 # number of blocks in each direction
+ */
+  __pyx_v_blockz = 50;
+
+  /* "cython_loop.pyx":54
+ *     cdef int blockz = 50
+ * 
+ *     cdef int blocki = nx//blockx+1 # number of blocks in each direction             # <<<<<<<<<<<<<<
+ *     cdef int blockj = ny//blocky+1
+ *     cdef int blockk = nz//blockz+1
+ */
+  __pyx_v_blocki = ((__pyx_v_nx / __pyx_v_blockx) + 1);
+
+  /* "cython_loop.pyx":55
+ * 
+ *     cdef int blocki = nx//blockx+1 # number of blocks in each direction
+ *     cdef int blockj = ny//blocky+1             # <<<<<<<<<<<<<<
+ *     cdef int blockk = nz//blockz+1
+ * 
+ */
+  __pyx_v_blockj = ((__pyx_v_ny / __pyx_v_blocky) + 1);
+
+  /* "cython_loop.pyx":56
+ *     cdef int blocki = nx//blockx+1 # number of blocks in each direction
+ *     cdef int blockj = ny//blocky+1
+ *     cdef int blockk = nz//blockz+1             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int iblock = 0
+ */
+  __pyx_v_blockk = ((__pyx_v_nz / __pyx_v_blockz) + 1);
+
+  /* "cython_loop.pyx":58
+ *     cdef int blockk = nz//blockz+1
+ * 
+ *     cdef int iblock = 0             # <<<<<<<<<<<<<<
+ *     cdef int jblock = 0
+ *     cdef int kblock = 0
+ */
+  __pyx_v_iblock = 0;
+
+  /* "cython_loop.pyx":59
+ * 
+ *     cdef int iblock = 0
+ *     cdef int jblock = 0             # <<<<<<<<<<<<<<
+ *     cdef int kblock = 0
+ * 
+ */
+  __pyx_v_jblock = 0;
+
+  /* "cython_loop.pyx":60
+ *     cdef int iblock = 0
+ *     cdef int jblock = 0
+ *     cdef int kblock = 0             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int iblocklen = 0
+ */
+  __pyx_v_kblock = 0;
+
+  /* "cython_loop.pyx":62
+ *     cdef int kblock = 0
+ * 
+ *     cdef int iblocklen = 0             # <<<<<<<<<<<<<<
+ *     cdef int jblocklen = 0
+ *     cdef int kblocklen = 0
+ */
+  __pyx_v_iblocklen = 0;
+
+  /* "cython_loop.pyx":63
+ * 
+ *     cdef int iblocklen = 0
+ *     cdef int jblocklen = 0             # <<<<<<<<<<<<<<
+ *     cdef int kblocklen = 0
+ * 
+ */
+  __pyx_v_jblocklen = 0;
+
+  /* "cython_loop.pyx":64
+ *     cdef int iblocklen = 0
+ *     cdef int jblocklen = 0
+ *     cdef int kblocklen = 0             # <<<<<<<<<<<<<<
+ * 
+ *     #cdef list blocksizes_x
+ */
+  __pyx_v_kblocklen = 0;
+
+  /* "cython_loop.pyx":70
+ *     #cdef list blocksizes_z
+ * 
+ *     cdef double[:,:,:] C = np.empty((nx,ny,nz), dtype=float)             # <<<<<<<<<<<<<<
+ * 
+ *     with nogil:
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_nx); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_ny); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_nz); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_5, 2, __pyx_t_4);
+  __pyx_t_1 = 0;
+  __pyx_t_3 = 0;
+  __pyx_t_4 = 0;
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5);
+  __pyx_t_5 = 0;
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, ((PyObject *)(&PyFloat_Type))) < 0) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_v_C = __pyx_t_6;
+  __pyx_t_6.memview = NULL;
+  __pyx_t_6.data = NULL;
+
+  /* "cython_loop.pyx":72
+ *     cdef double[:,:,:] C = np.empty((nx,ny,nz), dtype=float)
+ * 
+ *     with nogil:             # <<<<<<<<<<<<<<
+ * 
+ *         for iblock in range(blocki):
+ */
+  {
+      #ifdef WITH_THREAD
+      PyThreadState *_save;
+      Py_UNBLOCK_THREADS
+      __Pyx_FastGIL_Remember();
+      #endif
+      /*try:*/ {
+
+        /* "cython_loop.pyx":74
+ *     with nogil:
+ * 
+ *         for iblock in range(blocki):             # <<<<<<<<<<<<<<
+ *             if iblock == blocki-1: # we are in the last block
+ *                 iblocklen = nx%blockx
+ */
+        __pyx_t_7 = __pyx_v_blocki;
+        __pyx_t_8 = __pyx_t_7;
+        for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+          __pyx_v_iblock = __pyx_t_9;
+
+          /* "cython_loop.pyx":75
+ * 
+ *         for iblock in range(blocki):
+ *             if iblock == blocki-1: # we are in the last block             # <<<<<<<<<<<<<<
+ *                 iblocklen = nx%blockx
+ *             else: # we are not in the last block
+ */
+          __pyx_t_10 = ((__pyx_v_iblock == (__pyx_v_blocki - 1)) != 0);
+          if (__pyx_t_10) {
+
+            /* "cython_loop.pyx":76
+ *         for iblock in range(blocki):
+ *             if iblock == blocki-1: # we are in the last block
+ *                 iblocklen = nx%blockx             # <<<<<<<<<<<<<<
+ *             else: # we are not in the last block
+ *                 iblocklen = blockx
+ */
+            __pyx_v_iblocklen = (__pyx_v_nx % __pyx_v_blockx);
+
+            /* "cython_loop.pyx":75
+ * 
+ *         for iblock in range(blocki):
+ *             if iblock == blocki-1: # we are in the last block             # <<<<<<<<<<<<<<
+ *                 iblocklen = nx%blockx
+ *             else: # we are not in the last block
+ */
+            goto __pyx_L8;
+          }
+
+          /* "cython_loop.pyx":78
+ *                 iblocklen = nx%blockx
+ *             else: # we are not in the last block
+ *                 iblocklen = blockx             # <<<<<<<<<<<<<<
+ *             for jblock in range(blockj):
+ *                 if jblock == blockj-1: # we are in the last block
+ */
+          /*else*/ {
+            __pyx_v_iblocklen = __pyx_v_blockx;
+          }
+          __pyx_L8:;
+
+          /* "cython_loop.pyx":79
+ *             else: # we are not in the last block
+ *                 iblocklen = blockx
+ *             for jblock in range(blockj):             # <<<<<<<<<<<<<<
+ *                 if jblock == blockj-1: # we are in the last block
+ *                     jblocklen = ny%blocky
+ */
+          __pyx_t_11 = __pyx_v_blockj;
+          __pyx_t_12 = __pyx_t_11;
+          for (__pyx_t_13 = 0; __pyx_t_13 < __pyx_t_12; __pyx_t_13+=1) {
+            __pyx_v_jblock = __pyx_t_13;
+
+            /* "cython_loop.pyx":80
+ *                 iblocklen = blockx
+ *             for jblock in range(blockj):
+ *                 if jblock == blockj-1: # we are in the last block             # <<<<<<<<<<<<<<
+ *                     jblocklen = ny%blocky
+ *                 else: # we are not in the last block
+ */
+            __pyx_t_10 = ((__pyx_v_jblock == (__pyx_v_blockj - 1)) != 0);
+            if (__pyx_t_10) {
+
+              /* "cython_loop.pyx":81
+ *             for jblock in range(blockj):
+ *                 if jblock == blockj-1: # we are in the last block
+ *                     jblocklen = ny%blocky             # <<<<<<<<<<<<<<
+ *                 else: # we are not in the last block
+ *                     jblocklen = blocky
+ */
+              __pyx_v_jblocklen = (__pyx_v_ny % __pyx_v_blocky);
+
+              /* "cython_loop.pyx":80
+ *                 iblocklen = blockx
+ *             for jblock in range(blockj):
+ *                 if jblock == blockj-1: # we are in the last block             # <<<<<<<<<<<<<<
+ *                     jblocklen = ny%blocky
+ *                 else: # we are not in the last block
+ */
+              goto __pyx_L11;
+            }
+
+            /* "cython_loop.pyx":83
+ *                     jblocklen = ny%blocky
+ *                 else: # we are not in the last block
+ *                     jblocklen = blocky             # <<<<<<<<<<<<<<
+ *                 for kblock in range(blockk):
+ *                     if kblock == blockk-1: # we are in the last block
+ */
+            /*else*/ {
+              __pyx_v_jblocklen = __pyx_v_blocky;
+            }
+            __pyx_L11:;
+
+            /* "cython_loop.pyx":84
+ *                 else: # we are not in the last block
+ *                     jblocklen = blocky
+ *                 for kblock in range(blockk):             # <<<<<<<<<<<<<<
+ *                     if kblock == blockk-1: # we are in the last block
+ *                         kblocklen = nz%blockz
+ */
+            __pyx_t_14 = __pyx_v_blockk;
+            __pyx_t_15 = __pyx_t_14;
+            for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
+              __pyx_v_kblock = __pyx_t_16;
+
+              /* "cython_loop.pyx":85
+ *                     jblocklen = blocky
+ *                 for kblock in range(blockk):
+ *                     if kblock == blockk-1: # we are in the last block             # <<<<<<<<<<<<<<
+ *                         kblocklen = nz%blockz
+ *                     else: # we are not in the last block
+ */
+              __pyx_t_10 = ((__pyx_v_kblock == (__pyx_v_blockk - 1)) != 0);
+              if (__pyx_t_10) {
+
+                /* "cython_loop.pyx":86
+ *                 for kblock in range(blockk):
+ *                     if kblock == blockk-1: # we are in the last block
+ *                         kblocklen = nz%blockz             # <<<<<<<<<<<<<<
+ *                     else: # we are not in the last block
+ *                         kblocklen = blockz
+ */
+                __pyx_v_kblocklen = (__pyx_v_nz % __pyx_v_blockz);
+
+                /* "cython_loop.pyx":85
+ *                     jblocklen = blocky
+ *                 for kblock in range(blockk):
+ *                     if kblock == blockk-1: # we are in the last block             # <<<<<<<<<<<<<<
+ *                         kblocklen = nz%blockz
+ *                     else: # we are not in the last block
+ */
+                goto __pyx_L14;
+              }
+
+              /* "cython_loop.pyx":88
+ *                         kblocklen = nz%blockz
+ *                     else: # we are not in the last block
+ *                         kblocklen = blockz             # <<<<<<<<<<<<<<
+ *                     for i_local in range(iblocklen):
+ *                         for j_local in range(jblocklen):
+ */
+              /*else*/ {
+                __pyx_v_kblocklen = __pyx_v_blockz;
+              }
+              __pyx_L14:;
+
+              /* "cython_loop.pyx":89
+ *                     else: # we are not in the last block
+ *                         kblocklen = blockz
+ *                     for i_local in range(iblocklen):             # <<<<<<<<<<<<<<
+ *                         for j_local in range(jblocklen):
+ *                             for k_local in range(kblocklen):
+ */
+              __pyx_t_17 = __pyx_v_iblocklen;
+              __pyx_t_18 = __pyx_t_17;
+              for (__pyx_t_19 = 0; __pyx_t_19 < __pyx_t_18; __pyx_t_19+=1) {
+                __pyx_v_i_local = __pyx_t_19;
+
+                /* "cython_loop.pyx":90
+ *                         kblocklen = blockz
+ *                     for i_local in range(iblocklen):
+ *                         for j_local in range(jblocklen):             # <<<<<<<<<<<<<<
+ *                             for k_local in range(kblocklen):
+ *                                 i = iblock*blockx + i_local
+ */
+                __pyx_t_20 = __pyx_v_jblocklen;
+                __pyx_t_21 = __pyx_t_20;
+                for (__pyx_t_22 = 0; __pyx_t_22 < __pyx_t_21; __pyx_t_22+=1) {
+                  __pyx_v_j_local = __pyx_t_22;
+
+                  /* "cython_loop.pyx":91
+ *                     for i_local in range(iblocklen):
+ *                         for j_local in range(jblocklen):
+ *                             for k_local in range(kblocklen):             # <<<<<<<<<<<<<<
+ *                                 i = iblock*blockx + i_local
+ *                                 j = jblock*blocky + j_local
+ */
+                  __pyx_t_23 = __pyx_v_kblocklen;
+                  __pyx_t_24 = __pyx_t_23;
+                  for (__pyx_t_25 = 0; __pyx_t_25 < __pyx_t_24; __pyx_t_25+=1) {
+                    __pyx_v_k_local = __pyx_t_25;
+
+                    /* "cython_loop.pyx":92
+ *                         for j_local in range(jblocklen):
+ *                             for k_local in range(kblocklen):
+ *                                 i = iblock*blockx + i_local             # <<<<<<<<<<<<<<
+ *                                 j = jblock*blocky + j_local
+ *                                 k = kblock*blockz + k_local
+ */
+                    __pyx_v_i = ((__pyx_v_iblock * __pyx_v_blockx) + __pyx_v_i_local);
+
+                    /* "cython_loop.pyx":93
+ *                             for k_local in range(kblocklen):
+ *                                 i = iblock*blockx + i_local
+ *                                 j = jblock*blocky + j_local             # <<<<<<<<<<<<<<
+ *                                 k = kblock*blockz + k_local
+ *                                 C[i,j,k] = 1
+ */
+                    __pyx_v_j = ((__pyx_v_jblock * __pyx_v_blocky) + __pyx_v_j_local);
+
+                    /* "cython_loop.pyx":94
+ *                                 i = iblock*blockx + i_local
+ *                                 j = jblock*blocky + j_local
+ *                                 k = kblock*blockz + k_local             # <<<<<<<<<<<<<<
+ *                                 C[i,j,k] = 1
+ *     return np.array(C)
+ */
+                    __pyx_v_k = ((__pyx_v_kblock * __pyx_v_blockz) + __pyx_v_k_local);
+
+                    /* "cython_loop.pyx":95
+ *                                 j = jblock*blocky + j_local
+ *                                 k = kblock*blockz + k_local
+ *                                 C[i,j,k] = 1             # <<<<<<<<<<<<<<
+ *     return np.array(C)
+ */
+                    __pyx_t_26 = __pyx_v_i;
+                    __pyx_t_27 = __pyx_v_j;
+                    __pyx_t_28 = __pyx_v_k;
+                    *((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_C.data + __pyx_t_26 * __pyx_v_C.strides[0]) ) + __pyx_t_27 * __pyx_v_C.strides[1]) ) + __pyx_t_28 * __pyx_v_C.strides[2]) )) = 1.0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      /* "cython_loop.pyx":72
+ *     cdef double[:,:,:] C = np.empty((nx,ny,nz), dtype=float)
+ * 
+ *     with nogil:             # <<<<<<<<<<<<<<
+ * 
+ *         for iblock in range(blocki):
+ */
+      /*finally:*/ {
+        /*normal exit:*/{
+          #ifdef WITH_THREAD
+          __Pyx_FastGIL_Forget();
+          Py_BLOCK_THREADS
+          #endif
+          goto __pyx_L5;
+        }
+        __pyx_L5:;
+      }
+  }
+
+  /* "cython_loop.pyx":96
+ *                                 k = kblock*blockz + k_local
+ *                                 C[i,j,k] = 1
+ *     return np.array(C)             # <<<<<<<<<<<<<<
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 96, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 96, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_C, 3, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 96, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_2 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_4);
+    if (likely(__pyx_t_2)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_4, function);
+    }
+  }
+  __pyx_t_3 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_2, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 96, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
+  goto __pyx_L0;
+
+  /* "cython_loop.pyx":39
+ * 
+ * 
+ * def stencil_loop_blocking( float[:,:,:] A):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int i = 0
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
+  __Pyx_AddTraceback("cython_loop.stencil_loop_blocking", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_A, 1);
@@ -16484,6 +17167,12 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_array, __pyx_k_array, sizeof(__pyx_k_array), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
+  {&__pyx_n_s_blocki, __pyx_k_blocki, sizeof(__pyx_k_blocki), 0, 0, 1, 1},
+  {&__pyx_n_s_blockj, __pyx_k_blockj, sizeof(__pyx_k_blockj), 0, 0, 1, 1},
+  {&__pyx_n_s_blockk, __pyx_k_blockk, sizeof(__pyx_k_blockk), 0, 0, 1, 1},
+  {&__pyx_n_s_blockx, __pyx_k_blockx, sizeof(__pyx_k_blockx), 0, 0, 1, 1},
+  {&__pyx_n_s_blocky, __pyx_k_blocky, sizeof(__pyx_k_blocky), 0, 0, 1, 1},
+  {&__pyx_n_s_blockz, __pyx_k_blockz, sizeof(__pyx_k_blockz), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},
   {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
@@ -16506,12 +17195,21 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_kp_s_got_differing_extents_in_dimensi, __pyx_k_got_differing_extents_in_dimensi, sizeof(__pyx_k_got_differing_extents_in_dimensi), 0, 0, 1, 0},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
+  {&__pyx_n_s_i_local, __pyx_k_i_local, sizeof(__pyx_k_i_local), 0, 0, 1, 1},
+  {&__pyx_n_s_iblock, __pyx_k_iblock, sizeof(__pyx_k_iblock), 0, 0, 1, 1},
+  {&__pyx_n_s_iblocklen, __pyx_k_iblocklen, sizeof(__pyx_k_iblocklen), 0, 0, 1, 1},
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
   {&__pyx_n_s_j, __pyx_k_j, sizeof(__pyx_k_j), 0, 0, 1, 1},
+  {&__pyx_n_s_j_local, __pyx_k_j_local, sizeof(__pyx_k_j_local), 0, 0, 1, 1},
+  {&__pyx_n_s_jblock, __pyx_k_jblock, sizeof(__pyx_k_jblock), 0, 0, 1, 1},
+  {&__pyx_n_s_jblocklen, __pyx_k_jblocklen, sizeof(__pyx_k_jblocklen), 0, 0, 1, 1},
   {&__pyx_n_s_k, __pyx_k_k, sizeof(__pyx_k_k), 0, 0, 1, 1},
+  {&__pyx_n_s_k_local, __pyx_k_k_local, sizeof(__pyx_k_k_local), 0, 0, 1, 1},
+  {&__pyx_n_s_kblock, __pyx_k_kblock, sizeof(__pyx_k_kblock), 0, 0, 1, 1},
+  {&__pyx_n_s_kblocklen, __pyx_k_kblocklen, sizeof(__pyx_k_kblocklen), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
@@ -16547,6 +17245,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
   {&__pyx_n_s_stencil_loop, __pyx_k_stencil_loop, sizeof(__pyx_k_stencil_loop), 0, 0, 1, 1},
+  {&__pyx_n_s_stencil_loop_blocking, __pyx_k_stencil_loop_blocking, sizeof(__pyx_k_stencil_loop_blocking), 0, 0, 1, 1},
   {&__pyx_n_s_step, __pyx_k_step, sizeof(__pyx_k_step), 0, 0, 1, 1},
   {&__pyx_n_s_stop, __pyx_k_stop, sizeof(__pyx_k_stop), 0, 0, 1, 1},
   {&__pyx_kp_s_strided_and_direct, __pyx_k_strided_and_direct, sizeof(__pyx_k_strided_and_direct), 0, 0, 1, 0},
@@ -16783,6 +17482,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__19);
   __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(1, 0, 10, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cython_loop_pyx, __pyx_n_s_stencil_loop, 9, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 9, __pyx_L1_error)
 
+  /* "cython_loop.pyx":39
+ * 
+ * 
+ * def stencil_loop_blocking( float[:,:,:] A):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int i = 0
+ */
+  __pyx_tuple__21 = PyTuple_Pack(25, __pyx_n_s_A, __pyx_n_s_A, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_k, __pyx_n_s_nhalo, __pyx_n_s_nx, __pyx_n_s_ny, __pyx_n_s_nz, __pyx_n_s_blockx, __pyx_n_s_blocky, __pyx_n_s_blockz, __pyx_n_s_blocki, __pyx_n_s_blockj, __pyx_n_s_blockk, __pyx_n_s_iblock, __pyx_n_s_jblock, __pyx_n_s_kblock, __pyx_n_s_iblocklen, __pyx_n_s_jblocklen, __pyx_n_s_kblocklen, __pyx_n_s_C, __pyx_n_s_i_local, __pyx_n_s_j_local, __pyx_n_s_k_local); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__21);
+  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(1, 0, 25, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cython_loop_pyx, __pyx_n_s_stencil_loop_blocking, 39, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 39, __pyx_L1_error)
+
   /* "View.MemoryView":286
  *         return self.name
  * 
@@ -16790,9 +17501,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 286, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(1, 286, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__23);
+  __Pyx_GIVEREF(__pyx_tuple__23);
 
   /* "View.MemoryView":287
  * 
@@ -16801,9 +17512,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 287, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__22);
-  __Pyx_GIVEREF(__pyx_tuple__22);
+  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__24);
+  __Pyx_GIVEREF(__pyx_tuple__24);
 
   /* "View.MemoryView":288
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -16812,9 +17523,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(1, 288, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__23);
-  __Pyx_GIVEREF(__pyx_tuple__23);
+  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
 
   /* "View.MemoryView":291
  * 
@@ -16823,9 +17534,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(1, 291, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__24);
-  __Pyx_GIVEREF(__pyx_tuple__24);
+  __pyx_tuple__26 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(1, 291, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__26);
+  __Pyx_GIVEREF(__pyx_tuple__26);
 
   /* "View.MemoryView":292
  * 
@@ -16834,19 +17545,19 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(1, 292, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__25);
-  __Pyx_GIVEREF(__pyx_tuple__25);
+  __pyx_tuple__27 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(1, 292, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__27);
+  __Pyx_GIVEREF(__pyx_tuple__27);
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Enum(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_tuple__26 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__26);
-  __Pyx_GIVEREF(__pyx_tuple__26);
-  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_tuple__28 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__28);
+  __Pyx_GIVEREF(__pyx_tuple__28);
+  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -17218,6 +17929,18 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_stencil_loop, __pyx_t_1) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
+  /* "cython_loop.pyx":39
+ * 
+ * 
+ * def stencil_loop_blocking( float[:,:,:] A):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int i = 0
+ */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_11cython_loop_3stencil_loop_blocking, NULL, __pyx_n_s_cython_loop); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_stencil_loop_blocking, __pyx_t_1) < 0) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
   /* "cython_loop.pyx":1
  * # cython: cdivision=True             # <<<<<<<<<<<<<<
  * # cython: boundscheck=False
@@ -17248,7 +17971,7 @@ if (!__Pyx_RefNanny) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 286, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 286, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(generic);
   __Pyx_DECREF_SET(generic, __pyx_t_1);
@@ -17262,7 +17985,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__24, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(strided);
   __Pyx_DECREF_SET(strided, __pyx_t_1);
@@ -17276,7 +17999,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__25, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect);
   __Pyx_DECREF_SET(indirect, __pyx_t_1);
@@ -17290,7 +18013,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__24, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 291, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__26, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 291, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(contiguous);
   __Pyx_DECREF_SET(contiguous, __pyx_t_1);
@@ -17304,7 +18027,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__25, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 292, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__27, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect_contiguous);
   __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_1);
