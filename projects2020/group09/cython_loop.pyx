@@ -92,5 +92,13 @@ def stencil_loop_blocking( float[:,:,:] A):
                                 i = iblock*blockx + i_local
                                 j = jblock*blocky + j_local
                                 k = kblock*blockz + k_local
-                                C[i,j,k] = 1
+                                C[i,j,k] = A[i-1,j,k] + A[i+1,j,k] + A[i,j-1,k] + A[i,j+1,k] + \
+                                           A[i-1,j-1,k] + A[i+1,j+1,k] + A[i-1,j+1,k] + A[i+1,j-1,k] + \
+                                           A[i,j,k] + \
+                                           A[i-1,j,k+1] + A[i+1,j,k+1] + A[i,j-1,k+1] + A[i,j+1,k+1] + \
+                                           A[i-1,j-1,k+1] + A[i+1,j+1,k+1] + A[i-1,j+1,k+1] + A[i+1,j-1,k+1] + \
+                                           A[i,j,k+1] + \
+                                           A[i-1,j,k-1] + A[i+1,j,k-1] + A[i,j-1,k-1] + A[i,j+1,k-1] + \
+                                           A[i-1,j-1,k-1] + A[i+1,j+1,k-1] + A[i-1,j+1,k-1] + A[i+1,j-1,k-1] + \
+                                           A[i,j,k-1]
     return np.array(C)

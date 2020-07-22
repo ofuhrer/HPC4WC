@@ -141,9 +141,6 @@ blockk = nz//blockz+1
 blocksizes_x = [blockx] * (nx//blockx) + [nx%blockx]
 blocksizes_y = [blocky] * (ny//blocky) + [ny%blocky]
 blocksizes_z = [blockz] * (nz//blockz) + [nz%blockz]
-print(blocksizes_x)
-print(blocksizes_y)
-print(blocksizes_z)
 
 A = np.zeros((nx,ny,nz))
 for iblock, iblocklen in enumerate(blocksizes_x):
@@ -157,7 +154,6 @@ for iblock, iblocklen in enumerate(blocksizes_x):
                         k = kblock*blockz + k_local
                         A[i,j,k] = 1
 
-print(A.size, A.sum())
 A = np.zeros((nx,ny,nz))
 for iblock in range(blocki):
     if iblock == blocki-1: # we are in the last block
@@ -182,7 +178,6 @@ for iblock in range(blocki):
                         j = jblock*blocky + j_local
                         k = kblock*blockz + k_local
                         A[i,j,k] = 1
-print(A.size, A.sum())
 #data = data.fillna(tmp)
 # save result as "ground truth" for testing other approaches
 #data.to_netcdf('baseline_result.nc')
