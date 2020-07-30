@@ -1,8 +1,8 @@
 """
-Example for workflow for gapfilling remote sensing data from diverse sources
-
-    @author: verena bessenbacher
-    @date: 12 06 2020
+Test for the fortran script for gapfilling remote sensing data from diverse sources
+! Attention: this test is not working, but baseline_fortran_check.py is, so I didn't continue with this one
+    @author: Ulrike Proske
+    @date: 17 07 2020
 """
 
 import numpy as np
@@ -11,7 +11,8 @@ from datetime import datetime
 import xarray as xr
 from scipy.ndimage.filters import generic_filter
 
-frac_missing = 0.42
+# absolute tolerance for the isclose validation:
+abstol = 0.05
 filepath = './foin.nc'
 
 # create example array
@@ -40,8 +41,8 @@ for i in range(0,np.shape(tmp)[0]):
 import IPython; IPython.embed()
 print(tmp.shape)
 
-vali = np.isclose(result[2:-2,2:-2,2:-2], tmp[2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'validated: {vali}')
+vali = np.isclose(result[2:-2,2:-2,2:-2], tmp[2:-2,2:-2,2:-2], atol=abstol, equal_nan=True).all()
+print(f'validated: {vali}, absolute tolerance: {abstol}')
 
 """
 # numba njit

@@ -9,13 +9,6 @@
 ! module load netcdf
 ! gfortran -I /usr/local/netcdf-4.6.1-4.4.4-gnu-7.4.1/include/ -L /usr/local/netcdf-4.6.1-4.4.4-gnu-7.4.1/lib/ -lnetcdf -lnetcdff baseline_fortran.f90
 
-! To compile with netcdf (pgf90 is way slower than gfortran, though):
-! module load pgi/9.0-1
-! module load netcdf/3.6.3-pgf90
-! pgf90 -I/usr/local/netcdf-3.6.3-pgf90/include baseline_fortran.f90
-
-!module load perftools-lite
-
 program main
     
     USE netcdf 
@@ -37,6 +30,8 @@ program main
     real(kind=wp), allocatable :: mask(:,:,:,:)
 
     character(len=7) :: outfile
+
+    integer, parameter :: lblocking = 0 ! 1; blocking with blocks as specified below, 0: no blocking
 
     nvar = 3
     nx = 30
@@ -60,8 +55,13 @@ program main
     call system_clock(start_time, count_rate)
 
     do ivar = 1, nvar
-        CALL weightsum_blocking(mask(ivar,:,:,:), weights(ivar,:,:,:))
-        CALL nanmean_blocking(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
+        if (lblocking == 1) then
+            CALL weightsum_blocking(mask(ivar,:,:,:), weights(ivar,:,:,:))
+            CALL nanmean_blocking(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
+        else
+            CALL weightsum(mask(ivar,:,:,:), weights(ivar,:,:,:))
+            CALL nanmean(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
+        end if
         write(*,*) 'ivar = ', ivar
     end do
 
@@ -249,6 +249,7 @@ contains
             v(3,2,3) * w(3,2,3) + v(3,4,3) * w(3,4,3) + &
             v(2,2,3) * w(2,2,3) + v(4,4,3) * w(4,4,3) + &
             v(2,4,3) * w(2,4,3) + v(4,2,3) * w(4,2,3) + &
+            v(3,3,3) * w(3,3,3) + & ! including middle point itself
 
             v(2,3,4) * w(2,3,4) + v(4,3,4) * w(4,3,4) +  &! 2d slice before incl middle
             v(3,2,4) * w(3,2,4) + v(3,4,4) * w(3,4,4) + &
@@ -271,7 +272,7 @@ contains
             v(3,1,3) * w(3,1,3) + v(3,5,3) * w(3,5,3) +  &! middle 2d slice 2 points u&d
             v(2,1,3) * w(2,1,3) + v(2,5,3) * w(2,5,3) + &
             v(4,1,3) * w(4,1,3) + v(4,5,3) * w(4,5,3) + &
-        ! TODO: maybe there's something missing here? But also missing in Verena's version
+            ! This is shorter, because the corners are already included in the block above
 
             v(1,3,4) * w(1,3,4) + v(5,3,4) * w(5,3,4) +  &! 2d slice before 2 points l&r
             v(1,2,4) * w(1,2,4) + v(5,2,4) * w(5,2,4) + &
@@ -292,6 +293,8 @@ contains
             v(3,1,2) * w(3,1,2) + v(3,5,2) * w(3,5,2) +  &! 2d slice after 2 points u&d
             v(2,1,2) * w(2,1,2) + v(2,5,2) * w(2,5,2) + &
             v(4,1,2) * w(4,1,2) + v(4,5,2) * w(4,5,2) + &
+
+            ! Up to here is all points from (:,:,(2,3,4))
 
             v(1,1,1) * w(1,1,1) +  &
             v(1,2,1) * w(1,2,1) + &
@@ -323,35 +326,35 @@ contains
             v(5,4,1) * w(5,4,1) + &
             v(5,5,1) * w(5,5,1) + &
 
-            v(1,1,2) * w(1,1,2) + &
-            v(1,2,2) * w(1,2,2) + &
-            v(1,3,2) * w(1,3,2) + &
-            v(1,4,2) * w(1,4,2) + &
-            v(1,5,2) * w(1,5,2) + &
+            v(1,1,5) * w(1,1,5) + &
+            v(1,2,5) * w(1,2,5) + &
+            v(1,3,5) * w(1,3,5) + &
+            v(1,4,5) * w(1,4,5) + &
+            v(1,5,5) * w(1,5,5) + &
 
-            v(2,1,2) * w(2,1,2) + &
-            v(2,2,2) * w(2,2,2) + &
-            v(2,3,2) * w(2,3,2) + &
-            v(2,4,2) * w(2,4,2) + &
-            v(2,5,2) * w(2,5,2) + &
+            v(2,1,5) * w(2,1,5) + &
+            v(2,2,5) * w(2,2,5) + &
+            v(2,3,5) * w(2,3,5) + &
+            v(2,4,5) * w(2,4,5) + &
+            v(2,5,5) * w(2,5,5) + &
 
-            v(3,1,2) * w(3,1,2) + &
-            v(3,2,2) * w(3,2,2) + &
-            v(3,3,2) * w(3,3,2) + &
-            v(3,4,2) * w(3,4,2) + &
-            v(3,5,2) * w(3,5,2) + &
+            v(3,1,5) * w(3,1,5) + &
+            v(3,2,5) * w(3,2,5) + &
+            v(3,3,5) * w(3,3,5) + &
+            v(3,4,5) * w(3,4,5) + &
+            v(3,5,5) * w(3,5,5) + &
 
-            v(4,1,2) * w(4,1,2) + &
-            v(4,2,2) * w(4,2,2) + &
-            v(4,3,2) * w(4,3,2) + &
-            v(4,4,2) * w(4,4,2) + &
-            v(4,5,2) * w(4,5,2) + &
+            v(4,1,5) * w(4,1,5) + &
+            v(4,2,5) * w(4,2,5) + &
+            v(4,3,5) * w(4,3,5) + &
+            v(4,4,5) * w(4,4,5) + &
+            v(4,5,5) * w(4,5,5) + &
 
-            v(5,1,2) * w(5,1,2) + &
-            v(5,2,2) * w(5,2,2) + &
-            v(5,3,2) * w(5,3,2) + &
-            v(5,4,2) * w(5,4,2) + &
-            v(5,5,2) * w(5,5,2) ) / max(wvalue, 1.0_wp)
+            v(5,1,5) * w(5,1,5) + &
+            v(5,2,5) * w(5,2,5) + &
+            v(5,3,5) * w(5,3,5) + &
+            v(5,4,5) * w(5,4,5) + &
+            v(5,5,5) * w(5,5,5) ) / max(wvalue, 1.0_wp)
     end subroutine
 
     subroutine weights_stencil(w, outvalue)
@@ -376,7 +379,7 @@ contains
 
             w(1,1,3) + w(1,2,3) + w(1,3,3) + w(1,4,3) + w(1,5,3) + &
             w(2,1,3) + w(2,2,3) + w(2,3,3) + w(2,4,3) + w(2,5,3) + &
-            w(3,1,3) + w(3,2,3) + w(3,4,3) + w(3,5,3) + & ! w/o point itself!
+            w(3,1,3) + w(3,2,3) + w(3,4,3) + w(3,5,3) + w(3,3,3) + & ! w point itself!
             w(4,1,3) + w(4,2,3) + w(4,3,3) + w(4,4,3) + w(4,5,3) + &
             w(5,1,3) + w(5,2,3) + w(5,3,3) + w(5,4,3) + w(5,5,3) + &
 

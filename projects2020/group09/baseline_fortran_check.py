@@ -1,8 +1,9 @@
 """
-Example for workflow for gapfilling remote sensing data from diverse sources
+Test for the fortran script for gapfilling remote sensing data from diverse sources
+This test is slow, but working (I only use it for small example fields).
 
-    @author: verena bessenbacher
-    @date: 12 06 2020
+    @author: Ulrike Proske
+    @date: 17 07 2020
 """
 
 import numpy as np
@@ -11,7 +12,8 @@ from datetime import datetime
 import xarray as xr
 from scipy.ndimage.filters import generic_filter
 
-frac_missing = 0.42
+# absolute tolerance for the isclose validation:
+abstol = 0.05
 filepath = './foin.nc'
 
 # create example array
@@ -35,7 +37,8 @@ toc = datetime.now()
 print(f'numpy {toc-tic}')
 result = xr.open_dataarray('./fout.nc')
 result = result[:,:,:,:]
-import IPython; IPython.embed()
+# debug import IPython; IPython.embed()
+# where tmp is nan, this should be changed back to 0, because that's what the fortran code deals with instead of nans:
 for i in range(0,np.shape(tmp)[0]):
     print(i)
     for j in range(0,np.shape(tmp)[1]):
@@ -44,8 +47,8 @@ for i in range(0,np.shape(tmp)[0]):
                 if np.isnan(tmp[i,j,k,h]):
                     tmp[i,j,k,h] = 0
 
-vali = np.isclose(result[2:-2,2:-2,2:-2,:], tmp[2:-2,2:-2,2:-2,:], equal_nan=True).all()
-print(f'validated: {vali}')
+vali = np.isclose(result[2:-2,2:-2,2:-2,:], tmp[2:-2,2:-2,2:-2,:], atol=abstol, equal_nan=True).all()
+print(f'validated: {vali}, absolute tolerance: {abstol}')
 
 """
 # numba njit
