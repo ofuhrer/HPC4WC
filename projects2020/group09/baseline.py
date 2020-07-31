@@ -10,7 +10,6 @@ from datetime import datetime
 import xarray as xr
 from scipy.ndimage.filters import generic_filter
 
-frac_missing = 0.42
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
 # create example array
@@ -24,7 +23,7 @@ data = data[:,::10,:,:]
 # gapfilling the missing values with spatiotemporal mean
 print('gapfilling missing values with spatiotemporal mean')
 footprint = np.ones((1,5,5,5))
-footprint[0,2,2,2] = 0 
+#footprint[0,2,2,2] = 0 
 tic = datetime.now()
 tmp = generic_filter(data, np.nanmean, footprint=footprint, mode='nearest') # THIS IS SLOW!
 toc = datetime.now()

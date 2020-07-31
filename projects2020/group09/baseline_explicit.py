@@ -1,9 +1,10 @@
 """
 Example for workflow for gapfilling remote sensing data from diverse sources
 Explicit stencil filter
+Naive workflow
 
-    @author: verena bessenbacher
-    @date: 12 06 2020
+    @author: Ulrike Proske
+    @date: 17 07 2020
 """
 
 import numpy as np
@@ -11,8 +12,7 @@ from datetime import datetime
 import xarray as xr
 from scipy.ndimage.filters import generic_filter
 
-shape = (3, 30, 72, 140) # real shape is (22, 3653, 720, 1440)
-frac_missing = 0.42
+shape = (3, 30, 72, 140) # real shape is (3, 3653, 720, 1440)
 filepath = '/net/so4/landclim/bverena/large_files/data_small.nc'
 
 # create example array
@@ -39,7 +39,7 @@ for var in range(0,shape[0]):
                 k = 0
                 values = data[var,t-2:t+3,i-2:i+3,j-2:j+3].copy()
                 #print(np.shape(data), np.shape(values))
-                values[2,2,2] = np.nan # changed this to nan so that it gets ignored
+                #values[2,2,2] = np.nan # changed this to nan so that it gets ignored
                 values = values.values.flatten()
                 for v in values:
                     if ~np.isnan(v):
