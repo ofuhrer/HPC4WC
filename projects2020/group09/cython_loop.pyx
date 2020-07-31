@@ -23,15 +23,31 @@ def stencil_loop( float[:,:,:] A ):
         for i in range(nhalo,nx-nhalo):
             for j in range(nhalo,ny-nhalo):
                 for k in range(nhalo,nz-nhalo):
-                    C[i,j,k] = A[i-1,j,k] + A[i+1,j,k] + A[i,j-1,k] + A[i,j+1,k] + \
-                               A[i-1,j-1,k] + A[i+1,j+1,k] + A[i-1,j+1,k] + A[i+1,j-1,k] + \
-                               A[i,j,k] + \
-                               A[i-1,j,k+1] + A[i+1,j,k+1] + A[i,j-1,k+1] + A[i,j+1,k+1] + \
-                               A[i-1,j-1,k+1] + A[i+1,j+1,k+1] + A[i-1,j+1,k+1] + A[i+1,j-1,k+1] + \
-                               A[i,j,k+1] + \
-                               A[i-1,j,k-1] + A[i+1,j,k-1] + A[i,j-1,k-1] + A[i,j+1,k-1] + \
-                               A[i-1,j-1,k-1] + A[i+1,j+1,k-1] + A[i-1,j+1,k-1] + A[i+1,j-1,k-1] + \
-                               A[i,j,k-1]
+                    C[i,j,k] = A[i-2,j,k] + A[i-1,j,k] + A[i,j,k] + A[i+1,j,k] + A[i+2,j,k] + \
+                               A[i-2,j+1,k] + A[i-1,j+1,k] + A[i,j+1,k] + A[i+1,j+1,k] + A[i+2,j+1,k] + \
+                               A[i-2,j+2,k] + A[i-1,j+2,k] + A[i,j+2,k] + A[i+1,j+2,k] + A[i+2,j+2,k] + \
+                               A[i-2,j-1,k] + A[i-1,j-1,k] + A[i,j-1,k] + A[i+1,j-1,k] + A[i+2,j-1,k] + \
+                               A[i-2,j-2,k] + A[i-1,j-2,k] + A[i,j-2,k] + A[i+1,j-2,k] + A[i+2,j-2,k] + \
+                               A[i-2,j,k+1] + A[i-1,j,k+1] + A[i,j,k+1] + A[i+1,j,k+1] + A[i+2,j,k+1] + \
+                               A[i-2,j+1,k+1] + A[i-1,j+1,k+1] + A[i,j+1,k+1] + A[i+1,j+1,k+1] + A[i+2,j+1,k+1] + \
+                               A[i-2,j+2,k+1] + A[i-1,j+2,k+1] + A[i,j+2,k+1] + A[i+1,j+2,k+1] + A[i+2,j+2,k+1] + \
+                               A[i-2,j-1,k+1] + A[i-1,j-1,k+1] + A[i,j-1,k+1] + A[i+1,j-1,k+1] + A[i+2,j-1,k+1] + \
+                               A[i-2,j-2,k+1] + A[i-1,j-2,k+1] + A[i,j-2,k+1] + A[i+1,j-2,k+1] + A[i+2,j-2,k+1] + \
+                               A[i-2,j,k+2] + A[i-1,j,k+2] + A[i,j,k+2] + A[i+1,j,k+2] + A[i+2,j,k+2] + \
+                               A[i-2,j+1,k+2] + A[i-1,j+1,k+2] + A[i,j+1,k+2] + A[i+1,j+1,k+2] + A[i+2,j+1,k+2] + \
+                               A[i-2,j+2,k+2] + A[i-1,j+2,k+2] + A[i,j+2,k+2] + A[i+1,j+2,k+2] + A[i+2,j+2,k+2] + \
+                               A[i-2,j-1,k+2] + A[i-1,j-1,k+2] + A[i,j-1,k+2] + A[i+1,j-1,k+2] + A[i+2,j-1,k+2] + \
+                               A[i-2,j-2,k+2] + A[i-1,j-2,k+2] + A[i,j-2,k+2] + A[i+1,j-2,k+2] + A[i+2,j-2,k+2] + \
+                               A[i-2,j,k-1] + A[i-1,j,k-1] + A[i,j,k-1] + A[i+1,j,k-1] + A[i+2,j,k-1] + \
+                               A[i-2,j+1,k-1] + A[i-1,j+1,k-1] + A[i,j+1,k-1] + A[i+1,j+1,k-1] + A[i+2,j+1,k-1] + \
+                               A[i-2,j+2,k-1] + A[i-1,j+2,k-1] + A[i,j+2,k-1] + A[i+1,j+2,k-1] + A[i+2,j+2,k-1] + \
+                               A[i-2,j-1,k-1] + A[i-1,j-1,k-1] + A[i,j-1,k-1] + A[i+1,j-1,k-1] + A[i+2,j-1,k-1] + \
+                               A[i-2,j-2,k-1] + A[i-1,j-2,k-1] + A[i,j-2,k-1] + A[i+1,j-2,k-1] + A[i+2,j-2,k-1] + \
+                               A[i-2,j,k-2] + A[i-1,j,k-2] + A[i,j,k-2] + A[i+1,j,k-2] + A[i+2,j,k-2] + \
+                               A[i-2,j+1,k-2] + A[i-1,j+1,k-2] + A[i,j+1,k-2] + A[i+1,j+1,k-2] + A[i+2,j+1,k-2] + \
+                               A[i-2,j+2,k-2] + A[i-1,j+2,k-2] + A[i,j+2,k-2] + A[i+1,j+2,k-2] + A[i+2,j+2,k-2] + \
+                               A[i-2,j-1,k-2] + A[i-1,j-1,k-2] + A[i,j-1,k-2] + A[i+1,j-1,k-2] + A[i+2,j-1,k-2] + \
+                               A[i-2,j-2,k-2] + A[i-1,j-2,k-2] + A[i,j-2,k-2] + A[i+1,j-2,k-2] + A[i+2,j-2,k-2]
 
     return np.array(C)
 
@@ -93,13 +109,29 @@ def stencil_loop_blocking( float[:,:,:] A):
                                 j = jblock*blocky + j_local
                                 k = kblock*blockz + k_local
                                 if (i >= nhalo) & (j >= nhalo) & (k >= nhalo):
-                                    C[i,j,k] = A[i-1,j,k] + A[i+1,j,k] + A[i,j-1,k] + A[i,j+1,k] + \
-                                               A[i-1,j-1,k] + A[i+1,j+1,k] + A[i-1,j+1,k] + A[i+1,j-1,k] + \
-                                               A[i,j,k] + \
-                                               A[i-1,j,k+1] + A[i+1,j,k+1] + A[i,j-1,k+1] + A[i,j+1,k+1] + \
-                                               A[i-1,j-1,k+1] + A[i+1,j+1,k+1] + A[i-1,j+1,k+1] + A[i+1,j-1,k+1] + \
-                                               A[i,j,k+1] + \
-                                               A[i-1,j,k-1] + A[i+1,j,k-1] + A[i,j-1,k-1] + A[i,j+1,k-1] + \
-                                               A[i-1,j-1,k-1] + A[i+1,j+1,k-1] + A[i-1,j+1,k-1] + A[i+1,j-1,k-1] + \
-                                               A[i,j,k-1]
+                                    C[i,j,k] = A[i-2,j,k] + A[i-1,j,k] + A[i,j,k] + A[i+1,j,k] + A[i+2,j,k] + \
+                                               A[i-2,j+1,k] + A[i-1,j+1,k] + A[i,j+1,k] + A[i+1,j+1,k] + A[i+2,j+1,k] + \
+                                               A[i-2,j+2,k] + A[i-1,j+2,k] + A[i,j+2,k] + A[i+1,j+2,k] + A[i+2,j+2,k] + \
+                                               A[i-2,j-1,k] + A[i-1,j-1,k] + A[i,j-1,k] + A[i+1,j-1,k] + A[i+2,j-1,k] + \
+                                               A[i-2,j-2,k] + A[i-1,j-2,k] + A[i,j-2,k] + A[i+1,j-2,k] + A[i+2,j-2,k] + \
+                                               A[i-2,j,k+1] + A[i-1,j,k+1] + A[i,j,k+1] + A[i+1,j,k+1] + A[i+2,j,k+1] + \
+                                               A[i-2,j+1,k+1] + A[i-1,j+1,k+1] + A[i,j+1,k+1] + A[i+1,j+1,k+1] + A[i+2,j+1,k+1] + \
+                                               A[i-2,j+2,k+1] + A[i-1,j+2,k+1] + A[i,j+2,k+1] + A[i+1,j+2,k+1] + A[i+2,j+2,k+1] + \
+                                               A[i-2,j-1,k+1] + A[i-1,j-1,k+1] + A[i,j-1,k+1] + A[i+1,j-1,k+1] + A[i+2,j-1,k+1] + \
+                                               A[i-2,j-2,k+1] + A[i-1,j-2,k+1] + A[i,j-2,k+1] + A[i+1,j-2,k+1] + A[i+2,j-2,k+1] + \
+                                               A[i-2,j,k+2] + A[i-1,j,k+2] + A[i,j,k+2] + A[i+1,j,k+2] + A[i+2,j,k+2] + \
+                                               A[i-2,j+1,k+2] + A[i-1,j+1,k+2] + A[i,j+1,k+2] + A[i+1,j+1,k+2] + A[i+2,j+1,k+2] + \
+                                               A[i-2,j+2,k+2] + A[i-1,j+2,k+2] + A[i,j+2,k+2] + A[i+1,j+2,k+2] + A[i+2,j+2,k+2] + \
+                                               A[i-2,j-1,k+2] + A[i-1,j-1,k+2] + A[i,j-1,k+2] + A[i+1,j-1,k+2] + A[i+2,j-1,k+2] + \
+                                               A[i-2,j-2,k+2] + A[i-1,j-2,k+2] + A[i,j-2,k+2] + A[i+1,j-2,k+2] + A[i+2,j-2,k+2] + \
+                                               A[i-2,j,k-1] + A[i-1,j,k-1] + A[i,j,k-1] + A[i+1,j,k-1] + A[i+2,j,k-1] + \
+                                               A[i-2,j+1,k-1] + A[i-1,j+1,k-1] + A[i,j+1,k-1] + A[i+1,j+1,k-1] + A[i+2,j+1,k-1] + \
+                                               A[i-2,j+2,k-1] + A[i-1,j+2,k-1] + A[i,j+2,k-1] + A[i+1,j+2,k-1] + A[i+2,j+2,k-1] + \
+                                               A[i-2,j-1,k-1] + A[i-1,j-1,k-1] + A[i,j-1,k-1] + A[i+1,j-1,k-1] + A[i+2,j-1,k-1] + \
+                                               A[i-2,j-2,k-1] + A[i-1,j-2,k-1] + A[i,j-2,k-1] + A[i+1,j-2,k-1] + A[i+2,j-2,k-1] + \
+                                               A[i-2,j,k-2] + A[i-1,j,k-2] + A[i,j,k-2] + A[i+1,j,k-2] + A[i+2,j,k-2] + \
+                                               A[i-2,j+1,k-2] + A[i-1,j+1,k-2] + A[i,j+1,k-2] + A[i+1,j+1,k-2] + A[i+2,j+1,k-2] + \
+                                               A[i-2,j+2,k-2] + A[i-1,j+2,k-2] + A[i,j+2,k-2] + A[i+1,j+2,k-2] + A[i+2,j+2,k-2] + \
+                                               A[i-2,j-1,k-2] + A[i-1,j-1,k-2] + A[i,j-1,k-2] + A[i+1,j-1,k-2] + A[i+2,j-1,k-2] + \
+                                               A[i-2,j-2,k-2] + A[i-1,j-2,k-2] + A[i,j-2,k-2] + A[i+1,j-2,k-2] + A[i+2,j-2,k-2]
     return np.array(C)
