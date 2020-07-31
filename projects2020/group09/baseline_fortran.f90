@@ -409,20 +409,12 @@ contains
     subroutine writegrid(outfile,idata)
         ! http://home.chpc.utah.edu/~thorne/computing/Examples_netCDF.pdf
         IMPLICIT NONE
-        real (kind=wp), dimension(nx):: xpos
-        real (kind=wp), dimension(ny):: ypos
-        real (kind=wp), dimension(nz):: tpos
         real (kind=wp), intent(in) :: idata(:,:,:,:)
         integer(kind=wp), dimension(4) :: dimids
         character (len=7), intent(in):: outfile
 
         integer(kind=wp) :: ncid, x_dimid, y_dimid, t_dimid, var_dimid
         integer(kind=wp) :: x_varid, y_varid, var_varid, t_varid, varid
-
-        ! Dummy for now, TODO: fill these with sensible values
-        xpos(:) = 4
-        ypos(:) = 5
-        tpos(:) = 5
 
         ! Create the netcdf file
         CALL check(nf90_create(outfile, NF90_CLOBBER, ncid))
