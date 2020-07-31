@@ -19,14 +19,14 @@ print(f'read data array')
 data = xr.open_dataarray(filepath)
 
 # subset more for speedup of first tests
-print(f'subset even more because very large dataset')
-data = data[:,::100,:,:]
+#print(f'subset even more because very large dataset')
+#data = data[:,::100,:,:]
 print(data.shape)
 
 # numpy 
 tic = datetime.now()
 footprint = np.ones((1,5,5,5))
-#tmp = generic_filter(data, np.nanmean, footprint=footprint, mode='nearest')
+tmp = generic_filter(data, np.nanmean, footprint=footprint, mode='nearest')
 toc = datetime.now()
 print(f'numpy {toc-tic}')
 
@@ -41,7 +41,7 @@ toc = datetime.now()
 print(f'numba {toc-tic}')
 
 # numba stencil
-@numba.stencil
+@numba.stencil(neighborhood = ((-2,2),(-2,2),(-2,2)))
 def _sum(w):
     return (w[-1,0,0] + w[+1,0,0] + w[0,-1,0] + w[0,+1,0] +
             w[-1,-1,0] + w[+1,+1,0] + w[-1,+1,0] + w[+1,-1,0] + w[0,0,0] +
