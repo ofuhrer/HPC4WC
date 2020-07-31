@@ -31,27 +31,32 @@ program main
 
     character(len=7) :: outfile
 
-    integer, parameter :: lblocking = 0 ! 1; blocking with blocks as specified below, 0: no blocking
+    integer, parameter :: lblocking = 1 ! 1; blocking with blocks as specified below, 0: no blocking
+    integer, parameter :: lwriteout = 0 ! 1: write out the fields (careful! do that only when they are not too large)
+    ! 0: don't write any netcdf files
 
     nvar = 3
-    nx = 30
-    ny = 72
-    nz = 14
-    blockx = 30
-    blocky = 50
-    blockz = 10
+    nx = 3653
+    ny = 1440
+    nz = 720
+    blockx = 100
+    blocky = 100
+    blockz = 100
 
     CALL setup()
 
     !WRITE(*,*) in_field
 
-    outfile = 'foin.nc'
-    CALL writegrid(outfile,in_field)
+    if (lwriteout == 1) then
+            outfile = 'foin.nc'
+            CALL writegrid(outfile,in_field)
 
-    outfile = 'fmas.nc'
-    CALL writegrid(outfile,mask)
+            outfile = 'fmas.nc'
+            CALL writegrid(outfile,mask)
+    end if
 
     ! start timer 
+    write(*,*) 'Start timer'
     call system_clock(start_time, count_rate)
 
     do ivar = 1, nvar
@@ -66,13 +71,16 @@ program main
     end do
 
     ! stop timer
+    write(*,*) 'Stop timer'
     call system_clock(stop_time)
     
-    outfile = 'fwei.nc'
-    CALL writegrid(outfile,weights)
+    if (lwriteout == 1) then
+            outfile = 'fwei.nc'
+            CALL writegrid(outfile,weights)
 
-    outfile = 'fout.nc'
-    CALL writegrid(outfile,out_field)
+            outfile = 'fout.nc'
+            CALL writegrid(outfile,out_field)
+    end if
 
     write(*,*) 'This function took ', (stop_time - start_time)/count_rate, "seconds"
 
