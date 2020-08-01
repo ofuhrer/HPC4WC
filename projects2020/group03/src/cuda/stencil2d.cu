@@ -114,9 +114,6 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     buffer1[li-1][lj-1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
-    buffer2[li-1][lj][lk] = 0.0; // left
-    buffer2[li][lj-1][lk] = 0.0; // bottom
-    buffer2[li-1][lj-1][lk] = 0.0; // other corner
   } else if(se_corner) {
     // buffer1
     buffer1[li][lj][lk] = 0.0; // corner
@@ -125,9 +122,6 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     buffer1[li+1][lj-1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
-    buffer2[li+1][lj][lk] = 0.0; // right
-    buffer2[li][lj-1][lk] = 0.0; // bottom
-    buffer2[li+1][lj-1][lk] = 0.0; // other corner
   } else if(nw_corner) {
     // buffer1
     buffer1[li][lj][lk] = 0.0; // corner
@@ -136,9 +130,6 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     buffer1[li-1][lj+1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
-    buffer2[li-1][lj][lk] = 0.0; // left
-    buffer2[li][lj+1][lk] = 0.0; // top
-    buffer2[li-1][lj+1][lk] = 0.0; // other corner
   } else if(ne_corner) {
     // buffer1
     buffer1[li][lj][lk] = 0.0; // corner
@@ -147,9 +138,6 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     buffer1[li+1][lj+1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
-    buffer2[li+1][lj][lk] = 0.0; // right
-    buffer2[li][lj+1][lk] = 0.0; // top
-    buffer2[li+1][lj+1][lk] = 0.0; // other corner
   }
   __syncthreads();
 
@@ -224,9 +212,9 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
   cudaMemcpy(infield, &inField(0, 0, 0), size, cudaMemcpyHostToDevice);
 
   dim3 blockDim(8, 8, 4);
-  dim3 gridDim((xSize - halo + blockDim.x - 1) / blockDim.x,
-               (ySize - halo + blockDim.y - 1) / blockDim.y,
-               (zMax  + blockDim.z - 1) / blockDim.z);
+  dim3 gridDim((xMax + blockDim.x - 1) / blockDim.x,
+               (yMax + blockDim.y - 1) / blockDim.y,
+               (zMax + blockDim.z - 1) / blockDim.z);
 
   cudaEvent_t tic, toc;
   cudaEventCreate(&tic);
