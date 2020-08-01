@@ -72,6 +72,19 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   int xInterior = xMax - xMin;
   int yInterior = yMax - yMin;
 
+  // Utils (Edges)
+  bool south = (j >= 0    && j < yMin  && i >= xMin && i < xMax  && k < zMax);
+  bool north = (j >= yMax && j < ySize && i >= xMin && i < xMax  && k < zMax);
+  bool west  = (i >= 0    && i < xMin  && j >= yMin && j < yMax  && k < zMax);
+  bool east  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
+  bool inner = (i < xSize && j < ySize && k < zMax);
+
+  // Utils (Corners)
+  bool sw_corner = (i == xMin - 1 && j == yMin - 1 && k < zMax);
+  bool se_corner = (i == xMax     && j == yMin - 1 && k < zMax);
+  bool nw_corner = (i == xMin - 1 && j == yMax     && k < zMax);
+  bool ne_corner = (i == xMax     && j == yMax     && k < zMax);
+
   // initialize shared memory
   // east and west boundary initialization
   if (threadIdx.x == 0) {
@@ -93,25 +106,13 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   } else {
     // pass
   }
-  __syncthreads();
-
-  bool south = (j >= 0    && j < yMin  && i >= xMin && i < xMax  && k < zMax);
-  bool north = (j >= yMax && j < ySize && i >= xMin && i < xMax  && k < zMax);
-  bool west  = (i >= 0    && i < xMin  && j >= yMin && j < yMax  && k < zMax);
-  bool east  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
-  bool inner = (i < xSize && j < ySize && k < zMax);
-
-  bool sw_corner = (i == xMin - 1 && j == yMin - 1 && k < zMax);
-  bool se_corner = (i == xMax     && j == yMin - 1 && k < zMax);
-  bool nw_corner = (i == xMin - 1 && j == yMax     && k < zMax);
-  bool ne_corner = (i == xMax     && j == yMax     && k < zMax);
 
   if     (sw_corner) {
     // buffer1
     buffer1[li][lj][lk] = 0.0; // corner
     buffer1[li-1][lj][lk] = 0.0; // left
     buffer1[li][lj-1][lk] = 0.0; // bottom
-    buffer1[li-1][lj-1][lk] = 0.0; // other corner
+    //buffer1[li-1][lj-1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
   } else if(se_corner) {
@@ -119,7 +120,7 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     buffer1[li][lj][lk] = 0.0; // corner
     buffer1[li+1][lj][lk] = 0.0; // right
     buffer1[li][lj-1][lk] = 0.0; // bottom
-    buffer1[li+1][lj-1][lk] = 0.0; // other corner
+    //buffer1[li+1][lj-1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
   } else if(nw_corner) {
@@ -127,7 +128,7 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     buffer1[li][lj][lk] = 0.0; // corner
     buffer1[li-1][lj][lk] = 0.0; // left
     buffer1[li][lj+1][lk] = 0.0; // top
-    buffer1[li-1][lj+1][lk] = 0.0; // other corner
+    //buffer1[li-1][lj+1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
   } else if(ne_corner) {
@@ -135,13 +136,12 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     buffer1[li][lj][lk] = 0.0; // corner
     buffer1[li+1][lj][lk] = 0.0; // right
     buffer1[li][lj+1][lk] = 0.0; // top
-    buffer1[li+1][lj+1][lk] = 0.0; // other corner
+    //buffer1[li+1][lj+1][lk] = 0.0; // other corner
     // buffer2
     buffer2[li][lj][lk] = 0.0; // corner
   }
-  __syncthreads();
 
-  // fill buffer1 considering halo update
+  // fill buffer1 based on halo update
   if      (south) {
     buffer1[li][lj][lk] = infield[index + yInterior * xSize];
     buffer1[li][lj-1][lk] = infield[index + (yInterior-1) * xSize];
