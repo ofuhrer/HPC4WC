@@ -55,22 +55,27 @@ void updateHalo(Storage3D<double>& inField) {
 
 __global__
 void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xSize, int yMin, int yMax, int ySize, int zMax, double alpha) {
+  // shared memory buffers
   __shared__ double buffer1[10][10][4];
   __shared__ double buffer2[10][10][4];
+  // global 3D indexes for infield/outfield
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   int j = blockDim.y * blockIdx.y + threadIdx.y;
   int k = blockDim.z * blockIdx.z + threadIdx.z;
+  // local 3D indexes for buffer1/buffer2
   int li = threadIdx.x + 1;
   int lj = threadIdx.y + 1;
   int lk = threadIdx.z;
+  // global 1D index for infield/outfield
   int index = i + j * xSize + k * xSize * ySize;
+  // xInterior/yInterior
   int xInterior = xMax - xMin;
   int yInterior = yMax - yMin;
 
   // initialize shared memory
   buffer1[li][lj][lk] = 0.0;
   buffer2[li][lj][lk] = 0.0;
-  // top and bottom boundary initialization
+  // east and west boundary initialization
   if (threadIdx.x == 0) {
     buffer1[li-1][lj][lk] = 0.0;
     buffer2[li-1][lj][lk] = 0.0;
@@ -80,7 +85,7 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   } else {
     // pass
   }
-  // left and right boundary initialization
+  // south and north boundary initialization
   if (threadIdx.y == 0) {
     buffer1[li][lj-1][lk] = 0.0;
     buffer2[li][lj-1][lk] = 0.0;
@@ -94,16 +99,21 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
 
   bool south = (j >= 0    && j < yMin  && i >= xMin && i < xMax  && k < zMax);
   bool north = (j >= yMax && j < ySize && i >= xMin && i < xMax  && k < zMax);
-  bool east  = (i >= 0    && i < xMin  && j >= yMin && j < yMax  && k < zMax);
-  bool west  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
-  bool other = (i < xSize && j < ySize && k < zMax);
+  bool west  = (i >= 0    && i < xMin  && j >= yMin && j < yMax  && k < zMax);
+  bool east  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
+  bool inner = (i < xSize && j < ySize && k < zMax);
+
+  //bool sw_corner = (i == xMin - 1 && j == yMin - 1 && k < zMax);
+  //bool se_corner = (i == xMax     && j == yMin - 1 && k < zMax);
+  //bool nw_corner = (i == xMin - 1 && j == yMax     && k < zMax);
+  //bool ne_corner = (i == xMax     && j == yMax     && k < zMax);
 
   // fill buffer1 considering halo update
   if      (south) { buffer1[li][lj][lk] = infield[index + yInterior * xSize]; }
   else if (north) { buffer1[li][lj][lk] = infield[index - yInterior * xSize]; }
-  else if (east)  { buffer1[li][lj][lk] = infield[index + xInterior]; }
-  else if (west)  { buffer1[li][lj][lk] = infield[index - xInterior]; }
-  else if (other) { buffer1[li][lj][lk] = infield[index]; }
+  else if (west)  { buffer1[li][lj][lk] = infield[index + xInterior]; }
+  else if (east)  { buffer1[li][lj][lk] = infield[index - xInterior]; }
+  else if (inner) { buffer1[li][lj][lk] = infield[index]; }
   __syncthreads();
 
   // apply the initial laplacian
@@ -243,7 +253,7 @@ int main(int argc, char const* argv[]) {
   int y = atoi(argv[4]);
   int z = atoi(argv[6]);
   int iter = atoi(argv[8]);
-  int nHalo = 3;
+  int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
   Storage3D<double> input(x, y, z, nHalo);
   input.initialize();
