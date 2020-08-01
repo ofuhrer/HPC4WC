@@ -59,8 +59,8 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   __shared__ double buffer1[10][10][4];
   __shared__ double buffer2[10][10][4];
   // global 3D indexes for infield/outfield
-  int i = blockDim.x * blockIdx.x + threadIdx.x;
-  int j = blockDim.y * blockIdx.y + threadIdx.y;
+  int i = blockDim.x * blockIdx.x + threadIdx.x + 1;
+  int j = blockDim.y * blockIdx.y + threadIdx.y + 1;
   int k = blockDim.z * blockIdx.z + threadIdx.z;
   // local 3D indexes for buffer1/buffer2
   int li = threadIdx.x + 1;
@@ -73,8 +73,6 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   int yInterior = yMax - yMin;
 
   // initialize shared memory
-  buffer1[li][lj][lk] = 0.0;
-  buffer2[li][lj][lk] = 0.0;
   // east and west boundary initialization
   if (threadIdx.x == 0) {
     buffer1[li-1][lj][lk] = 0.0;
@@ -103,17 +101,82 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   bool east  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
   bool inner = (i < xSize && j < ySize && k < zMax);
 
-  //bool sw_corner = (i == xMin - 1 && j == yMin - 1 && k < zMax);
-  //bool se_corner = (i == xMax     && j == yMin - 1 && k < zMax);
-  //bool nw_corner = (i == xMin - 1 && j == yMax     && k < zMax);
-  //bool ne_corner = (i == xMax     && j == yMax     && k < zMax);
+  bool sw_corner = (i == xMin - 1 && j == yMin - 1 && k < zMax);
+  bool se_corner = (i == xMax     && j == yMin - 1 && k < zMax);
+  bool nw_corner = (i == xMin - 1 && j == yMax     && k < zMax);
+  bool ne_corner = (i == xMax     && j == yMax     && k < zMax);
+
+  if     (sw_corner) {
+    // buffer1
+    buffer1[li][lj][lk] = 0.0; // corner
+    buffer1[li-1][lj][lk] = 0.0; // left
+    buffer1[li][lj-1][lk] = 0.0; // bottom
+    buffer1[li-1][lj-1][lk] = 0.0; // other corner
+    // buffer2
+    buffer2[li][lj][lk] = 0.0; // corner
+    buffer2[li-1][lj][lk] = 0.0; // left
+    buffer2[li][lj-1][lk] = 0.0; // bottom
+    buffer2[li-1][lj-1][lk] = 0.0; // other corner
+  } else if(se_corner) {
+    // buffer1
+    buffer1[li][lj][lk] = 0.0; // corner
+    buffer1[li+1][lj][lk] = 0.0; // right
+    buffer1[li][lj-1][lk] = 0.0; // bottom
+    buffer1[li+1][lj-1][lk] = 0.0; // other corner
+    // buffer2
+    buffer2[li][lj][lk] = 0.0; // corner
+    buffer2[li+1][lj][lk] = 0.0; // right
+    buffer2[li][lj-1][lk] = 0.0; // bottom
+    buffer2[li+1][lj-1][lk] = 0.0; // other corner
+  } else if(nw_corner) {
+    // buffer1
+    buffer1[li][lj][lk] = 0.0; // corner
+    buffer1[li-1][lj][lk] = 0.0; // left
+    buffer1[li][lj+1][lk] = 0.0; // top
+    buffer1[li-1][lj+1][lk] = 0.0; // other corner
+    // buffer2
+    buffer2[li][lj][lk] = 0.0; // corner
+    buffer2[li-1][lj][lk] = 0.0; // left
+    buffer2[li][lj+1][lk] = 0.0; // top
+    buffer2[li-1][lj+1][lk] = 0.0; // other corner
+  } else if(ne_corner) {
+    // buffer1
+    buffer1[li][lj][lk] = 0.0; // corner
+    buffer1[li+1][lj][lk] = 0.0; // right
+    buffer1[li][lj+1][lk] = 0.0; // top
+    buffer1[li+1][lj+1][lk] = 0.0; // other corner
+    // buffer2
+    buffer2[li][lj][lk] = 0.0; // corner
+    buffer2[li+1][lj][lk] = 0.0; // right
+    buffer2[li][lj+1][lk] = 0.0; // top
+    buffer2[li+1][lj+1][lk] = 0.0; // other corner
+  }
+  __syncthreads();
 
   // fill buffer1 considering halo update
-  if      (south) { buffer1[li][lj][lk] = infield[index + yInterior * xSize]; }
-  else if (north) { buffer1[li][lj][lk] = infield[index - yInterior * xSize]; }
-  else if (west)  { buffer1[li][lj][lk] = infield[index + xInterior]; }
-  else if (east)  { buffer1[li][lj][lk] = infield[index - xInterior]; }
-  else if (inner) { buffer1[li][lj][lk] = infield[index]; }
+  if      (south) {
+    buffer1[li][lj][lk] = infield[index + yInterior * xSize];
+    buffer1[li][lj-1][lk] = infield[index + (yInterior-1) * xSize];
+  } else if (north) {
+    buffer1[li][lj][lk] = infield[index - yInterior * xSize];
+    buffer1[li][lj+1][lk] = infield[index - (yInterior+1) * xSize];
+  } else if (west)  {
+    buffer1[li][lj][lk] = infield[index + xInterior];
+    buffer1[li-1][lj][lk] = infield[index + xInterior - 1];
+  } else if (east)  {
+    buffer1[li][lj][lk] = infield[index - xInterior];
+    buffer1[li+1][lj][lk] = infield[index - xInterior + 1];
+  } else if (inner) {
+    buffer1[li][lj][lk] = infield[index];
+    // Left-most or right-most
+    if      (threadIdx.x == 0)              { buffer1[li-1][lj][lk] = infield[index - 1]; }
+    else if (threadIdx.x == blockDim.x - 1) { buffer1[li+1][lj][lk] = infield[index + 1]; }
+    else { /*pass*/ }
+    // Upper-most or lower-most
+    if      (threadIdx.y == 0)              { buffer1[li][lj-1][lk] = infield[index - xSize]; }
+    else if (threadIdx.y == blockDim.y - 1) { buffer1[li][lj+1][lk] = infield[index + xSize]; }
+    else { /*pass*/ }
+  }
   __syncthreads();
 
   // apply the initial laplacian
@@ -159,11 +222,10 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
   cudaMalloc((void **)&infield, size);
   cudaMalloc((void **)&outfield, size);
   cudaMemcpy(infield, &inField(0, 0, 0), size, cudaMemcpyHostToDevice);
-  cudaMemcpy(outfield, infield, size, cudaMemcpyDeviceToDevice);
 
   dim3 blockDim(8, 8, 4);
-  dim3 gridDim((xSize + blockDim.x - 1) / blockDim.x,
-               (ySize + blockDim.y - 1) / blockDim.y,
+  dim3 gridDim((xSize - halo + blockDim.x - 1) / blockDim.x,
+               (ySize - halo + blockDim.y - 1) / blockDim.y,
                (zMax  + blockDim.z - 1) / blockDim.z);
 
   cudaEvent_t tic, toc;
