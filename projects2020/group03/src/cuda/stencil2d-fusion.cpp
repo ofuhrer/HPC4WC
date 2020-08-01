@@ -114,7 +114,7 @@ int main(int argc, char const* argv[]) {
   int y = atoi(argv[4]);
   int z = atoi(argv[6]);
   int iter = atoi(argv[8]);
-  int nHalo = 3;
+  int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
   Storage3D<double> input(x, y, z, nHalo);
   input.initialize();
