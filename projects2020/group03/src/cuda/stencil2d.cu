@@ -65,8 +65,8 @@ void apply_stencil(double const *infield,
                    int const zMax,
                    double const alpha) {
   // shared memory buffers
-  __shared__ double buffer1[10][10][4];
-  __shared__ double buffer2[10][10][4];
+  __shared__ double buffer1[10][10][1];
+  __shared__ double buffer2[10][10][1];
   // local 3D indexes for buffer1/buffer2
   int const li = threadIdx.x + 1;
   int const lj = threadIdx.y + 1;
@@ -182,7 +182,7 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
   cudaMalloc((void **)&outfield, size);
   cudaMemcpy(infield, &inField(0, 0, 0), size, cudaMemcpyHostToDevice);
 
-  dim3 blockDim(8, 8, 4);
+  dim3 blockDim(8, 8, 1);
   dim3 gridDim((xMax + blockDim.x - 1) / blockDim.x,
                (yMax + blockDim.y - 1) / blockDim.y,
                (zMax + blockDim.z - 1) / blockDim.z);
