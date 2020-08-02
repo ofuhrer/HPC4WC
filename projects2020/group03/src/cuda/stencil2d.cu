@@ -88,7 +88,9 @@ void apply_stencil(double const *infield,
   bool const east  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
   bool const inner = (i < xSize && j < ySize && k < zMax);
 
-  // initialize shared memory borders with zeros
+  // initialize shared memory to zero
+  buffer1[li][lj][lk] = 0.0;
+  buffer2[li][lj][lk] = 0.0;
   // east and west boundary initialization
   if (threadIdx.x == 0) {
     buffer1[li-1][lj][lk] = 0.0;
@@ -110,37 +112,9 @@ void apply_stencil(double const *infield,
   if (south) {
     buffer1[li][lj][lk] = infield[index + yInterior * xSize];
     buffer1[li][lj-1][lk] = infield[index + (yInterior - 1) * xSize];
-    // fill corners with zeros
-    bool const sw_corner = (i == xMin - 1 && j == yMin - 1);
-    bool const se_corner = (i == xMax     && j == yMin - 1);
-    if (sw_corner) {
-      buffer1[li][lj][lk] = 0.0; // corner
-      buffer1[li-1][lj][lk] = 0.0; // left
-      buffer1[li][lj-1][lk] = 0.0; // bottom
-      buffer2[li][lj][lk] = 0.0; // corner
-    } else if (se_corner) {
-      buffer1[li][lj][lk] = 0.0; // corner
-      buffer1[li+1][lj][lk] = 0.0; // right
-      buffer1[li][lj-1][lk] = 0.0; // bottom
-      buffer2[li][lj][lk] = 0.0; // corner
-    } else { /* pass */ }
   } else if (north) {
     buffer1[li][lj][lk] = infield[index - yInterior * xSize];
     buffer1[li][lj+1][lk] = infield[index - (yInterior + 1) * xSize];
-    // fill corners with zeros
-    bool const nw_corner = (i == xMin - 1 && j == yMax);
-    bool const ne_corner = (i == xMax     && j == yMax);
-    if (nw_corner) {
-      buffer1[li][lj][lk] = 0.0; // corner
-      buffer1[li-1][lj][lk] = 0.0; // left
-      buffer1[li][lj+1][lk] = 0.0; // top
-      buffer2[li][lj][lk] = 0.0; // corner
-    } else if (ne_corner) {
-      buffer1[li][lj][lk] = 0.0; // corner
-      buffer1[li+1][lj][lk] = 0.0; // right
-      buffer1[li][lj+1][lk] = 0.0; // top
-      buffer2[li][lj][lk] = 0.0; // corner
-    } else { /* pass */}
   } else if (west)  {
     buffer1[li][lj][lk] = infield[index + xInterior];
     buffer1[li-1][lj][lk] = infield[index + xInterior - 1];
