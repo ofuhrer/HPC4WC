@@ -54,7 +54,16 @@ void updateHalo(Storage3D<double>& inField) {
 }
 
 __global__
-void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xSize, int yMin, int yMax, int ySize, int zMax, double alpha) {
+void apply_stencil(double const *infield,
+                   double *outfield,
+                   int const xMin,
+                   int const xMax,
+                   int const xSize,
+                   int const yMin,
+                   int const yMax,
+                   int const ySize,
+                   int const zMax,
+                   double const alpha) {
   // shared memory buffers
   __shared__ double buffer1[10][10][4];
   __shared__ double buffer2[10][10][4];
@@ -100,10 +109,10 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   // fill buffer1 based on halo update
   if (south) {
     buffer1[li][lj][lk] = infield[index + yInterior * xSize];
-    buffer1[li][lj-1][lk] = infield[index + (yInterior-1) * xSize];
+    buffer1[li][lj-1][lk] = infield[index + (yInterior - 1) * xSize];
     // fill corners with zeros
-    bool sw_corner = (i == xMin - 1 && j == yMin - 1);
-    bool se_corner = (i == xMax     && j == yMin - 1);
+    bool const sw_corner = (i == xMin - 1 && j == yMin - 1);
+    bool const se_corner = (i == xMax     && j == yMin - 1);
     if (sw_corner) {
       buffer1[li][lj][lk] = 0.0; // corner
       buffer1[li-1][lj][lk] = 0.0; // left
@@ -117,10 +126,10 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
     } else { /* pass */ }
   } else if (north) {
     buffer1[li][lj][lk] = infield[index - yInterior * xSize];
-    buffer1[li][lj+1][lk] = infield[index - (yInterior+1) * xSize];
+    buffer1[li][lj+1][lk] = infield[index - (yInterior + 1) * xSize];
     // fill corners with zeros
-    bool nw_corner = (i == xMin - 1 && j == yMax);
-    bool ne_corner = (i == xMax     && j == yMax);
+    bool const nw_corner = (i == xMin - 1 && j == yMax);
+    bool const ne_corner = (i == xMax     && j == yMax);
     if (nw_corner) {
       buffer1[li][lj][lk] = 0.0; // corner
       buffer1[li-1][lj][lk] = 0.0; // left
@@ -158,11 +167,11 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   // apply the initial laplacian
   if (i >= xMin - 1 && i < xMax + 1 &&
       j >= yMin - 1 && j < yMax + 1 && k < zMax) {
-    double value = -4.0 * buffer1[li][lj][lk]
-                        + buffer1[li - 1][lj][lk]
-                        + buffer1[li + 1][lj][lk]
-                        + buffer1[li][lj - 1][lk]
-                        + buffer1[li][lj + 1][lk];
+    double const value = -4.0 * buffer1[li][lj][lk]
+                              + buffer1[li-1][lj][lk]
+                              + buffer1[li+1][lj][lk]
+                              + buffer1[li][lj-1][lk]
+                              + buffer1[li][lj+1][lk];
     buffer2[li][lj][lk] = value;
   }
   __syncthreads();
@@ -170,11 +179,11 @@ void apply_stencil(double *infield, double *outfield, int xMin, int xMax, int xS
   // apply the second laplacian
   if (i >= xMin && i < xMax &&
       j >= yMin && j < yMax && k < zMax) {
-    double value = -4.0 * buffer2[li][lj][lk]
-                        + buffer2[li - 1][lj][lk]
-                        + buffer2[li + 1][lj][lk]
-                        + buffer2[li][lj - 1][lk]
-                        + buffer2[li][lj + 1][lk];
+    double const value = -4.0 * buffer2[li][lj][lk]
+                              + buffer2[li-1][lj][lk]
+                              + buffer2[li+1][lj][lk]
+                              + buffer2[li][lj-1][lk]
+                              + buffer2[li][lj+1][lk];
     outfield[index] = buffer1[li][lj][lk] - alpha * value;
   }
 }
