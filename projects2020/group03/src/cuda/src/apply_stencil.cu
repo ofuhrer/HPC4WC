@@ -36,7 +36,7 @@ void apply_stencil(double const *infield,
   bool const north = (j == yMax     && i >= xMin && i < xMax  && k < zMax);
   bool const west  = (i == xMin - 1 && j >= yMin && j < yMax  && k < zMax);
   bool const east  = (i == xMax     && j >= yMin && j < yMax  && k < zMax);
-  bool const inner = (i < xSize && j < ySize && k < zMax);
+  bool const inner = (i >= xMin && i < xMax && j >= yMin && j < yMax && k < zMax);
 
   // initialize shared memory to zero
   buffer1[li][lj][lk] = 0.0;
