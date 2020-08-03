@@ -13,9 +13,9 @@ def stencil_loop( float[:,:,:] A ):
     cdef int k = 0
 
     cdef int nhalo = 2
-    cdef int nx = 3653
-    cdef int ny = 72
-    cdef int nz = 144
+    cdef int nx = 37
+    cdef int ny = 720
+    cdef int nz = 1440
 
     cdef double[:,:,:] C = np.empty((nx,ny,nz), dtype=float)
 
@@ -59,13 +59,13 @@ def stencil_loop_blocking( float[:,:,:] A):
     cdef int k = 0
 
     cdef int nhalo = 2 # size of array
-    cdef int nx = 3653
-    cdef int ny = 72
-    cdef int nz = 144
+    cdef int nx = 37
+    cdef int ny = 720
+    cdef int nz = 1440
 
-    cdef int blockx = 50 # regular block sizes
-    cdef int blocky = 25
-    cdef int blockz = 25
+    cdef int blockx = 10 # regular block sizes
+    cdef int blocky = 500
+    cdef int blockz = 500
 
     cdef int blocki = nx//blockx+1 # number of blocks in each direction
     cdef int blockj = ny//blocky+1

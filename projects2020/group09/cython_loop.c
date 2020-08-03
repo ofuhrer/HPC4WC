@@ -2548,40 +2548,40 @@ static PyObject *__pyx_pf_11cython_loop_stencil_loop(CYTHON_UNUSED PyObject *__p
  *     cdef int k = 0
  * 
  *     cdef int nhalo = 2             # <<<<<<<<<<<<<<
- *     cdef int nx = 3653
- *     cdef int ny = 72
+ *     cdef int nx = 37
+ *     cdef int ny = 720
  */
   __pyx_v_nhalo = 2;
 
   /* "cython_loop.pyx":16
  * 
  *     cdef int nhalo = 2
- *     cdef int nx = 3653             # <<<<<<<<<<<<<<
- *     cdef int ny = 72
- *     cdef int nz = 144
+ *     cdef int nx = 37             # <<<<<<<<<<<<<<
+ *     cdef int ny = 720
+ *     cdef int nz = 1440
  */
-  __pyx_v_nx = 0xE45;
+  __pyx_v_nx = 37;
 
   /* "cython_loop.pyx":17
  *     cdef int nhalo = 2
- *     cdef int nx = 3653
- *     cdef int ny = 72             # <<<<<<<<<<<<<<
- *     cdef int nz = 144
+ *     cdef int nx = 37
+ *     cdef int ny = 720             # <<<<<<<<<<<<<<
+ *     cdef int nz = 1440
  * 
  */
-  __pyx_v_ny = 72;
+  __pyx_v_ny = 0x2D0;
 
   /* "cython_loop.pyx":18
- *     cdef int nx = 3653
- *     cdef int ny = 72
- *     cdef int nz = 144             # <<<<<<<<<<<<<<
+ *     cdef int nx = 37
+ *     cdef int ny = 720
+ *     cdef int nz = 1440             # <<<<<<<<<<<<<<
  * 
  *     cdef double[:,:,:] C = np.empty((nx,ny,nz), dtype=float)
  */
-  __pyx_v_nz = 0x90;
+  __pyx_v_nz = 0x5A0;
 
   /* "cython_loop.pyx":20
- *     cdef int nz = 144
+ *     cdef int nz = 1440
  * 
  *     cdef double[:,:,:] C = np.empty((nx,ny,nz), dtype=float)             # <<<<<<<<<<<<<<
  * 
@@ -4234,67 +4234,67 @@ static PyObject *__pyx_pf_11cython_loop_2stencil_loop_blocking(CYTHON_UNUSED PyO
  *     cdef int k = 0
  * 
  *     cdef int nhalo = 2 # size of array             # <<<<<<<<<<<<<<
- *     cdef int nx = 3653
- *     cdef int ny = 72
+ *     cdef int nx = 37
+ *     cdef int ny = 720
  */
   __pyx_v_nhalo = 2;
 
   /* "cython_loop.pyx":62
  * 
  *     cdef int nhalo = 2 # size of array
- *     cdef int nx = 3653             # <<<<<<<<<<<<<<
- *     cdef int ny = 72
- *     cdef int nz = 144
+ *     cdef int nx = 37             # <<<<<<<<<<<<<<
+ *     cdef int ny = 720
+ *     cdef int nz = 1440
  */
-  __pyx_v_nx = 0xE45;
+  __pyx_v_nx = 37;
 
   /* "cython_loop.pyx":63
  *     cdef int nhalo = 2 # size of array
- *     cdef int nx = 3653
- *     cdef int ny = 72             # <<<<<<<<<<<<<<
- *     cdef int nz = 144
+ *     cdef int nx = 37
+ *     cdef int ny = 720             # <<<<<<<<<<<<<<
+ *     cdef int nz = 1440
  * 
  */
-  __pyx_v_ny = 72;
+  __pyx_v_ny = 0x2D0;
 
   /* "cython_loop.pyx":64
- *     cdef int nx = 3653
- *     cdef int ny = 72
- *     cdef int nz = 144             # <<<<<<<<<<<<<<
+ *     cdef int nx = 37
+ *     cdef int ny = 720
+ *     cdef int nz = 1440             # <<<<<<<<<<<<<<
  * 
- *     cdef int blockx = 50 # regular block sizes
+ *     cdef int blockx = 10 # regular block sizes
  */
-  __pyx_v_nz = 0x90;
+  __pyx_v_nz = 0x5A0;
 
   /* "cython_loop.pyx":66
- *     cdef int nz = 144
+ *     cdef int nz = 1440
  * 
- *     cdef int blockx = 50 # regular block sizes             # <<<<<<<<<<<<<<
- *     cdef int blocky = 25
- *     cdef int blockz = 25
+ *     cdef int blockx = 10 # regular block sizes             # <<<<<<<<<<<<<<
+ *     cdef int blocky = 500
+ *     cdef int blockz = 500
  */
-  __pyx_v_blockx = 50;
+  __pyx_v_blockx = 10;
 
   /* "cython_loop.pyx":67
  * 
- *     cdef int blockx = 50 # regular block sizes
- *     cdef int blocky = 25             # <<<<<<<<<<<<<<
- *     cdef int blockz = 25
+ *     cdef int blockx = 10 # regular block sizes
+ *     cdef int blocky = 500             # <<<<<<<<<<<<<<
+ *     cdef int blockz = 500
  * 
  */
-  __pyx_v_blocky = 25;
+  __pyx_v_blocky = 0x1F4;
 
   /* "cython_loop.pyx":68
- *     cdef int blockx = 50 # regular block sizes
- *     cdef int blocky = 25
- *     cdef int blockz = 25             # <<<<<<<<<<<<<<
+ *     cdef int blockx = 10 # regular block sizes
+ *     cdef int blocky = 500
+ *     cdef int blockz = 500             # <<<<<<<<<<<<<<
  * 
  *     cdef int blocki = nx//blockx+1 # number of blocks in each direction
  */
-  __pyx_v_blockz = 25;
+  __pyx_v_blockz = 0x1F4;
 
   /* "cython_loop.pyx":70
- *     cdef int blockz = 25
+ *     cdef int blockz = 500
  * 
  *     cdef int blocki = nx//blockx+1 # number of blocks in each direction             # <<<<<<<<<<<<<<
  *     cdef int blockj = ny//blocky+1
