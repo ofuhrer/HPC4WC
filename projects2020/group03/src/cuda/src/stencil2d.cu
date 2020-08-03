@@ -9,158 +9,9 @@
 #include "pat_api.h"
 #endif
 #include "utils.h"
-
-namespace {
-
-void updateHalo(Storage3D<double>& inField) {
-  const int xInterior = inField.xMax() - inField.xMin();
-  const int yInterior = inField.yMax() - inField.yMin();
-
-  // bottom edge (without corners)
-  for(std::size_t k = 0; k < inField.zMax(); ++k) {
-    for(std::size_t j = 0; j < inField.yMin(); ++j) {
-      for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-        inField(i, j, k) = inField(i, j + yInterior, k);
-      }
-    }
-  }
-
-  // top edge (without corners)
-  for(std::size_t k = 0; k < inField.zMax(); ++k) {
-    for(std::size_t j = inField.yMax(); j < inField.ySize(); ++j) {
-      for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-        inField(i, j, k) = inField(i, j - yInterior, k);
-      }
-    }
-  }
-
-  // left edge (including corners)
-  for(std::size_t k = 0; k < inField.zMax(); ++k) {
-    for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-      for(std::size_t i = 0; i < inField.xMin(); ++i) {
-        inField(i, j, k) = inField(i + xInterior, j, k);
-      }
-    }
-  }
-
-  // right edge (including corners)
-  for(std::size_t k = 0; k < inField.zMax(); ++k) {
-    for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-      for(std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
-        inField(i, j, k) = inField(i - xInterior, j, k);
-      }
-    }
-  }
-}
-
-__global__
-void apply_stencil(double const *infield,
-                   double *outfield,
-                   int const xMin,
-                   int const xMax,
-                   int const xSize,
-                   int const yMin,
-                   int const yMax,
-                   int const ySize,
-                   int const zMax,
-                   double const alpha) {
-  // shared memory buffers
-  __shared__ double buffer1[10][10][1];
-  __shared__ double buffer2[10][10][1];
-  // local 3D indexes for buffer1/buffer2
-  int const li = threadIdx.x + 1;
-  int const lj = threadIdx.y + 1;
-  int const lk = threadIdx.z;
-  // global 3D indexes for infield/outfield
-  int const i = blockDim.x * blockIdx.x + li;
-  int const j = blockDim.y * blockIdx.y + lj;
-  int const k = blockDim.z * blockIdx.z + lk;
-  // global 1D index for infield/outfield
-  int const index = i + j * xSize + k * xSize * ySize;
-  // xInterior/yInterior
-  int const xInterior = xMax - xMin;
-  int const yInterior = yMax - yMin;
-
-  // utils (Edges)
-  bool const south = (j == yMin - 1 && i >= xMin && i < xMax  && k < zMax);
-  bool const north = (j == yMax     && i >= xMin && i < xMax  && k < zMax);
-  bool const west  = (i == xMin - 1 && j >= yMin && j < yMax  && k < zMax);
-  bool const east  = (i == xMax     && j >= yMin && j < yMax  && k < zMax);
-  bool const inner = (i < xSize && j < ySize && k < zMax);
-
-  // initialize shared memory to zero
-  buffer1[li][lj][lk] = 0.0;
-  buffer2[li][lj][lk] = 0.0;
-  // east and west boundary initialization
-  if (threadIdx.x == 0) {
-    buffer1[li-1][lj][lk] = 0.0;
-    buffer2[li-1][lj][lk] = 0.0;
-  } else if (threadIdx.x == blockDim.x - 1) {
-    buffer1[li+1][lj][lk] = 0.0;
-    buffer2[li+1][lj][lk] = 0.0;
-  } else { /* pass */ }
-  // south and north boundary initialization
-  if (threadIdx.y == 0) {
-    buffer1[li][lj-1][lk] = 0.0;
-    buffer2[li][lj-1][lk] = 0.0;
-  } else if (threadIdx.y == blockDim.y - 1) {
-    buffer1[li][lj+1][lk] = 0.0;
-    buffer2[li][lj+1][lk] = 0.0;
-  } else { /* pass */}
-
-  // fill buffer1 based on halo update
-  if (south) {
-    buffer1[li][lj][lk] = infield[index + yInterior * xSize];
-    buffer1[li][lj-1][lk] = infield[index + (yInterior - 1) * xSize];
-  } else if (north) {
-    buffer1[li][lj][lk] = infield[index - yInterior * xSize];
-    buffer1[li][lj+1][lk] = infield[index - (yInterior + 1) * xSize];
-  } else if (west)  {
-    buffer1[li][lj][lk] = infield[index + xInterior];
-    buffer1[li-1][lj][lk] = infield[index + xInterior - 1];
-  } else if (east)  {
-    buffer1[li][lj][lk] = infield[index - xInterior];
-    buffer1[li+1][lj][lk] = infield[index - xInterior + 1];
-  } else if (inner) {
-    buffer1[li][lj][lk] = infield[index];
-    // if left-most or right-most load border values from neighbor domain
-    if (threadIdx.x == 0) {
-      buffer1[li-1][lj][lk] = infield[index - 1];
-    } else if (threadIdx.x == blockDim.x - 1) {
-      buffer1[li+1][lj][lk] = infield[index + 1];
-    } else { /*pass*/ }
-    // if upper-most or lower-most load border values from neighbor domain
-    if (threadIdx.y == 0) {
-      buffer1[li][lj-1][lk] = infield[index - xSize];
-    } else if (threadIdx.y == blockDim.y - 1) {
-      buffer1[li][lj+1][lk] = infield[index + xSize];
-    } else { /*pass*/ }
-  }
-  __syncthreads();
-
-  // apply the initial laplacian
-  if (i >= xMin - 1 && i < xMax + 1 &&
-      j >= yMin - 1 && j < yMax + 1 && k < zMax) {
-    double const value = -4.0 * buffer1[li][lj][lk]
-                              + buffer1[li-1][lj][lk]
-                              + buffer1[li+1][lj][lk]
-                              + buffer1[li][lj-1][lk]
-                              + buffer1[li][lj+1][lk];
-    buffer2[li][lj][lk] = value;
-  }
-  __syncthreads();
-
-  // apply the second laplacian
-  if (i >= xMin && i < xMax &&
-      j >= yMin && j < yMax && k < zMax) {
-    double const value = -4.0 * buffer2[li][lj][lk]
-                              + buffer2[li-1][lj][lk]
-                              + buffer2[li+1][lj][lk]
-                              + buffer2[li][lj-1][lk]
-                              + buffer2[li][lj+1][lk];
-    outfield[index] = buffer1[li][lj][lk] - alpha * value;
-  }
-}
+#include "update_halo.h"
+#include "apply_diffusion.h"
+#include "apply_stencil.cuh"
 
 void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField,
                          double alpha, unsigned numIter, int x, int y, int z, int halo) {
@@ -212,45 +63,6 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
   cudaFree(outfield);
 }
 
-
-void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, double alpha,
-                     unsigned numIter, int x, int y, int z, int halo) {
-
-  Storage3D<double> tmp1Field(x, y, z, halo);
-
-  for(std::size_t iter = 0; iter < numIter; ++iter) {
-
-    updateHalo(inField);
-
-    for(std::size_t k = 0; k < inField.zMax(); ++k) {
-
-      // apply the initial laplacian
-      for(std::size_t j = inField.yMin() - 1; j < inField.yMax() + 1; ++j) {
-        for(std::size_t i = inField.xMin() - 1; i < inField.xMax() + 1; ++i) {
-          tmp1Field(i, j, 0) = -4.0 * inField(i, j, k) + inField(i - 1, j, k) +
-                               inField(i + 1, j, k) + inField(i, j - 1, k) + inField(i, j + 1, k);
-        }
-      }
-
-      // apply the second laplacian
-      for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-        for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-          double laplap = -4.0 * tmp1Field(i, j, 0) + tmp1Field(i - 1, j, 0) +
-                          tmp1Field(i + 1, j, 0) + tmp1Field(i, j - 1, 0) + tmp1Field(i, j + 1, 0);
-
-          // and update the field
-          if(iter == numIter - 1) {
-            outField(i, j, k) = inField(i, j, k) - alpha * laplap;
-          } else {
-            inField(i, j, k) = inField(i, j, k) - alpha * laplap;
-          }
-        }
-      }
-    }
-  }
-}
-
-
 void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
   int size = 1;
@@ -264,7 +76,6 @@ void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
             << diff << "],\n";
   std::cout << "] )" << std::endl;
 }
-} // namespace
 
 int main(int argc, char const* argv[]) {
 #ifdef CRAYPAT
