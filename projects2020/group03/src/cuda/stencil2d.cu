@@ -82,10 +82,10 @@ void apply_stencil(double const *infield,
   int const yInterior = yMax - yMin;
 
   // utils (Edges)
-  bool const south = (j >= 0    && j < yMin  && i >= xMin && i < xMax  && k < zMax);
-  bool const north = (j >= yMax && j < ySize && i >= xMin && i < xMax  && k < zMax);
-  bool const west  = (i >= 0    && i < xMin  && j >= yMin && j < yMax  && k < zMax);
-  bool const east  = (i >= xMax && i < xSize && j >= yMin && j < yMax  && k < zMax);
+  bool const south = (j == yMin - 1 && i >= xMin && i < xMax  && k < zMax);
+  bool const north = (j == yMax     && i >= xMin && i < xMax  && k < zMax);
+  bool const west  = (i == xMin - 1 && j >= yMin && j < yMax  && k < zMax);
+  bool const east  = (i == xMax     && j >= yMin && j < yMax  && k < zMax);
   bool const inner = (i < xSize && j < ySize && k < zMax);
 
   // initialize shared memory to zero
