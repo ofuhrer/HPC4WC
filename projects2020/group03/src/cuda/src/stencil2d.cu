@@ -38,10 +38,10 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
                (yMax + blockDim.y - 1) / blockDim.y,
                (zMax + blockDim.z - 1) / blockDim.z);
 
-  cudaEvent_t tic, toc;
-  cudaEventCreate(&tic);
-  cudaEventCreate(&toc);
-  cudaEventRecord(tic);
+  //cudaEvent_t tic, toc;
+  //cudaEventCreate(&tic);
+  //cudaEventCreate(&toc);
+  //cudaEventRecord(tic);
 
   for(std::size_t iter = 0; iter < numIter; ++iter) {
     apply_stencil<<<gridDim, blockDim>>>(infield, outfield, xMin, xMax, xSize, yMin, yMax, ySize, zMax, alpha);
@@ -49,13 +49,13 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
     if ( iter != numIter - 1 ) std::swap(infield, outfield);
   }
 
-  cudaEventRecord(toc);
-  cudaEventSynchronize(toc);
-  float telapsed = -1;
-  cudaEventElapsedTime(&telapsed, tic, toc);
-  std::cout << "telapsed: " << telapsed << std::endl;
-  cudaEventDestroy(tic);
-  cudaEventDestroy(toc);
+  //cudaEventRecord(toc);
+  //cudaEventSynchronize(toc);
+  //float telapsed = -1;
+  //cudaEventElapsedTime(&telapsed, tic, toc);
+  //std::cout << "telapsed: " << telapsed << std::endl;
+  //cudaEventDestroy(tic);
+  //cudaEventDestroy(toc);
 
   // Copy result from device to host and free device memory
   cudaMemcpy(&outField(0, 0, 0), outfield, size, cudaMemcpyDeviceToHost);
