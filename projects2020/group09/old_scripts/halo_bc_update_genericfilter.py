@@ -20,6 +20,10 @@ def numba_nanmean(values):
 def halo_update(data, tmp):
     for ivar in range(0,np.shape(data)[0]):
         # sides/edges
+        #tmp[ivar,2:-2,2:-2,np.r_[-2,1]] = generic_filter(data[ivar,i,j,np.r_[-4:4]])[2:-2,2:-2,2:6]
+        # tmp2 = np.ones(np.shape(tmp))
+        # tmp2[ivar,2:-2,2:-2,np.r_[-2:2]] = generic_filter(data[ivar,:,:,np.r_[-4:4]], numba_nanmean, footprint=np.ones((5,5,5)), mode='nearest')[2:-2,2:-2,2:6].reshape((4,33,68))
+        # Above should be the same as cacluated in the first loop here, but somehow is no(trying this to get faster)t
         for i in range(2, np.shape(data)[1]-2): # exclude corners
             for j in range(2, np.shape(data)[2]-2):
                     # left boundary:
@@ -38,6 +42,7 @@ def halo_update(data, tmp):
                     # right -1
                     # var, time, lat, lon(-3,-2,-1,0,1)
                     tmp[ivar,i,j,-1] = numba_nanmean(data[ivar, i-2:i+3, j-2:j+3, np.r_[-3:2]].values)
+        import IPython; IPython.embed()
         # top and bottom
         for i in range(2, np.shape(data)[1]-2):
             for k in range(2, np.shape(data)[3]-2):
@@ -152,13 +157,6 @@ data = xr.open_dataarray(filepath)
 print(f'subset even more because very large dataset')
 data = data[:,::100,:,:]
 print(data.shape)
-
-# numpy
-tic = datetime.now()
-footprint = np.ones((1,5,5,5))
-tmp = generic_filter(data, np.nanmean, footprint=footprint, mode='nearest')
-toc = datetime.now()
-print(f'numpy {toc-tic}')
 
 # numba njit
 @numba.njit
