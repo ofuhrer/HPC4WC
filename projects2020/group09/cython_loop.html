@@ -458,12 +458,12 @@ static PyObject *__pyx_pf_11cython_loop_stencil_loop(CYTHON_UNUSED PyObject *__p
 </pre><pre class="cython line score-0">&#xA0;<span class="">014</span>: </pre>
 <pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">015</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nhalo</span> <span class="o">=</span> <span class="mf">2</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_nhalo = 2;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">016</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nx</span> <span class="o">=</span> <span class="mf">3653</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_nx = 0xE45;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">017</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">ny</span> <span class="o">=</span> <span class="mf">72</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_ny = 72;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">018</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nz</span> <span class="o">=</span> <span class="mf">144</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_nz = 0x90;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">016</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nx</span> <span class="o">=</span> <span class="mf">37</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_nx = 37;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">017</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">ny</span> <span class="o">=</span> <span class="mf">720</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_ny = 0x2D0;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">018</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nz</span> <span class="o">=</span> <span class="mf">1440</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_nz = 0x5A0;
 </pre><pre class="cython line score-0">&#xA0;<span class="">019</span>: </pre>
 <pre class="cython line score-40" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">020</span>:     <span class="k">cdef</span> <span class="kt">double</span>[<span class="p">:,:,:]</span> <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">nz</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span></pre>
 <pre class='cython code score-40 '>  <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_t_1, __pyx_n_s_np);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)</span>
@@ -1123,19 +1123,19 @@ static PyObject *__pyx_pf_11cython_loop_2stencil_loop_blocking(CYTHON_UNUSED PyO
 </pre><pre class="cython line score-0">&#xA0;<span class="">060</span>: </pre>
 <pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">061</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nhalo</span> <span class="o">=</span> <span class="mf">2</span> <span class="c"># size of array</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_nhalo = 2;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">062</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nx</span> <span class="o">=</span> <span class="mf">3653</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_nx = 0xE45;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">063</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">ny</span> <span class="o">=</span> <span class="mf">72</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_ny = 72;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">064</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nz</span> <span class="o">=</span> <span class="mf">144</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_nz = 0x90;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">062</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nx</span> <span class="o">=</span> <span class="mf">37</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_nx = 37;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">063</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">ny</span> <span class="o">=</span> <span class="mf">720</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_ny = 0x2D0;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">064</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">nz</span> <span class="o">=</span> <span class="mf">1440</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_nz = 0x5A0;
 </pre><pre class="cython line score-0">&#xA0;<span class="">065</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">066</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">blockx</span> <span class="o">=</span> <span class="mf">50</span> <span class="c"># regular block sizes</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_blockx = 50;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">067</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">blocky</span> <span class="o">=</span> <span class="mf">25</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_blocky = 25;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">068</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">blockz</span> <span class="o">=</span> <span class="mf">25</span></pre>
-<pre class='cython code score-0 '>  __pyx_v_blockz = 25;
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">066</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">blockx</span> <span class="o">=</span> <span class="mf">10</span> <span class="c"># regular block sizes</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_blockx = 10;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">067</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">blocky</span> <span class="o">=</span> <span class="mf">500</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_blocky = 0x1F4;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">068</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">blockz</span> <span class="o">=</span> <span class="mf">500</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_blockz = 0x1F4;
 </pre><pre class="cython line score-0">&#xA0;<span class="">069</span>: </pre>
 <pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">070</span>:     <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">blocki</span> <span class="o">=</span> <span class="n">nx</span><span class="o">//</span><span class="n">blockx</span><span class="o">+</span><span class="mf">1</span> <span class="c"># number of blocks in each direction</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_blocki = ((__pyx_v_nx / __pyx_v_blockx) + 1);
