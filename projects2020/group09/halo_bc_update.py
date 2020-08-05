@@ -1,5 +1,6 @@
 """
 Halo update functions for all python gapfilling routines
+Working, but slow
 
     @author: Ulrike Proske
     @date: 31 07 2020
@@ -25,7 +26,6 @@ def halo_update(data, tmp):
                     # left boundary:
                     # left 0
                     # var, time, lat, lon(-2,-1,0,1,2)
-                    #print(np.shape(box))
                     tmp[ivar,i,j,0] = numba_nanmean(data[ivar, i-2:i+3, j-2:j+3, np.r_[-2:3]].values)
                     # left 1
                     # var, time, lat, lon(-1,0,1,2,3)
@@ -69,7 +69,7 @@ def halo_update(data, tmp):
                     tmp[ivar,-1,j,k] = numba_nanmean(data[ivar,np.r_[-3:0],j-2:j+2,k-2:k+2].values)
                     # end -2
                     tmp[ivar,-2,j,k] = numba_nanmean(data[ivar,np.r_[-4:0],j-2:j+2,k-2:k+2].values)
-        # corners
+        # corners: call them up written out explicitly
         # 4 corners in time=0-level
         tmp[ivar,0,0,0] = numba_nanmean(data[ivar,0:3,0:3,np.r_[-2:3]].values)
         tmp[ivar,0,0,1] = numba_nanmean(data[ivar,0:3,0:3,np.r_[-1:4]].values)
@@ -153,14 +153,14 @@ print(f'subset even more because very large dataset')
 data = data[:,::100,:,:]
 print(data.shape)
 
-# numpy
+# numpy as a reference
 tic = datetime.now()
 footprint = np.ones((1,5,5,5))
 tmp = generic_filter(data, np.nanmean, footprint=footprint, mode='nearest')
 toc = datetime.now()
 print(f'numpy {toc-tic}')
 
-# numba njit
+# numba njit without halo update
 @numba.njit
 def numba_nanmean(values):
     return np.nanmean(values)
@@ -170,7 +170,7 @@ tmp = generic_filter(data, numba_nanmean, footprint=footprint, mode='nearest')
 toc = datetime.now()
 print(f'numba without halo_update {toc-tic}')
 
-# numba njit
+# numba njit with halo update
 @numba.njit
 def numba_nanmean(values):
     return np.nanmean(values)
@@ -185,166 +185,4 @@ tmp = generic_filter(data, numba_nanmean, footprint=footprint, mode='wrap')
 vali = np.isclose(result[:,2:-2,2:-2,:], tmp[:,2:-2,2:-2,:], equal_nan=True).all()
 print(f'numba with halo_update validates inside longitudinal halos against generic_filter(..., mode=wrap): {vali}')
 print(f'numba with halo_update {toc-tic}')
-
-"""
-# unnecessary, ignore
-
-def halo_stencil_l3(v,w):
-        # careful, l3 and l4 have different shapes for time and lat
-        if np.shape(v)[0] == 3: # time
-            print('time l3')
-            return v[0,0,0] * w[0,0,0] +
-                   v[0,0,1] * w[0,0,1] + 
-                   v[0,0,2] * w[0,0,2] +
-                   v[0,0,3] * w[0,0,3] +
-                   v[0,0,4] * w[0,0,4] +
-                   v[0,1,0] * w[0,1,0] +
-                   v[0,1,1] * w[0,1,1] +
-                   v[0,1,2] * w[0,1,2] +
-                   v[0,1,3] * w[0,1,3] +
-                   v[0,1,4] * w[0,1,4] +
-                   v[0,2,0] * w[0,2,0] +
-                   v[0,2,1] * w[0,2,1] +
-                   v[0,2,2] * w[0,2,2] +
-                   v[0,2,3] * w[0,2,3] +
-                   v[0,2,4] * w[0,2,4] +
-                   v[0,3,0] * w[0,3,0] +
-                   v[0,3,1] * w[0,3,1] +
-                   v[0,3,2] * w[0,3,2] +
-                   v[0,3,3] * w[0,3,3] +
-                   v[0,3,4] * w[0,3,4] +
-                   v[0,4,0] * w[0,4,0] +
-                   v[0,4,1] * w[0,4,1] +
-                   v[0,4,2] * w[0,4,2] +
-                   v[0,4,3] * w[0,4,3] +
-                   v[0,4,4] * w[0,4,4] +
-                   v[1,0,0] * w[1,0,0] +
-                   v[1,0,1] * w[1,0,1] +
-                   v[1,0,2] * w[1,0,2] +
-                   v[1,0,3] * w[1,0,3] +
-                   v[1,0,4] * w[1,0,4] +
-                   v[1,1,0] * w[1,1,0] +
-                   v[1,1,1] * w[1,1,1] +
-                   v[1,1,2] * w[1,1,2] +
-                   v[1,1,3] * w[1,1,3] +
-                   v[1,1,4] * w[1,1,4] +
-                   v[1,2,0] * w[1,2,0] +
-                   v[1,2,1] * w[1,2,1] +
-                   v[1,2,2] * w[1,2,2] +
-                   v[1,2,3] * w[1,2,3] +
-                   v[1,2,4] * w[1,2,4] +
-                   v[1,3,0] * w[1,3,0] +
-                   v[1,3,1] * w[1,3,1] +
-                   v[1,3,2] * w[1,3,2] +
-                   v[1,3,3] * w[1,3,3] +
-                   v[1,3,4] * w[1,3,4] +
-                   v[1,4,0] * w[1,4,0] +
-                   v[1,4,1] * w[1,4,1] +
-                   v[1,4,2] * w[1,4,2] +
-                   v[1,4,3] * w[1,4,3] +
-                   v[1,4,4] * w[1,4,4] +
-                   v[2,0,0] * w[2,0,0] +
-                   v[2,0,1] * w[2,0,1] +
-                   v[2,0,2] * w[2,0,2] +
-                   v[2,0,3] * w[2,0,3] +
-                   v[2,0,4] * w[2,0,4] +
-                   v[2,1,0] * w[2,1,0] +
-                   v[2,1,1] * w[2,1,1] +
-                   v[2,1,2] * w[2,1,2] +
-                   v[2,1,3] * w[2,1,3] +
-                   v[2,1,4] * w[2,1,4] +
-                   v[2,2,0] * w[2,2,0] +
-                   v[2,2,1] * w[2,2,1] +
-                   v[2,2,2] * w[2,2,2] +
-                   v[2,2,3] * w[2,2,3] +
-                   v[2,2,4] * w[2,2,4] +
-                   v[2,3,0] * w[2,3,0] +
-                   v[2,3,1] * w[2,3,1] +
-                   v[2,3,2] * w[2,3,2] +
-                   v[2,3,3] * w[2,3,3] +
-                   v[2,3,4] * w[2,3,4] +
-                   v[2,4,0] * w[2,4,0] +
-                   v[2,4,1] * w[2,4,1] +
-                   v[2,4,2] * w[2,4,2] +
-                   v[2,4,3] * w[2,4,3] +
-                   v[2,4,4] * w[2,4,4]
-        if np.shape(v)[1] == 3: # lat
-            print('time l3')
-            return v[0,0,0] * w[0,0,0] +
-                   v[0,0,1] * w[0,0,1] + 
-                   v[0,0,2] * w[0,0,2] +
-                   v[0,0,3] * w[0,0,3] +
-                   v[0,0,4] * w[0,0,4] +
-                   v[0,1,0] * w[0,1,0] +
-                   v[0,1,1] * w[0,1,1] +
-                   v[0,1,2] * w[0,1,2] +
-                   v[0,1,3] * w[0,1,3] +
-                   v[0,1,4] * w[0,1,4] +
-                   v[0,2,0] * w[0,2,0] +
-                   v[0,2,1] * w[0,2,1] +
-                   v[0,2,2] * w[0,2,2] +
-                   v[0,2,3] * w[0,2,3] +
-                   v[0,2,4] * w[0,2,4] +
-                   v[1,0,0] * w[1,0,0] +
-                   v[1,0,1] * w[1,0,1] +
-                   v[1,0,2] * w[1,0,2] +
-                   v[1,0,3] * w[1,0,3] +
-                   v[1,0,4] * w[1,0,4] +
-                   v[1,1,0] * w[1,1,0] +
-                   v[1,1,1] * w[1,1,1] +
-                   v[1,1,2] * w[1,1,2] +
-                   v[1,1,3] * w[1,1,3] +
-                   v[1,1,4] * w[1,1,4] +
-                   v[1,2,0] * w[1,2,0] +
-                   v[1,2,1] * w[1,2,1] +
-                   v[1,2,2] * w[1,2,2] +
-                   v[1,2,3] * w[1,2,3] +
-                   v[1,2,4] * w[1,2,4] +
-                   v[1,3,0] * w[1,3,0] +
-                   v[2,0,0] * w[2,0,0] +
-                   v[2,0,1] * w[2,0,1] +
-                   v[2,0,2] * w[2,0,2] +
-                   v[2,0,3] * w[2,0,3] +
-                   v[2,0,4] * w[2,0,4] +
-                   v[2,1,0] * w[2,1,0] +
-                   v[2,1,1] * w[2,1,1] +
-                   v[2,1,2] * w[2,1,2] +
-                   v[2,1,3] * w[2,1,3] +
-                   v[2,1,4] * w[2,1,4] +
-                   v[2,2,0] * w[2,2,0] +
-                   v[2,2,1] * w[2,2,1] +
-                   v[2,2,2] * w[2,2,2] +
-                   v[2,2,3] * w[2,2,3] +
-                   v[2,2,4] * w[2,2,4] +
-                   v[3,0,0] * w[3,0,0] +
-                   v[3,0,1] * w[3,0,1] +
-                   v[3,0,2] * w[3,0,2] +
-                   v[3,0,3] * w[3,0,3] +
-                   v[3,0,4] * w[3,0,4] +
-                   v[3,1,0] * w[3,1,0] +
-                   v[3,1,1] * w[3,1,1] +
-                   v[3,1,2] * w[3,1,2] +
-                   v[3,1,3] * w[3,1,3] +
-                   v[3,1,4] * w[3,1,4] +
-                   v[3,2,0] * w[3,2,0] +
-                   v[3,2,1] * w[3,2,1] +
-                   v[3,2,2] * w[3,2,2] +
-                   v[3,2,3] * w[3,2,3] +
-                   v[3,2,4] * w[3,2,4] +
-                   v[4,0,0] * w[4,0,0] +
-                   v[4,0,1] * w[4,0,1] +
-                   v[4,0,2] * w[4,0,2] +
-                   v[4,0,3] * w[4,0,3] +
-                   v[4,0,4] * w[4,0,4] +
-                   v[4,1,0] * w[4,1,0] +
-                   v[4,1,1] * w[4,1,1] +
-                   v[4,1,2] * w[4,1,2] +
-                   v[4,1,3] * w[4,1,3] +
-                   v[4,1,4] * w[4,1,4] +
-                   v[4,2,0] * w[4,2,0] +
-                   v[4,2,1] * w[4,2,1] +
-                   v[4,2,2] * w[4,2,2] +
-                   v[4,2,3] * w[4,2,3] +
-                   v[4,2,4] * w[4,2,4]
-"""
 

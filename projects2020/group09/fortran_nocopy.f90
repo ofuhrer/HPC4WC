@@ -45,21 +45,20 @@ program main
 
     character(len=7) :: outfile
 
-    integer, parameter :: lblocking = 1 ! 1; blocking with blocks as specified below, 0: no blocking
-    integer, parameter :: lwriteout = 1 ! 1: write out the fields (careful! do that only when they are not too large)
+    integer, parameter :: lblocking = 0 ! 1; blocking with blocks as specified below, 0: no blocking
+    ! Choose to write out the results for a validation with baseline_fortran_check.py:
+    integer, parameter :: lwriteout = 0 ! 1: write out the fields (careful! do that only when they are not too large)
     ! 0: don't write any netcdf files
 
     nvar = 3
-    nx = 37 !3653
-    ny = 14 !1440
-    nz = 72 !720
+    nx = 3653 !3653
+    ny = 1440 !1440
+    nz = 720 !720
     blockx = 100
     blocky = 100
     blockz = 100
 
     CALL setup()
-
-    !WRITE(*,*) in_field
 
     if (lwriteout == 1) then
             outfile = 'foin.nc'
@@ -116,11 +115,13 @@ contains
         integer :: il, jl, kl
         real(kind=wp) :: tmp, tmpm
 
+        ! loop over all data points
         do k = 1+nhalo, nz-nhalo
         do j = 1+nhalo, ny-nhalo
         do i = 1+nhalo, nx-nhalo
             tmp = 0
             tmpm = 0
+            ! loop over surrounding box
             do il = i-2,i+2
             do jl = j-2,j+2
             do kl = k-2,k+2
@@ -130,7 +131,6 @@ contains
             end do
             end do
             out_field(ivar,i,j,k) = tmp / max(tmpm, 1.0_wp)
-            !write(*,*) 'tmp: ', tmp,'tmpm: ', tmpm, 'outfield: ', out_field(ivar,i,j,k)
         end do
         end do
         end do
@@ -151,20 +151,25 @@ contains
         integer :: il, jl, kl
         real(kind=wp) :: tmp, tmpm
 
+        ! loop over blocks
         do block_k = 0, nz/blockz+1 ! +1 to include all points even if the block size does not fit the dimension
         do block_j = 0, ny/blocky+1
         do block_i = 0, nx/blockx+1
+        ! loop inside blocks
         do k_local = 1, blockz
         do j_local = 1, blocky
         do i_local = 1, blockx
+            ! construct absolute indices
             k = blockz*block_k + k_local
             j = blocky*block_j + j_local
             i = blockx*block_i + i_local
+            ! ignore if we're inside the halo zone
             if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
                cycle
             end if
             tmp = 0
             tmpm = 0
+            ! loop over surrounding box
             do il = i-2,i+2
             do jl = j-2,j+2
             do kl = k-2,k+2
@@ -173,6 +178,7 @@ contains
             end do
             end do
             end do
+            ! result = sum of all points in the box / number of values in the box
             out_field(ivar,i,j,k) = tmp / max(tmpm, 1.0_wp)
         end do
         end do
@@ -183,7 +189,7 @@ contains
     end subroutine weightsumnanmean_combined_blocking
 
     ! setup everything before work
-    ! (init timers, allocate memory, initialize fields)
+    ! (allocate memory, initialize fields)
     subroutine setup()
         !use m_utils, only : timer_init
         implicit none
@@ -202,7 +208,8 @@ contains
         do j = 1, ny
         do i = 1, nx
         do h = 1, nvar
-                ! Since fortran does not have nans, we set all values below 0.5 to 0 and treat them as nans here
+                ! Since fortran does not have nans, we set all values below 0.5 to 0 and treat them as nans here,
+                ! using the mask construct
                 if (in_field(h,i,j,k) < 0.5) then
                         mask(h,i,j,k) = 0.0_wp
                         in_field(h,i,j,k) = 0.0_wp
@@ -251,10 +258,6 @@ contains
         CALL check(nf90_def_dim(ncid, "var", nvar, var_dimid))
 
         ! Define coordinate variables
-        !CALL check(nf90_def_var(ncid, "lon", NF90_REAL, x_dimid, x_varid))
-        !CALL check(nf90_def_var(ncid, "lat", NF90_REAL, y_dimid, y_varid))
-        !CALL check(nf90_def_var(ncid, "time", NF90_REAL, t_dimid, t_varid))
-        !CALL check(nf90_def_var(ncid, "var", NF90_REAL, var_dimid, var_varid))
         dimids = (/ var_dimid, x_dimid, y_dimid, t_dimid /) ! not the right order
 
         ! Define variable
@@ -262,9 +265,6 @@ contains
         CALL check(nf90_enddef(ncid)) !End Definitions
 
         ! Write Data
-        !CALL check(nf90_put_var(ncid, x_varid, xpos))
-        !CALL check(nf90_put_var(ncid, y_varid, ypos))
-        !CALL check(nf90_put_var(ncid, t_varid, tpos))
         CALL check(nf90_put_var(ncid, varid, idata))
         CALL check(nf90_close(ncid))
 !

@@ -44,21 +44,19 @@ program main
 
     character(len=7) :: outfile
 
-    integer, parameter :: lblocking = 0 ! 1; blocking with blocks as specified below, 0: no blocking
-    integer, parameter :: lwriteout = 0 ! 1: write out the fields (careful! do that only when they are not too large)
+    integer, parameter :: lblocking = 1 ! 1; blocking with blocks as specified below, 0: no blocking
+    integer, parameter :: lwriteout = 1 ! 1: write out the fields (careful! do that only when they are not too large)
     ! 0: don't write any netcdf files
 
     nvar = 3
     nx = 36 !3653
-    ny = 1440 !1440
-    nz = 720 !720
+    ny = 14 !1440
+    nz = 72 !720
     blockx = 100
     blocky = 100
     blockz = 100
 
     CALL setup()
-
-    !WRITE(*,*) in_field
 
     if (lwriteout == 1) then
             outfile = 'foin.nc'
@@ -74,7 +72,9 @@ program main
 
     do ivar = 1, nvar
         if (lblocking == 1) then
+            ! First compute the weights
             CALL weightsum_blocking(mask(ivar,:,:,:), weights(ivar,:,:,:))
+            ! Then compute the filtered data, using the weights
             CALL nanmean_blocking(in_field(ivar,:,:,:), weights(ivar,:,:,:), mask(ivar,:,:,:), out_field(ivar,:,:,:))
         else
             CALL weightsum(mask(ivar,:,:,:), weights(ivar,:,:,:))
@@ -125,6 +125,7 @@ contains
 
     subroutine weightsum_blocking(mask, weights)
         ! sum surrounding mask points into the weights
+        ! utilizing blocking
         implicit none
 
         ! argument
@@ -134,20 +135,23 @@ contains
         ! local
         integer :: i, j, k, block_i, block_j, block_k, k_local, j_local, i_local
 
+        ! loop over block
         do block_k = 0, nz/blockz+1 ! +1 to include all points even if the block size does not fit the dimension
         do block_j = 0, ny/blocky+1
         do block_i = 0, nx/blockx+1
+        ! loop inside blocks
         do k_local = 1, blockz
         do j_local = 1, blocky
         do i_local = 1, blockx
+            ! construct absolute indices
             k = blockz*block_k + k_local
             j = blocky*block_j + j_local
             i = blockx*block_i + i_local
+            ! ignore if we're inside the halo zone
             if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
                cycle
             end if
             CALL weights_stencil(mask(i-2:i+2,j-2:j+2,k-2:k+2), weights(i,j,k))
-            !write(*,*) weights(i,j,k)
         end do
         end do
         end do
@@ -181,6 +185,7 @@ contains
 
     subroutine nanmean_blocking(in_field, weights, mask, out_field)
         ! loop over all points of a certain var-field and compute generic_filter for each
+        ! utilizing blocking
         implicit none
 
         ! argument
@@ -193,7 +198,7 @@ contains
         integer :: i, j, k, block_i, block_j, block_k, k_local, j_local, i_local
 
         do block_k = 0, nz/blockz+1 ! for decimals that cut off a block +1
-        do block_j = 0, ny/blocky+1 ! TODO: this could probably be done in a smarter way
+        do block_j = 0, ny/blocky+1 ! this could probably be done in a smarter way
         do block_i = 0, nx/blockx+1 ! but looping over too many should not be very expensive
         do k_local = 1, blockz
         do j_local = 1, blocky
@@ -201,12 +206,9 @@ contains
             k = blockz*block_k + k_local
             j = blocky*block_j + j_local
             i = blockx*block_i + i_local
-            !write(*,*) i,j,k,1+nhalo,nz-nhalo,ny-nhalo,nx-nhalo
             if (k < 1+nhalo .or. k > nz-nhalo .or. j < 1+nhalo .or. j > ny-nhalo .or. i < 1+nhalo .or. i > nx-nhalo) then
                cycle
             end if
-            !write(*,*) 'b'
-            !write(*,*) weights(i,j,k)
             CALL nanmean_stencil(in_field(i-2:i+2,j-2:j+2,k-2:k+2), mask(i-2:i+2,j-2:j+2,k-2:k+2), weights(i,j,k), out_field(i,j,k))
         end do
         end do
@@ -259,6 +261,7 @@ contains
     end subroutine setup
 
     subroutine nanmean_stencil(v, w, wvalue, outvalue)
+            ! Actual stencil computation
 
             implicit none
 
@@ -382,6 +385,7 @@ contains
     end subroutine
 
     subroutine weights_stencil(w, outvalue)
+            ! Actual stencil computation for the weights
 
             implicit none
 
@@ -450,10 +454,6 @@ contains
         CALL check(nf90_def_dim(ncid, "var", nvar, var_dimid))
 
         ! Define coordinate variables
-        !CALL check(nf90_def_var(ncid, "lon", NF90_REAL, x_dimid, x_varid))
-        !CALL check(nf90_def_var(ncid, "lat", NF90_REAL, y_dimid, y_varid))
-        !CALL check(nf90_def_var(ncid, "time", NF90_REAL, t_dimid, t_varid))
-        !CALL check(nf90_def_var(ncid, "var", NF90_REAL, var_dimid, var_varid))
         dimids = (/ var_dimid, x_dimid, y_dimid, t_dimid /) ! not the original order, but that does not really matter
 
         ! Define variable
@@ -461,9 +461,6 @@ contains
         CALL check(nf90_enddef(ncid)) !End Definitions
 
         ! Write Data
-        !CALL check(nf90_put_var(ncid, x_varid, xpos))
-        !CALL check(nf90_put_var(ncid, y_varid, ypos))
-        !CALL check(nf90_put_var(ncid, t_varid, tpos))
         CALL check(nf90_put_var(ncid, varid, idata))
         CALL check(nf90_close(ncid))
 !
