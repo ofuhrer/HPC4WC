@@ -22,7 +22,7 @@ data = np.full((3,3653,720,1440), np.nan)
 data[:,:,landlat,landlon] = data_flat['tp']
 
 # make smaller for faster comparison
-data = data[:,::100,:,:]
+#data = data[:,::100,:,:]
 data = data.astype(np.float32)
 data = xr.DataArray(data)
 print(f'data shape is {data.shape}')
@@ -203,4 +203,4 @@ result = result / weights
 result = np.where(weights == 0, np.nan, result)
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'concurrent futures parallel over vars with cython block {toc-tic}, validated: {vali}')
+print(f'concurrent futures parAllel over vars with cython block {toc-tic}, validated: {vali}')
