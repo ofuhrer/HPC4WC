@@ -45,7 +45,7 @@ program main
 
     character(len=7) :: outfile
 
-    integer, parameter :: lblocking = 0 ! 1; blocking with blocks as specified below, 0: no blocking
+    integer, parameter :: lblocking = 1 ! 1; blocking with blocks as specified below, 0: no blocking
     ! Choose to write out the results for a validation with baseline_fortran_check.py:
     integer, parameter :: lwriteout = 0 ! 1: write out the fields (careful! do that only when they are not too large)
     ! 0: don't write any netcdf files

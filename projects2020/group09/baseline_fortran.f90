@@ -45,16 +45,18 @@ program main
     character(len=7) :: outfile
 
     integer, parameter :: lblocking = 1 ! 1; blocking with blocks as specified below, 0: no blocking
-    integer, parameter :: lwriteout = 1 ! 1: write out the fields (careful! do that only when they are not too large)
+    integer, parameter :: lwriteout = 0 ! 1: write out the fields (careful! do that only when they are not too large)
     ! 0: don't write any netcdf files
 
+    ! dataset size
     nvar = 3
-    nx = 36 !3653
-    ny = 14 !1440
-    nz = 72 !720
-    blockx = 100
-    blocky = 100
-    blockz = 100
+    nx = 365 !3653
+    ny = 1440 !1440
+    nz = 720 !720
+    ! blocking size
+    blockx = 200
+    blocky = 200
+    blockz = 200
 
     CALL setup()
 
