@@ -15,7 +15,10 @@ void updateHalo(Storage3D<double>& inField) {
   const int xInterior = inField.xMax() - inField.xMin();
   const int yInterior = inField.yMax() - inField.yMin();
 
+#pragma omp parallel
+  {
   // bottom edge (without corners)
+#pragma omp for collapse(2) nowait
   for(std::size_t k = 0; k < inField.zMax(); ++k) {
     for(std::size_t j = 0; j < inField.yMin(); ++j) {
       for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
@@ -25,6 +28,7 @@ void updateHalo(Storage3D<double>& inField) {
   }
 
   // top edge (without corners)
+#pragma omp for collapse(2) nowait
   for(std::size_t k = 0; k < inField.zMax(); ++k) {
     for(std::size_t j = inField.yMax(); j < inField.ySize(); ++j) {
       for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
@@ -34,6 +38,7 @@ void updateHalo(Storage3D<double>& inField) {
   }
 
   // left edge (including corners)
+#pragma omp for collapse(2) nowait
   for(std::size_t k = 0; k < inField.zMax(); ++k) {
     for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
       for(std::size_t i = 0; i < inField.xMin(); ++i) {
@@ -43,12 +48,14 @@ void updateHalo(Storage3D<double>& inField) {
   }
 
   // right edge (including corners)
+#pragma omp for collapse(2) nowait
   for(std::size_t k = 0; k < inField.zMax(); ++k) {
     for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
       for(std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
         inField(i, j, k) = inField(i - xInterior, j, k);
       }
     }
+  }
   }
 }
 
@@ -64,6 +71,7 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
     for(std::size_t k = 0; k < inField.zMax(); ++k) {
 
       // apply the initial laplacian
+#pragma omp parallel for
       for(std::size_t j = inField.yMin() - 1; j < inField.yMax() + 1; ++j) {
         for(std::size_t i = inField.xMin() - 1; i < inField.xMax() + 1; ++i) {
           tmp1Field(i, j, 0) = -4.0 * inField(i, j, k) + inField(i - 1, j, k) +
@@ -72,6 +80,7 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
       }
 
       // apply the second laplacian
+#pragma omp parallel for
       for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
         for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
           double laplap = -4.0 * tmp1Field(i, j, 0) + tmp1Field(i - 1, j, 0) +
