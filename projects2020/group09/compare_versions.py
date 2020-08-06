@@ -20,8 +20,9 @@ lsm = xr.open_dataarray('/net/so4/landclim/bverena/large_files/landmask_idebug_F
 landlat, landlon = np.where(lsm)
 data = np.full((3,3653,720,1440), np.nan)
 data[:,:,landlat,landlon] = data_flat['tp']
+
 # make smaller for faster comparison
-data = data[:,::100,:,:]
+#data = data[:,::100,:,:]
 data = data.astype(np.float32)
 data = xr.DataArray(data)
 print(f'data shape is {data.shape}')
@@ -35,18 +36,17 @@ toc = datetime.now()
 print(f'numpy omitted for speed')
 
 # numba njit
-@numba.njit
-def numba_nanmean(values):
-    return np.nanmean(values)
-tic = datetime.now()
-footprint = np.ones((1,5,5,5))
-tmp = generic_filter(data, numba_nanmean, footprint=footprint, mode='nearest')
-toc = datetime.now()
-print(f'numba njit {toc-tic}')
+if False:
+    @numba.njit
+    def numba_nanmean(values):
+        return np.nanmean(values)
+    tic = datetime.now()
+    footprint = np.ones((1,5,5,5))
+    tmp = generic_filter(data, numba_nanmean, footprint=footprint, mode='nearest')
+    toc = datetime.now()
+    print(f'numba.njit {toc-tic}')
 
-if irun:
 # numba stencil
-#@numba.stencil(neighborhood = ((-2,2),(-2,2),(-2,2))) # not necessary
     @numba.stencil
     def _sum(w):
         return (w[-2,-2,2] + w[-2,-1,2] + w[-2,0,2] + w[-2,+1,2] + w[-2,+2,2] +
@@ -78,14 +78,6 @@ if irun:
                 w[0,-2,-2] + w[0,-1,-2] + w[0,0,-2] + w[0,+1,-2] + w[0,+2,-2] +
                 w[+1,-2,-2] + w[+1,-1,-2] + w[+1,0,-2] + w[+1,+1,-2] + w[+1,+2,-2] +
                 w[+2,-2,-2] + w[+2,-1,-2] + w[+2,0,-2] + w[+2,+1,-2] + w[+2,+2,-2])
-        #return (w[-1,0,0] + w[+1,0,0] + w[0,-1,0] + w[0,+1,0] +
-        #        w[-1,-1,0] + w[+1,+1,0] + w[-1,+1,0] + w[+1,-1,0] + w[0,0,0] +
-
-        #        w[-1,0,1] + w[+1,0,1] + w[0,-1,1] + w[0,+1,1] +
-        #        w[-1,-1,1] + w[+1,+1,1] + w[-1,+1,1] + w[+1,-1,1] + w[0,0,1] +
-
-        #        w[-1,0,-1] + w[+1,0,-1] + w[0,-1,-1] + w[0,+1,-1] +
-        #        w[-1,-1,-1] + w[+1,+1,-1] + w[-1,+1,-1] + w[+1,-1,-1] + w[0,0,-1])
 
     mask = ~ np.isnan(data.values)
     datanum = np.nan_to_num(data)
@@ -102,7 +94,7 @@ if irun:
     result = np.where(weights == 0, np.nan, result)
     toc = datetime.now()
     vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-    print(f'stencil {toc-tic}, validated: {vali}')
+    print(f'numba.stencil {toc-tic}, validated: {vali}')
 
 # numba stencil and njit
     @numba.njit
@@ -122,7 +114,7 @@ if irun:
     result = np.where(weights == 0, np.nan, result)
     toc = datetime.now()
     vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-    print(f'stencil + njit {toc-tic}, validated: {vali}')
+    print(f'numba.stencil + numba.njit {toc-tic}, validated: {vali}')
 
 # cython stencil
 from cython_loop import stencil_loop
@@ -140,11 +132,30 @@ weights[1,:,:,:] = stencil_loop(mask[1,:,:,:])
 weights[2,:,:,:] = stencil_loop(mask[2,:,:,:])
 result = result / weights
 result = np.where(weights == 0, np.nan, result)
+tmp = result
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'cython {toc-tic}, validated: {vali}')
+print(f'cython with stencil {toc-tic}, validated: {vali}')
 
-# cython stencil
+# cython stencil oli
+from cython_loop2 import run
+tic = datetime.now()
+data = data.astype(np.float64)
+result = run(data.values)
+toc = datetime.now()
+vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
+print(f'cython with loop {toc-tic}, validated: {vali}')
+
+# cython stencil oli blocked
+from cython_loop2 import run_block
+tic = datetime.now()
+data = data.astype(np.float64)
+result = run_block(data.values)
+toc = datetime.now()
+vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
+print(f'cython with loop, blocked {toc-tic}, validated: {vali}')
+
+# cython stencil with blocking
 from cython_loop import stencil_loop_blocking as stencil_loop
 mask = (~ np.isnan(data.values) *1.)
 mask = mask.astype(np.float32)
@@ -161,7 +172,7 @@ result = result / weights
 result = np.where(weights == 0, np.nan, result)
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'cython block {toc-tic}, validated: {vali}')
+print(f'cython stencil, blocked {toc-tic}, validated: {vali}')
 
 # parallelise over variables with concurrent.futures
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -192,4 +203,4 @@ result = result / weights
 result = np.where(weights == 0, np.nan, result)
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'concurrent futures parallel over vars with cython block {toc-tic}, validated: {vali}')
+print(f'concurrent futures parAllel over vars with cython block {toc-tic}, validated: {vali}')
