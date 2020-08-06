@@ -176,7 +176,8 @@ print(f'cython stencil, blocked {toc-tic}, validated: {vali}')
 
 # parallelise over variables with concurrent.futures
 from concurrent.futures.thread import ThreadPoolExecutor
-from cython_loop import stencil_loop_blocking as stencil_loop
+from cython_loop import stencil_loop
+datanum = np.nan_to_num(data)
 mask = (~ np.isnan(data.values) *1.)
 mask = mask.astype(np.float32)
 tic = datetime.now()
@@ -203,4 +204,5 @@ result = result / weights
 result = np.where(weights == 0, np.nan, result)
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'concurrent futures parAllel over vars with cython block {toc-tic}, validated: {vali}')
+print(f'concurrent futures parAllel over vars with cython stencil {toc-tic}, validated: {vali}')
+#print(f'concurrent futures parallel over vars with cython stencil {toc-tic}')#, validated: {vali}')
