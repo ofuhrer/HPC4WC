@@ -44,7 +44,7 @@ if False:
     footprint = np.ones((1,5,5,5))
     tmp = generic_filter(data, numba_nanmean, footprint=footprint, mode='nearest')
     toc = datetime.now()
-    print(f'numba njit {toc-tic}')
+    print(f'numba.njit {toc-tic}')
 
 # numba stencil
     @numba.stencil
@@ -94,7 +94,7 @@ if False:
     result = np.where(weights == 0, np.nan, result)
     toc = datetime.now()
     vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-    print(f'stencil {toc-tic}, validated: {vali}')
+    print(f'numba.stencil {toc-tic}, validated: {vali}')
 
 # numba stencil and njit
     @numba.njit
@@ -114,7 +114,7 @@ if False:
     result = np.where(weights == 0, np.nan, result)
     toc = datetime.now()
     vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-    print(f'stencil + njit {toc-tic}, validated: {vali}')
+    print(f'numba.stencil + numba.njit {toc-tic}, validated: {vali}')
 
 # cython stencil
 from cython_loop import stencil_loop
@@ -135,7 +135,7 @@ result = np.where(weights == 0, np.nan, result)
 tmp = result
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'cython {toc-tic}, validated: {vali}')
+print(f'cython with stencil {toc-tic}, validated: {vali}')
 
 # cython stencil oli
 from cython_loop2 import run
@@ -144,7 +144,7 @@ data = data.astype(np.float64)
 result = run(data.values)
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'cython oli {toc-tic}, validated: {vali}')
+print(f'cython with loop {toc-tic}, validated: {vali}')
 
 # cython stencil oli blocked
 from cython_loop2 import run_block
@@ -153,7 +153,7 @@ data = data.astype(np.float64)
 result = run_block(data.values)
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'cython oli {toc-tic}, validated: {vali}')
+print(f'cython with loop, blocked {toc-tic}, validated: {vali}')
 
 # cython stencil with blocking
 from cython_loop import stencil_loop_blocking as stencil_loop
@@ -172,7 +172,7 @@ result = result / weights
 result = np.where(weights == 0, np.nan, result)
 toc = datetime.now()
 vali = np.isclose(result[:,2:-2,2:-2,2:-2], tmp[:,2:-2,2:-2,2:-2], equal_nan=True).all()
-print(f'cython block {toc-tic}, validated: {vali}')
+print(f'cython stencil, blocked {toc-tic}, validated: {vali}')
 
 # parallelise over variables with concurrent.futures
 from concurrent.futures.thread import ThreadPoolExecutor

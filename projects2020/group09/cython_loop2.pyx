@@ -65,13 +65,13 @@ def run_block(np.ndarray[DTYPE_t, ndim=4] arr):
     cdef int count
 
     cdef int nhalo = 2 # size of array
-    cdef int nx = 37
+    cdef int nx = 3653
     cdef int ny = 720
     cdef int nz = 1440
 
-    cdef int blockx = 10 # regular block sizes
-    cdef int blocky = 500
-    cdef int blockz = 500
+    cdef int blockx = 180 # regular block sizes
+    cdef int blocky = 180
+    cdef int blockz = 180
 
     cdef int blocki = nx//blockx+1 # number of blocks in each direction
     cdef int blockj = ny//blocky+1
