@@ -1,0 +1,26 @@
+Operator `Kernel` run in 3.04 s
+time: 3.98852242808789
+Operator `Kernel` run in 1.68 s
+time: 1.8279494382441044
+Operator `Kernel` run in 1.19 s
+time: 1.3482368788681924
+Operator `Kernel` run in 1.00 s
+time: 1.1611613710410893
+srun: Job 24818784 step creation temporarily disabled, retrying (Requested nodes are busy)
+srun: Step created for job 24818784
+Operator `Kernel` run in 0.91 s
+time: 1.0531354630365968
+Operator `Kernel` run in 0.85 s
+time: 0.9974354598671198
+Operator `Kernel` run in 0.85 s
+time: 1.0099950730800629
+Operator `Kernel` run in 0.84 s
+time: 0.9956602263264358
+Operator `Kernel` run in 0.83 s
+time: 0.9858018839731812
+Operator `Kernel` run in 0.82 s
+time: 0.9756999448873103
+Operator `Kernel` run in 0.81 s
+time: 1.0029651122167706
+Operator `Kernel` run in 0.82 s
+time: 0.9725103098899126

@@ -1,0 +1,15 @@
+Operator `Kernel` run in 0.01 s
+Operator `Kernel` run in 0.01 s
+Operator `Kernel` run in 0.02 s
+Operator `Kernel` run in 0.04 s
+Operator `Kernel` run in 0.20 s
+Operator `Kernel` run in 2.27 s
+Operator `Kernel` run in 18.91 s
+time GPU
+nx = 8
+nx = 16
+nx = 32
+nx = 64
+nx = 128
+nx = 256
+nx = 512
