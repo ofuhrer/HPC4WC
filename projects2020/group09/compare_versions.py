@@ -36,7 +36,8 @@ toc = datetime.now()
 print(f'numpy omitted for speed')
 
 # numba njit
-if False:
+# Set this to False to easily turn off the slow numba computations
+if True:
     @numba.njit
     def numba_nanmean(values):
         return np.nanmean(values)
