@@ -1,0 +1,66 @@
+This Readme-file contains information on the use of the files realted to the GT4Py implementation of the sea ice parameterization.
+For information on the use of other files please have a look at the main Readme file.
+
+----------------------------------------
+
+PYTHON
+main.py
+Runs and validates the sea ice parameterization in plain python.
+
+sea_ice.py
+Sea ice parameterization in plain python.
+
+sea_ice_timer.py
+Sea ice parameterization in plain python with a timer to measure performance.
+
+----------------------------------------
+
+GT4PY
+main_gt4py.py
+Runs and validates the sea ice parameterization in GT4Py.
+
+sea_ice_gt4py.py
+GT4Py implementation of the sea ice parameterization. This file contains one single stencil.
+
+sea_ice_gt4py_3sten.py
+GT4Py implementation of the sea ice parameterization.
+This file contains three individual stencils, because a workaround for the backend gtcuda had to be applied such that it compiled.
+
+----------------------------------------
+
+main_performance.py
+Runs performance tests with plain python and different GT4Py backends and plots the results.
+
+sea_ice_getpoints.py
+Writes land/sea point and sea-ice points to file to compute a mask.
+Attention, this is a dirty file. The file has to be adapted, such that both points are saved.
+The file raises an error, when the first point is saved to file.
+
+obj
+This repository contains a land/sea point and a sea-ice point, which were used to initialize the arrays for the performance tests.
+
+ice.dat
+land.dat
+These are the sea ice and land points, respectivley. They are needed to initialize the arrays for the performance tests. 
+
+----------------------------------------
+
+PLOTTING        
+plot_fortran.py
+boxplot_fortran.py
+boxplot_python.py
+These are the plotting scripts to generate the plots shown in the report. 
+
+----------------------------------------
+
+main_performance_cpu_time.F
+Runs performance tests of the fortran implementation of the sea ice parameterisation using the cpu_time command.
+
+main_performance_system_clock.F
+Runs performance tests of the fortran implementation of the sea ice parameterisation using the system_clock command.
+
+----------------------------------------
+
+results_non_optimized.dat
+results_optimized.dat
+These are the performance data from the Fortran runs with optimized compiler options and no compiler options. 
