@@ -46,14 +46,14 @@ public:
     }
   }
 
-  const std::size_t xMin() const { return halosize_; }
-  const std::size_t xMax() const { return xsize_ - halosize_; }
-  const std::size_t xSize() const { return xsize_; }
-  const std::size_t yMin() const { return halosize_; }
-  const std::size_t yMax() const { return ysize_ - halosize_; }
-  const std::size_t ySize() const { return ysize_; }
-  const std::size_t zMin() const { return 0; }
-  const std::size_t zMax() const { return zsize_; }
+  std::size_t xMin() const { return halosize_; }
+  std::size_t xMax() const { return xsize_ - halosize_; }
+  std::size_t xSize() const { return xsize_; }
+  std::size_t yMin() const { return halosize_; }
+  std::size_t yMax() const { return ysize_ - halosize_; }
+  std::size_t ySize() const { return ysize_; }
+  std::size_t zMin() const { return 0; }
+  std::size_t zMax() const { return zsize_; }
 
 private:
   int32_t xsize_, ysize_, zsize_, halosize_;

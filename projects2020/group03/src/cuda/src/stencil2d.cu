@@ -101,10 +101,13 @@ int main(int argc, char const* argv[]) {
 #ifdef CRAYPAT
   PAT_record(PAT_STATE_ON);
 #endif
+  // Synchronize the host and device so that the timings are accurate
+  cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 
   apply_diffusion_gpu(input, output, alpha, iter, x, y, z, nHalo);
 
+  cudaDeviceSynchronize();
   auto end = std::chrono::steady_clock::now();
 #ifdef CRAYPAT
   PAT_record(PAT_STATE_OFF);
