@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "update_halo.h"
 #include "apply_diffusion.h"
+#include "apply_diffusion_fused.h"
 
 void reportTime(const Storage3D<realType>& storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
@@ -52,6 +53,7 @@ int main(int argc, char const* argv[]) {
   auto start = std::chrono::steady_clock::now();
 
   apply_diffusion(input, output, alpha, iter, x, y, z, nHalo);
+  //apply_diffusion_fused(input, output, alpha, iter, x, y, z, nHalo);
 
   auto end = std::chrono::steady_clock::now();
 #ifdef CRAYPAT
