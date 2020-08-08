@@ -4,8 +4,8 @@
 #include "apply_stencil.cuh"
 
 __global__
-void apply_stencil(double const *infield,
-                   double *outfield,
+void apply_stencil(realType const *infield,
+                   realType *outfield,
                    int const xMin,
                    int const xMax,
                    int const xSize,
@@ -13,10 +13,10 @@ void apply_stencil(double const *infield,
                    int const yMax,
                    int const ySize,
                    int const zMax,
-                   double const alpha) {
+                   realType const alpha) {
   // shared memory buffers
-  __shared__ double buffer1[10][10][1];
-  __shared__ double buffer2[10][10][1];
+  __shared__ realType buffer1[10][10][1];
+  __shared__ realType buffer2[10][10][1];
   // local 3D indexes for buffer1/buffer2
   int const li = threadIdx.x + 1;
   int const lj = threadIdx.y + 1;
@@ -91,7 +91,7 @@ void apply_stencil(double const *infield,
   // apply the initial laplacian
   if (i >= xMin - 1 && i < xMax + 1 &&
       j >= yMin - 1 && j < yMax + 1 && k < zMax) {
-    double const value = -4.0 * buffer1[li][lj][lk]
+    realType const value = -4.0 * buffer1[li][lj][lk]
                               + buffer1[li-1][lj][lk]
                               + buffer1[li+1][lj][lk]
                               + buffer1[li][lj-1][lk]
@@ -103,7 +103,7 @@ void apply_stencil(double const *infield,
   // apply the second laplacian
   if (i >= xMin && i < xMax &&
       j >= yMin && j < yMax && k < zMax) {
-    double const value = -4.0 * buffer2[li][lj][lk]
+    realType const value = -4.0 * buffer2[li][lj][lk]
                               + buffer2[li-1][lj][lk]
                               + buffer2[li+1][lj][lk]
                               + buffer2[li][lj-1][lk]

@@ -11,7 +11,7 @@
 
 namespace {
 
-void updateHalo(Storage3D<double>& inField) {
+void updateHalo(Storage3D<realType>& inField) {
   const int xInterior = inField.xMax() - inField.xMin();
   const int yInterior = inField.yMax() - inField.yMin();
 
@@ -59,10 +59,10 @@ void updateHalo(Storage3D<double>& inField) {
   }
 }
 
-void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, double alpha,
+void apply_diffusion(Storage3D<realType>& inField, Storage3D<realType>& outField, realType alpha,
                      unsigned numIter, int x, int y, int z, int halo) {
 
-  Storage3D<double> tmp1Field(x, y, z, halo);
+  Storage3D<realType> tmp1Field(x, y, z, halo);
 
   for(std::size_t iter = 0; iter < numIter; ++iter) {
 
@@ -83,7 +83,7 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
 #pragma omp parallel for
       for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
         for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-          double laplap = -4.0 * tmp1Field(i, j, 0) + tmp1Field(i - 1, j, 0) +
+          realType laplap = -4.0 * tmp1Field(i, j, 0) + tmp1Field(i - 1, j, 0) +
                           tmp1Field(i + 1, j, 0) + tmp1Field(i, j - 1, 0) + tmp1Field(i, j + 1, 0);
 
           // and update the field
@@ -98,7 +98,7 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
   }
 }
 
-void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
+void reportTime(const Storage3D<realType>& storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
   int size;
 #pragma omp parallel
@@ -123,12 +123,12 @@ int main(int argc, char const* argv[]) {
   int iter = atoi(argv[8]);
   int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
-  Storage3D<double> input(x, y, z, nHalo);
+  Storage3D<realType> input(x, y, z, nHalo);
   input.initialize();
-  Storage3D<double> output(x, y, z, nHalo);
+  Storage3D<realType> output(x, y, z, nHalo);
   output.initialize();
 
-  double alpha = 1. / 32.;
+  realType alpha = 1. / 32.;
 
   std::ofstream fout;
   fout.open("in_field.dat", std::ios::binary | std::ofstream::trunc);

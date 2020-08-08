@@ -9,7 +9,7 @@
 #endif
 #include "utils.h"
 
-void updateHalo(Storage3D<double>& inField) {
+void updateHalo(Storage3D<realType>& inField) {
   const int xInterior = inField.xMax() - inField.xMin();
   const int yInterior = inField.yMax() - inField.yMin();
 
@@ -50,18 +50,18 @@ void updateHalo(Storage3D<double>& inField) {
   }
 }
 
-void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, double alpha,
+void apply_diffusion(Storage3D<realType>& inField, Storage3D<realType>& outField, realType alpha,
                      unsigned numIter, int x, int y, int z, int halo) {
 
-  Storage3D<double> tmp1Field(x, y, z, halo);
+  Storage3D<realType> tmp1Field(x, y, z, halo);
 
   for(std::size_t iter = 0; iter < numIter; ++iter) {
 
     updateHalo(inField);
-    double a1 = -1. * alpha;
-    double a2 = -2. * alpha;
-    double a8 = 8. * alpha;
-    double a20 = 1. - 20. * alpha;
+    realType a1 = -1. * alpha;
+    realType a2 = -2. * alpha;
+    realType a8 = 8. * alpha;
+    realType a20 = 1. - 20. * alpha;
 
     for(std::size_t k = 0; k < inField.zMax(); ++k) {
 
@@ -92,7 +92,7 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
   }
 }
 
-void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
+void reportTime(const Storage3D<realType>& storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
   int size;
 #pragma omp parallel
@@ -116,12 +116,12 @@ int main(int argc, char const* argv[]) {
   int iter = atoi(argv[8]);
   int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
-  Storage3D<double> input(x, y, z, nHalo);
+  Storage3D<realType> input(x, y, z, nHalo);
   input.initialize();
-  Storage3D<double> output(x, y, z, nHalo);
+  Storage3D<realType> output(x, y, z, nHalo);
   output.initialize();
 
-  double alpha = 1. / 32.;
+  realType alpha = 1. / 32.;
 
   std::ofstream fout;
   fout.open("in_field.dat", std::ios::binary | std::ofstream::trunc);

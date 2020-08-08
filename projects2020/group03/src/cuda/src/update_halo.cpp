@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "update_halo.h"
 
-void updateHalo(Storage3D<double>& inField) {
+void updateHalo(Storage3D<realType>& inField) {
   const int xInterior = inField.xMax() - inField.xMin();
   const int yInterior = inField.yMax() - inField.yMin();
 

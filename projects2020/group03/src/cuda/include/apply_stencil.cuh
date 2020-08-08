@@ -1,10 +1,11 @@
 #pragma once
 #include <iostream>
 #include <cuda.h>
+#include "common_types.h"
 
 __global__
-void apply_stencil(double const *infield,
-                   double *outfield,
+void apply_stencil(realType const *infield,
+                   realType *outfield,
                    int const xMin,
                    int const xMax,
                    int const xSize,
@@ -12,4 +13,4 @@ void apply_stencil(double const *infield,
                    int const yMax,
                    int const ySize,
                    int const zMax,
-                   double const alpha);
+                   realType const alpha);

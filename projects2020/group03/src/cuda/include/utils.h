@@ -2,6 +2,7 @@
 
 #include <ostream>
 #include <vector>
+#include "common_types.h"
 
 template <typename T>
 class Storage3D {
@@ -14,7 +15,7 @@ public:
 
   void writeFile(std::ostream& os) {
     int32_t three = 3;
-    int32_t sixtyfour = 64;
+    int32_t sixtyfour = 8*sizeof(realType);
     int32_t writehalo = halosize_;
     int32_t writex = xsize_;
     int32_t writey = ysize_;
@@ -29,7 +30,7 @@ public:
     for(std::size_t k = 0; k < zsize_; ++k) {
       for(std::size_t j = 0; j < ysize_; ++j) {
         for(std::size_t i = 0; i < xsize_; ++i) {
-          os.write(reinterpret_cast<const char*>(&operator()(i, j, k)), sizeof(double));
+          os.write(reinterpret_cast<const char*>(&operator()(i, j, k)), sizeof(realType));
         }
       }
     }

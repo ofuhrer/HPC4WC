@@ -13,8 +13,8 @@
 #include "apply_diffusion.h"
 #include "apply_stencil.cuh"
 
-void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField,
-                         double alpha, unsigned numIter, int x, int y, int z, int halo) {
+void apply_diffusion_gpu(Storage3D<realType>& inField, Storage3D<realType>& outField,
+                         realType alpha, unsigned numIter, int x, int y, int z, int halo) {
   // Utils
   std::size_t const xSize = inField.xSize();
   std::size_t const ySize = inField.ySize();
@@ -24,10 +24,10 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
   std::size_t const yMax = inField.yMax();
   std::size_t const zMin = inField.zMin();
   std::size_t const zMax = inField.zMax();
-  std::size_t const size = sizeof(double) * xSize * ySize * zMax;
+  std::size_t const size = sizeof(realType) * xSize * ySize * zMax;
 
   // Allocate space on device memory and copy data from host
-  double *infield, *outfield;
+  realType *infield, *outfield;
   //cuInit(0);
   cudaMalloc((void **)&infield, size);
   cudaMalloc((void **)&outfield, size);
@@ -63,7 +63,7 @@ void apply_diffusion_gpu(Storage3D<double>& inField, Storage3D<double>& outField
   cudaFree(outfield);
 }
 
-void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
+void reportTime(const Storage3D<realType>& storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
   int size = 1;
 //#pragma omp parallel
@@ -87,12 +87,12 @@ int main(int argc, char const* argv[]) {
   int iter = atoi(argv[8]);
   int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
-  Storage3D<double> input(x, y, z, nHalo);
+  Storage3D<realType> input(x, y, z, nHalo);
   input.initialize();
-  Storage3D<double> output(x, y, z, nHalo);
+  Storage3D<realType> output(x, y, z, nHalo);
   output.initialize();
 
-  double alpha = 1. / 32.;
+  realType alpha = 1. / 32.;
 
   std::ofstream fout;
   fout.open("in_field.dat", std::ios::binary | std::ofstream::trunc);
