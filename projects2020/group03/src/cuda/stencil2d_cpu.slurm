@@ -11,8 +11,8 @@
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-nx=1024
-ny=1024
+nx=128
+ny=128
 nz=64
 niter=1024
 

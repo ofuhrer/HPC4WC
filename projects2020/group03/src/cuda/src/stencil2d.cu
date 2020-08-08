@@ -2,7 +2,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
-//#include <omp.h>
+#include <omp.h>
 #include <cuda.h>
 
 #ifdef CRAYPAT
@@ -66,11 +66,11 @@ void apply_diffusion_gpu(Storage3D<realType>& inField, Storage3D<realType>& outF
 void reportTime(const Storage3D<realType>& storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
   int size = 1;
-//#pragma omp parallel
-//  {
-//#pragma omp master
-//    { size = omp_get_num_threads(); }
-//  }
+#pragma omp parallel
+  {
+#pragma omp master
+    { size = omp_get_num_threads(); }
+  }
   std::cout << "[ " << size << ", " << storage.xMax() - storage.xMin() << ", "
             << storage.yMax() - storage.yMin() << ", " << storage.zMax() << ", " << nIter << ", "
             << diff << "],\n";
