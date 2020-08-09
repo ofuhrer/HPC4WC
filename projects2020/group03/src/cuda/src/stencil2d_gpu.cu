@@ -13,8 +13,10 @@
 //#include "apply_diffusion.h"
 #include "apply_stencil.cuh"
 
-void apply_diffusion_gpu(Storage3D<realType>& inField, Storage3D<realType>& outField,
-                         realType alpha, unsigned numIter, int x, int y, int z, int halo) {
+void apply_diffusion_gpu(Storage3D<realType>& inField,
+                         Storage3D<realType>& outField,
+                         realType const alpha,
+                         unsigned const numIter) {
   // Utils
   std::size_t const xSize = inField.xSize();
   std::size_t const ySize = inField.ySize();
@@ -38,24 +40,11 @@ void apply_diffusion_gpu(Storage3D<realType>& inField, Storage3D<realType>& outF
                (yMax + blockDim.y - 1) / blockDim.y,
                (zMax + blockDim.z - 1) / blockDim.z);
 
-  //cudaEvent_t tic, toc;
-  //cudaEventCreate(&tic);
-  //cudaEventCreate(&toc);
-  //cudaEventRecord(tic);
-
   for(std::size_t iter = 0; iter < numIter; ++iter) {
     apply_stencil<<<gridDim, blockDim>>>(infield, outfield, xMin, xMax, xSize, yMin, yMax, ySize, zMax, alpha);
     cudaDeviceSynchronize();
     if ( iter != numIter - 1 ) std::swap(infield, outfield);
   }
-
-  //cudaEventRecord(toc);
-  //cudaEventSynchronize(toc);
-  //float telapsed = -1;
-  //cudaEventElapsedTime(&telapsed, tic, toc);
-  //std::cout << "telapsed: " << telapsed << std::endl;
-  //cudaEventDestroy(tic);
-  //cudaEventDestroy(toc);
 
   // Copy result from device to host and free device memory
   cudaMemcpy(&outField(0, 0, 0), outfield, size, cudaMemcpyDeviceToHost);
@@ -105,7 +94,7 @@ int main(int argc, char const* argv[]) {
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 
-  apply_diffusion_gpu(input, output, alpha, iter, x, y, z, nHalo);
+  apply_diffusion_gpu(input, output, alpha, iter);
 
   cudaDeviceSynchronize();
   auto end = std::chrono::steady_clock::now();

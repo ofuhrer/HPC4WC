@@ -14,9 +14,12 @@
 #include "apply_stencil.cuh"
 #include "apply_stencil_cpu.h"
 
-void apply_diffusion_hybrid(Storage3D<realType>& inField, Storage3D<realType>& outField,
-                            realType alpha, unsigned numIter, int x, int y, int z, int halo,
-                            double percent_cpu) {
+void apply_diffusion_hybrid(Storage3D<realType>& inField,
+                            Storage3D<realType>& outField,
+                            Storage3D<realType>& buffer,
+                            realType const alpha,
+                            unsigned const numIter,
+                            double const percent_cpu) {
   // Utils
   std::size_t const xSize = inField.xSize();
   std::size_t const ySize = inField.ySize();
@@ -46,7 +49,7 @@ void apply_diffusion_hybrid(Storage3D<realType>& inField, Storage3D<realType>& o
   //cudaEventCreate(&toc);
   //cudaEventRecord(tic);
 
-  Storage3D<realType> buffer(x, y, 1, halo);
+  //Storage3D<realType> buffer(x, y, 1, halo);
 
   for(std::size_t iter = 0; iter < numIter; ++iter) {
     // GPU code (Control returns directly to the CPU)
@@ -114,11 +117,12 @@ int main(int argc, char const* argv[]) {
 #ifdef CRAYPAT
   PAT_record(PAT_STATE_ON);
 #endif
+  Storage3D<realType> buffer(x, y, 1, nHalo);
   // Synchronize the host and device so that the timings are accurate
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 
-  apply_diffusion_hybrid(input, output, alpha, iter, x, y, z, nHalo, percent_cpu);
+  apply_diffusion_hybrid(input, output, buffer, alpha, iter, percent_cpu);
 
   cudaDeviceSynchronize();
   auto end = std::chrono::steady_clock::now();
