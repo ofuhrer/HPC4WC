@@ -5,14 +5,14 @@ module m_diffusion_openacc_split
   public :: apply_diffusion
   contains
     subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter)
-      use, intrinsic :: iso_fortran_env, only: REAL32
+      use, intrinsic :: iso_fortran_env, only: REAL64
       use m_partitioner, only: Partitioner
       use m_halo, only: update_halo
 
-      real(kind = REAL32), intent(inout) :: in_field(:, :, :)
-      real(kind = REAL32), intent(inout) :: out_field(:, :, :)
+      real(kind = REAL64), intent(inout) :: in_field(:, :, :)
+      real(kind = REAL64), intent(inout) :: out_field(:, :, :)
       integer, intent(in) :: num_halo
-      real(kind = REAL32), intent(in) :: alpha
+      real(kind = REAL64), intent(in) :: alpha
       type(Partitioner), intent(in) :: p
       integer, intent(in) :: num_iter
 
@@ -20,10 +20,10 @@ module m_diffusion_openacc_split
       integer :: i
       integer :: j
       integer :: k
-      real(kind = REAL32) :: alpha_20
-      real(kind = REAL32) :: alpha_08
-      real(kind = REAL32) :: alpha_02
-      real(kind = REAL32) :: alpha_01
+      real(kind = REAL64) :: alpha_20
+      real(kind = REAL64) :: alpha_08
+      real(kind = REAL64) :: alpha_02
+      real(kind = REAL64) :: alpha_01
       integer :: nx
       integer :: ny
       integer :: nz

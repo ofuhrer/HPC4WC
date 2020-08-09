@@ -11,14 +11,14 @@ module m_halo_openmp_mpi
 #ifdef __INTEL_COMPILER
       !DIR$ ATTRIBUTES FORCEINLINE :: update_halo
 #endif
-      use, intrinsic :: iso_fortran_env, only: REAL32
+      use, intrinsic :: iso_fortran_env, only: REAL64
       use mpi, only: &
         MPI_SUCCESS, MPI_FLOAT, MPI_STATUS_IGNORE
         ! MPI_Isend, MPI_Irecv
       use m_utils, only: error
       use m_partitioner, only: Partitioner
 
-      real(kind = REAL32), intent(inout) :: field(:, :, :)
+      real(kind = REAL64), intent(inout) :: field(:, :, :)
       integer, intent(in) :: num_halo
       type(Partitioner), intent(in) :: p
 
@@ -29,23 +29,23 @@ module m_halo_openmp_mpi
 
       integer :: s_send_req
       integer :: s_recv_req
-      real(kind = REAL32), allocatable :: s_send_buf(:, :, :)
-      real(kind = REAL32), allocatable :: s_recv_buf(:, :, :)
+      real(kind = REAL64), allocatable :: s_send_buf(:, :, :)
+      real(kind = REAL64), allocatable :: s_recv_buf(:, :, :)
 
       integer :: n_send_req
       integer :: n_recv_req
-      real(kind = REAL32), allocatable :: n_send_buf(:, :, :)
-      real(kind = REAL32), allocatable :: n_recv_buf(:, :, :)
+      real(kind = REAL64), allocatable :: n_send_buf(:, :, :)
+      real(kind = REAL64), allocatable :: n_recv_buf(:, :, :)
 
       integer :: w_send_req
       integer :: w_recv_req
-      real(kind = REAL32), allocatable :: w_send_buf(:, :, :)
-      real(kind = REAL32), allocatable :: w_recv_buf(:, :, :)
+      real(kind = REAL64), allocatable :: w_send_buf(:, :, :)
+      real(kind = REAL64), allocatable :: w_recv_buf(:, :, :)
 
       integer :: e_send_req
       integer :: e_recv_req
-      real(kind = REAL32), allocatable :: e_send_buf(:, :, :)
-      real(kind = REAL32), allocatable :: e_recv_buf(:, :, :)
+      real(kind = REAL64), allocatable :: e_send_buf(:, :, :)
+      real(kind = REAL64), allocatable :: e_recv_buf(:, :, :)
 
       nx = size(field, 1) - 2 * num_halo
       ny = size(field, 2) - 2 * num_halo

@@ -12,9 +12,9 @@ endif ()
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include (Flags)
 
-find_package (OpenMP  REQUIRED)
-find_package (MPI     REQUIRED)
-find_package (OpenACC         )
+find_package (OpenMP REQUIRED COMPONENTS Fortran CXX)
+find_package (MPI    )# REQUIRED COMPONENTS Fortran CXX)
+find_package (OpenACC)
 
 add_subdirectory (src)
 
