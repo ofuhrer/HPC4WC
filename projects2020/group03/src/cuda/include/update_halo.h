@@ -3,4 +3,4 @@
 #include "utils.h"
 #include "common_types.h"
 
-void updateHalo(Storage3D<realType>& inField);
+void updateHalo(Storage3D<realType>& inField, std::size_t k0 = 0);
