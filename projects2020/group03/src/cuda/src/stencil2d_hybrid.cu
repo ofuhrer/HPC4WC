@@ -19,7 +19,7 @@ void apply_diffusion_hybrid(Storage3D<realType>& inField,
                             Storage3D<realType>& buffer,
                             realType const alpha,
                             unsigned const numIter,
-                            double const percent_cpu) {
+                            double const z_slices_on_cpu) {
   // Utils
   std::size_t const xSize = inField.xSize();
   std::size_t const ySize = inField.ySize();
@@ -29,7 +29,7 @@ void apply_diffusion_hybrid(Storage3D<realType>& inField,
   std::size_t const yMax = inField.yMax();
   std::size_t const zMin = inField.zMin();
   std::size_t const zMax = inField.zMax();
-  std::size_t const zMax_gpu = (1 - percent_cpu) * zMax;
+  std::size_t const zMax_gpu = zMax - z_slices_on_cpu;
   std::size_t const size = sizeof(realType) * xSize * ySize * zMax_gpu;
 
   // Allocate space on device memory and copy data from host
@@ -98,11 +98,11 @@ int main(int argc, char const* argv[]) {
   int y = atoi(argv[4]);
   int z = atoi(argv[6]);
   int iter = atoi(argv[8]);
-  double percent_cpu = atof(argv[10]);
+  int z_slices_on_cpu = atoi(argv[10]);
   int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
-  assert(percent_cpu >= 0 && percent_cpu <= 1);
-  std::cout << "Offloaded: " << percent_cpu * 100 << "% on the CPU" << std::endl;
+  assert(z_slices_on_cpu >= 0 && z_slices_on_cpu <= z);
+  std::cout << "Offloaded " << z_slices_on_cpu << " / " << z << " slices on the CPU" << std::endl;
   Storage3D<realType> input(x, y, z, nHalo);
   input.initialize();
   Storage3D<realType> output(x, y, z, nHalo);
@@ -122,7 +122,7 @@ int main(int argc, char const* argv[]) {
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 
-  apply_diffusion_hybrid(input, output, buffer, alpha, iter, percent_cpu);
+  apply_diffusion_hybrid(input, output, buffer, alpha, iter, z_slices_on_cpu);
 
   cudaDeviceSynchronize();
   auto end = std::chrono::steady_clock::now();

@@ -11,13 +11,22 @@
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-nx=1024
-ny=1024
+nx=128
+ny=128
 nz=64
 niters=1024
-percent_cpu=0.04
+z_slices_on_cpu=1
 
-srun               ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --percent_cpu $percent_cpu
-srun nvprof        ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --percent_cpu $percent_cpu
-#srun cuda-memcheck ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --percent_cpu $percent_cpu
+for nxy in 128 256 512 1024
+do
+    srun ./stencil2d_gpu.x --nx $nxy --ny $nxy --nz $nz --niters $niters
+    for z_slices_on_cpu in 1 2 3 4 5
+    do
+        srun ./stencil2d_hybrid.x --nx $nxy --ny $nxy --nz $nz --niters $niters --z_slices_on_cpu $z_slices_on_cpu
+    done
+done
+
+#srun               ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --z_slices_on_cpu $z_slices_on_cpu
+#srun nvprof        ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --z_slices_on_cpu $z_slices_on_cpu
+#srun cuda-memcheck ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --z_slices_on_cpu $z_slices_on_cpu
 

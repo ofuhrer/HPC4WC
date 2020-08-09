@@ -16,7 +16,12 @@ ny=1024
 nz=64
 niters=1024
 
-srun               ./stencil2d_gpu.x --nx $nx --ny $ny --nz $nz --niters $niters
-srun nvprof        ./stencil2d_gpu.x --nx $nx --ny $ny --nz $nz --niters $niters
+for nxy in 128 256 512 1024
+do
+    srun ./stencil2d_gpu.x --nx $nxy --ny $nxy --nz $nz --niters $niters
+done
+
+#srun               ./stencil2d_gpu.x --nx $nx --ny $ny --nz $nz --niters $niters
+#srun nvprof        ./stencil2d_gpu.x --nx $nx --ny $ny --nz $nz --niters $niters
 #srun cuda-memcheck ./stencil2d_gpu.x --nx $nx --ny $ny --nz $nz --niters $niters
 

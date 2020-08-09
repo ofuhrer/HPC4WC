@@ -16,7 +16,13 @@ ny=128
 nz=64
 niter=1024
 
-srun ./stencil2d_cpu.x --nx $nx --ny $ny --nz $nz --num_iter $niter
+for nxy in 128 256 512 1024
+do
+    for z_slices_on_cpu in 64 32 1
+    do
+        srun ./stencil2d_cpu.x --nx $nxy --ny $nxy --nz $nz --num_iter $niter --z_slices_on_cpu $z_slices_on_cpu
+    done
+done
 
 #nthreads=1
 #echo "out = [None] * 21" > out_cpu.txt

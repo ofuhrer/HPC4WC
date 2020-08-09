@@ -33,8 +33,11 @@ int main(int argc, char const* argv[]) {
   int y = atoi(argv[4]);
   int z = atoi(argv[6]);
   int numIter = atoi(argv[8]);
+  int z_slices_on_cpu = atoi(argv[10]);
   int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && numIter > 0);
+  assert(z_slices_on_cpu >= 0 && z_slices_on_cpu <= z);
+  std::cout << "Processing " << z_slices_on_cpu << " / " << z << " slices on the CPU" << std::endl;
   Storage3D<realType> input(x, y, z, nHalo);
   input.initialize();
   Storage3D<realType> output(x, y, z, nHalo);
@@ -53,8 +56,8 @@ int main(int argc, char const* argv[]) {
   auto start = std::chrono::steady_clock::now();
 
   for(std::size_t iter = 0; iter < numIter; ++iter) {
-    updateHalo(input);
-    apply_stencil_cpu(input, output, buffer, alpha, iter, numIter);
+    updateHalo(input, z - z_slices_on_cpu);
+    apply_stencil_cpu(input, output, buffer, alpha, iter, numIter, z - z_slices_on_cpu);
   }
 
   auto end = std::chrono::steady_clock::now();
