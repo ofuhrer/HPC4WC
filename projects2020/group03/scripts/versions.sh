@@ -4,8 +4,8 @@ set -euo pipefail
 IFS=$'\n\t'
 
 versions=(
-	"orig/stencil2d-orig"
-	"mpi/stencil2d-mpi"
+#	"orig/stencil2d-orig" # uses floats instead of doubles
+#	"mpi/stencil2d-mpi"
 	"seq/stencil2d_seq"
 	"seq/stencil2d_seq_base_cpp"
 	"seq/stencil2d_seq_base_array_cpp"

@@ -1,0 +1,40 @@
+[@ build/cray/src/seq @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq
+[@ build/cray/src/seq @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_cpp
+[@ build/cray/src/seq @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_array_cpp
+[@ build/cray/src/seq @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_arrayFusion_cpp
+# [@ build/cray/src/openmp @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp
+[@ build/cray/src/openmp_target @]  ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp_target
+# [@ build/cray/src/openmp_split @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp_split
+# [@ build/cray/src/openacc @]        ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc
+[@ build/cray/src/openacc @]        ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-base-array-acc
+[@ build/cray/src/openacc @]        ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-acc
+[@ build/cray/src/openacc_split @]  ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc_split
+
+[@ build/gnu/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq
+[@ build/gnu/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_cpp
+[@ build/gnu/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_array_cpp
+[@ build/gnu/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_arrayFusion_cpp
+[@ build/gnu/src/openmp @]          ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp
+[@ build/gnu/src/openmp_target @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp_target
+# [@ build/gnu/src/openmp_split @]    ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp_split
+[@ build/gnu/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc
+[@ build/gnu/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-base-array-acc
+[@ build/gnu/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-acc
+[@ build/gnu/src/openacc_split @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc_split
+
+[@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq
+[@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_cpp
+[@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_array_cpp
+[@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_arrayFusion_cpp
+[@ build/intel/src/openmp @]        ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp
+
+[@ build/pgi/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq
+[@ build/pgi/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_cpp
+[@ build/pgi/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_array_cpp
+[@ build/pgi/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_arrayFusion_cpp
+# [@ build/pgi/src/openmp @]          ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp
+[@ build/pgi/src/openmp_target @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp_target
+[@ build/pgi/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc
+[@ build/pgi/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-base-array-acc
+[@ build/pgi/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-acc
+[@ build/pgi/src/openacc_split @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc_split

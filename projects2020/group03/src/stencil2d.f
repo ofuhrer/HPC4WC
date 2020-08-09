@@ -8,7 +8,7 @@
 
 ! Driver for apply_diffusion() that sets up fields and does timings
 program main
-    use, intrinsic :: iso_fortran_env, only: REAL32, REAL64
+    use, intrinsic :: iso_fortran_env, only: REAL64
     use mpi, only: MPI_COMM_WORLD
     use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
     use m_partitioner, only: Partitioner
@@ -19,12 +19,12 @@ program main
     logical :: scan
 
     integer :: num_halo = 2
-    real(kind = REAL32) :: alpha = 1.0_REAL32 / 32.0_REAL32
+    real(kind = REAL64) :: alpha = 1.0_REAL64 / 32.0_REAL64
 
-    real(kind = REAL32), allocatable :: in_field(:, :, :)
-    real(kind = REAL32), allocatable :: out_field(:, :, :)
-    real(kind = REAL32), allocatable :: in_field_p(:, :, :)
-    real(kind = REAL32), allocatable :: out_field_p(:, :, :)
+    real(kind = REAL64), allocatable :: in_field(:, :, :)
+    real(kind = REAL64), allocatable :: out_field(:, :, :)
+    real(kind = REAL64), allocatable :: in_field_p(:, :, :)
+    real(kind = REAL64), allocatable :: out_field_p(:, :, :)
 
     integer :: timer_work
     real(kind = REAL64) :: runtime
@@ -84,14 +84,14 @@ program main
     call finalize()
 contains
     subroutine calc(in_field, out_field, num_halo, alpha, num_iter)
-        use, intrinsic :: iso_fortran_env, only: REAL32
+        use, intrinsic :: iso_fortran_env, only: REAL64
         use m_partitioner, only: Partitioner
         use m_diffusion, only: apply_diffusion
 
-        real(kind = REAL32), intent(in) :: in_field(:, :, :)
-        real(kind = REAL32), intent(out) :: out_field(:, :, :)
+        real(kind = REAL64), intent(in) :: in_field(:, :, :)
+        real(kind = REAL64), intent(out) :: out_field(:, :, :)
         integer, intent(in) :: num_halo
-        real(kind = REAL32), intent(in) :: alpha
+        real(kind = REAL64), intent(in) :: alpha
         integer, intent(in) :: num_iter
 
         integer :: nx
@@ -99,8 +99,8 @@ contains
         integer :: nz
         integer :: ns(3)
         type(Partitioner) :: p
-        real(kind = REAL32), allocatable :: in_field_p(:, :, :)
-        real(kind = REAL32), allocatable :: out_field_p(:, :, :)
+        real(kind = REAL64), allocatable :: in_field_p(:, :, :)
+        real(kind = REAL64), allocatable :: out_field_p(:, :, :)
 
         nx = size(in_field, 1) - 2 * num_halo
         ny = size(in_field, 2) - 2 * num_halo
@@ -162,11 +162,11 @@ contains
         call timer_init()
 
         allocate(in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz))
-        in_field = 0.0_REAL32
+        in_field = 0.0_REAL64
         do k = 1 + nz / 4, 3 * nz / 4
         do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
         do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
-            in_field(i, j, k) = 1.0_REAL32
+            in_field(i, j, k) = 1.0_REAL64
         end do
         end do
         end do

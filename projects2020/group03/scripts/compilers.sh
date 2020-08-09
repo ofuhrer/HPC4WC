@@ -26,7 +26,7 @@ modules_gnu=(
 )
 modules_intel=(
 	"PrgEnv-intel"
-	"perftools-lite-gpu"
+#	"perftools-lite-gpu"
 )
 modules_cray=(
 	"PrgEnv-cray"
@@ -34,7 +34,7 @@ modules_cray=(
 )
 modules_pgi=(
 	"PrgEnv-pgi"
-	"perftools-lite-gpu"
+#	"perftools-lite-gpu"
 )
 
 load_compiler() {
@@ -48,4 +48,5 @@ load_compiler() {
 	modules_compiler="${modules_compiler}[@]"
 	module load ${!modules_compiler}
 	module load ${modules_post[@]}
+	module list
 }

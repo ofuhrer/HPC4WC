@@ -1,0 +1,3 @@
+[submodule "projects2020/group03/vendor/timemory"]
+	path = projects2020/group03/vendor/timemory
+	url = https://github.com/NERSC/timemory.git

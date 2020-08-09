@@ -11,9 +11,9 @@ module m_halo_seq
 #ifdef __INTEL_COMPILER
       !DIR$ ATTRIBUTES FORCEINLINE :: update_halo
 #endif
-      use, intrinsic :: iso_fortran_env, only: REAL32
+      use, intrinsic :: iso_fortran_env, only: REAL64
 
-      real(kind = REAL32), intent(inout) :: field(:, :, :)
+      real(kind = REAL64), intent(inout) :: field(:, :, :)
       integer, intent(in) :: num_halo
 
       integer :: nx
