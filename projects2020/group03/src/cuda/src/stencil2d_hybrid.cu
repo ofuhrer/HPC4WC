@@ -10,7 +10,7 @@
 #endif
 #include "utils.h"
 #include "update_halo.h"
-#include "apply_diffusion.h"
+//#include "apply_diffusion.h"
 #include "apply_stencil.cuh"
 #include "apply_stencil_cpu.h"
 

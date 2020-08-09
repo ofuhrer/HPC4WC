@@ -19,4 +19,5 @@ percent_cpu=0.04
 
 srun               ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --percent_cpu $percent_cpu
 srun nvprof        ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --percent_cpu $percent_cpu
-#srun cuda-memcheck ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters
+#srun cuda-memcheck ./stencil2d_hybrid.x --nx $nx --ny $ny --nz $nz --niters $niters --percent_cpu $percent_cpu
+

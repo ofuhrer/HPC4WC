@@ -10,7 +10,7 @@
 #endif
 #include "utils.h"
 #include "update_halo.h"
-#include "apply_diffusion.h"
+//#include "apply_diffusion.h"
 #include "apply_stencil.cuh"
 
 void apply_diffusion_gpu(Storage3D<realType>& inField, Storage3D<realType>& outField,

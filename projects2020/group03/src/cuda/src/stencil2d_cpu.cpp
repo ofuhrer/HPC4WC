@@ -53,8 +53,8 @@ int main(int argc, char const* argv[]) {
   auto start = std::chrono::steady_clock::now();
 
   for(std::size_t iter = 0; iter < numIter; ++iter) {
-    updateHalo(input, z / 2);
-    apply_stencil_cpu(input, output, buffer, alpha, iter, numIter, z / 2);
+    updateHalo(input);
+    apply_stencil_cpu(input, output, buffer, alpha, iter, numIter);
   }
 
   auto end = std::chrono::steady_clock::now();
