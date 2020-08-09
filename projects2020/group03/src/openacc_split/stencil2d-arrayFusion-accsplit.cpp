@@ -12,7 +12,7 @@
 #endif
 #include "../utils.h"
 
-#define split_factor 1
+float split_factor = 1.;
 
 typedef double float_type;
 // typedef float float_type;
@@ -613,6 +613,9 @@ int main(int argc, char const *argv[]) {
   unsigned int iter = atoi(argv[8]);
   int nHalo = 3;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
+
+  if (argc == 11)
+    split_factor = atof(argv[10]);
 
   std::size_t zsize, xsize, ysize;
   xsize = x + 2 * nHalo;

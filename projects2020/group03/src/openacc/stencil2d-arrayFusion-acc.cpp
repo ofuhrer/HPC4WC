@@ -117,86 +117,82 @@ void inline updateHalo(double *input, int32_t xsize, int32_t ysize,
 
   // todo : do you need the copy in?
   // #pragma acc data copyin(input [0:sizeOf3DField])
-  {
 // #pragma acc enter data
 // copyin(input [0:sizeOf3DField])
 // bottom edge (without corners)
 #pragma acc data present(input)
-    {
+  {
 #pragma acc parallel
-      {
+    {
 #pragma acc loop independent gang worker vector collapse(3)
-        for (std::size_t k = 0; k < zMax; ++k) {
-          for (std::size_t j = 0; j < yMin; ++j) {
-            for (std::size_t i = xMin; i < xMax; ++i) {
-              std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-              std::size_t ijp1k =
-                  i + ((j + yInterior) * xsize) + (k * xsize * ysize);
+      for (std::size_t k = 0; k < zMax; ++k) {
+        for (std::size_t j = 0; j < yMin; ++j) {
+          for (std::size_t i = xMin; i < xMax; ++i) {
+            std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
+            std::size_t ijp1k =
+                i + ((j + yInterior) * xsize) + (k * xsize * ysize);
 
-              input[ijk] = input[ijp1k];
-              // input[k][j][i] = input[k][j + yInterior][i];
-            }
+            input[ijk] = input[ijp1k];
+            // input[k][j][i] = input[k][j + yInterior][i];
           }
         }
+      }
 
-        // top edge (without corners)
+      // top edge (without corners)
 // #pragma acc parallel present(input) async(2)
 #pragma acc loop independent gang worker vector collapse(3)
-        for (std::size_t k = 0; k < zMax; ++k) {
-          for (std::size_t j = yMax; j < ysize; ++j) {
-            for (std::size_t i = xMin; i < xMax; ++i) {
-              std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-              std::size_t ijm1k =
-                  i + ((j - yInterior) * xsize) + (k * xsize * ysize);
+      for (std::size_t k = 0; k < zMax; ++k) {
+        for (std::size_t j = yMax; j < ysize; ++j) {
+          for (std::size_t i = xMin; i < xMax; ++i) {
+            std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
+            std::size_t ijm1k =
+                i + ((j - yInterior) * xsize) + (k * xsize * ysize);
 
-              input[ijk] = input[ijm1k];
-              // input[k][j][i] = input[k][j - yInterior][i];
-            }
+            input[ijk] = input[ijm1k];
+            // input[k][j][i] = input[k][j - yInterior][i];
           }
         }
+      }
 
-        // left edge (including corners)
+      // left edge (including corners)
 // #pragma acc parallel present(input) async(3)
 #pragma acc loop independent gang worker vector collapse(3)
-        for (std::size_t k = 0; k < zMax; ++k) {
-          for (std::size_t j = yMin; j < yMax; ++j) {
-            for (std::size_t i = 0; i < xMin; ++i) {
-              std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-              std::size_t ip1jk =
-                  i + xInterior + (j * xsize) + (k * xsize * ysize);
+      for (std::size_t k = 0; k < zMax; ++k) {
+        for (std::size_t j = yMin; j < yMax; ++j) {
+          for (std::size_t i = 0; i < xMin; ++i) {
+            std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
+            std::size_t ip1jk =
+                i + xInterior + (j * xsize) + (k * xsize * ysize);
 
-              input[ijk] = input[ip1jk];
-              // input[k][j][i] = input(i + xInterior, j, k);
-            }
+            input[ijk] = input[ip1jk];
+            // input[k][j][i] = input(i + xInterior, j, k);
           }
         }
+      }
 
-        // right edge (including corners)
+      // right edge (including corners)
 // #pragma acc parallel present(input) async(4)
 #pragma acc loop independent gang worker vector collapse(3)
-        for (std::size_t k = 0; k < zMax; ++k) {
-          for (std::size_t j = yMin; j < yMax; ++j) {
-            for (std::size_t i = xMax; i < xsize; ++i) {
-              std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-              std::size_t im1jk =
-                  i - xInterior + (j * xsize) + (k * xsize * ysize);
+      for (std::size_t k = 0; k < zMax; ++k) {
+        for (std::size_t j = yMin; j < yMax; ++j) {
+          for (std::size_t i = xMax; i < xsize; ++i) {
+            std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
+            std::size_t im1jk =
+                i - xInterior + (j * xsize) + (k * xsize * ysize);
 
-              input[ijk] = input[im1jk];
-              // input[k][j][i] = input[i - xInterior][j][k];
-            }
+            input[ijk] = input[im1jk];
+            // input[k][j][i] = input[i - xInterior][j][k];
           }
         }
       }
     }
   }
-  // #pragma acc exit data
-  // copyout(input [0:sizeOf3DField])
 } // namespace
 
 //
 
-void inline updateHalo_2(double *output, int32_t xsize, int32_t ysize,
-                         int32_t zsize, int32_t halosize) {
+void inline updateHalo_output(double *output, int32_t xsize, int32_t ysize,
+                              int32_t zsize, int32_t halosize) {
   std::size_t xMin = halosize;
   std::size_t xMax = xsize - halosize;
   std::size_t yMin = halosize;
@@ -463,7 +459,7 @@ int main(int argc, char const *argv[]) {
 #endif
 
   // updateHalo(output_3D);
-  updateHalo_2(output, xsize, ysize, zsize, nHalo);
+  updateHalo_output(output, xsize, ysize, zsize, nHalo);
 #pragma acc exit data copyout(output [0:sizeOf3DField]) delete (               \
     input [0:sizeOf3DField])
 
