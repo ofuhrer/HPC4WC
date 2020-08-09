@@ -12,10 +12,11 @@
 #include "update_halo.h"
 #include "apply_diffusion.h"
 #include "apply_stencil.cuh"
+#include "apply_stencil_cpu.h"
 
 void apply_diffusion_hybrid(Storage3D<realType>& inField, Storage3D<realType>& outField,
                             realType alpha, unsigned numIter, int x, int y, int z, int halo,
-                            double percent_cpu = 0.5) {
+                            double percent_cpu) {
   // Utils
   std::size_t const xSize = inField.xSize();
   std::size_t const ySize = inField.ySize();
@@ -45,8 +46,15 @@ void apply_diffusion_hybrid(Storage3D<realType>& inField, Storage3D<realType>& o
   //cudaEventCreate(&toc);
   //cudaEventRecord(tic);
 
+  Storage3D<realType> buffer(x, y, 1, halo);
+
   for(std::size_t iter = 0; iter < numIter; ++iter) {
+    // GPU code (Control returns directly to the CPU)
     apply_stencil<<<gridDim, blockDim>>>(infield, outfield, xMin, xMax, xSize, yMin, yMax, ySize, zMax_gpu, alpha);
+    // CPU code (Overlaps with GPU code)
+    updateHalo(inField, zMax_gpu);
+    apply_stencil_cpu(inField, outField, buffer, alpha, iter, numIter, zMax_gpu);
+    // Synchronize
     cudaDeviceSynchronize();
     if ( iter != numIter - 1 ) std::swap(infield, outfield);
   }
@@ -87,8 +95,11 @@ int main(int argc, char const* argv[]) {
   int y = atoi(argv[4]);
   int z = atoi(argv[6]);
   int iter = atoi(argv[8]);
+  double percent_cpu = atof(argv[10]);
   int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
+  assert(percent_cpu >= 0 && percent_cpu <= 1);
+  std::cout << "Offloaded: " << percent_cpu * 100 << "% on the CPU" << std::endl;
   Storage3D<realType> input(x, y, z, nHalo);
   input.initialize();
   Storage3D<realType> output(x, y, z, nHalo);
@@ -107,7 +118,7 @@ int main(int argc, char const* argv[]) {
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 
-  apply_diffusion_hybrid(input, output, alpha, iter, x, y, z, nHalo);
+  apply_diffusion_hybrid(input, output, alpha, iter, x, y, z, nHalo, percent_cpu);
 
   cudaDeviceSynchronize();
   auto end = std::chrono::steady_clock::now();
