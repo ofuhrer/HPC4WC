@@ -5,10 +5,15 @@ module m_halo_openmp
   public :: update_halo
   contains
     subroutine update_halo(field, num_halo)
+#ifdef _CRAYC
       !DIR$ INLINEALWAYS update_halo
-      use, intrinsic :: iso_fortran_env, only: REAL32
+#endif
+#ifdef __INTEL_COMPILER
+      !DIR$ ATTRIBUTES FORCEINLINE :: update_halo
+#endif
+      use, intrinsic :: iso_fortran_env, only: REAL64
 
-      real(kind = REAL32), intent(inout) :: field(:, :, :)
+      real(kind = REAL64), intent(inout) :: field(:, :, :)
       integer, intent(in) :: num_halo
 
       integer :: nx
@@ -23,7 +28,7 @@ module m_halo_openmp
       nz = size(field, 3)
 
       !$omp single
-      
+
       ! north
       !$omp task
       do k = 1, nz
@@ -34,7 +39,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! south
       !$omp task
       do k = 1, nz
@@ -45,7 +50,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! east
       !$omp task
       do k = 1, nz
@@ -56,7 +61,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! west
       !$omp task
       do k = 1, nz
@@ -67,7 +72,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! northeast
       !$omp task
       do k = 1, nz
@@ -78,7 +83,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! northwest
       !$omp task
       do k = 1, nz
@@ -89,7 +94,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! southeast
       !$omp task
       do k = 1, nz
@@ -100,7 +105,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       ! southwest
       !$omp task
       do k = 1, nz
@@ -111,7 +116,7 @@ module m_halo_openmp
         end do
       end do
       !$omp end task
-      
+
       !$omp taskwait
       !$omp end single
     end subroutine

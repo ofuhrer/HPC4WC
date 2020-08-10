@@ -1,4 +1,4 @@
-module m_diffusion_openmp_target
+module m_diffusion_openacc_split
   implicit none
   private
 
@@ -27,33 +27,28 @@ module m_diffusion_openmp_target
       integer :: nx
       integer :: ny
       integer :: nz
+      integer :: z_split
 
       nx = size(in_field, 1) - 2 * num_halo
       ny = size(in_field, 2) - 2 * num_halo
       nz = size(in_field, 3)
+      z_split = floor(0.85 * nz)
 
       alpha_20 = -20 * alpha + 1
       alpha_08 =   8 * alpha
       alpha_02 =  -2 * alpha
       alpha_01 =  -1 * alpha
 
-      !$omp target data &
-      !$omp   map(to: in_field) &
-      !$omp   map(from: out_field) &
-      !$omp   map(alloc: i, j, k)
+      !$acc enter data create(in_field, out_field)
+      !$acc update device(in_field(:, :, :z_split))
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
-        ! TODO: update halo on GPU from host
 
-        !$omp target teams distribute &
-        !$omp   default(none) &
-        !$omp   shared(iter, nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01) &
-        !$omp   private(i, j, k)
-        do k = 1, nz
-          !$omp parallel do collapse(2) &
-          !$omp   default(none) &
-          !$omp   shared(nx, ny, num_halo, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, k) &
-          !$omp   private(i, j)
+        ! GPU
+        !$acc parallel async
+        !$acc loop gang
+        do k = 1, z_split
+          !$acc loop vector collapse(2)
           do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
               out_field(i, j, k) = &
@@ -72,29 +67,66 @@ module m_diffusion_openmp_target
                 + alpha_01 * in_field(i,     j + 2, k)
             end do
           end do
-          !$omp end parallel do
+          !!$omp end do
 
           if (iter /= num_iter) then
-            !$omp parallel do collapse(2) &
-            !$omp   default(none) &
-            !$omp   shared(nx, ny, num_halo, in_field, out_field, k) &
-            !$omp   private(i, j)
+            !$acc loop vector collapse(2)
             do j = 1 + num_halo, ny + num_halo
               do i = 1 + num_halo, nx + num_halo
                 in_field(i, j, k) = out_field(i, j, k)
               end do
             end do
-            !$omp end parallel do
           end if
         end do
-        !$omp end target teams distribute
-        ! TODO get halo from GPU to send to other ranks
+        !$acc end parallel
+
+        ! CPU
+        !$omp parallel do &
+        !$omp   default(none) &
+        !$omp   shared(iter, nx, ny, nz, z_split, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01) &
+        !$omp   private(i, j, k)
+        do k = z_split + 1, nz
+          !$omp simd collapse(2)
+          do j = 1 + num_halo, ny + num_halo
+            do i = 1 + num_halo, nx + num_halo
+              out_field(i, j, k) = &
+                + alpha_20 * in_field(i,     j,     k) &
+                + alpha_08 * in_field(i - 1, j,     k) &
+                + alpha_08 * in_field(i + 1, j,     k) &
+                + alpha_08 * in_field(i,     j - 1, k) &
+                + alpha_08 * in_field(i,     j + 1, k) &
+                + alpha_02 * in_field(i - 1, j - 1, k) &
+                + alpha_02 * in_field(i - 1, j + 1, k) &
+                + alpha_02 * in_field(i + 1, j - 1, k) &
+                + alpha_02 * in_field(i + 1, j + 1, k) &
+                + alpha_01 * in_field(i - 2, j,     k) &
+                + alpha_01 * in_field(i + 2, j,     k) &
+                + alpha_01 * in_field(i,     j - 2, k) &
+                + alpha_01 * in_field(i,     j + 2, k)
+            end do
+          end do
+
+          if (iter /= num_iter) then
+            !$omp simd collapse(2)
+            do j = 1 + num_halo, ny + num_halo
+              do i = 1 + num_halo, nx + num_halo
+                in_field(i, j, k) = out_field(i, j, k)
+              end do
+            end do
+          end if
+        end do
+        !$omp end parallel do
+        !$acc wait
+
+        ! TODO: node halo copy for MPI update
+        !       probably allocate buffers for GPU halos
 
         if (iter == num_iter) then
           call update_halo(out_field, num_halo, p)
         end if
       end do
-      !$omp end target data
+      !$acc update host(out_field(:, :, :z_split))
+      !$acc exit data delete(in_field, out_field)
     end subroutine
 end module
 

@@ -5,14 +5,14 @@ module m_diffusion_openmp
   public :: apply_diffusion
   contains
     subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter)
-      use, intrinsic :: iso_fortran_env, only: REAL32
+      use, intrinsic :: iso_fortran_env, only: REAL64
       use m_partitioner, only: Partitioner
-      use m_halo_mpi, only: update_halo
+      use m_halo, only: update_halo
 
-      real(kind = REAL32), intent(inout) :: in_field(:, :, :)
-      real(kind = REAL32), intent(inout) :: out_field(:, :, :)
+      real(kind = REAL64), intent(inout) :: in_field(:, :, :)
+      real(kind = REAL64), intent(inout) :: out_field(:, :, :)
       integer, intent(in) :: num_halo
-      real(kind = REAL32), intent(in) :: alpha
+      real(kind = REAL64), intent(in) :: alpha
       type(Partitioner), intent(in) :: p
       integer, intent(in) :: num_iter
 
@@ -20,10 +20,10 @@ module m_diffusion_openmp
       integer :: i
       integer :: j
       integer :: k
-      real(kind = REAL32) :: alpha_20
-      real(kind = REAL32) :: alpha_08
-      real(kind = REAL32) :: alpha_02
-      real(kind = REAL32) :: alpha_01
+      real(kind = REAL64) :: alpha_20
+      real(kind = REAL64) :: alpha_08
+      real(kind = REAL64) :: alpha_02
+      real(kind = REAL64) :: alpha_01
       integer :: nx
       integer :: ny
       integer :: nz
@@ -37,12 +37,13 @@ module m_diffusion_openmp
       alpha_02 =  -2 * alpha
       alpha_01 =  -1 * alpha
 
+      ! TODO: crashes on intel
       !$omp parallel &
       !$omp   default(none) &
       !$omp   shared(nx, ny, nz, num_halo, num_iter, in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, p) &
       !$omp   private(iter, i, j, k)
       do iter = 1, num_iter
-        call update_halo(in_field, num_halo, p)
+        call update_halo(in_field, num_halo)
 
         !$omp do schedule(dynamic)
         do k = 1, nz
@@ -78,7 +79,7 @@ module m_diffusion_openmp
         !$omp end do
 
         if (iter == num_iter) then
-          call update_halo(out_field, num_halo, p)
+          call update_halo(out_field, num_halo)
         end if
       end do
       !$omp end parallel

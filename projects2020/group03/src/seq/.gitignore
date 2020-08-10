@@ -1,0 +1,10 @@
+# hidden files
+.*
+
+# data files
+*.dat
+
+# executables
+*.x
+
+!/.gitignore

@@ -5,14 +5,14 @@ module m_diffusion_openacc
   public :: apply_diffusion
   contains
     subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter)
-      use, intrinsic :: iso_fortran_env, only: REAL32
+      use, intrinsic :: iso_fortran_env, only: REAL64
       use m_partitioner, only: Partitioner
       use m_halo_mpi, only: update_halo
 
-      real(kind = REAL32), intent(inout) :: in_field(:, :, :)
-      real(kind = REAL32), intent(inout) :: out_field(:, :, :)
+      real(kind = REAL64), intent(inout) :: in_field(:, :, :)
+      real(kind = REAL64), intent(inout) :: out_field(:, :, :)
       integer, intent(in) :: num_halo
-      real(kind = REAL32), intent(in) :: alpha
+      real(kind = REAL64), intent(in) :: alpha
       type(Partitioner), intent(in) :: p
       integer, intent(in) :: num_iter
 
@@ -20,10 +20,10 @@ module m_diffusion_openacc
       integer :: i
       integer :: j
       integer :: k
-      real(kind = REAL32) :: alpha_20
-      real(kind = REAL32) :: alpha_08
-      real(kind = REAL32) :: alpha_02
-      real(kind = REAL32) :: alpha_01
+      real(kind = REAL64) :: alpha_20
+      real(kind = REAL64) :: alpha_08
+      real(kind = REAL64) :: alpha_02
+      real(kind = REAL64) :: alpha_01
       integer :: nx
       integer :: ny
       integer :: nz
@@ -39,10 +39,11 @@ module m_diffusion_openacc
 
       !$acc enter data create(in_field, out_field)
       !$acc update device(in_field, out_field)
-      !$acc parallel
       do iter = 1, num_iter
         call update_halo(in_field, num_halo, p)
 
+        ! TODO cray Debug build
+        !$acc parallel
         !$acc loop gang
         do k = 1, nz
           !$acc loop vector collapse(2)
@@ -74,12 +75,12 @@ module m_diffusion_openacc
             end do
           end if
         end do
+        !$acc end parallel
 
         if (iter == num_iter) then
           call update_halo(out_field, num_halo, p)
         end if
       end do
-      !$acc end parallel
       !$acc update host(out_field)
       !$acc exit data delete(in_field, out_field)
     end subroutine

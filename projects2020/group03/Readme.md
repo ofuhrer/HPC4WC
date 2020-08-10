@@ -10,4 +10,15 @@
 	scripts/build.sh [ Debug | Release | RelWithDebInfo ]
 ```
 
+## Running
+```bash
+	source scripts/daint.sh
+	sbatch scripts/run.sh
+```
+
+## Postprocessing
+```bash
+	scripts/table.sh path/to/slurm.out
+```
+
 [1] https://reader.elsevier.com/reader/sd/pii/S0045782511000235?token=D6719774F918FDC2DBA99AF121BCA0F1F371703BACD747EDFFDC2771E43E920816D31843CEAF2AF698CD81FC86624D65

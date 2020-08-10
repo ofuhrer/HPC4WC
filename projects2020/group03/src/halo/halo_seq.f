@@ -5,9 +5,15 @@ module m_halo_seq
   public :: update_halo
   contains
     subroutine update_halo(field, num_halo)
-      use, intrinsic :: iso_fortran_env, only: REAL32
+#ifdef _CRAYC
+      !DIR$ INLINEALWAYS update_halo
+#endif
+#ifdef __INTEL_COMPILER
+      !DIR$ ATTRIBUTES FORCEINLINE :: update_halo
+#endif
+      use, intrinsic :: iso_fortran_env, only: REAL64
 
-      real(kind = REAL32), intent(inout) :: field(:, :, :)
+      real(kind = REAL64), intent(inout) :: field(:, :, :)
       integer, intent(in) :: num_halo
 
       integer :: nx
