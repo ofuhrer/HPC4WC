@@ -1,0 +1,7 @@
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+	message (WARNING "FIXME: Intel compiler borks on OpenMP")
+else ()
+	include (stencil2d_cpu.cmake)
+	include (stencil2d_gpu.cmake)
+	include (stencil2d_hybrid.cmake)
+endif ()

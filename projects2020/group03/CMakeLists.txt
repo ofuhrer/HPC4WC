@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-project(stencil2d LANGUAGES Fortran CXX C)
+project(stencil2d LANGUAGES Fortran CXX C CUDA)
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message (FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
@@ -10,6 +10,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set (CMAKE_CUDA_ARCHITECTURES 60)
 include (Flags)
 
 find_package (OpenMP REQUIRED COMPONENTS Fortran CXX)

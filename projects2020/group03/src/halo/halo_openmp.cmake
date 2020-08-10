@@ -1,5 +1,5 @@
 add_library (m_halo_openmp OBJECT halo_openmp.f)
-target_link_libraries (m_halo_openmp PUBLIC OpenMP::Fortran)
+target_link_libraries (m_halo_openmp PUBLIC OpenMP)
 add_library (halo_openmp INTERFACE)
 target_sources (halo_openmp INTERFACE $<TARGET_OBJECTS:m_halo_openmp>)
 target_compile_definitions (halo_openmp INTERFACE -D m_halo=m_halo_openmp)

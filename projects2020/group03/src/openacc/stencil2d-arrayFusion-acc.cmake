@@ -4,8 +4,8 @@ add_executable (
 )
 target_link_libraries (
 	stencil2d-arrayFusion-acc
-		OpenACC::CXX
-		OpenMP::CXX
+		OpenACC
+		OpenMP
 )
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 shiftwidth=2 :

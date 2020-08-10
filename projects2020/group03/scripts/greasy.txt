@@ -9,6 +9,10 @@
 [@ build/cray/src/openacc @]        ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-base-array-acc
 [@ build/cray/src/openacc @]        ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-acc
 [@ build/cray/src/openacc_split @]  ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc_split
+[@ build/cray/src/openacc_split @]  ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-accsplit
+[@ build/cray/src/cuda @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_cpu
+[@ build/cray/src/cuda @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_gpu
+[@ build/cray/src/cuda @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_hybrid
 
 [@ build/gnu/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq
 [@ build/gnu/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_cpp
@@ -21,12 +25,19 @@
 [@ build/gnu/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-base-array-acc
 [@ build/gnu/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-acc
 [@ build/gnu/src/openacc_split @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc_split
+[@ build/gnu/src/openacc_split @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-accsplit
+[@ build/gnu/src/cuda @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_cpu
+[@ build/gnu/src/cuda @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_gpu
+[@ build/gnu/src/cuda @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_hybrid
 
 [@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq
 [@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_cpp
 [@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_array_cpp
 [@ build/intel/src/seq @]           ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_arrayFusion_cpp
 [@ build/intel/src/openmp @]        ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openmp
+# [@ build/intel/src/cuda @]          ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_cpu
+# [@ build/intel/src/cuda @]          ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_gpu
+# [@ build/intel/src/cuda @]          ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_hybrid
 
 [@ build/pgi/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq
 [@ build/pgi/src/seq @]             ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_seq_base_cpp
@@ -38,3 +49,7 @@
 [@ build/pgi/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-base-array-acc
 [@ build/pgi/src/openacc @]         ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-acc
 [@ build/pgi/src/openacc_split @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_openacc_split
+[@ build/pgi/src/openacc_split @]   ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d-arrayFusion-accsplit
+[@ build/pgi/src/cuda @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_cpu
+[@ build/pgi/src/cuda @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_gpu
+[@ build/pgi/src/cuda @]            ${SLURM_SUBMIT_DIR}/scripts/wrapper.sh stencil2d_hybrid

@@ -17,4 +17,6 @@ add_subdirectory (openmp_split)
 add_subdirectory (openacc)
 add_subdirectory (openacc_split)
 
+add_subdirectory (cuda)
+
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 shiftwidth=2 :

@@ -12,8 +12,8 @@ target_link_libraries (
 		utils
 		partitioner
 		halo_mpi
-		OpenACC::Fortran
-		OpenMP::OpenMP_Fortran
+		OpenACC
+		OpenMP
 		MPI::MPI_Fortran
 )
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 shiftwidth=2 :

@@ -12,7 +12,7 @@ target_link_libraries (
 		utils
 		partitioner
 		halo_openmp
-		OpenMP::OpenMP_Fortran
+		OpenMP
 		MPI::MPI_Fortran
 )
 

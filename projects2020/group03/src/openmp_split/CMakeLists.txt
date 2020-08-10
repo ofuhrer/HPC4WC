@@ -19,7 +19,7 @@ else ()
 			utils
 			partitioner
 			halo_openmp_mpi
-			OpenMP::OpenMP_Fortran
+			OpenMP
 			MPI::MPI_Fortran
 	)
 endif ()

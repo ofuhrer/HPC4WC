@@ -18,8 +18,6 @@ set (
         CACHE STRING "Flags used by the CXX compiler during RelWithDebInfo builds."
         FORCE
 )
-add_library (OpenMP::CXX  INTERFACE IMPORTED)
-add_library (OpenACC::CXX INTERFACE IMPORTED)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set (
@@ -46,10 +44,10 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		CACHE STRING "Flags used by the CXX compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::CXX  PROPERTY INTERFACE_COMPILE_OPTIONS -fopenmp)
-	set_property (TARGET OpenMP::CXX  PROPERTY INTERFACE_LINK_LIBRARIES  -fopenmp)
-	set_property (TARGET OpenACC::CXX PROPERTY INTERFACE_COMPILE_OPTIONS -fopenacc)
-	set_property (TARGET OpenACC::CXX PROPERTY INTERFACE_LINK_LIBRARIES  -fopenacc)
+	target_compile_options (OpenMP  INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:CXX>:-fopenmp>")
+	target_link_options    (OpenMP  INTERFACE "SHELL: $<$<LINK_LANGUAGE:CXX>:-fopenmp>")
+	target_compile_options (OpenACC INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:CXX>:-fopenacc>")
+	target_link_options    (OpenACC INTERFACE "SHELL: $<$<LINK_LANGUAGE:CXX>:-fopenacc>")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 	set (
 		CMAKE_CXX_FLAGS
@@ -75,9 +73,9 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 		CACHE STRING "Flags used by the CXX compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::CXX PROPERTY INTERFACE_COMPILE_OPTIONS -qopenmp)
-	set_property (TARGET OpenMP::CXX PROPERTY INTERFACE_LINK_LIBRARIES  -qopenmp)
-elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray") 
+	target_compile_options (OpenMP INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:CXX>:-qopenmp>")
+	target_link_options    (OpenMP INTERFACE "SHELL: $<$<LINK_LANGUAGE:CXX>:-qopenmp>")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") 
 	set (
 		CMAKE_CXX_FLAGS
 		"-std=c++17 -march=native -D_USE_MATH_DEFINES=1 -Wall -Wextra -Wnon-virtual-dtor -Wconversion -Wcast-align -Wformat=2 -Wformat-security -Wmissing-declarations -Wstrict-overflow -Woverloaded-virtual -Wreorder -Wsign-promo -pedantic"
@@ -102,11 +100,9 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
 		CACHE STRING "Flags used by the CXX compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::CXX PROPERTY INTERFACE_COMPILE_OPTIONS -fopenmp -fopenmp-targets=nvptx64)
-	set_property (TARGET OpenMP::CXX PROPERTY INTERFACE_LINK_LIBRARIES  -fopenmp -fopenmp-targets=nvptx64)
-	# set_property (TARGET OpenACC::CXX PROPERTY INTERFACE_COMPILE_OPTIONS -hacc)
-	# set_property (TARGET OpenACC::CXX PROPERTY INTERFACE_LINK_LIBRARIES  -hacc)
-elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
+	target_compile_options (OpenMP INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:CXX>:-fopenmp -fopenmp-targets=nvptx64>")
+	target_link_options    (OpenMP INTERFACE "SHELL: $<$<LINK_LANGUAGE:CXX>:-fopenmp -fopenmp-targets=nvptx64>")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
 	set (
 		CMAKE_CXX_FLAGS
 		"--c++17 -Wall -pedantic"
@@ -131,10 +127,10 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 		CACHE STRING "Flags used by the CXX compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::CXX  PROPERTY INTERFACE_COMPILE_OPTIONS -mp=nonuma)
-	set_property (TARGET OpenMP::CXX  PROPERTY INTERFACE_LINK_LIBRARIES  -mp=nonuma)
-	set_property (TARGET OpenACC::CXX PROPERTY INTERFACE_COMPILE_OPTIONS -acc -ta=tesla,cc60)
-	set_property (TARGET OpenACC::CXX PROPERTY INTERFACE_LINK_LIBRARIES  -acc -ta=tesla,cc60)
+	target_compile_options (OpenMP  INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:CXX>:-mp=nonuma>")
+	target_link_options    (OpenMP  INTERFACE "SHELL: $<$<LINK_LANGUAGE:CXX>:-mp=nonuma>")
+	target_compile_options (OpenACC INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:CXX>:-acc -ta=tesla,cc60>")
+	target_link_options    (OpenACC INTERFACE "SHELL: $<$<LINK_LANGUAGE:CXX>:-acc -ta=tesla,cc60>")
 endif ()
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 :

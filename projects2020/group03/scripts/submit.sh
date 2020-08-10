@@ -17,6 +17,7 @@ module load gcc
 module load intel
 module load pgi
 module load cudatoolkit
+module load GREASY
 
 export GREASY_LOGFILE=${SLURM_JOB_NAME}.log
 export GREASY_NWORKER_PER_NODE=${SLURM_NTASKS_PER_NODE}

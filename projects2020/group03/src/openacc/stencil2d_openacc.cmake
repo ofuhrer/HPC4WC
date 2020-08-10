@@ -12,7 +12,7 @@ target_link_libraries (
 		utils
 		partitioner
 		halo_mpi
-		OpenACC::Fortran
+		OpenACC
 		MPI::MPI_Fortran
 )
 

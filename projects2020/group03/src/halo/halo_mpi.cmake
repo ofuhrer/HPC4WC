@@ -1,5 +1,5 @@
 add_library (m_halo_mpi OBJECT halo_mpi.f)
-target_link_libraries (m_halo_mpi PUBLIC utils partitioner MPI::MPI_Fortran OpenMP::Fortran)
+target_link_libraries (m_halo_mpi PUBLIC utils partitioner MPI::MPI_Fortran OpenMP)
 add_library (halo_mpi INTERFACE)
 target_sources (halo_mpi INTERFACE $<TARGET_OBJECTS:m_halo_mpi>)
 target_compile_definitions (halo_mpi INTERFACE -D m_halo=m_halo_mpi)

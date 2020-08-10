@@ -4,8 +4,8 @@
 #include "update_halo.h"
 
 void updateHalo(Storage3D<realType>& inField, std::size_t k0) {
-  const int xInterior = inField.xMax() - inField.xMin();
-  const int yInterior = inField.yMax() - inField.yMin();
+  const std::size_t xInterior = inField.xMax() - inField.xMin();
+  const std::size_t yInterior = inField.yMax() - inField.yMin();
 
 #pragma omp parallel
   {

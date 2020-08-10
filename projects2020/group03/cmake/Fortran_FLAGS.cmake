@@ -18,8 +18,6 @@ set (
 	CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 	FORCE
 )
-add_library (OpenMP::Fortran  INTERFACE IMPORTED)
-add_library (OpenACC::Fortran INTERFACE IMPORTED)
 
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 	set (
@@ -46,10 +44,10 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS -fopenmp)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  -fopenmp)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -fopenacc)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -fopenacc)
+	target_compile_options (OpenMP  INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:Fortran>:-fopenmp>")
+	target_link_options    (OpenMP  INTERFACE "SHELL: $<$<LINK_LANGUAGE:Fortran>:-fopenmp>")
+	target_compile_options (OpenACC INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:Fortran>:-fopenacc>")
+	target_link_options    (OpenACC INTERFACE "SHELL: $<$<LINK_LANGUAGE:Fortran>:-fopenacc>")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 	set (
 		CMAKE_Fortran_FLAGS
@@ -75,8 +73,8 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -qopenmp)
-	set_property (TARGET OpenMP::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -qopenmp)
+	target_compile_options (OpenMP INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:Fortran>:-qopenmp>")
+	target_link_options    (OpenMP INTERFACE "SHELL: $<$<LINK_LANGUAGE:Fortran>:-qopenmp>")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray") 
 	set (
 		CMAKE_Fortran_FLAGS
@@ -102,11 +100,10 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS -homp)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  -homp)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -hacc)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -hacc)
-
+	target_compile_options (OpenMP  INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:Fortran>:-homp>")
+	target_link_options    (OpenMP  INTERFACE "SHELL: $<$<LINK_LANGUAGE:Fortran>:-homp>")
+	target_compile_options (OpenACC INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:Fortran>:-hacc>")
+	target_link_options    (OpenACC INTERFACE "SHELL: $<$<LINK_LANGUAGE:Fortran>:-hacc>")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 	set (
 		CMAKE_Fortran_FLAGS
@@ -132,10 +129,10 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_COMPILE_OPTIONS -mp=nonuma)
-	set_property (TARGET OpenMP::Fortran  PROPERTY INTERFACE_LINK_LIBRARIES  -mp=nonuma)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_COMPILE_OPTIONS -acc -ta=tesla,cc60)
-	set_property (TARGET OpenACC::Fortran PROPERTY INTERFACE_LINK_LIBRARIES  -acc -ta=tesla,cc60)
+	target_compile_options (OpenMP  INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:Fortran>:-mp=nonuma>")
+	target_link_options    (OpenMP  INTERFACE "SHELL: $<$<LINK_LANGUAGE:Fortran>:-mp=nonuma>")
+	target_compile_options (OpenACC INTERFACE "SHELL: $<$<COMPILE_LANGUAGE:Fortran>:-acc -ta=tesla,cc60>")
+	target_link_options    (OpenACC INTERFACE "SHELL: $<$<LINK_LANGUAGE:Fortran>:-acc -ta=tesla,cc60>")
 endif ()
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 :

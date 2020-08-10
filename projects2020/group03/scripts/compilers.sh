@@ -48,5 +48,5 @@ load_compiler() {
 	modules_compiler="${modules_compiler}[@]"
 	module load ${!modules_compiler}
 	module load ${modules_post[@]}
-	module list
+	# module list
 }
