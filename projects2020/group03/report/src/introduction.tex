@@ -1,0 +1,52 @@
+
+Weather and climate modeling is an extremely compute-intensive task that always relied on the state-of-the-art in high-performance computing, in order to enable large-scale simulations and accurate predictions in reasonable amount of time.
+For much of it's history, this meant running climate models on multi-core clusters, using distributed and shared memory parallelism.
+However, with the advent GPGPU computing and the wide availability of modern hardware accelerators, which not only allow much higher peak performance, but are also much more energy efficient, providing a significant FLOP/Watt advantage, climate codes are gradually adapting to GPUs.
+
+CPUs are general purpose processing units with a small number of powerful cores that are latency-optimized allowing for complex instruction level parallelism.
+They usually achieve this by means of a larger cache, larger instruction set, and a larger control unit.
+Most modern CPUs have less than a 100 cores.
+
+GPUs on the other hand, consist of a large number of simple cores that are throughput-optimised for fast ``component-wise`` computations on arrays.
+Therefore, they excel at applying the same instruction concurrently on a very large number of inputs.
+This aspect of the GPU architecture lends itself well to graphical rendering applications.
+However, this same aspect has been widely utilized in scientific computing problems where a bulk of the computational effort involves applying the same instruction to a large array of data.
+Modern GPUs can have 1000s of cores, revealing their potential for massive parallelism. 
+
+% HOW DOES THIS AFFECT THEIR USE FOR NUMERICAL METHODS : locality and dependence.
+
+This is where its rising prevalence in weather and climate codes comes in.
+Simulation of weather and climate models typically involve solving a system of conservation laws, i.e mass, momentum, and energy, known together as the Navier-Stokes-Fourier equations, as well as some additional equations for air and water balance. 
+These equations are given below:
+\begin{subequations} 
+\label{eqn:govEqn}
+\begin{align}
+\frac{d}{d t} \mathbf{v}=-2 \mathbf{\Omega} \times \mathbf{v}-\frac{1}{\rho} \nabla_{3} p+\mathbf{g}+\mathbf{F} \\
+C_{v} \frac{d}{d t}(\rho q)+p \frac{d}{d t}\left(\frac{1}{\rho}\right)=J \\
+\frac{\partial}{\partial t}(\rho)=-\nabla_{3} \cdot(\rho \mathbf{v}) \\
+\frac{\partial}{\partial t}=-\nabla_{3} \cdot(\rho \mathbf{v} q)+\rho(E-C) \\
+p=\rho R T
+\end{align}
+\end{subequations}
+
+Numerical solution of PDEs such as \cref{eqn:govEqn} involves moving from a continuous domain to a discrete equivalent, and solving the PDEs approximately on a finite number of grid points.
+A wide class of methods for the solution of the discrete problem can be casted as stencil computations, where the solution at every grid point is updated based on a fixed pattern, that involves local computations in the neighborhood of every grid point.
+This fixed pattern all over the computational domain can be exploited for extracting parallelism on GPUs. 
+
+In this project, we experimentally study various approaches based on the programming models OpenMP, OpenACC, and CUDA, for implementing an efficient 3D stencil code. 
+We examine the performance one can achieve using CPU or GPU, individually, as well as CPU and GPU cooperatively, \cite{PAPADRAKAKIS20111490} to perform stencil computations.
+As a benchmark, we utilize a simplified set of equations, by reducing our focus to the 4th-order non-monotonic diffusion equation \cite{MING2000}, i.e.: 
+\begin{equation}
+\begin{aligned}
+\frac{\partial \phi}{\partial t} &=-\alpha \boldsymbol{\nabla^{4} \phi} \\
+&=-\alpha  \boldsymbol{\Delta \left(\Delta  \phi\right)}
+\end{aligned}
+\label{eq:diff4}
+\end{equation}
+
+Such numerical diffusion can be used in a weather or climate model as a means of controlling small-scale noise.
+Although much simpler than the full system of equations (\ref{eqn:govEqn}), the underlying mechanism of the stencil computations remains the same, and hence, can be utilized as a model problem for evaluating the efficiency of weather and climate codes.
+
+In \cref{sec:stencil}, we present the different programming models we used for optimizing our stencil code implementations for CPUs and GPUs, along with some implementation details. 
+In \cref{sec:results}, we showcase our results and analyze the viability of domain decomposition across the CPU and the GPU, in an attempt to cooperatively utilize the available hardware of modern compute nodes so as to maximize performance.
+We compare the performance results across the different programming paradigms we implemented and argue on them. 

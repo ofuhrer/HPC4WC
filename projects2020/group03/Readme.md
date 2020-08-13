@@ -29,4 +29,7 @@ scripts/data.sh
 
 For the CUDA version, see [`src/cuda/Readme.md`](src/cuda/Readme.md)
 
+## Report
+The report can be found [here `report/HPC4WC_Project___Overlapping_computation_on_the_CPU_and_the_GPU.pdf`](report/HPC4WC_Project___Overlapping_computation_on_the_CPU_and_the_GPU.pdf)
+
 [1] https://reader.elsevier.com/reader/sd/pii/S0045782511000235?token=D6719774F918FDC2DBA99AF121BCA0F1F371703BACD747EDFFDC2771E43E920816D31843CEAF2AF698CD81FC86624D65

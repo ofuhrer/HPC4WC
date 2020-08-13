@@ -1,0 +1,24 @@
+% Plot time vs size
+%\pgfplotstabletypeset{data.dat}
+
+% Note about .dat file formating.
+% Should have 2 columns, i.e.:
+% num of z-slices on the CPU and time in seconds
+% Fixed problem size.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=0.9]
+\begin{axis}[tick style={line width=0.6pt}, ymajorgrids, xlabel=number of z-slices on the CPU, ylabel=time (sec), legend pos=south east, ymode=log, log basis y={2}]% legend style={at={(0.5,+1.6)},anchor=north}
+\addplot table [x=z, y=time]{results/time_vs_z_slices_on_cpu/512/openmp_target.dat};
+\addlegendentry{CPU+GPU (OpenMP)}
+\addplot table [x=z, y=time]{results/time_vs_z_slices_on_cpu/512/openacc.dat};
+\addlegendentry{CPU+GPU (OpenACC)}
+\addplot table [x=z, y=time]{results/time_vs_z_slices_on_cpu/512/cuda.dat};
+\addlegendentry{CPU+GPU (CUDA)}
+\end{axis}
+\end{tikzpicture}
+\caption{Performance of the hybrid CPU/GPU code for fixed problem size $S = 512$ and increasing offloaded work on the CPU.}
+\label{fig:time_vs_z_slices_on_cpu_512}
+\end{figure}
+
+%%% End:
