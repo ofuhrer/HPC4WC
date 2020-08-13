@@ -4,7 +4,7 @@ module m_diffusion_openmp_split
 
   public :: apply_diffusion
   contains
-    subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter)
+    subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter, z_slices_on_cpu)
       use, intrinsic :: iso_fortran_env, only: REAL64
       use m_partitioner, only: Partitioner
       use m_halo, only: update_halo
@@ -15,11 +15,13 @@ module m_diffusion_openmp_split
       real(kind = REAL64), intent(in) :: alpha
       type(Partitioner), intent(in) :: p
       integer, intent(in) :: num_iter
+      integer, intent(in) :: z_slices_on_cpu
 
       integer :: iter
       integer :: i
       integer :: j
       integer :: k
+      integer :: k0
       real(kind = REAL64) :: alpha_20
       real(kind = REAL64) :: alpha_08
       real(kind = REAL64) :: alpha_02
@@ -27,12 +29,10 @@ module m_diffusion_openmp_split
       integer :: nx
       integer :: ny
       integer :: nz
-      integer :: z_split
 
       nx = size(in_field, 1) - 2 * num_halo
       ny = size(in_field, 2) - 2 * num_halo
       nz = size(in_field, 3)
-      z_split = floor(0.85 * nz)
 
       alpha_20 = -20 * alpha + 1
       alpha_08 =   8 * alpha
@@ -40,11 +40,11 @@ module m_diffusion_openmp_split
       alpha_01 =  -1 * alpha
 
       !$omp target data &
-      !$omp   map(to: in_field(:, :, :z_split)) &
-      !$omp   map(from: out_field(:, :, :z_split))
+      !$omp   map(to: in_field(:, :, :k0)) &
+      !$omp   map(from: out_field(:, :, :k0))
       !$omp parallel &
       !$omp   default(none) &
-      !$omp   shared(nx, ny, nz, z_split, num_halo, num_iter) &
+      !$omp   shared(nx, ny, nz, k0, num_halo, num_iter) &
       !$omp   shared(in_field, out_field, alpha_20, alpha_08, alpha_02, alpha_01, p) &
       !$omp   private(iter, i, j, k)
       do iter = 1, num_iter
@@ -54,7 +54,7 @@ module m_diffusion_openmp_split
         !$omp single
         !$omp target teams distribute nowait &
         !$omp   private(k)
-        do k = 1, z_split
+        do k = 1, k0
           !$omp parallel &
           !$omp   default(none) &
           !$omp   shared(iter, nx, ny, num_halo, num_iter) &
@@ -94,7 +94,7 @@ module m_diffusion_openmp_split
 
         ! CPU
         !$omp do
-        do k = z_split + 1, nz
+        do k = 1 + k0, nz
           !$omp simd collapse(2)
           do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo

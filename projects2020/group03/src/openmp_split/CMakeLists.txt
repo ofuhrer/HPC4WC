@@ -22,6 +22,23 @@ else ()
 			OpenMP
 			MPI::MPI_Fortran
 	)
+
+	add_executable (
+		stencil2d_openmp_split2
+			stencil2d.f
+			diffusion_openmp_split2.f
+	)
+	target_compile_definitions (
+		stencil2d_openmp_split2 PRIVATE
+			-D m_diffusion=m_diffusion_openmp_split2
+	)
+	target_link_libraries (
+		stencil2d_openmp_split2
+			utils
+			partitioner
+			OpenMP
+			MPI::MPI_Fortran
+	)
 endif ()
 
 # vim : filetype=cmake noexpandtab tabstop=2 softtabs=2 shiftwidth=2 :

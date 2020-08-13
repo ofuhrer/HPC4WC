@@ -34,13 +34,13 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELEASE
-		"-UDEBUG -DNDEBUG=1 -O3 -ffast-math -funroll-loops -flto -fno-fat-lto-objects -fomit-frame-pointer -fopt-info"
+		"-UDEBUG -DNDEBUG=1 -O3 -ffast-math -funroll-loops -fomit-frame-pointer -fopt-info" # -flto -fno-fat-lto-objects"
 		CACHE STRING "Flags used by the Fortran compiler during Release builds."
 		FORCE
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-		"-UDEBUG -DNDEBUG=1 -O2 -g2 -flto -fno-fat-lto-objects -fno-omit-frame-pointer"
+		"-UDEBUG -DNDEBUG=1 -O2 -g2 -fno-omit-frame-pointer" # -flto -fno-fat-lto-objects"
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
@@ -69,7 +69,7 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-		"-UDEBUG -DNDEBUG=1 -O2 -g -ipo -fno-fat-lto-objects"
+		"-UDEBUG -DNDEBUG=1 -O2 -g -debug all" # -ipo -fno-fat-lto-objects"
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)
@@ -96,7 +96,7 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
 	)
 	set (
 		CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-		"-UDEBUG -DNDEBUG=1 -G02" # TODO
+		"-UDEBUG -DNDEBUG=1 -G2" # TODO
 		CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds."
 		FORCE
 	)

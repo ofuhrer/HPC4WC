@@ -15,7 +15,7 @@ program main
     implicit none
 
     ! local
-    integer :: nx, ny, nz, num_iter, rank
+    integer :: nx, ny, nz, num_iter, rank, z_slices_on_cpu
     logical :: scan
 
     integer :: num_halo = 2
@@ -62,7 +62,7 @@ program main
             call write_field_to_file(in_field, num_halo, "in_field.dat")
         end if
 
-        call calc(in_field, out_field, num_halo, alpha, num_iter)
+        call calc(in_field, out_field, num_halo, alpha, num_iter, z_slices_on_cpu)
 
         if (.not. scan .and. is_master()) then
             call write_field_to_file(out_field, num_halo, "out_field.dat")
@@ -83,7 +83,7 @@ program main
 
     call finalize()
 contains
-    subroutine calc(in_field, out_field, num_halo, alpha, num_iter)
+    subroutine calc(in_field, out_field, num_halo, alpha, num_iter, z_slices_on_cpu)
         use, intrinsic :: iso_fortran_env, only: REAL64
         use m_partitioner, only: Partitioner
         use m_diffusion, only: apply_diffusion
@@ -93,6 +93,7 @@ contains
         integer, intent(in) :: num_halo
         real(kind = REAL64), intent(in) :: alpha
         integer, intent(in) :: num_iter
+        integer, intent(in) :: z_slices_on_cpu
 
         integer :: nx
         integer :: ny
@@ -112,7 +113,7 @@ contains
         out_field_p = p%scatter(out_field)
 
         ! warmup caches
-        call apply_diffusion(in_field_p, out_field_p, num_halo, alpha, p, 1)
+        call apply_diffusion(in_field_p, out_field_p, num_halo, alpha, p, 1, z_slices_on_cpu)
 
         ! time the actual work
 #ifdef CRAYPAT
@@ -121,7 +122,7 @@ contains
         timer_work = -999
         call timer_start('work', timer_work)
 
-        call apply_diffusion(in_field_p, out_field_p, num_halo, alpha, p, num_iter)
+        call apply_diffusion(in_field_p, out_field_p, num_halo, alpha, p, num_iter, z_slices_on_cpu)
 
         call timer_end(timer_work)
 #ifdef CRAYPAT
@@ -192,6 +193,7 @@ contains
         ny = -1
         nz = -1
         num_iter = -1
+        z_slices_on_cpu = -1
         scan = .false.
 
         num_arg = command_argument_count()
@@ -223,6 +225,12 @@ contains
                 call error(arg_val(1:1) == "-", "Missing value for -num_iter argument")
                 read(arg_val, *) num_iter
                 iarg = iarg + 1
+            case ("--z_slices_on_cpu")
+                call error(iarg + 1 > num_arg, "Missing value for -z_slices_on_cpu argument")
+                call get_command_argument(iarg + 1, arg_val)
+                call error(arg_val(1:1) == "-", "Missing value for -z_slices_on_cpu argument")
+                read(arg_val, *) z_slices_on_cpu
+                iarg = iarg + 1
             case ("--scan")
                 scan = .true.
             case default
@@ -238,6 +246,7 @@ contains
         end if
         call error(nz == -1, 'You have to specify nz')
         call error(num_iter == -1, 'You have to specify num_iter')
+        call error(z_slices_on_cpu == -1, 'You have to specify z_slices_on_cpu')
 
         ! check consistency of values
         if (.not. scan) then
@@ -246,6 +255,7 @@ contains
         end if
         call error(nz < 0 .or. nz > 1024, "Please provide a reasonable value of nz")
         call error(num_iter < 1 .or. num_iter > 1024*1024, "Please provide a reasonable value of num_iter")
+        call error(z_slices_on_cpu < 0 .or. z_slices_on_cpu > nz, "Please provide a reasonable value of z_slices_on_cpu")
     end subroutine
 
     ! cleanup at end of work

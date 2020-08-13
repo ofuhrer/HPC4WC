@@ -1,4 +1,4 @@
-module m_diffusion_openmp
+module m_diffusion_openmp2
   implicit none
   private
 
@@ -7,7 +7,6 @@ module m_diffusion_openmp
     subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter, z_slices_on_cpu)
       use, intrinsic :: iso_fortran_env, only: REAL64
       use m_partitioner, only: Partitioner
-      use m_halo, only: update_halo
 
       real(kind = REAL64), intent(inout) :: in_field(:, :, :)
       real(kind = REAL64), intent(inout) :: out_field(:, :, :)
@@ -34,7 +33,7 @@ module m_diffusion_openmp
       ny = size(in_field, 2) - 2 * num_halo
       nz = size(in_field, 3)
 
-      k0 = nz - z_slices_on_cpu + 1
+      k0 = nz - z_slices_on_cpu
 
       alpha_20 = -20 * alpha + 1
       alpha_08 =   8 * alpha
@@ -50,7 +49,7 @@ module m_diffusion_openmp
         call update_halo(in_field, num_halo, z_slices_on_cpu)
 
         !$omp do schedule(dynamic)
-        do k = k0, nz
+        do k = 1 + k0, nz
           !$omp simd collapse(2)
           do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
@@ -86,8 +85,104 @@ module m_diffusion_openmp
           call update_halo(out_field, num_halo, z_slices_on_cpu)
         end if
       end do
+      !$omp barrier
       !$omp end parallel
+    end subroutine
+
+    subroutine update_halo(field, num_halo, z_slices_on_cpu)
+#ifdef _CRAYC
+      !DIR$ INLINEALWAYS update_halo
+#endif
+#ifdef __INTEL_COMPILER
+      !DIR$ ATTRIBUTES FORCEINLINE :: update_halo
+#endif
+      use, intrinsic :: iso_fortran_env, only: REAL64
+
+      real(kind = REAL64), intent(inout) :: field(:, :, :)
+      integer, intent(in) :: num_halo
+
+      integer :: nx
+      integer :: ny
+      integer :: nz
+      integer :: z_slices_on_cpu
+      integer :: i
+      integer :: j
+      integer :: k
+      integer :: k0
+
+      nx = size(field, 1) - 2 * num_halo
+      ny = size(field, 2) - 2 * num_halo
+      nz = size(field, 3)
+
+      k0 = nz - z_slices_on_cpu
+
+      !$omp do
+      do k = 1 + k0, nz
+        ! north
+        !$omp simd collapse(2)
+        do j = 1, num_halo
+          do i = 1 + num_halo, nx + num_halo
+            field(i, j, k) = field(i, j + ny, k)
+          end do
+        end do
+
+        ! south
+        !$omp simd collapse(2)
+        do j = ny + num_halo + 1, ny + 2 * num_halo
+          do i = 1 + num_halo, nx + num_halo
+            field(i, j, k) = field(i, j - ny, k)
+          end do
+        end do
+
+        ! east
+        !$omp simd collapse(2)
+        do j = 1 + num_halo, ny + num_halo
+          do i = 1, num_halo
+            field(i, j, k) = field(i + nx, j, k)
+          end do
+        end do
+
+        ! west
+        !$omp simd collapse(2)
+        do j = 1 + num_halo, ny + num_halo
+          do i = nx + num_halo + 1, nx + 2 * num_halo
+            field(i, j, k) = field(i - nx, j, k)
+          end do
+        end do
+
+        ! northeast
+        !$omp simd collapse(2)
+        do j = 1, num_halo
+          do i = 1, num_halo
+            field(i, j, k) = field(i + nx, j, k)
+          end do
+        end do
+
+        ! northwest
+        !$omp simd collapse(2)
+        do j = ny + num_halo + 1, ny + 2 * num_halo
+          do i = 1, num_halo
+            field(i, j, k) = field(i + nx, j, k)
+          end do
+        end do
+
+        ! southeast
+        !$omp simd collapse(2)
+        do j = 1, num_halo
+          do i = nx + num_halo + 1, nx + 2 * num_halo
+            field(i, j, k) = field(i - nx, j, k)
+          end do
+        end do
+
+        ! southwest
+        !$omp simd collapse(2)
+        do j = ny + num_halo + 1, ny + 2 * num_halo
+          do i = nx + num_halo + 1, nx + 2 * num_halo
+            field(i, j, k) = field(i - nx, j, k)
+          end do
+        end do
+      end do
     end subroutine
 end module
 
-! vim: set filetype=fortran expandtab tabstop=2 softtabstop=2 shiftwidth=2 :
+! vim: set filetype=fortran expandtab tabstop=2 softtabstop=2 :
