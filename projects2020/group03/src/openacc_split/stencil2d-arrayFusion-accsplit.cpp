@@ -12,7 +12,7 @@
 #endif
 #include "../utils.h"
 
-float split_factor = 1.;
+float split_factor = 64;
 
 typedef double float_type;
 // typedef float float_type;
@@ -389,7 +389,7 @@ void apply_diffusion(float_type *input, float_type *output, float_type alpha,
   std::size_t zMax = z;
 
   // float split_factor = 1;
-  std::size_t z_split = floor(split_factor * zMax);
+  std::size_t z_split = split_factor;//floor(split_factor * zMax);
   std::size_t split_N =
       (xMax - 1) + ((yMax - 1) * xsize) + ((z_split - 1) * xsize * ysize);
 
@@ -516,75 +516,6 @@ void apply_diffusion(float_type *input, float_type *output, float_type alpha,
     }
   }
 
-  //   for (std::size_t iter = 0; iter < numIter; ++iter) {
-  //
-  //     ///////////////////////cpu//////////////////////
-  //     updateHalo_cpu(input, xsize, ysize, z, halo, z_split);
-  //     // std::cout << "this is cpu part " << std::endl;
-  //
-  // #pragma omp parallel
-  //     {
-  // #pragma omp for
-  //       for (std::size_t k = z_split; k < zMax; ++k) {
-  //         for (std::size_t j = yMin; j < yMax; ++j) {
-  //           for (std::size_t i = xMin; i < xMax; ++i) {
-  //             std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-  //             std::size_t ip1jk = (i + 1) + (j * xsize) + (k * xsize *
-  //             ysize); std::size_t im1jk = (i - 1) + (j * xsize) + (k *
-  //             xsize
-  //             * ysize); std::size_t ijp1k = i + ((j + 1) * xsize) + (k *
-  //             xsize * ysize); std::size_t ijm1k = i + ((j - 1) * xsize) +
-  //             (k
-  //             * xsize * ysize); std::size_t im1jm1k =
-  //                 i - 1 + ((j - 1) * xsize) + k * (xsize * ysize);
-  //             std::size_t im1jp1k =
-  //                 i - 1 + ((j + 1) * xsize) + k * (xsize * ysize);
-  //             std::size_t ip1jm1k =
-  //                 i + 1 + ((j - 1) * xsize) + k * (xsize * ysize);
-  //             std::size_t ip1jp1k =
-  //                 i + 1 + ((j + 1) * xsize) + k * (xsize * ysize);
-  //             std::size_t im2jk = (i - 2) + (j * xsize) + k * (xsize *
-  //             ysize); std::size_t ip2jk = (i + 2) + (j * xsize) + k *
-  //             (xsize
-  //             * ysize); std::size_t ijm2k = i + ((j - 2) * xsize) + k *
-  //             (xsize * ysize); std::size_t ijp2k = i + ((j + 2) * xsize) +
-  //             k
-  //             * (xsize * ysize);
-  //
-  //             float_type partial_laplap =
-  //                 // 20*input[ijk] -
-  //                 -8 * (input[im1jk] + input[ip1jk] + input[ijm1k] +
-  //                       input[ijp1k]) +
-  //                 2 * (input[im1jm1k] + input[ip1jm1k] + input[im1jp1k] +
-  //                      input[ip1jp1k]) +
-  //                 1 * (input[im2jk] + input[ip2jk] + input[ijm2k] +
-  //                 input[ijp2k]);
-  //
-  //             // TODO : check if independent
-  //             output[ijk] =
-  //                 (1 - 20 * alpha) * input[ijk] - alpha * partial_laplap;
-  //           }
-  //         }
-  //       }
-  //
-  //       if (iter != numIter - 1) {
-  // // num_gangs(2) num_workers(4)    vector_length(128)
-  // // #pragma acc parallel present(input, output)
-  // #pragma omp for
-  //         for (std::size_t k = z_split; k < zMax; ++k) {
-  //           for (std::size_t j = yMin; j < yMax; ++j) {
-  //             for (std::size_t i = xMin; i < xMax; ++i) {
-  //               std::size_t ijk = i + (j * xsize) + (k * xsize * ysize);
-  //               // output[ijk] = input[ijk];
-  //               input[ijk] = output[ijk];
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //////////////////////cpu/////////////////////////
-
 } // namespace
 
 void reportTime(const Storage3D<float_type> &storage, int nIter,
@@ -661,7 +592,7 @@ int main(int argc, char const *argv[]) {
   std::size_t zMax = zsize;
 
   // float split_factor = 1;
-  std::size_t z_split = floor(split_factor * zMax);
+  std::size_t z_split = split_factor;//floor(split_factor * zMax);
   std::size_t split_N =
       (xMax - 1) + ((yMax - 1) * xsize) + ((z_split - 1) * xsize * ysize);
 
@@ -745,7 +676,18 @@ int main(int argc, char const *argv[]) {
   reportTime(output_3D, iter, timeDiff);
 
   std::ofstream os;
-  os.open("time_1.dat", std::ofstream::app);
+    if (x == 256){
+       os.open("time_256.dat", std::ofstream::app);
+    }  
+    else if (x==512){
+       os.open("time_512.dat", std::ofstream::app);
+    }   
+     else if (x==1024){
+       os.open("time_1024.dat", std::ofstream::app);
+     }   
+     else {
+      os.open("time_1.dat", std::ofstream::app);
+     }   
   os << timeDiff << std::endl;
   os.close();
   delete[] input;
