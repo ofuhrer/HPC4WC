@@ -1,0 +1,9 @@
+[@ build/cray/src/openmp        @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp2         128 64 1024 64
+[@ build/cray/src/openmp        @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp2         256 64 1024 64
+[@ build/cray/src/openmp        @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp2         512 64 1024 64
+[@ build/cray/src/openmp        @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp2        1024 64 1024 64
+
+[@ build/cray/src/openmp_target @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_target2  128 64 1024  0
+[@ build/cray/src/openmp_target @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_target2  256 64 1024  0
+[@ build/cray/src/openmp_target @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_target2  512 64 1024  0
+[@ build/cray/src/openmp_target @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_target2 1024 64 1024  0

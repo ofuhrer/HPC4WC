@@ -1,0 +1,5 @@
+
+In this project, we experimentally study various different approaches for implementing a fast 3D stencil code, often used in weather and climate simulations, that overlaps computations on the CPU and the GPU, in an attempt to efficiently utilize modern hardware and achieve maximum performance.
+We start by developing optimized code able to run on the CPU and the GPU, individually, and then we fuse them with an efficient strategy, that allows for an additional increase in performance. 
+In our work, we compare three alternative parallel programming models; OpenMP, OpenACC, and CUDA.
+We present extensive numerical results for all three approaches along with discussions.

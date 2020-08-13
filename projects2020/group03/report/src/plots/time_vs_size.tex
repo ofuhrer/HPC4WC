@@ -1,0 +1,29 @@
+% Plot time vs size
+%\pgfplotstabletypeset{data.dat}
+
+% Note about .dat file formating.
+% Should have 2 columns, i.e.:
+% size time
+% The size is a column with the values 128, 256, 512, 1024.
+% The time is a column with the respective timings in seconds.
+% For this plot I had in mind something like timing the code when increasing (x, y) \in (128 ... 1024) and keeping fixed z = 64.
+% This is just an example. We can do other plots too.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=0.9]
+\begin{axis}[tick style={line width=0.6pt}, ymajorgrids, xlabel=size of each 2D slice, ylabel=time (sec), legend pos=north west, xmode=log, ymode=log, log basis x={2}, log basis y={2}] %, legend style={at={(0.5,+1.6)},anchor=north}
+\addplot table [x=size, y=time]{results/time_vs_size/openmp_target.dat};
+\addlegendentry{GPU (OpenMP)}
+\addplot table [x=size, y=time]{results/time_vs_size/openacc.dat};
+\addlegendentry{GPU (OpenACC)}
+\addplot table [x=size, y=time]{results/time_vs_size/cuda.dat};
+\addlegendentry{GPU (CUDA)}
+\addplot table [x=size, y=time]{results/time_vs_size/cpu_openmp_12threads.dat};
+\addlegendentry{CPU (12 threads)}
+\end{axis}
+\end{tikzpicture}
+\caption{Performance of different parallelization approaches on the CPU and the GPU individually, for increasing problem size and using \texttt{doubles}. We define the size as $S \times S \times 64$ for 1024 iterations, and vary $S$ from 128 to 1024.}
+\label{fig:time_vs_size}
+\end{figure}
+
+%%% End:

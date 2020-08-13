@@ -1,0 +1,26 @@
+% Plot time vs size
+%\pgfplotstabletypeset{data.dat}
+
+% Note about .dat file formating.
+% Should have 2 columns, i.e.:
+% num of z-slices on the CPU and time in seconds
+% Fixed problem size.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=0.9]
+\begin{axis}[tick style={line width=0.6pt}, ymajorgrids, xlabel=number of z-slices on the CPU, ylabel=time (sec), legend pos=south east] %, legend style={at={(0.5,+1.6)},anchor=north}
+\addplot table [x=z, y=time]{results/time_vs_splitting_z_slices/1024/openmp_target.dat};
+\addlegendentry{GPU (OpenMP)}
+\addplot table [x=z, y=time]{results/time_vs_splitting_z_slices/1024/openacc.dat};
+\addlegendentry{GPU (OpenACC)}
+\addplot table [x=z, y=time]{results/time_vs_splitting_z_slices/1024/cuda.dat};
+\addlegendentry{GPU (CUDA)}
+\addplot table [x=z, y=time]{results/time_vs_splitting_z_slices/1024/cpu_openmp_12threads.dat};
+\addlegendentry{CPU (12 threads)}
+\end{axis}
+\end{tikzpicture}
+\caption{Performance of the CPU-only and GPU-only code for increasing number of z-slices on the CPU and decreasing number of z-slices on the GPU, for fixed problem size $S = 1024$, and for total number of z-slices equal to $64$.}
+\label{fig:time_vs_splitting_z_slices_1024}
+\end{figure}
+
+%%% End:
