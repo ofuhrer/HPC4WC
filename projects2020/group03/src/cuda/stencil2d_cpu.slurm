@@ -18,7 +18,7 @@ niter=1024
 
 for nxy in 128 256 512 1024
 do
-    for z_slices_on_cpu in 64 32 1
+    for z_slices_on_cpu in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
     do
         srun ./stencil2d_cpu.x --nx $nxy --ny $nxy --nz $nz --num_iter $niter --z_slices_on_cpu $z_slices_on_cpu
     done
