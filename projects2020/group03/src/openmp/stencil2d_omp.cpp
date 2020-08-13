@@ -421,7 +421,7 @@ int main(int argc, char const *argv[]) {
   auto start = std::chrono::steady_clock::now();
 
   // apply_diffusion(input_3D, output_3D, alpha, iter, x, y, z, nHalo);
-  apply_diffusion(input, output, alpha, iter, xsize, ysize, zsize, nHalo);
+  apply_diffusion_2(input, output, alpha, iter, xsize, ysize, zsize, nHalo);
 
   auto end = std::chrono::steady_clock::now();
 #ifdef CRAYPAT

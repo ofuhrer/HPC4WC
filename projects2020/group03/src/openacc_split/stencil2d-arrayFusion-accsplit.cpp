@@ -676,7 +676,18 @@ int main(int argc, char const *argv[]) {
   reportTime(output_3D, iter, timeDiff);
 
   std::ofstream os;
-  os.open("time_1.dat", std::ofstream::app);
+    if (x == 256){
+       os.open("time_256.dat", std::ofstream::app);
+    }  
+    else if (x==512){
+       os.open("time_512.dat", std::ofstream::app);
+    }   
+     else if (x==1024){
+       os.open("time_1024.dat", std::ofstream::app);
+     }   
+     else {
+      os.open("time_1.dat", std::ofstream::app);
+     }   
   os << timeDiff << std::endl;
   os.close();
   delete[] input;
