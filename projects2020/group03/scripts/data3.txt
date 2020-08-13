@@ -19,6 +19,16 @@
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 18
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 19
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 20
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 21
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 22
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 23
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 24
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 25
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 26
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 27
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 28
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 29
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   256 64 1024 30
 
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024  0
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024  1
@@ -41,6 +51,16 @@
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 18
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 19
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 20
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 21
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 22
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 23
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 24
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 25
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 26
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 27
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 28
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 29
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2   512 64 1024 30
 
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024  0
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024  1
@@ -63,3 +83,13 @@
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 18
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 19
 [@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 20
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 21
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 22
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 23
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 24
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 25
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 26
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 27
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 28
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 29
+[@ build/cray/src/openmp_split  @] ${SLURM_SUBMIT_DIR}/scripts/data_wrapper.sh stencil2d_openmp_split2  1024 64 1024 30
