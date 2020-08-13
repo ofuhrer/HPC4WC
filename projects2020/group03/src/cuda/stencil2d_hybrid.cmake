@@ -1,11 +1,15 @@
 add_executable (
-	stencil2d_hybrid
-		update_halo.cpp
-		apply_stencil_cpu.cpp
-		apply_stencil.cu
-		stencil2d_hybrid.cu
+	stencil2d_hybrid.x
+		src/update_halo.cpp
+		src/apply_stencil_cpu.cpp
+		src/apply_stencil.cu
+		src/stencil2d_hybrid.cu
+)
+target_include_directories (
+	stencil2d_hybrid.x
+		include
 )
 target_link_libraries (
-	stencil2d_hybrid
+	stencil2d_hybrid.x
 		OpenMP
 )
