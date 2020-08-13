@@ -6,7 +6,7 @@ add_executable (
 		src/stencil2d_hybrid.cu
 )
 target_include_directories (
-	stencil2d_hybrid.x
+	stencil2d_hybrid.x PRIVATE
 		include
 )
 target_link_libraries (

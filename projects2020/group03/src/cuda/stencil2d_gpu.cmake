@@ -5,7 +5,7 @@ add_executable (
 		src/stencil2d_gpu.cu
 )
 target_include_directories (
-	stencil2d_gpu.x
+	stencil2d_gpu.x PRIVATE
 		include
 )
 target_link_libraries (

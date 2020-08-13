@@ -4,7 +4,7 @@ module m_diffusion_openacc_split
 
   public :: apply_diffusion
   contains
-    subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter)
+    subroutine apply_diffusion(in_field, out_field, num_halo, alpha, p, num_iter, z_slices_on_cpu)
       use, intrinsic :: iso_fortran_env, only: REAL64
       use m_partitioner, only: Partitioner
       use m_halo, only: update_halo
@@ -15,6 +15,7 @@ module m_diffusion_openacc_split
       real(kind = REAL64), intent(in) :: alpha
       type(Partitioner), intent(in) :: p
       integer, intent(in) :: num_iter
+      integer, intent(in) :: z_slices_on_cpu
 
       integer :: iter
       integer :: i

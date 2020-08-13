@@ -5,7 +5,7 @@ add_executable (
 		src/stencil2d_cpu.cpp
 )
 target_include_directories (
-	stencil2d_cpu.x
+	stencil2d_cpu.x PRIVATE
 		include
 )
 target_link_libraries (
