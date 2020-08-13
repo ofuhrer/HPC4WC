@@ -1,0 +1,56 @@
+---------------------------------------------------------------------------------------------
+Strong scaling runs
+---------------------------------------------------------------------------------------------
+
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =   6 // Elapsed time for work =   14.0051 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =   6 // Elapsed time for work =   14.1774 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =   6 // Elapsed time for work =   14.1319 s
+
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  24 // Elapsed time for work =    3.7976 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  24 // Elapsed time for work =    3.8821 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  24 // Elapsed time for work =    3.9515 s
+
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  54 // Elapsed time for work =    2.0768 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  54 // Elapsed time for work =    2.0642 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  54 // Elapsed time for work =    2.0426 s
+
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  96 // Elapsed time for work =    1.3828 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  96 // Elapsed time for work =    1.3910 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks =  96 // Elapsed time for work =    1.3795 s
+
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks = 150 // Elapsed time for work =    1.0750 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks = 150 // Elapsed time for work =    1.0688 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks = 150 // Elapsed time for work =    1.0673 s
+
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks = 216 // Elapsed time for work =    0.8863 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks = 216 // Elapsed time for work =    0.9029 s
+nz =  60, ny = 120, nx = 120; iter = 1020, ranks = 216 // Elapsed time for work =    0.9050 s
+
+---------------------------------------------------------------------------------------------
+
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =   6 // Elapsed time for work =   91.3117 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =   6 // Elapsed time for work =   92.5372 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =   6 // Elapsed time for work =   91.2999 s
+
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  24 // Elapsed time for work =   18.6142 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  24 // Elapsed time for work =   18.8271 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  24 // Elapsed time for work =   18.7734 s
+
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  54 // Elapsed time for work =    7.8464 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  54 // Elapsed time for work =    7.7880 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  54 // Elapsed time for work =    7.7942 s
+
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  96 // Elapsed time for work =    5.5118 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  96 // Elapsed time for work =    5.5425 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks =  96 // Elapsed time for work =    5.5753 s
+
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks = 150 // Elapsed time for work =    4.3026 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks = 150 // Elapsed time for work =    4.2533 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks = 150 // Elapsed time for work =    4.2799 s
+
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks = 216 // Elapsed time for work =    3.5039 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks = 216 // Elapsed time for work =    3.5572 s
+nz =  60, ny = 240, nx = 240; iter = 1020, ranks = 216 // Elapsed time for work =    3.4828 s
+
+---------------------------------------------------------------------------------------------
+
