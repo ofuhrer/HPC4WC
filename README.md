@@ -1,4 +1,4 @@
-# HPC4WC Summer 2020
+# HPC4WC Summer 2021
 
 High Performance Computing for Weather and Climate Course
 
