@@ -6,6 +6,10 @@ if [ ! -d HPC4WC ] ; then
     echo "ERROR: Cannot find a HPC4WC repository clone in your home directory. Ask for help!"
     exit 1
 fi
+if [ -d HPC4WC_venv ] ; then
+    echo "ERROR: You seem to be running this command for the second time. Ask for help!"
+    exit 1
+fi
 
 module load daint-gpu
 module load cray-python
