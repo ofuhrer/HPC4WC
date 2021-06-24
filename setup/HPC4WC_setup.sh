@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 cd ~/
 if [ ! -d HPC4WC ] ; then
