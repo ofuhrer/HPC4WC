@@ -21,6 +21,7 @@ cp -r HPC4WC HPC4WC_orig
 echo "Creating virtual HPC4WC_venv Python virtual environment"
 python -m venv HPC4WC_venv
 source HPC4WC_venv/bin/activate
+pip install setuptools wheel
 pip install -r ~/HPC4WC/setup/etc/requirements.txt
 
 echo "Creating HPC4WC_kernel kernel for Jupyter"
