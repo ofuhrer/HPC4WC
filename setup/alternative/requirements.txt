@@ -1,9 +1,0 @@
-bash_kernel
-click
-gt4py @ git+https://github.com/gridtools/gt4py.git#egg=gt4py
-ipdb
-ipython
-jupyter
-matplotlib==2.2.2
-numpy
-pytest
