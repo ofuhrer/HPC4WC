@@ -35,7 +35,7 @@ Mako==1.1.4
 MarkupSafe==2.0.1
 matplotlib==3.4.2
 matplotlib-inline==0.1.2
-mpi4py @ file:///project/s1053/install/mpi4py/mpi4py-3.1.0a0-cp38-cp38-linux_x86_64.whl
+mpi4py @ file:///scratch/snx3000/tobwi/mpi4py-3.1.0a0-cp38-cp38-linux_x86_64.whl
 mpmath==1.2.1
 mypy-extensions==0.4.3
 networkx==2.5.1
