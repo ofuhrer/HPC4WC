@@ -41,6 +41,9 @@ $(TARGET): $(OBJS)
 clean: 
 	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report report_*.txt out.txt
 
+clean_examples:
+	rm -f parallel private reduction regions schedule scoping shared threadnum timing weak weak.txt barrier barrier2 caching.txt caching2 caching2.txt infos loops nowait out.txt
+
 distclean: clean
 	-$(RM) -rf *.png *.dat *.npy *.x *.x+orig* *.x+[0-9]*
 
