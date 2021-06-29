@@ -38,14 +38,15 @@ $(TARGET): $(OBJS)
 	$(F90) $(FFLAGS) $(OBJS) -o $(TARGET)
 	cp $(TARGET) stencil2d.x
 
-clean: 
+clean: clean_examples
 	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report report_*.txt out.txt
 
 clean_examples:
-	rm -f parallel private reduction regions schedule scoping shared threadnum timing weak weak.txt barrier barrier2 caching.txt caching2 caching2.txt infos loops nowait out.txt
+	rm -f parallel private reduction regions schedule scoping shared threadnum timing weak weak.txt barrier barrier2 caching.txt caching2 caching2.txt infos loops nowait out.txt caching 
 
 distclean: clean
 	-$(RM) -rf *.png *.dat *.npy *.x *.x+orig* *.x+[0-9]*
 
 %.o: %.F90
 	$(F90) $(FFLAGS) -c $*.F90
+
