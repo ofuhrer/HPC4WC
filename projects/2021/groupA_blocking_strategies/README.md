@@ -8,6 +8,9 @@ This is only a copy of the real repository. The automatic unittests and document
 
 Please visit [https://github.com/maede97/HPC4WC-Project](https://github.com/maede97/HPC4WC-Project) for the actual git repository of the project.
 
+## Report
+The report can be found in this directory via [report.pdf](report.pdf).
+
 ## Requirements
 - CMake >3.11
 - C++ 17/20
