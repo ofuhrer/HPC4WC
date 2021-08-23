@@ -1,0 +1,103 @@
+Performing search over 49 different possibilities.
+-blocking-size-i 2 -blocking-size-j 2 
+on average took 8.2205 seconds
+-blocking-size-i 2 -blocking-size-j 4 
+on average took 6.66327 seconds
+-blocking-size-i 2 -blocking-size-j 8 
+on average took 5.96792 seconds
+-blocking-size-i 2 -blocking-size-j 16 
+on average took 5.5819 seconds
+-blocking-size-i 2 -blocking-size-j 32 
+on average took 5.38404 seconds
+-blocking-size-i 2 -blocking-size-j 64 
+on average took 5.30378 seconds
+-blocking-size-i 2 -blocking-size-j 128 
+on average took 5.21617 seconds
+-blocking-size-i 4 -blocking-size-j 2 
+on average took 6.4145 seconds
+-blocking-size-i 4 -blocking-size-j 4 
+on average took 5.35329 seconds
+-blocking-size-i 4 -blocking-size-j 8 
+on average took 4.86273 seconds
+-blocking-size-i 4 -blocking-size-j 16 
+on average took 4.60908 seconds
+-blocking-size-i 4 -blocking-size-j 32 
+on average took 4.45652 seconds
+-blocking-size-i 4 -blocking-size-j 64 
+on average took 4.37635 seconds
+-blocking-size-i 4 -blocking-size-j 128 
+on average took 4.30717 seconds
+-blocking-size-i 8 -blocking-size-j 2 
+on average took 5.53813 seconds
+-blocking-size-i 8 -blocking-size-j 4 
+on average took 4.68703 seconds
+-blocking-size-i 8 -blocking-size-j 8 
+on average took 4.31805 seconds
+-blocking-size-i 8 -blocking-size-j 16 
+on average took 4.09281 seconds
+-blocking-size-i 8 -blocking-size-j 32 
+on average took 3.96232 seconds
+-blocking-size-i 8 -blocking-size-j 64 
+on average took 3.89644 seconds
+-blocking-size-i 8 -blocking-size-j 128 
+on average took 3.87065 seconds
+-blocking-size-i 16 -blocking-size-j 2 
+on average took 5.14556 seconds
+-blocking-size-i 16 -blocking-size-j 4 
+on average took 4.43497 seconds
+-blocking-size-i 16 -blocking-size-j 8 
+on average took 4.06506 seconds
+-blocking-size-i 16 -blocking-size-j 16 
+on average took 3.81654 seconds
+-blocking-size-i 16 -blocking-size-j 32 
+on average took 3.71731 seconds
+-blocking-size-i 16 -blocking-size-j 64 
+on average took 3.69055 seconds
+-blocking-size-i 16 -blocking-size-j 128 
+on average took 3.71402 seconds
+-blocking-size-i 32 -blocking-size-j 2 
+on average took 4.94223 seconds
+-blocking-size-i 32 -blocking-size-j 4 
+on average took 4.23111 seconds
+-blocking-size-i 32 -blocking-size-j 8 
+on average took 3.91939 seconds
+-blocking-size-i 32 -blocking-size-j 16 
+on average took 3.75421 seconds
+-blocking-size-i 32 -blocking-size-j 32 
+on average took 3.64804 seconds
+-blocking-size-i 32 -blocking-size-j 64 
+on average took 3.62224 seconds
+-blocking-size-i 32 -blocking-size-j 128 
+on average took 3.65074 seconds
+-blocking-size-i 64 -blocking-size-j 2 
+on average took 4.81465 seconds
+-blocking-size-i 64 -blocking-size-j 4 
+on average took 4.15892 seconds
+-blocking-size-i 64 -blocking-size-j 8 
+on average took 3.86119 seconds
+-blocking-size-i 64 -blocking-size-j 16 
+on average took 3.70499 seconds
+-blocking-size-i 64 -blocking-size-j 32 
+on average took 3.62044 seconds
+-blocking-size-i 64 -blocking-size-j 64 
+on average took 3.6084 seconds
+-blocking-size-i 64 -blocking-size-j 128 
+on average took 3.73931 seconds
+-blocking-size-i 128 -blocking-size-j 2 
+on average took 4.75208 seconds
+-blocking-size-i 128 -blocking-size-j 4 
+on average took 4.11041 seconds
+-blocking-size-i 128 -blocking-size-j 8 
+on average took 3.83754 seconds
+-blocking-size-i 128 -blocking-size-j 16 
+on average took 3.69636 seconds
+-blocking-size-i 128 -blocking-size-j 32 
+on average took 3.63375 seconds
+-blocking-size-i 128 -blocking-size-j 64 
+on average took 3.75405 seconds
+-blocking-size-i 128 -blocking-size-j 128 
+on average took 3.77646 seconds
+==================
+Search complete.
+Best parameters (3.6084s): 
+-blocking-size-i 64 -blocking-size-j 64
