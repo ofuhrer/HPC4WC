@@ -1,0 +1,12 @@
+# Use the Google style in this project.
+BasedOnStyle: Google
+UseTab: Never
+IndentWidth: 4
+ColumnLimit: 160
+AccessModifierOffset: -4
+ReflowComments: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty

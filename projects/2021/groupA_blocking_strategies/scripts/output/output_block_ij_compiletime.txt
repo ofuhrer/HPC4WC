@@ -1,0 +1,98 @@
+-blocking-size-i 2 -blocking-size-j 2
+Time elapsed: 5.19479
+-blocking-size-i 2 -blocking-size-j 4
+Time elapsed: 4.20122
+-blocking-size-i 2 -blocking-size-j 8
+Time elapsed: 3.73569
+-blocking-size-i 2 -blocking-size-j 16
+Time elapsed: 3.49068
+-blocking-size-i 2 -blocking-size-j 32
+Time elapsed: 3.38214
+-blocking-size-i 2 -blocking-size-j 64
+Time elapsed: 3.29042
+-blocking-size-i 2 -blocking-size-j 128
+Time elapsed: 3.23974
+-blocking-size-i 4 -blocking-size-j 2
+Time elapsed: 4.02269
+-blocking-size-i 4 -blocking-size-j 4
+Time elapsed: 3.33172
+-blocking-size-i 4 -blocking-size-j 8
+Time elapsed: 3.00138
+-blocking-size-i 4 -blocking-size-j 16
+Time elapsed: 2.83185
+-blocking-size-i 4 -blocking-size-j 32
+Time elapsed: 2.75059
+-blocking-size-i 4 -blocking-size-j 64
+Time elapsed: 2.68578
+-blocking-size-i 4 -blocking-size-j 128
+Time elapsed: 2.66031
+-blocking-size-i 8 -blocking-size-j 2
+Time elapsed: 3.45556
+-blocking-size-i 8 -blocking-size-j 4
+Time elapsed: 2.89607
+-blocking-size-i 8 -blocking-size-j 8
+Time elapsed: 2.63625
+-blocking-size-i 8 -blocking-size-j 16
+Time elapsed: 2.51061
+-blocking-size-i 8 -blocking-size-j 32
+Time elapsed: 2.4236
+-blocking-size-i 8 -blocking-size-j 64
+Time elapsed: 2.38057
+-blocking-size-i 8 -blocking-size-j 128
+Time elapsed: 2.37519
+-blocking-size-i 16 -blocking-size-j 2
+Time elapsed: 3.18844
+-blocking-size-i 16 -blocking-size-j 4
+Time elapsed: 2.71457
+-blocking-size-i 16 -blocking-size-j 8
+Time elapsed: 2.49191
+-blocking-size-i 16 -blocking-size-j 16
+Time elapsed: 2.34514
+-blocking-size-i 16 -blocking-size-j 32
+Time elapsed: 2.2746
+-blocking-size-i 16 -blocking-size-j 64
+Time elapsed: 2.23711
+-blocking-size-i 16 -blocking-size-j 128
+Time elapsed: 2.3372
+-blocking-size-i 32 -blocking-size-j 2
+Time elapsed: 3.06012
+-blocking-size-i 32 -blocking-size-j 4
+Time elapsed: 2.61203
+-blocking-size-i 32 -blocking-size-j 8
+Time elapsed: 2.38574
+-blocking-size-i 32 -blocking-size-j 16
+Time elapsed: 2.2845
+-blocking-size-i 32 -blocking-size-j 32
+Time elapsed: 2.21222
+-blocking-size-i 32 -blocking-size-j 64
+Time elapsed: 2.19283
+-blocking-size-i 32 -blocking-size-j 128
+Time elapsed: 2.21697
+-blocking-size-i 64 -blocking-size-j 2
+Time elapsed: 2.97283
+-blocking-size-i 64 -blocking-size-j 4
+Time elapsed: 2.54266
+-blocking-size-i 64 -blocking-size-j 8
+Time elapsed: 2.35175
+-blocking-size-i 64 -blocking-size-j 16
+Time elapsed: 2.25165
+-blocking-size-i 64 -blocking-size-j 32
+Time elapsed: 2.19836
+-blocking-size-i 64 -blocking-size-j 64
+Time elapsed: 2.18286
+-blocking-size-i 64 -blocking-size-j 128
+Time elapsed: 2.29985
+-blocking-size-i 128 -blocking-size-j 2
+Time elapsed: 2.93754
+-blocking-size-i 128 -blocking-size-j 4
+Time elapsed: 2.52941
+-blocking-size-i 128 -blocking-size-j 8
+Time elapsed: 2.34351
+-blocking-size-i 128 -blocking-size-j 16
+Time elapsed: 2.24343
+-blocking-size-i 128 -blocking-size-j 32
+Time elapsed: 2.21156
+-blocking-size-i 128 -blocking-size-j 64
+Time elapsed: 2.32711
+-blocking-size-i 128 -blocking-size-j 128
+Time elapsed: 2.40454
