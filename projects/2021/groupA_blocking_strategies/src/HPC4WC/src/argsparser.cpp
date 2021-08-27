@@ -61,7 +61,7 @@ void ArgsParser::add_argument(Field::idx_t& result, const char* argument, const 
 
 void ArgsParser::add_argument(bool& result, const char* argument, const char* help) {
     m_arguments.push_back({argument, help, result ? "true" : "false"});
-    result = m_args.get<Field::idx_t>(argument).value_or(result);
+    result = m_args.get<bool>(argument).value_or(result);
 }
 
 void ArgsParser::add_argument(std::string& result, const char* argument, const char* help) {

@@ -38,6 +38,15 @@ After you have completed the build instructions, run the unittest binary using
 ```
 from within the `build` folder.
 
+## Example program
+Our example program is `diffusion2d`. In order to get the fields plotted as shown in the report, execute the following commands (assuming you have completed the step [Build Instructions](#build-instructions), execute the steps from the `build` folder):
+```
+./src/executables/diffusion2d --plotting=true
+python3 ../scripts/showmat.py initial.mat initial.png
+python3 ../scripts/showmat.py final.mat final.png
+```
+This will generate the plots for the initial and final field values.
+
 ## Piz Daint
 Our code is designed that it can be run on [Piz Daint](https://www.cscs.ch/computers/piz-daint/). To enable everything, log in and clone this repository. Then, run the following commands:
 

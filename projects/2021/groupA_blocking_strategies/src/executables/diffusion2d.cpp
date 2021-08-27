@@ -22,6 +22,9 @@ int main(int argc, char* argv[]) {
     argsParser.add_argument(num_halo, "num_halo", "Number of halo points in i and j direction.");
     argsParser.add_argument(num_timesteps, "iterations", "Number of diffusion iterations.");
 
+    bool do_plotting = false;
+    argsParser.add_argument(do_plotting, "plotting", "Output initial and final field data.");
+
     if (argsParser.help()) {
         argsParser.help(std::cout);
         return 0;
@@ -31,8 +34,10 @@ int main(int argc, char* argv[]) {
 
     CubeInitialCondition::apply(f);
 
-    // std::ofstream initial_of("initial.mat");
-    // IO::write(initial_of, f, nk / 2);
+    if(do_plotting) {
+        std::ofstream initial_of("initial.mat");
+        IO::write(initial_of, f, nk / 2);
+    }
 
     auto timer = Timer();
 
@@ -44,8 +49,10 @@ int main(int argc, char* argv[]) {
     double time = timer.timeElapsed();
     std::cout << "Time elapsed: " << time << std::endl;
 
-    // std::ofstream final_of("final.mat");
-    // IO::write(final_of, f, nk / 2);
-
+    if(do_plotting) {
+        std::ofstream final_of("final.mat");
+        IO::write(final_of, f, nk / 2);
+    }
+    
     return 0;
 }

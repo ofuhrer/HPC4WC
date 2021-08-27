@@ -48,3 +48,19 @@ TEST(ArgsParser, Arguments) {
     EXPECT_EQ(def_val, 1);
     EXPECT_EQ(val2, 1);
 }
+
+TEST(ArgsParser, BoolArg) {
+    using namespace HPC4WC;
+
+    char* args[] = {"binary", "--val1=f", "--val2=1", "--val3"};
+    ArgsParser argsparser(4, args);
+
+    bool v1 = false, v2 = false, v3 = false;
+    argsparser.add_argument(v1, "val1", "val1");
+    argsparser.add_argument(v2, "val2", "val2");
+    argsparser.add_argument(v3, "val3", "val3");
+
+    EXPECT_FALSE(v1);
+    EXPECT_TRUE(v2);
+    EXPECT_TRUE(v3);
+}
