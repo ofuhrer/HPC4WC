@@ -1,0 +1,245 @@
+GT4Py   tmp   Backend         nx      ny   nz   Elapsed
+ True   True  numpy           30      30    1  4.455572
+ True   True  numpy           30      30    1  4.341864
+ True   True  numpy           30      30    1  4.410543
+ True   True  numpy           30      30    1  4.341405
+ True   True  numpy           30      30    1  4.446870
+ True   True  numpy           50      30    1  6.285703
+ True   True  numpy           50      30    1  6.351858
+ True   True  numpy           50      30    1  6.260638
+ True   True  numpy           50      30    1  6.376969
+ True   True  numpy           50      30    1  6.293254
+ True   True  numpy          100      30    1  10.638374
+ True   True  numpy          100      30    1  10.737999
+ True   True  numpy          100      30    1  10.737260
+ True   True  numpy          100      30    1  10.747593
+ True   True  numpy          100      30    1  10.696152
+ True   True  numpy          200      30    1  19.878750
+ True   True  numpy          200      30    1  19.941572
+ True   True  numpy          200      30    1  19.572268
+ True   True  numpy          200      30    1  19.824927
+ True   True  numpy          200      30    1  19.828471
+ True   True  numpy          500      30    1  48.771551
+ True   True  numpy          500      30    1  48.471563
+ True   True  numpy          500      30    1  48.303117
+ True   True  numpy          500      30    1  49.211676
+ True   True  numpy          500      30    1  50.279034
+ True   True  numpy         1000      30    1  100.797641
+ True   True  numpy         1000      30    1  98.628214
+ True   True  numpy         1000      30    1  100.702740
+ True   True  numpy         1000      30    1  100.544396
+ True   True  numpy         1000      30    1  99.998802
+ True   True  gtmc            30      30    1  4.522080
+ True   True  gtmc            30      30    1  4.500722
+ True   True  gtmc            30      30    1  4.488715
+ True   True  gtmc            30      30    1  4.495965
+ True   True  gtmc            30      30    1  4.507765
+ True   True  gtmc            50      30    1  6.687369
+ True   True  gtmc            50      30    1  6.485512
+ True   True  gtmc            50      30    1  6.468528
+ True   True  gtmc            50      30    1  6.447612
+ True   True  gtmc            50      30    1  6.409881
+ True   True  gtmc           100      30    1  11.208968
+ True   True  gtmc           100      30    1  11.059226
+ True   True  gtmc           100      30    1  11.169734
+ True   True  gtmc           100      30    1  11.128614
+ True   True  gtmc           100      30    1  11.165113
+ True   True  gtmc           200      30    1  20.266581
+ True   True  gtmc           200      30    1  20.173133
+ True   True  gtmc           200      30    1  20.374801
+ True   True  gtmc           200      30    1  20.275722
+ True   True  gtmc           200      30    1  20.337360
+ True   True  gtmc           500      30    1  48.882098
+ True   True  gtmc           500      30    1  48.671979
+ True   True  gtmc           500      30    1  48.671847
+ True   True  gtmc           500      30    1  49.128291
+ True   True  gtmc           500      30    1  49.421175
+ True   True  gtmc          1000      30    1  96.997524
+ True   True  gtmc          1000      30    1  96.916647
+ True   True  gtmc          1000      30    1  97.571124
+ True   True  gtmc          1000      30    1  96.320021
+ True   True  gtmc          1000      30    1  97.112095
+ True   True  gtx86           30      30    1  4.504176
+ True   True  gtx86           30      30    1  4.479908
+ True   True  gtx86           30      30    1  4.548739
+ True   True  gtx86           30      30    1  4.476457
+ True   True  gtx86           30      30    1  4.494388
+ True   True  gtx86           50      30    1  6.445041
+ True   True  gtx86           50      30    1  6.422671
+ True   True  gtx86           50      30    1  6.433626
+ True   True  gtx86           50      30    1  6.504877
+ True   True  gtx86           50      30    1  6.442340
+ True   True  gtx86          100      30    1  11.173429
+ True   True  gtx86          100      30    1  11.058379
+ True   True  gtx86          100      30    1  11.195030
+ True   True  gtx86          100      30    1  11.055428
+ True   True  gtx86          100      30    1  11.068404
+ True   True  gtx86          200      30    1  20.366818
+ True   True  gtx86          200      30    1  20.314615
+ True   True  gtx86          200      30    1  20.220284
+ True   True  gtx86          200      30    1  20.327784
+ True   True  gtx86          200      30    1  20.347377
+ True   True  gtx86          500      30    1  48.644161
+ True   True  gtx86          500      30    1  48.617223
+ True   True  gtx86          500      30    1  48.711633
+ True   True  gtx86          500      30    1  48.506912
+ True   True  gtx86          500      30    1  48.812679
+ True   True  gtx86         1000      30    1  96.542383
+ True   True  gtx86         1000      30    1  96.813625
+ True   True  gtx86         1000      30    1  96.856360
+ True   True  gtx86         1000      30    1  96.994937
+ True   True  gtx86         1000      30    1  97.225100
+ True   True  gtc:dace        30      30    1  4.618316
+ True   True  gtc:dace        30      30    1  4.630934
+ True   True  gtc:dace        30      30    1  4.613844
+ True   True  gtc:dace        30      30    1  4.618588
+ True   True  gtc:dace        30      30    1  4.614735
+ True   True  gtc:dace        50      30    1  6.639204
+ True   True  gtc:dace        50      30    1  6.630151
+ True   True  gtc:dace        50      30    1  6.684541
+ True   True  gtc:dace        50      30    1  6.613182
+ True   True  gtc:dace        50      30    1  6.686515
+ True   True  gtc:dace       100      30    1  11.578210
+ True   True  gtc:dace       100      30    1  11.545269
+ True   True  gtc:dace       100      30    1  11.539422
+ True   True  gtc:dace       100      30    1  11.553653
+ True   True  gtc:dace       100      30    1  11.625582
+ True   True  gtc:dace       200      30    1  21.279351
+ True   True  gtc:dace       200      30    1  21.252109
+ True   True  gtc:dace       200      30    1  21.167343
+ True   True  gtc:dace       200      30    1  21.051675
+ True   True  gtc:dace       200      30    1  21.322242
+ True   True  gtc:dace       500      30    1  51.563408
+ True   True  gtc:dace       500      30    1  51.677147
+ True   True  gtc:dace       500      30    1  51.606193
+ True   True  gtc:dace       500      30    1  52.054671
+ True   True  gtc:dace       500      30    1  51.622771
+ True   True  gtc:dace      1000      30    1  105.696969
+ True   True  gtc:dace      1000      30    1  105.479794
+ True   True  gtc:dace      1000      30    1  105.057695
+ True   True  gtc:dace      1000      30    1  105.677828
+ True   True  gtc:dace      1000      30    1  105.766253
+ True   True  gtcuda          30      30    1  4.437476
+ True   True  gtcuda          30      30    1  4.855096
+ True   True  gtcuda          30      30    1  4.521071
+ True   True  gtcuda          30      30    1  4.416198
+ True   True  gtcuda          30      30    1  5.220069
+ True   True  gtcuda          50      30    1  6.086745
+ True   True  gtcuda          50      30    1  6.643351
+ True   True  gtcuda          50      30    1  6.095497
+ True   True  gtcuda          50      30    1  6.397161
+ True   True  gtcuda          50      30    1  6.013193
+ True   True  gtcuda         100      30    1  10.133513
+ True   True  gtcuda         100      30    1  10.330877
+ True   True  gtcuda         100      30    1  10.070746
+ True   True  gtcuda         100      30    1  10.251322
+ True   True  gtcuda         100      30    1  10.204558
+ True   True  gtcuda         200      30    1  18.329628
+ True   True  gtcuda         200      30    1  18.232420
+ True   True  gtcuda         200      30    1  18.463790
+ True   True  gtcuda         200      30    1  17.975838
+ True   True  gtcuda         200      30    1  18.797593
+ True   True  gtcuda         500      30    1  43.170795
+ True   True  gtcuda         500      30    1  42.590678
+ True   True  gtcuda         500      30    1  43.538645
+ True   True  gtcuda         500      30    1  42.531381
+ True   True  gtcuda         500      30    1  42.348237
+ True   True  gtcuda        1000      30    1  85.135280
+ True   True  gtcuda        1000      30    1  83.293649
+ True   True  gtcuda        1000      30    1  84.018219
+ True   True  gtcuda        1000      30    1  85.144900
+ True   True  gtcuda        1000      30    1  83.924436
+False   True  numpy           30      30    1  2.159891
+False   True  numpy           30      30    1  2.177704
+False   True  numpy           30      30    1  2.173837
+False   True  numpy           30      30    1  2.191250
+False   True  numpy           30      30    1  2.156557
+False   True  numpy           50      30    1  5.837689
+False   True  numpy           50      30    1  5.891549
+False   True  numpy           50      30    1  5.988059
+False   True  numpy           50      30    1  5.865530
+False   True  numpy           50      30    1  5.856378
+False   True  numpy          100      30    1  22.659357
+False   True  numpy          100      30    1  22.836402
+False   True  numpy          100      30    1  22.865970
+False   True  numpy          100      30    1  22.791305
+False   True  numpy          100      30    1  22.722815
+False   True  numpy          200      30    1  87.828047
+False   True  numpy          200      30    1  88.072068
+False   True  numpy          200      30    1  87.871486
+False   True  numpy          200      30    1  87.981900
+False   True  numpy          200      30    1  87.879858
+False   True  numpy          500      30    1  543.737415
+False   True  numpy          500      30    1  545.126304
+False   True  numpy          500      30    1  542.427482
+False   True  numpy          500      30    1  543.686740
+False   True  numpy          500      30    1  544.940447
+False   True  numpy         1000      30    1  2170.769349
+False   True  numpy         1000      30    1  2165.737256
+False   True  numpy         1000      30    1  2157.595848
+False   True  numpy         1000      30    1  2184.731343
+False   True  numpy         1000      30    1  2160.047810
+ True  False  numpy           30      30    1  4.467573
+ True  False  numpy           30      30    1  4.477871
+ True  False  numpy           30      30    1  4.508997
+ True  False  numpy           30      30    1  4.422922
+ True  False  numpy           30      30    1  4.407830
+ True  False  numpy           50      30    1  6.326806
+ True  False  numpy           50      30    1  6.336152
+ True  False  numpy           50      30    1  6.314680
+ True  False  numpy           50      30    1  6.265125
+ True  False  numpy           50      30    1  6.234338
+ True  False  numpy          100      30    1  10.550262
+ True  False  numpy          100      30    1  10.674019
+ True  False  numpy          100      30    1  10.403131
+ True  False  numpy          100      30    1  10.573890
+ True  False  numpy          100      30    1  10.566756
+ True  False  numpy          200      30    1  19.617156
+ True  False  numpy          200      30    1  19.570396
+ True  False  numpy          200      30    1  19.515646
+ True  False  numpy          200      30    1  19.388751
+ True  False  numpy          200      30    1  19.389820
+ True  False  numpy          500      30    1  48.024278
+ True  False  numpy          500      30    1  47.187096
+ True  False  numpy          500      30    1  48.272399
+ True  False  numpy          500      30    1  47.786161
+ True  False  numpy          500      30    1  48.090288
+ True  False  numpy         1000      30    1  101.959332
+ True  False  numpy         1000      30    1  97.855774
+ True  False  numpy         1000      30    1  97.549154
+ True  False  numpy         1000      30    1  95.719771
+ True  False  numpy         1000      30    1  96.736551
+ True   True  numpy         1500      30    1  157.745750
+ True   True  numpy         1500      30    1  157.644647
+ True   True  numpy         1500      30    1  155.070689
+ True   True  numpy         1500      30    1  157.502035
+ True   True  numpy         1500      30    1  156.251705
+ True   True  gtmc          1500      30    1  145.953752
+ True   True  gtmc          1500      30    1  146.282009
+ True   True  gtmc          1500      30    1  146.179155
+ True   True  gtmc          1500      30    1  146.052309
+ True   True  gtmc          1500      30    1  146.330244
+ True   True  gtx86         1500      30    1  146.003944
+ True   True  gtx86         1500      30    1  146.219023
+ True   True  gtx86         1500      30    1  146.361376
+ True   True  gtx86         1500      30    1  146.792965
+ True   True  gtx86         1500      30    1  145.871367
+ True   True  gtc:dace      1500      30    1  163.516285
+ True   True  gtc:dace      1500      30    1  163.066534
+ True   True  gtc:dace      1500      30    1  164.721022
+ True   True  gtc:dace      1500      30    1  162.723360
+ True   True  gtc:dace      1500      30    1  163.409103
+ True   True  gtcuda        1500      30    1  127.510200
+ True   True  gtcuda        1500      30    1  127.487468
+ True   True  gtcuda        1500      30    1  128.492820
+ True   True  gtcuda        1500      30    1  127.119187
+ True   True  gtcuda        1500      30    1  126.772917
+False   True  numpy         1500      30    1  4889.370258
+False   True  numpy         1500      30    1  4880.716677
+False   True  numpy         1500      30    1  4854.967964
+False   True  numpy         1500      30    1  4867.788195
+ True  False  numpy         1500      30    1  147.806941
+ True  False  numpy         1500      30    1  149.534964
+ True  False  numpy         1500      30    1  146.775961
+ True  False  numpy         1500      30    1  144.989492
+ True  False  numpy         1500      30    1  145.897569
