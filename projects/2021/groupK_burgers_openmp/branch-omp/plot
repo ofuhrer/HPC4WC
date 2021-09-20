@@ -1,0 +1,22 @@
+# just to get GPVAL_Y_MAX
+p "results-shallow-static.txt" using 1:2 \
+, "results-shallow-dynamic.txt" using 1:2 \
+, "results-collapsed-static.txt" using 1:2 \
+#, "results-collapsed-dynamic.txt" using 1:2
+
+set term svg
+set output "plot.svg"
+
+set xlabel "Threads"
+set ylabel "Runtime [ms]"
+
+set xrange [1:24]
+set yrange [0:GPVAL_Y_MAX]
+
+set arrow from 12, graph 0 to 12, graph 1 nohead lw 0.5 lc rgb "0xC0C0C0"
+
+p 1761.55 title "single-threaded" lt black \
+, "results-shallow-static.txt" using 1:2 w l title "shallow, static" \
+, "results-shallow-dynamic.txt" using 1:2 w l title "shallow, dynamic" \
+, "results-collapsed-static.txt" using 1:2 w l title "collapsed, static" \
+#, "results-collapsed-dynamic.txt" using 1:2 w l title "collapsed, dynamic" \
