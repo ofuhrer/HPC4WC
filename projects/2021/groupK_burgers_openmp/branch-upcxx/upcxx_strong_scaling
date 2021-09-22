@@ -1,0 +1,10 @@
+Time: runtime: 4279.9ms ± 134.979ms; best: 4030.75ms; n=59
+Time: runtime: 1100.13ms ± 28.4733ms; best: 1066.17ms; n=35
+Time: runtime: 800.246ms ± 44.5372ms; best: 753.12ms; n=28
+Time: runtime: 546.107ms ± 17.7146ms; best: 521.13ms; n=27
+Time: runtime: 497.132ms ± 43.4852ms; best: 443.236ms; n=37
+Time: runtime: 4401.04ms ± 132.005ms; best: 4201.34ms; n=29
+Time: runtime: 2190.8ms ± 45.1649ms; best: 2107.44ms; n=38
+Time: runtime: 1183.65ms ± 24.1417ms; best: 1148.65ms; n=45
+Time: runtime: 725.589ms ± 21.6998ms; best: 688.194ms; n=60
+Time: runtime: 594.244ms ± 45.5923ms; best: 564.256ms; n=32
