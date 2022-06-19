@@ -150,6 +150,7 @@ contains
             do j = 1 + num_halo, ny + num_halo
             do i = 1 + num_halo, nx + num_halo
                 out_field(i, j, k) = in_field(i, j, k) - alpha * tmp2_field(i, j, k)
+                ! TODO (this is and example!)
                 if (increase_counters) flop_counter = flop_counter + 2
                 if (increase_counters) byte_counter = byte_counter + 3 * wp
             end do
