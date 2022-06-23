@@ -76,7 +76,7 @@ def apply_diffusion(
     "--plot_result", type=bool, default=False, help="Make a plot of the result?"
 )
 def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
-    """ Driver for apply_diffusion that sets up fields and does timings. """
+    """Driver for apply_diffusion that sets up fields and does timings."""
 
     assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx"
     assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny"
