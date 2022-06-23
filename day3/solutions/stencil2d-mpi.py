@@ -112,6 +112,8 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1, p=None):
 
         if n < num_iter - 1:
             in_field, out_field = out_field, in_field
+        else:
+            update_halo(out_field, num_halo, p)
 
             
 @click.command()

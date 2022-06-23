@@ -43,7 +43,7 @@ def laplacian(in_field, lap_field, num_halo, extend=0):
     )
 
 
-def halo_update(field, num_halo):
+def update_halo(field, num_halo):
     """ Update the halo-zone using an up/down and left/right strategy.
 
     Parameters
@@ -91,7 +91,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     tmp_field = np.empty_like(in_field)
 
     for n in range(num_iter):
-        halo_update(in_field, num_halo)
+        update_halo(in_field, num_halo)
 
         laplacian(in_field, tmp_field, num_halo=num_halo, extend=1)
         laplacian(tmp_field, out_field, num_halo=num_halo, extend=0)
@@ -104,7 +104,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
         if n < num_iter - 1:
             in_field, out_field = out_field, in_field
         else:
-            halo_update(out_field, num_halo)
+            update_halo(out_field, num_halo)
 
 
 @click.command()
