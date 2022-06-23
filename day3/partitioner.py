@@ -1,3 +1,11 @@
+# ******************************************************
+#     Package: partitioner
+#      Author: Oliver Fuhrer
+#       Email: oliverf@meteoswiss.ch
+#        Date: 23.06.2022
+# Description: Provides a 2d domain decomposition for 3d fields
+# ******************************************************
+
 import math
 import numpy as np
 
@@ -73,24 +81,32 @@ class Partitioner:
         return self.__rank_to_position(self.__rank)
 
 
+    def get_neighbor_rank(self, offset):
+        """Get the rank ID of a neighboring rank at a certain offset relative to the current rank"""
+        position = self.__rank_to_position(self.__rank)
+        pos_y = self.__cyclic_offset(position[0], offset[0], self.__size[0], self.__periodic[0])
+        pos_x = self.__cyclic_offset(position[1], offset[1], self.__size[1], self.__periodic[1])
+        return self.__position_to_rank( [pos_y, pos_x] )
+
+
     def left(self):
         """Returns the rank of the left neighbor"""
-        return self.__get_neighbor_rank( [0, -1] )
+        return self.get_neighbor_rank( [0, -1] )
     
     
     def right(self):
         """Returns the rank of the left neighbor"""
-        return self.__get_neighbor_rank( [0, +1] )
+        return self.get_neighbor_rank( [0, +1] )
     
     
     def top(self):
         """Returns the rank of the left neighbor"""
-        return self.__get_neighbor_rank( [+1, 0] )
+        return self.get_neighbor_rank( [+1, 0] )
     
     
     def bottom(self):
         """Returns the rank of the left neighbor"""
-        return self.__get_neighbor_rank( [-1, 0] )
+        return self.get_neighbor_rank( [-1, 0] )
     
     
     def scatter(self, field, root=0):
@@ -103,11 +119,15 @@ class Partitioner:
             return field
         sendbuf = None
         if self.__rank == root:
-            sendbuf = np.empty( [self.__num_ranks,] + self.__max_shape, dtype=field.dtype )
+            sendbuf = np.empty([self.__num_ranks,] + self.__max_shape, dtype=field.dtype)
             for rank in range(self.__num_ranks):
                 j_start, i_start, j_end, i_end = self.__domains[rank]
                 sendbuf[rank, :, :j_end-j_start, :i_end-i_start] = field[:, j_start:j_end, i_start:i_end]
-        recvbuf = np.empty(self.__max_shape, dtype=field.dtype)
+        if self.__rank == root:
+            data_type = self.__comm.bcast(field.dtype, root=0)
+        else:
+            data_type = self.__comm.bcast(None, root=0)
+        recvbuf = np.empty(self.__max_shape, dtype=data_type)
         self.__comm.Scatter(sendbuf, recvbuf, root=root)
         j_start, i_start, j_end, i_end = self.__domain
         return recvbuf[:, :j_end-j_start, :i_end-i_start].copy()
@@ -152,14 +172,6 @@ class Partitioner:
         self.__size = (self.__num_ranks // ranks_x, ranks_x)
         return self.__size
         
-
-    def __get_neighbor_rank(self, offset):
-        """Get the rank ID of a neighboring rank at a certain offset relative to the current rank"""
-        position = self.__rank_to_position(self.__rank)
-        pos_y = self.__cyclic_offset(position[0], offset[0], self.__size[0], self.__periodic[0])
-        pos_x = self.__cyclic_offset(position[1], offset[1], self.__size[1], self.__periodic[1])
-        return self.__position_to_rank( [pos_y, pos_x] )
-
 
     def __cyclic_offset(self, position, offset, size, periodic=True):
         """Add offset with cyclic boundary conditions"""
