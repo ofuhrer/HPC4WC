@@ -39,16 +39,13 @@ def apply_diffusion(
     domain = ()  # TODO
 
     for n in range(num_iter):
-        # halo update
         update_halo(in_field, num_halo)
 
         # TODO: run the stencil
 
         if n < num_iter - 1:
-            # swap input and output fields
             in_field, out_field = out_field, in_field
         else:
-            # halo update
             update_halo(out_field, num_halo)
 
 
@@ -88,11 +85,11 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
         2 <= num_halo <= 256
     ), "You have to specify a reasonable number of halo points"
     assert backend in (
-        "debug",
         "numpy",
-        "gtx86",
-        "gtmc",
-        "gtcuda",
+        "gt:cpu_ifirst",
+        "gt:cpu_kfirst",
+        "gt:gpu",
+        "cuda",
     ), "You have to specify a reasonable value for backend"
     alpha = 1.0 / 32.0
 
