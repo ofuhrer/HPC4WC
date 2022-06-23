@@ -40,7 +40,7 @@ program main
     call init()
 
     if ( is_master() ) then
-        write(*, '(a)') '# ranks nx ny ny nz num_iter time'
+        write(*, '(a)') '# ranks nx ny nz num_iter time'
         write(*, '(a)') 'data = np.array( [ \'
     end if
 
@@ -74,7 +74,6 @@ program main
         call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
-        call update_halo( out_field )
         if ( .not. scan .and. is_master() ) &
             call write_field_to_file( out_field, num_halo, "out_field.dat" )
 
@@ -158,6 +157,8 @@ contains
             end if
 
         end do
+
+        call update_halo( out_field )
             
     end subroutine apply_diffusion
 

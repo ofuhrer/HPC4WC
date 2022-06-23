@@ -43,7 +43,7 @@ program main
     call init()
 
     if ( is_master() ) then
-        write(*, '(a)') '# ranks nx ny ny nz num_iter time flop byte'
+        write(*, '(a)') '# ranks nx ny nz num_iter time flop byte'
         write(*, '(a)') 'data = np.array( [ \'
     end if
 
