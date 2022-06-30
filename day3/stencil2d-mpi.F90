@@ -224,8 +224,7 @@ contains
     !  Note: corners are updated in the left/right phase of the halo-update
     !
     subroutine update_halo( field, p )
-        use mpi, only : MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, MPI_STATUS_SIZE, &
-            MPI_Irecv, MPI_Isend, MPI_Waitall
+        use mpi, only : MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, MPI_STATUS_SIZE
         use m_utils, only : error
         implicit none
 
