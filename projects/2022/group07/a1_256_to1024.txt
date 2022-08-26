@@ -1,0 +1,230 @@
+numpy
+64
+Elapsed time for work = 5.102015495300293 s
+Elapsed time for work = 2.5729963779449463 s
+Elapsed time for work = 1.445357084274292 s
+Elapsed time for work = 0.8548448085784912 s
+Elapsed time for work = 0.3867669105529785 s
+Elapsed time for work = 0.30327534675598145 s
+Elapsed time for work = 0.2673051357269287 s
+128
+Elapsed time for work = 19.31964612007141 s
+Elapsed time for work = 10.586086988449097 s
+Elapsed time for work = 5.225631952285767 s
+Elapsed time for work = 2.627582550048828 s
+Elapsed time for work = 1.4465892314910889 s
+Elapsed time for work = 0.8563096523284912 s
+Elapsed time for work = 0.428356409072876 s
+256
+Elapsed time for work = 112.95393443107605 s
+Elapsed time for work = 45.52910780906677 s
+Elapsed time for work = 19.596170902252197 s
+Elapsed time for work = 10.630975246429443 s
+Elapsed time for work = 5.273103475570679 s
+Elapsed time for work = 2.631946563720703 s
+Elapsed time for work = 1.482201099395752 s
+512
+Elapsed time for work = 460.1884512901306 s
+Elapsed time for work = 230.3989565372467 s
+Elapsed time for work = 114.85517454147339 s
+Elapsed time for work = 45.53024339675903 s
+Elapsed time for work = 19.757341384887695 s
+Elapsed time for work = 10.708781480789185 s
+Elapsed time for work = 5.3594255447387695 s
+1024
+Elapsed time for work = 1823.9678492546082 s
+Elapsed time for work = 918.8784215450287 s
+Elapsed time for work = 457.6106321811676 s
+Elapsed time for work = 230.73364877700806 s
+Elapsed time for work = 114.31273579597473 s
+Elapsed time for work = 45.9938907623291 s
+Elapsed time for work = 19.830791234970093 s
+weak
+Elapsed time for work = 5.110713243484497 s
+Elapsed time for work = 5.23451042175293 s
+Elapsed time for work = 5.2596495151519775 s
+Elapsed time for work = 5.330297470092773 s
+gt:cpu_ifirst
+64
+Elapsed time for work = 0.22760224342346191 s
+Elapsed time for work = 0.1820545196533203 s
+Elapsed time for work = 0.17046403884887695 s
+Elapsed time for work = 0.17156529426574707 s
+Elapsed time for work = 0.15524506568908691 s
+Elapsed time for work = 0.16128325462341309 s
+Elapsed time for work = 0.17097687721252441 s
+128
+Elapsed time for work = 0.40100646018981934 s
+Elapsed time for work = 0.29201173782348633 s
+Elapsed time for work = 0.25534749031066895 s
+Elapsed time for work = 0.19655466079711914 s
+Elapsed time for work = 0.20548319816589355 s
+Elapsed time for work = 0.16789722442626953 s
+Elapsed time for work = 0.20827507972717285 s
+256
+Elapsed time for work = 1.054112434387207 s
+Elapsed time for work = 0.6126174926757812 s
+Elapsed time for work = 0.4313852787017822 s
+Elapsed time for work = 0.3122537136077881 s
+Elapsed time for work = 0.26175522804260254 s
+Elapsed time for work = 0.20729851722717285 s
+Elapsed time for work = 0.20902371406555176 s
+512
+Elapsed time for work = 3.4583005905151367 s
+Elapsed time for work = 1.7968683242797852 s
+Elapsed time for work = 1.1320948600769043 s
+Elapsed time for work = 0.6531116962432861 s
+Elapsed time for work = 0.4362654685974121 s
+Elapsed time for work = 0.32634639739990234 s
+Elapsed time for work = 0.5423762798309326 s
+1024
+Elapsed time for work = 10.86723279953003 s
+Elapsed time for work = 5.380253314971924 s
+Elapsed time for work = 3.24672532081604 s
+Elapsed time for work = 1.8736910820007324 s
+Elapsed time for work = 1.1733698844909668 s
+Elapsed time for work = 0.6661596298217773 s
+Elapsed time for work = 0.5576579570770264 s
+weak
+Elapsed time for work = 0.22931790351867676 s
+Elapsed time for work = 0.2568061351776123 s
+Elapsed time for work = 0.25014448165893555 s
+Elapsed time for work = 0.3655967712402344 s
+gt:cpu_kfirst
+64
+Elapsed time for work = 0.16697454452514648 s
+Elapsed time for work = 0.14839386940002441 s
+Elapsed time for work = 0.13383245468139648 s
+Elapsed time for work = 0.12737607955932617 s
+Elapsed time for work = 0.14393901824951172 s
+Elapsed time for work = 0.17997288703918457 s
+Elapsed time for work = 0.18788552284240723 s
+128
+Elapsed time for work = 0.32567334175109863 s
+Elapsed time for work = 0.2372908592224121 s
+Elapsed time for work = 0.19483637809753418 s
+Elapsed time for work = 0.15813493728637695 s
+Elapsed time for work = 0.14447951316833496 s
+Elapsed time for work = 0.15475034713745117 s
+Elapsed time for work = 0.18459081649780273 s
+256
+Elapsed time for work = 0.9987242221832275 s
+Elapsed time for work = 0.5842301845550537 s
+Elapsed time for work = 0.3556094169616699 s
+Elapsed time for work = 0.28324198722839355 s
+Elapsed time for work = 0.20673227310180664 s
+Elapsed time for work = 0.18301963806152344 s
+Elapsed time for work = 0.17804932594299316 s
+512
+Elapsed time for work = 3.7489964962005615 s
+Elapsed time for work = 1.8552329540252686 s
+Elapsed time for work = 1.0428569316864014 s
+Elapsed time for work = 0.615288496017456 s
+Elapsed time for work = 0.3666098117828369 s
+Elapsed time for work = 0.284623384475708 s
+Elapsed time for work = 0.27076005935668945 s
+1024
+Elapsed time for work = 13.367616891860962 s
+Elapsed time for work = 6.580539226531982 s
+Elapsed time for work = 3.4439139366149902 s
+Elapsed time for work = 1.886340856552124 s
+Elapsed time for work = 1.0854160785675049 s
+Elapsed time for work = 1.2144138813018799 s
+Elapsed time for work = 0.42220544815063477 s
+weak
+Elapsed time for work = 0.16373968124389648 s
+Elapsed time for work = 0.19138360023498535 s
+Elapsed time for work = 0.208021879196167 s
+Elapsed time for work = 0.24832677841186523 s
+gt:gpu
+64
+Elapsed time for work = 0.3988924026489258 s
+Elapsed time for work = 0.31511902809143066 s
+Elapsed time for work = 0.2885324954986572 s
+Elapsed time for work = 0.24535083770751953 s
+Elapsed time for work = 0.23439693450927734 s
+Elapsed time for work = 0.226304292678833 s
+Elapsed time for work = 0.22990727424621582 s
+128
+Elapsed time for work = 0.7766571044921875 s
+Elapsed time for work = 0.5318913459777832 s
+Elapsed time for work = 0.4176366329193115 s
+Elapsed time for work = 0.3275337219238281 s
+Elapsed time for work = 0.2991466522216797 s
+Elapsed time for work = 0.26557445526123047 s
+Elapsed time for work = 0.27079224586486816 s
+256
+Elapsed time for work = 2.128214120864868 s
+Elapsed time for work = 1.2233798503875732 s
+Elapsed time for work = 0.8239014148712158 s
+Elapsed time for work = 0.5436172485351562 s
+Elapsed time for work = 0.43938350677490234 s
+Elapsed time for work = 0.3426356315612793 s
+Elapsed time for work = 0.3747422695159912 s
+512
+Elapsed time for work = 7.189331293106079 s
+Elapsed time for work = 3.7802374362945557 s
+Elapsed time for work = 2.1832330226898193 s
+Elapsed time for work = 1.262653112411499 s
+Elapsed time for work = 0.833158016204834 s
+Elapsed time for work = 0.5587003231048584 s
+Elapsed time for work = 0.4465177059173584 s
+1024
+Elapsed time for work = 25.642677545547485 s
+Elapsed time for work = 13.240620374679565 s
+Elapsed time for work = 7.264108657836914 s
+Elapsed time for work = 3.8426308631896973 s
+Elapsed time for work = 2.2110257148742676 s
+Elapsed time for work = 1.2699239253997803 s
+Elapsed time for work = 0.8898427486419678 s
+weak
+Elapsed time for work = 0.39748573303222656 s
+Elapsed time for work = 0.4190824031829834 s
+Elapsed time for work = 0.4396188259124756 s
+Elapsed time for work = 0.4838097095489502 s
+gt:cuda
+64
+Elapsed time for work = 0.395641565322876 s
+Elapsed time for work = 0.31412553787231445 s
+Elapsed time for work = 0.2900264263153076 s
+Elapsed time for work = 0.2550489902496338 s
+Elapsed time for work = 0.23934173583984375 s
+Elapsed time for work = 0.23683929443359375 s
+Elapsed time for work = 0.2561953067779541 s
+128
+Elapsed time for work = 0.7850785255432129 s
+Elapsed time for work = 0.529003381729126 s
+Elapsed time for work = 0.4244883060455322 s
+Elapsed time for work = 0.3355894088745117 s
+Elapsed time for work = 0.30361342430114746 s
+Elapsed time for work = 0.2680017948150635 s
+Elapsed time for work = 0.2760958671569824 s
+256
+Elapsed time for work = 2.138416051864624 s
+Elapsed time for work = 1.2342298030853271 s
+Elapsed time for work = 0.8175179958343506 s
+Elapsed time for work = 0.5389730930328369 s
+Elapsed time for work = 0.4323756694793701 s
+Elapsed time for work = 0.3505876064300537 s
+Elapsed time for work = 0.33248066902160645 s
+512
+Elapsed time for work = 7.178917646408081 s
+Elapsed time for work = 3.786588191986084 s
+Elapsed time for work = 2.188797950744629 s
+Elapsed time for work = 1.2708344459533691 s
+Elapsed time for work = 0.832251787185669 s
+Elapsed time for work = 0.5673065185546875 s
+Elapsed time for work = 0.5179245471954346 s
+1024
+Elapsed time for work = 25.678066968917847 s
+Elapsed time for work = 13.231227159500122 s
+Elapsed time for work = 7.278266429901123 s
+Elapsed time for work = 3.8422627449035645 s
+Elapsed time for work = 2.225654363632202 s
+Elapsed time for work = 1.2704071998596191 s
+Elapsed time for work = 0.9076192378997803 s
+weak
+Elapsed time for work = 0.3956615924835205 s
+Elapsed time for work = 0.4216430187225342 s
+Elapsed time for work = 0.4278740882873535 s
+Elapsed time for work = 0.465817928314209 s
