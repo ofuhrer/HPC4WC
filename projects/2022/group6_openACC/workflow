@@ -1,0 +1,25 @@
+to run the different fortran codes:
+	copy the local folder to ela (using windows with PuTTY secure copy, maybe delete large data files for faster upload):
+		pscp -r 'D:\Dropbox\(2021-2023) ETH\...\vNN_group6_openACC' class193@ela.cscs.ch:/users/class193/
+	login to daint:
+		ssh class193@ela.cscs.ch
+		ssh daint.cscs.ch
+		cd vNN_group6_openACC
+	run:
+		bash run.sh
+			(enter version)
+			(enter nx=ny)
+	plot:
+		bash plot.sh
+	logout:
+		exit
+		exit
+
+to download the folder to the local machine:
+	pscp -r class193@ela.cscs.ch:/users/class193/vNN_group6_openACC/ 'D:\Dropbox\(2021-2023) ETH\...\vNN_group6_openACC'
+
+to download specific files to the local machine:
+	pscp -r class193@ela.cscs.ch:/users/class193/vNN_group6_openACC/data/*acc0[1-3, 5]* 'D:\Dropbox\(2021-2023) ETH\...\vNN_group6_openACC\data'
+
+
+
