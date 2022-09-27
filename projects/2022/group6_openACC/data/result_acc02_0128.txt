@@ -1,0 +1,4 @@
+# ranks nx ny nz num_iter time
+data = np.array( [ \
+[    1,  128,  128,   64,    1024,  0.5766409E+01], \
+] )
