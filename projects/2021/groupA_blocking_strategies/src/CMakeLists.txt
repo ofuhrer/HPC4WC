@@ -1,2 +1,0 @@
-add_subdirectory(HPC4WC)
-add_subdirectory(executables)

@@ -1,4 +1,0 @@
-click==7.1.2
-matplotlib==3.3.0
-mpi4py==3.0.3
-numpy==1.22.0
