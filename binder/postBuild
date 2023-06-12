@@ -1,15 +1,6 @@
 #!/bin/bash
 set -ex
 
-# invoke r --env-name=notebook
-invoke demofiles
-invoke talk -t demo
-rm -rf demofiles
-rm -rf notebooks
-rm -rf narrative
-rm -rf slides
-rm demo/notebooks/Julia.ipynb
-
 # Setup a workspace
 # - activate the environment otherwise the workspace is imported
 #   in the user home folder rather than in the prefix path (new default)
