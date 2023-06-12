@@ -1,4 +1,16 @@
 #!/bin/bash
+set -ex
 
-# Install a JupyterLab extension for demonstration purposes
-jupyter labextension install @jupyterlab/geojson-extension jupyterlab-drawio
+# invoke r --env-name=notebook
+invoke demofiles
+invoke talk -t demo
+rm -rf demofiles
+rm -rf notebooks
+rm -rf narrative
+rm -rf slides
+rm demo/notebooks/Julia.ipynb
+
+# Setup a workspace
+# - activate the environment otherwise the workspace is imported
+#   in the user home folder rather than in the prefix path (new default)
+conda run -n notebook jupyter lab workspaces import .binder/workspace.json
