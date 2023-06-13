@@ -23,6 +23,7 @@ python -m venv HPC4WC_venv
 source HPC4WC_venv/bin/activate
 pip install setuptools wheel
 pip install -r ~/HPC4WC/setup/etc/requirements.txt
+pip install dace@git+https://github.com/spcl/dace.git@74f67e3fc82b54f248cb9cc0877b4e629e04026c
 
 echo "Creating HPC4WC_kernel kernel for Jupyter"
 cp ~/HPC4WC/setup/etc/.jupyterhub.env ~/

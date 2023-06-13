@@ -10,10 +10,10 @@ certifi==2021.5.30
 chardet==4.0.0
 click==7.1.2
 cmake==3.20.2
-cupy-cuda102==9.1.0
+cupy-cuda110==10.1.0
 cycler==0.10.0
 cytoolz==0.11.0
-dace @ git+https://github.com/spcl/dace.git@74f67e3fc82b54f248cb9cc0877b4e629e04026c
+#dace @ git+https://github.com/spcl/dace.git@74f67e3fc82b54f248cb9cc0877b4e629e04026c
 decorator==4.4.2
 devtools==0.6.1
 dill==0.3.3
@@ -35,11 +35,11 @@ Mako==1.2.2
 MarkupSafe==2.0.1
 matplotlib==3.4.2
 matplotlib-inline==0.1.2
-mpi4py @ file:///scratch/snx3000/tobwi/mpi4py-3.1.0a0-cp38-cp38-linux_x86_64.whl
+mpi4py==3.1.4
 mpmath==1.2.1
 mypy-extensions==0.4.3
 networkx==2.5.1
-numpy==1.22.0
+numpy==1.20.0
 packaging==20.9
 parso==0.8.2
 pathspec==0.8.1
@@ -60,7 +60,7 @@ regex==2021.4.4
 requests==2.25.1
 scikit-build==0.11.1
 six==1.16.0
-sympy==1.8
+sympy==1.9
 tabulate==0.8.9
 toml==0.10.2
 toolz==0.11.1
