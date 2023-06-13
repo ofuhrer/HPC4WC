@@ -1,0 +1,4 @@
+day2
+- Notebook 02: missing Fortran version for "VERSION=parallel-halo"
+- Notebook 03: missing solutions expensive.cpp, critical.cpp, atomic.cpp, reduction.cpp,
+  fully_parallel.cpp, static_small_expensive.cpp, static_large_expensive.cpp, static_small_cheap.cpp, static_large_cheap.cpp
