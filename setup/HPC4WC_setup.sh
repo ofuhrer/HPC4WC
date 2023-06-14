@@ -23,6 +23,7 @@ python -m venv HPC4WC_venv
 source HPC4WC_venv/bin/activate
 pip install setuptools wheel
 MPICC=CC pip install -r ~/HPC4WC/setup/etc/requirements.txt
+pip uninstall dace
 pip install dace@git+https://github.com/spcl/dace.git@74f67e3fc82b54f248cb9cc0877b4e629e04026c
 
 echo "Creating HPC4WC_kernel kernel for Jupyter"
