@@ -1,3 +1,10 @@
+general
+- [fuo] move solutions to .solutions
+- [fuo] update setup
+- [fuo] remove old slides pdf's
+- [wit] binder 
+- [wit] test setup and account
+
 day2
 - Notebook 02: missing Fortran version for "VERSION=parallel-halo"
 - Notebook 03: missing solutions expensive.cpp, critical.cpp, atomic.cpp, reduction.cpp,
