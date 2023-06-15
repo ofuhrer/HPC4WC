@@ -13,14 +13,13 @@ cmake==3.20.2
 cupy-cuda110==10.1.0
 cycler==0.10.0
 cytoolz==0.11.0
-#dace @ git+https://github.com/spcl/dace.git@74f67e3fc82b54f248cb9cc0877b4e629e04026c
 decorator==4.4.2
 devtools==0.6.1
 dill==0.3.3
 distro==1.5.0
 fastrlock==0.6
 Flask==1.1.4
-gt4py @ git+https://github.com/gridtools/gt4py.git@9fa835cb14127a3a37ad3d5b33f2988ed807e737
+gt4py @ git+https://github.com/gridtools/gt4py.git@50503087eae255be4bb2cc5ede0da27f3696e424
 idna==2.10
 ipykernel==5.5.5
 ipython==7.31.1
