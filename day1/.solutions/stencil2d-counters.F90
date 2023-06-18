@@ -230,7 +230,7 @@ contains
         do j = 1, num_halo
         do i = 1 + num_halo, nx + num_halo
             field(i, j, k) = field(i, j + ny, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+            if (increase_counters) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
@@ -240,7 +240,7 @@ contains
         do j = ny + num_halo + 1, ny + 2 * num_halo
         do i = 1 + num_halo, nx + num_halo
             field(i, j, k) = field(i, j - ny, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+            if (increase_counters) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
@@ -250,7 +250,7 @@ contains
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
             field(i, j, k) = field(i + nx, j, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+            if (increase_counters) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
@@ -260,7 +260,7 @@ contains
         do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
             field(i, j, k) = field(i - nx, j, k)
-            if ( increase_counters ) byte_counter = byte_counter + 2 * wp
+            if (increase_counters) byte_counter = byte_counter + 2 * wp
         end do
         end do
         end do
