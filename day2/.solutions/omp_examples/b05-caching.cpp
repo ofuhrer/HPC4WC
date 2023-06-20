@@ -4,18 +4,16 @@
 
 int main(int argc, char const* argv[]) {
 
-  int nThreads = atoi(argv[1]);
-  omp_set_num_threads(nThreads);
-  
+  std::vector<double> input(10000000, 1);
+  std::vector<double> output(10000000, 0);
 
+  omp_set_num_threads(atoi(argv[1]));
 
   double tic = omp_get_wtime();
 
-  int steps = 10000000;
-  double sum;
-#pragma omp parallel for reduction(+ : sum)
-  for(std::size_t t = 0; t < steps; ++t) {
-    sum += (1.0 - 2 * (t % 2)) / (2 * t + 1);
+#pragma omp parallel for schedule(static, 1)
+  for(int i = 0; i < input.size(); ++i) {
+    output[i] = 2 * input[i];
   }
 
   double toc = omp_get_wtime();

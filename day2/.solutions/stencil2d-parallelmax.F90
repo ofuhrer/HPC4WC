@@ -39,11 +39,6 @@ program main
 
     call init()
 
-    if ( is_master() ) then
-        write(*, '(a)') '# ranks nx ny nz num_iter time'
-        write(*, '(a)') 'data = np.array( [ \'
-    end if
-
     if ( scan ) num_setups = size(nx_setups) * size(ny_setups)
     do cur_setup = 0, num_setups - 1
 
@@ -81,10 +76,12 @@ program main
         call cleanup()
 
         runtime = timer_get( timer_work )
-        if ( is_master() ) &
-            write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
+        if ( is_master() ) then
+        write(*, '(a)') '# ranks nx ny nz num_iter time'
+        write(*, '(a)') 'data = np.array( [ \'
+        write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
                 '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
-
+        end if
     end do
 
     if ( is_master() ) then
@@ -169,7 +166,7 @@ contains
                   end do
                 end do
                 if ( is_master() ) then
-                    write(*, *) maxvalue
+                    write(*, *) '#', maxvalue
                 end if
             end if
                   

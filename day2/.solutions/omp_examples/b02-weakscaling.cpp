@@ -5,14 +5,13 @@
 int main(int argc, char const* argv[]) {
 
   int nThreads = atoi(argv[1]);
-  omp_set_num_threads(nThreads);
-  
+  int steps = 10000000 * nThreads;
+  double sum;
 
+  omp_set_num_threads(nThreads);
 
   double tic = omp_get_wtime();
 
-  int steps = 10000000;
-  double sum;
 #pragma omp parallel for reduction(+ : sum)
   for(std::size_t t = 0; t < steps; ++t) {
     sum += (1.0 - 2 * (t % 2)) / (2 * t + 1);

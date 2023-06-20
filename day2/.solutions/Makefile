@@ -38,11 +38,15 @@ $(TARGET): $(OBJS)
 	$(F90) $(FFLAGS) $(OBJS) -o $(TARGET)
 	cp $(TARGET) stencil2d.x
 
-clean: 
-	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report report_*.txt out.txt
+clean: clean_examples
+	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report report_*.txt out*.txt
+
+clean_examples:
+	rm -f *.out weak.txt caching.txt caching2.txt out.txt 
 
 distclean: clean
 	-$(RM) -rf *.png *.dat *.npy *.x *.x+orig* *.x+[0-9]*
 
 %.o: %.F90
 	$(F90) $(FFLAGS) -c $*.F90
+
