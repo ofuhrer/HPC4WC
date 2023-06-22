@@ -14,38 +14,76 @@ import time
 
 
 @gtscript.function
-def laplacian(field):
-    # TODO
-    pass
+def laplacian(in_field):
+    lap_field = (
+        -4.0 * in_field[0, 0, 0]
+        + in_field[-1, 0, 0]
+        + in_field[1, 0, 0]
+        + in_field[0, -1, 0]
+        + in_field[0, 1, 0]
+    )
+    return lap_field
 
 
 def diffusion_defs(
     in_field: gtscript.Field[float], out_field: gtscript.Field[float], *, alpha: float
 ):
-    # TODO
-    pass
+    from __externals__ import laplacian
+    from __gtscript__ import PARALLEL, computation, interval
+
+    with computation(PARALLEL), interval(...):
+        lap1 = laplacian(in_field)
+        lap2 = laplacian(lap1)
+        out_field = in_field - alpha * lap2
 
 
 def update_halo(field, num_halo):
-    # TODO
-    pass
+    # bottom edge (without corners)
+    field[num_halo:-num_halo, :num_halo] = field[
+        num_halo:-num_halo, -2 * num_halo : -num_halo
+    ]
+
+    # top edge (without corners)
+    field[num_halo:-num_halo, -num_halo:] = field[
+        num_halo:-num_halo, num_halo : 2 * num_halo
+    ]
+
+    # left edge (including corners)
+    field[:num_halo, :] = field[-2 * num_halo : -num_halo, :]
+
+    # right edge (including corners)
+    field[-num_halo:, :] = field[num_halo : 2 * num_halo]
 
 
 def apply_diffusion(
     diffusion_stencil, in_field, out_field, alpha, num_halo, num_iter=1
 ):
     # origin and extent of the computational domain
-    origin = ()  # TODO
-    domain = ()  # TODO
+    origin = (num_halo, num_halo, 0)
+    domain = (
+        in_field.shape[0] - 2 * num_halo,
+        in_field.shape[1] - 2 * num_halo,
+        in_field.shape[2],
+    )
 
     for n in range(num_iter):
+        # halo update
         update_halo(in_field, num_halo)
 
-        # TODO: run the stencil
+        # run the stencil
+        diffusion_stencil(
+            in_field=in_field,
+            out_field=out_field,
+            alpha=alpha,
+            origin=origin,
+            domain=domain,
+        )
 
         if n < num_iter - 1:
+            # swap input and output fields
             in_field, out_field = out_field, in_field
         else:
+            # halo update
             update_halo(out_field, num_halo)
 
 
@@ -97,8 +135,12 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
     dorigin = (num_halo, num_halo, 0)
 
     # allocate input and output fields
-    in_field = None  # TODO
-    out_field = None  # TODO
+    in_field = gt.storage.zeros(
+        backend, dorigin, (nx + 2 * num_halo, ny + 2 * num_halo, nz), dtype=float
+    )
+    out_field = gt.storage.zeros(
+        backend, dorigin, (nx + 2 * num_halo, ny + 2 * num_halo, nz), dtype=float
+    )
 
     # prepare input field
     in_field[
@@ -135,7 +177,12 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
     # time the actual work
     tic = time.time()
     apply_diffusion(
-        diffusion_stencil, in_field, out_field, alpha, num_halo, num_iter=num_iter
+        diffusion_stencil,
+        in_field,
+        out_field,
+        alpha,
+        num_halo,
+        num_iter=num_iter,
     )
     toc = time.time()
     print(f"Elapsed time for work = {toc - tic} s")
