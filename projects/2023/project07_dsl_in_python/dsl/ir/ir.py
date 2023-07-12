@@ -17,6 +17,7 @@ class FieldAccessExpr(Expr):
     def __str__(self):
         return f"{self.name}"
 
+
 class LiteralExpr(Expr):
     value: str
 
@@ -24,16 +25,11 @@ class LiteralExpr(Expr):
         self.value = value
         self.dtype = dtype
 
-    def __str__(self):
-        return f"{self.value}"
 
 class AssignmentStmt(Stmt):
     def __init__(self, left: Expr, right: Expr):
         self.left = left
         self.right = right
-
-    def __str__(self):
-        return f"{self.left} = {self.right}"
 
 
 class IR(Node):
