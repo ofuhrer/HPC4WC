@@ -14,8 +14,11 @@ class FieldAccessExpr(Expr):
     def __init__(self, name: str):
         self.name = name
 
-    def __str__(self):
-        return f"{self.name}"
+
+class FieldDeclaration(Expr):
+    def __init__(self, name: str, size: list):
+        self.name = name
+        self.size = size
 
 
 class LiteralExpr(Expr):

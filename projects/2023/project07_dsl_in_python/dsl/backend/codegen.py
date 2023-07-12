@@ -16,9 +16,9 @@ class CodeGen(IRNodeVisitor):
         return node.value
 
     def visit_AssignmentStmt(self, node: ir.AssignmentStmt) -> str:
-        return self.visit(node.left) + " = " + "np.zeros([3,3,3])" + """
-for i in range(3):
-    for j in range(3):
+        return """
+for i in range(1):
+    for j in range(2):
         for k in range(3):
 """ + "            " + self.visit(node.left) + "[i,j,k]" + " = " + self.visit(
             node.right) + "\n" + "print(" + self.visit(node.left) + ")"
@@ -31,3 +31,6 @@ for i in range(3):
             f.write(self.code)
 
         return
+
+    def visit_FieldDeclaration(self, node: ir.FieldDeclaration) -> str:
+        return self.visit(node.name) + " = np.zeros([" + ", ".join([self.visit(_) for _ in node.size]) + "])"
