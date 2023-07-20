@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Node:
     pass
 
@@ -33,6 +36,12 @@ class AssignmentStmt(Stmt):
     def __init__(self, left: Expr, right: Expr):
         self.left = left
         self.right = right
+
+
+class Horizontal(Node):
+    def __init__(self, extent: List):
+        self.body: List[Stmt] = []
+        self.extent = extent
 
 
 class IR(Node):
