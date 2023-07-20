@@ -44,6 +44,12 @@ class Horizontal(Node):
         self.extent = extent
 
 
+class Vertical(Node):
+    def __init__(self, extent: List):
+        self.body: List[Stmt] = []
+        self.extent = extent
+
+
 class IR(Node):
     def __init__(self):
         self.name = ""

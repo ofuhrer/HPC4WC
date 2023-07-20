@@ -21,6 +21,13 @@ class CodeGen(IRNodeVisitor):
     def visit_AssignmentStmt(self, node: ir.AssignmentStmt) -> str:
         return self.visit(node.left) + "[i,j,k]" + " = " + self.visit(node.right)
 
+    def visit_Vertical(self, node: ir.Vertical) -> str:
+        code = f"""
+    for k in range({self.visit(node.extent[0][0])}, {self.visit(node.extent[0][1])}):"""
+        for stmt in node.body:
+            code += self.visit(stmt)
+        return code
+
     def visit_Horizontal(self, node: ir.Horizontal) -> str:
         code = f"""
     for i in range({self.visit(node.extent[0][0])}, {self.visit(node.extent[0][1])}):
