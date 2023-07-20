@@ -1,7 +1,8 @@
 import ast
+from typing import List
 
 import dsl.ir.ir as ir
-from dsl.ir.ir import IR
+from dsl.ir.ir import IR, Horizontal
 
 
 class LanguageParser(ast.NodeVisitor):
@@ -35,3 +36,27 @@ class LanguageParser(ast.NodeVisitor):
         field_declaration = ir.FieldDeclaration(name, size)
         self._scope.body.append(field_declaration)
         return field_declaration
+
+    def visit_With(self, node: ast.With) -> ir.Horizontal:
+        expr = node.items[0].context_expr
+        if isinstance(expr, ast.Subscript):
+            if expr.value.id == "Horizontal":
+                self._parent.append(self._scope)
+
+                assert len(node.items) == 1
+                extent = []
+                for slice in expr.slice.elts:
+                    extent.append(self.visit(slice))
+
+                # Create the Horizontal node
+                self._scope.body.append(Horizontal(extent))
+
+                # Set the scope to the body of the new Horizontal node
+                self._scope = self._scope.body[-1]
+
+                for stmt in node.body:
+                    self.visit(stmt)
+                self._scope = self._parent.pop()
+
+    def visit_Slice(self, node: ast.Slice) -> List[int]:
+        return [self.visit(node.lower), self.visit(node.upper)]

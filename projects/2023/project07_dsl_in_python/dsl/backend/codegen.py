@@ -7,7 +7,7 @@ from dsl.ir.visitor import IRNodeVisitor
 class CodeGen(IRNodeVisitor):
     def __init__(self):
         self.code = "import numpy as np\n\n"
-        self.code += "def generated_function(field_1, field_2):\n"
+        self.code += "def generated_function(field_1, field_2):"
 
     def apply(self, ir: ir.IR) -> str:
         self.visit(ir)
@@ -19,12 +19,18 @@ class CodeGen(IRNodeVisitor):
         return node.value
 
     def visit_AssignmentStmt(self, node: ir.AssignmentStmt) -> str:
-        return """
-    for i in range(field_1.shape[0]):
-        for j in range(field_1.shape[1]):
-            for k in range(field_1.shape[2]):
-""" + "               " + self.visit(node.left) + "[i,j,k]" + " = " + self.visit(
-            node.right) + "\n" + "    print(" + self.visit(node.left) + ")"
+        return self.visit(node.left) + "[i,j,k]" + " = " + self.visit(node.right)
+
+    def visit_Horizontal(self, node: ir.Horizontal) -> str:
+        code = f"""
+    for i in range({self.visit(node.extent[0][0])}, {self.visit(node.extent[0][1])}):
+        for j in range({self.visit(node.extent[1][0])}, {self.visit(node.extent[1][1])}):
+            for k in range(0, 3):
+"""
+        for stmt in node.body:
+            code += f"                {self.visit(stmt)}\n"
+
+        return code
 
     def visit_IR(self, node: ir.IR, filepath: os.PathLike = os.path.join("dsl", "generated", "main.py")) -> str:
         for stmt in node.body:
