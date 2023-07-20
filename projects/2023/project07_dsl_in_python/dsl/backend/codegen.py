@@ -30,9 +30,8 @@ class CodeGen(IRNodeVisitor):
 
     def visit_Horizontal(self, node: ir.Horizontal) -> str:
         code = f"""
-    for i in range({self.visit(node.extent[0][0])}, {self.visit(node.extent[0][1])}):
-        for j in range({self.visit(node.extent[1][0])}, {self.visit(node.extent[1][1])}):
-            for k in range(0, 3):
+        for i in range({self.visit(node.extent[0][0])}, {self.visit(node.extent[0][1])}):
+            for j in range({self.visit(node.extent[1][0])}, {self.visit(node.extent[1][1])}):
 """
         for stmt in node.body:
             code += f"                {self.visit(stmt)}\n"
