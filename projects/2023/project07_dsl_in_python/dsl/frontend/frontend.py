@@ -15,6 +15,7 @@ class LanguageParser(ast.NodeVisitor):
         for stmt in self._IR.body:
             print(stmt)
 
+
     def visit_Name(self, node: ast.Name) -> ir.FieldAccessExpr:
         symbol = node.id
         return ir.FieldAccessExpr(name=symbol)
@@ -28,6 +29,11 @@ class LanguageParser(ast.NodeVisitor):
         rhs = self.visit(node.value)
         assign = ir.AssignmentStmt(left=lhs, right=rhs)
         self._scope.body.append(assign)
+
+    def visit_Call(self, node: ast.Call) -> ir.Function:
+        function_name = node.func.id
+        args = [self.visit(arg) for arg in node.args]
+        return ir.Function(name=str(function_name), args=args)
 
     def visit_Subscript(self, node: ast.Subscript) -> ir.FieldDeclaration:
         name = self.visit(node.value)

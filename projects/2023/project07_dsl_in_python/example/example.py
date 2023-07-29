@@ -5,7 +5,7 @@ from dsl.frontend.parser import parse_function
 def example_function():
     with Vertical[1:10]:
         with Horizontal[2:8, 2:8]:
-            field_1 = 10
+            field_2 = lap(field_1)
 
 
 if __name__ == "__main__":

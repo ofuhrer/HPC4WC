@@ -38,6 +38,23 @@ class CodeGen(IRNodeVisitor):
 
         return code
 
+    def visit_Function(self, node: ir.Function) -> str:
+        if node.name == "lap":
+            code = f"""(
+                                -4.0 * + {self.visit(node.args[0])}[i,j,k]
+                                + {self.visit(node.args[0])}[i-1,j,k] + {self.visit(node.args[0])}[i+1,j,k]
+                                + {self.visit(node.args[0])}[i,j-1,k] + {self.visit(node.args[0])}[i,j+1,k]
+                                )
+                    """
+        elif node.name == "malzehn":  # Das chasch au lösche lol, isch nur so zum Spass ksi. U get the idea :)
+            code = f""" {self.visit(node.args[0])}[i,j,k] * 10"""
+
+        else:
+            print("this is an unknown function!")
+            code = f"""#unknown function"""
+
+        return code
+
     def visit_IR(self, node: ir.IR, filepath: os.PathLike = os.path.join("dsl", "generated", "main.py")) -> str:
         for stmt in node.body:
             self.code += self.visit(stmt) + "\n"

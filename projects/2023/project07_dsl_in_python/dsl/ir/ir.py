@@ -13,6 +13,11 @@ class Stmt(Node):
     pass
 
 
+class Function(Node):
+    def __init__(self, name: str, args: list):
+        self.name = name
+        self.args = args
+
 class FieldAccessExpr(Expr):
     def __init__(self, name: str):
         self.name = name
