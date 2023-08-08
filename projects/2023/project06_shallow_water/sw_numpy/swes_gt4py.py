@@ -40,6 +40,11 @@ class Solver:
                     * FALSE otherwise
         """
 
+        # --- TO DO --- #
+        # move all needed fields (incl dx) to gt4py
+        # in_field = gt.storage.from_array(in_field_np, backend, default_origin)
+        # --- TO DO --- #
+        
         # --- Build grid --- #
 
         assert ((M > 1) and (N > 1)), "Number of grid points along each direction must be greater than one."
@@ -152,6 +157,17 @@ class Solver:
             self.Cy = - self.dy[1:-1,1:] / (self.dy[1:-1,:-1] * (self.dy[1:-1,1:] + self.dy[1:-1,:-1]))
             self.Cy = np.concatenate((self.Cy[:,0:1], self.Cy, self.Cy[:,-1:]), axis = 1)
 
+        # --- TO DO --- #
+        # # compile diffusion stencil
+        # kwargs = {"verbose": True} if backend in ("gtx86", "gtmc", "gtcuda") else {}
+        # diffusion_stencil = gtscript.stencil(
+        #     definition=diffusion_defs,
+        #     backend=backend,
+        #     externals={"laplacian": laplacian},
+        #     rebuild=False,
+        #     **kwargs,
+        # )
+        # --- TO DO --- #
 
     def setPlanetConstants(self):
         """
@@ -286,7 +302,11 @@ class Solver:
 
         :return qlap:	Laplacian of q
         """
-
+        
+        # --- TO DO --- #
+        # turn into gt4py function
+        # --- TO DO --- #
+        
         # Compute second order derivative along longitude
         qxx = self.Ax[1:-1,:] * (self.Ax[1:-1,:] * q[2:-2,2:-2] + \
                                  self.Bx[1:-1,:] * q[3:-1,2:-2] + \
@@ -337,6 +357,11 @@ class Solver:
         hv	= h * v
         hv1 = h * v1
 
+        # --- TO DO --- #
+        # turn the computations into gt4py functions
+        # and LaxWendroff into a stencil
+        # --- TO DO --- #
+        
         # --- Compute mid-point values after half timestep --- #
 
         # Mid-point value for h along x
@@ -538,7 +563,11 @@ class Solver:
                 t += self.dt
 
             # --- Update solution --- #
-
+            
+            # --- TO DO --- # 
+            # call our function
+            # --- TO DO --- # 
+            
             hnew, unew, vnew = self.LaxWendroff(self.h, self.u, self.v)
 
             # --- Update solution applying BCs --- #
