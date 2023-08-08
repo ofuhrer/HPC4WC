@@ -40,10 +40,13 @@ class Solver:
                     * FALSE otherwise
         """
 
-        # --- TO DO --- #
-        # move all needed fields (incl dx) to gt4py
-        # in_field = gt.storage.from_array(in_field_np, backend, default_origin)
-        # --- TO DO --- #
+        # --- DONE --- #
+        # initialize GT4Py
+        self.num_halo = 1
+        self.default_origin = (self.num_halo, self.num_halo)
+        self.backend = 'numpy' # give options, take as input
+        # --- DONE --- #
+
         
         # --- Build grid --- #
 
@@ -91,7 +94,7 @@ class Solver:
         self.y1 = self.a * np.sin(self.theta)
 
         # Increments
-        self.dx  = self.x[1:,:] - self.x[:-1,:]
+        self.dx  = self.x[1:,:] - self.x[:-1,:] # x(1)-x(0)
         self.dy  = self.y[:,1:] - self.y[:,:-1]
         self.dy1 = self.y1[:,1:] - self.y1[:,:-1]
 
@@ -157,17 +160,64 @@ class Solver:
             self.Cy = - self.dy[1:-1,1:] / (self.dy[1:-1,:-1] * (self.dy[1:-1,1:] + self.dy[1:-1,:-1]))
             self.Cy = np.concatenate((self.Cy[:,0:1], self.Cy, self.Cy[:,-1:]), axis = 1)
 
-        # --- TO DO --- #
-        # # compile diffusion stencil
-        # kwargs = {"verbose": True} if backend in ("gtx86", "gtmc", "gtcuda") else {}
-        # diffusion_stencil = gtscript.stencil(
-        #     definition=diffusion_defs,
-        #     backend=backend,
-        #     externals={"laplacian": laplacian},
-        #     rebuild=False,
-        #     **kwargs,
-        # )
-        # --- TO DO --- #
+        # --- DONE --- #
+        # --- move all needed fields to GT4Py
+        
+        # coordinates
+        self.theta = gt.storage.from_array(self.theta, self.backend, self.default_origin)
+        self.phi = gt.storage.from_array(self.phi, self.backend, self.default_origin)
+        self.c = gt.storage.from_array(self.c, self.backend, self.default_origin)
+        self.cMidy = gt.storage.from_array(self.cMidy, self.backend, self.default_origin)
+        self.tg = gt.storage.from_array(self.tg, self.backend, self.default_origin)
+        self.tgMidx = gt.storage.from_array(self.tgMidx, self.backend, self.default_origin)
+        self.tgMidy = gt.storage.from_array(self.tgMidy, self.backend, self.default_origin)
+        
+        # grid spacing
+        self.dx = gt.storage.from_array(self.dx, self.backend, self.default_origin)
+        self.dy = gt.storage.from_array(self.dy, self.backend, self.default_origin)
+        self.dy1 = gt.storage.from_array(self.dy1, self.backend, self.default_origin)
+        self.dxc = gt.storage.from_array(self.dxc, self.backend, self.default_origin)
+        self.dyc = gt.storage.from_array(self.dyc, self.backend, self.default_origin)
+        self.dy1c = gt.storage.from_array(self.dy1c, self.backend, self.default_origin)
+        
+        # emtpy field
+        self.hs = gt.storage.from_array(self.hs, self.backend, self.default_origin)
+        
+        # initial condition
+        self.h = gt.storage.from_array(self.h, self.backend, self.default_origin)
+        self.u = gt.storage.from_array(self.u, self.backend, self.default_origin)
+        self.v = gt.storage.from_array(self.v, self.backend, self.default_origin)
+        self.uMidx = gt.storage.from_array(self.uMidx, self.backend, self.default_origin)
+        self.uMidy = gt.storage.from_array(self.uMidy, self.backend, self.default_origin)
+        self.vMidx = gt.storage.from_array(self.vMidx, self.backend, self.default_origin)
+        self.vMidy = gt.storage.from_array(self.vMidy, self.backend, self.default_origin)
+        
+        # diffusion
+        self.Ax = gt.storage.from_array(self.Ax, self.backend, self.default_origin)
+        self.Bx = gt.storage.from_array(self.Bx, self.backend, self.default_origin)
+        self.Cx = gt.storage.from_array(self.Cx, self.backend, self.default_origin)
+        self.Ay = gt.storage.from_array(self.Ay, self.backend, self.default_origin)
+        self.By = gt.storage.from_array(self.By, self.backend, self.default_origin)
+        self.Cy = gt.storage.from_array(self.Cy, self.backend, self.default_origin)
+        
+        # output fields
+        new_field = np.zeros_like(h)
+        self.unew = gt.storage.from_array(new_field, self.backend, self.default_origin)
+        self.vnew = gt.storage.from_array(new_field, self.backend, self.default_origin)
+        self.hnew = gt.storage.from_array(new_field, self.backend, self.default_origin)
+        # --- DONE --- #
+            
+        # --- DONE --- #
+        # compile  stencil
+        kwargs = {"verbose": True} if backend in ("gtx86", "gtmc", "gtcuda") else {}
+        self.LaxWendroff_stencil = gtscript.stencil(
+            definition=self.LaxWendroff_defs,
+            backend=self.backend,
+            externals={"computeLaplacian": computeLaplacian}, # external parameters not needed here
+            rebuild=False,
+            **kwargs,
+        )
+        # --- DONE --- #
 
     def setPlanetConstants(self):
         """
@@ -290,7 +340,13 @@ class Solver:
         self.u = u
         self.v = v
 
-
+    # --- TO DO --- #
+    @gtscript.function
+    def computeLaplacian(self, q):
+        print('not implemented')
+        pass
+    # --- TO DO --- #
+    
     def computeLaplacian(self, q):
         """
         Auxiliary methods evaluating the Laplacian of a given quantity
@@ -334,8 +390,27 @@ class Solver:
 
         return qlap
 
-
-    def LaxWendroff(self, h, u, v):
+    # --- ALTERNATIVE --- #
+    # @gtscript.function
+    # def get_staggered(self,a):
+    #     ## rationale: we introduce 4 fields instead of 2 here
+    #     ## but the speedup should be of about 10x, then a factor of 2 slower is fine
+    #     # return aMidx_left, aMidx_right, aMidy_top, aMidy_bottom
+    #     return 
+    # --- ALTERNATIVE --- #
+    
+    def LaxWendroff_defs( ### self?
+        h: gtscript.Field[float],
+        u: gtscript.Field[float],
+        v: gtscript.Field[float],
+        hnew: gtscript.Field[float],
+        unew: gtscript.Field[float],
+        vnew: gtscript.Field[float],
+        *, 
+    ):
+        # --- TO DO: pass all constants --- #
+        # --- TO DO: update description --- #
+        # --- TO DO: update stencil computations to gt4py syntax --- #
         """
         Update solution through finite difference Lax-Wendroff scheme.
         Note that Coriolis effect is taken into account in Lax-Wendroff step,
@@ -349,147 +424,145 @@ class Solver:
         :return	unew:	updated longitudinal velocity
         :return	vnew:	updated latitudinal velocity
         """
+        from __externals__ import laplacian
+        from __gtscript__ import PARALLEL, computation, interval
 
-        # --- Auxiliary variables --- #
+        with computation(PARALLEL), interval(...):
+            
 
-        v1	= v * self.c
-        hu	= h * u
-        hv	= h * v
-        hv1 = h * v1
+            # --- Auxiliary variables --- #
 
-        # --- TO DO --- #
-        # turn the computations into gt4py functions
-        # and LaxWendroff into a stencil
-        # --- TO DO --- #
-        
-        # --- Compute mid-point values after half timestep --- #
+            v1	= v * self.c
+            hu	= h * u
+            hv	= h * v
+            hv1 = h * v1
 
-        # Mid-point value for h along x
-        hMidx = 0.5 * (h[1:,1:-1] + h[:-1,1:-1]) - \
-             0.5 * self.dt / self.dx[:,1:-1] * (hu[1:,1:-1] - hu[:-1,1:-1])
+            # --- Compute mid-point values after half timestep --- #
 
-        # Mid-point value for h along y
-        hMidy = 0.5 * (h[1:-1,1:] + h[1:-1,:-1]) - \
-             0.5 * self.dt / self.dy1[1:-1,:] * (hv1[1:-1,1:] - hv1[1:-1,:-1])
+            # # Mid-point value for h along x
+            hMidx = 0.5 * (h[1:,1:-1] + h[:-1,1:-1]) - \
+                 0.5 * self.dt / self.dx[:,1:-1] * (hu[1:,1:-1] - hu[:-1,1:-1])
+            
+            # Mid-point value for h along y
+            hMidy = 0.5 * (h[1:-1,1:] + h[1:-1,:-1]) - \
+                 0.5 * self.dt / self.dy1[1:-1,:] * (hv1[1:-1,1:] - hv1[1:-1,:-1])
 
-        # Mid-point value for hu along x
-        Ux = hu * u + 0.5 * self.g * h * h
-        huMidx = 0.5 * (hu[1:,1:-1] + hu[:-1,1:-1]) - \
-                0.5 * self.dt / self.dx[:,1:-1] * (Ux[1:,1:-1] - Ux[:-1,1:-1]) + \
-                0.5 * self.dt * \
-                (0.5 * (self.f[1:,1:-1] + self.f[:-1,1:-1]) + \
-                0.5 * (self.u[1:,1:-1] + self.u[:-1,1:-1]) * self.tgMidx / self.a) * \
-                (0.5 * (hv[1:,1:-1] + hv[:-1,1:-1]))
+            # Mid-point value for hu along x
+            Ux = hu * u + 0.5 * self.g * h * h
+            huMidx = 0.5 * (hu[1:,1:-1] + hu[:-1,1:-1]) - \
+                    0.5 * self.dt / self.dx[:,1:-1] * (Ux[1:,1:-1] - Ux[:-1,1:-1]) + \
+                    0.5 * self.dt * \
+                    (0.5 * (self.f[1:,1:-1] + self.f[:-1,1:-1]) + \
+                    0.5 * (self.u[1:,1:-1] + self.u[:-1,1:-1]) * self.tgMidx / self.a) * \
+                    (0.5 * (hv[1:,1:-1] + hv[:-1,1:-1]))
 
-        # Mid-point value for hu along y
-        Uy = hu * v1
-        huMidy = 0.5 * (hu[1:-1,1:] + hu[1:-1,:-1]) - \
-                0.5 * self.dt / self.dy1[1:-1,:] * (Uy[1:-1,1:] - Uy[1:-1,:-1]) + \
-                0.5 * self.dt * \
-                (0.5 * (self.f[1:-1,1:] + self.f[1:-1,:-1]) + \
-                0.5 * (u[1:-1,1:] + u[1:-1,:-1]) * self.tgMidy / self.a) * \
-                (0.5 * (hv[1:-1,1:] + hv[1:-1,:-1]))
+            # Mid-point value for hu along y
+            Uy = hu * v1
+            huMidy = 0.5 * (hu[1:-1,1:] + hu[1:-1,:-1]) - \
+                    0.5 * self.dt / self.dy1[1:-1,:] * (Uy[1:-1,1:] - Uy[1:-1,:-1]) + \
+                    0.5 * self.dt * \
+                    (0.5 * (self.f[1:-1,1:] + self.f[1:-1,:-1]) + \
+                    0.5 * (u[1:-1,1:] + u[1:-1,:-1]) * self.tgMidy / self.a) * \
+                    (0.5 * (hv[1:-1,1:] + hv[1:-1,:-1]))
 
-        # Mid-point value for hv along x
-        Vx = hu * v
-        hvMidx = 0.5 * (hv[1:,1:-1] + hv[:-1,1:-1]) - \
-                0.5 * self.dt / self.dx[:,1:-1] * (Vx[1:,1:-1] - Vx[:-1,1:-1]) - \
-                0.5 * self.dt * \
-                (0.5 * (self.f[1:,1:-1] + self.f[:-1,1:-1]) + \
-                0.5 * (u[1:,1:-1] + u [:-1,1:-1]) * self.tgMidx / self.a) * \
-                (0.5 * (hu[1:,1:-1] + hu[:-1,1:-1]))
+            # Mid-point value for hv along x
+            Vx = hu * v
+            hvMidx = 0.5 * (hv[1:,1:-1] + hv[:-1,1:-1]) - \
+                    0.5 * self.dt / self.dx[:,1:-1] * (Vx[1:,1:-1] - Vx[:-1,1:-1]) - \
+                    0.5 * self.dt * \
+                    (0.5 * (self.f[1:,1:-1] + self.f[:-1,1:-1]) + \
+                    0.5 * (u[1:,1:-1] + u [:-1,1:-1]) * self.tgMidx / self.a) * \
+                    (0.5 * (hu[1:,1:-1] + hu[:-1,1:-1]))
 
-        # Mid-point value for hv along y
-        Vy1 = hv * v1
-        Vy2 = 0.5 * self.g * h * h
-        hvMidy = 0.5 * (hv[1:-1,1:] + hv[1:-1,:-1]) - \
-                0.5 * self.dt / self.dy1[1:-1,:] * (Vy1[1:-1,1:] - Vy1[1:-1,:-1]) - \
-                0.5 * self.dt / self.dy[1:-1,:] * (Vy2[1:-1,1:] - Vy2[1:-1,:-1]) - \
-                0.5 * self.dt * \
-                (0.5 * (self.f[1:-1,1:] + self.f[1:-1,:-1]) + \
-                0.5 * (u[1:-1,1:] + u[1:-1,:-1]) * self.tgMidy / self.a) * \
-                (0.5 * (hu[1:-1,1:] + hu[1:-1,:-1]))
+            # Mid-point value for hv along y
+            Vy1 = hv * v1
+            Vy2 = 0.5 * self.g * h * h
+            hvMidy = 0.5 * (hv[1:-1,1:] + hv[1:-1,:-1]) - \
+                    0.5 * self.dt / self.dy1[1:-1,:] * (Vy1[1:-1,1:] - Vy1[1:-1,:-1]) - \
+                    0.5 * self.dt / self.dy[1:-1,:] * (Vy2[1:-1,1:] - Vy2[1:-1,:-1]) - \
+                    0.5 * self.dt * \
+                    (0.5 * (self.f[1:-1,1:] + self.f[1:-1,:-1]) + \
+                    0.5 * (u[1:-1,1:] + u[1:-1,:-1]) * self.tgMidy / self.a) * \
+                    (0.5 * (hu[1:-1,1:] + hu[1:-1,:-1]))
 
-        # --- Compute solution at next timestep --- #
+            # --- Compute solution at next timestep --- #
 
-        # Update fluid height
-        hnew = h[1:-1,1:-1] - \
-               self.dt / self.dxc * (huMidx[1:,:] - huMidx[:-1,:]) - \
-               self.dt / self.dy1c * (hvMidy[:,1:]*self.cMidy[:,1:] - hvMidy[:,:-1]*self.cMidy[:,:-1])
+            # Update fluid height
+            hnew = h[1:-1,1:-1] - \
+                   self.dt / self.dxc * (huMidx[1:,:] - huMidx[:-1,:]) - \
+                   self.dt / self.dy1c * (hvMidy[:,1:]*self.cMidy[:,1:] - hvMidy[:,:-1]*self.cMidy[:,:-1])
 
-        # Update longitudinal moment
-        UxMid = np.where(hMidx > 0.0, \
-                            huMidx * huMidx / hMidx + 0.5 * self.g * hMidx * hMidx, \
-                            0.5 * self.g * hMidx * hMidx)
-        UyMid = np.where(hMidy > 0.0, \
-                            hvMidy * self.cMidy * huMidy / hMidy, \
-                            0.0)
-        hunew = hu[1:-1,1:-1] - \
-                self.dt / self.dxc * (UxMid[1:,:] - UxMid[:-1,:]) - \
-                self.dt / self.dy1c * (UyMid[:,1:] - UyMid[:,:-1]) + \
-                self.dt * (self.f[1:-1,1:-1] + \
-                            0.25 * (huMidx[:-1,:] / hMidx[:-1,:] + \
-                                    huMidx[1:,:] / hMidx[1:,:] + \
-                                    huMidy[:,:-1] / hMidy[:,:-1] + \
-                                    huMidy[:,1:] / hMidy[:,1:]) * \
-                            self.tg / self.a) * \
-                0.25 * (hvMidx[:-1,:] + hvMidx[1:,:] + hvMidy[:,:-1] + hvMidy[:,1:]) - \
-                self.dt * self.g * \
-                0.25 * (hMidx[:-1,:] + hMidx[1:,:] + hMidy[:,:-1] + hMidy[:,1:]) * \
-                (self.hs[2:,1:-1] - self.hs[:-2,1:-1]) / (self.dx[:-1,1:-1] + self.dx[1:,1:-1])
+            # Update longitudinal moment
+            UxMid = np.where(hMidx > 0.0, \
+                                huMidx * huMidx / hMidx + 0.5 * self.g * hMidx * hMidx, \
+                                0.5 * self.g * hMidx * hMidx)
+            UyMid = np.where(hMidy > 0.0, \
+                                hvMidy * self.cMidy * huMidy / hMidy, \
+                                0.0)
+            hunew = hu[1:-1,1:-1] - \
+                    self.dt / self.dxc * (UxMid[1:,:] - UxMid[:-1,:]) - \
+                    self.dt / self.dy1c * (UyMid[:,1:] - UyMid[:,:-1]) + \
+                    self.dt * (self.f[1:-1,1:-1] + \
+                                0.25 * (huMidx[:-1,:] / hMidx[:-1,:] + \
+                                        huMidx[1:,:] / hMidx[1:,:] + \
+                                        huMidy[:,:-1] / hMidy[:,:-1] + \
+                                        huMidy[:,1:] / hMidy[:,1:]) * \
+                                self.tg / self.a) * \
+                    0.25 * (hvMidx[:-1,:] + hvMidx[1:,:] + hvMidy[:,:-1] + hvMidy[:,1:]) - \
+                    self.dt * self.g * \
+                    0.25 * (hMidx[:-1,:] + hMidx[1:,:] + hMidy[:,:-1] + hMidy[:,1:]) * \
+                    (self.hs[2:,1:-1] - self.hs[:-2,1:-1]) / (self.dx[:-1,1:-1] + self.dx[1:,1:-1])
 
-        # Update latitudinal moment
-        VxMid = np.where(hMidx > 0.0, \
-                            hvMidx * huMidx / hMidx, \
-                            0.0)
-        Vy1Mid = np.where(hMidy > 0.0, \
-                            hvMidy * hvMidy / hMidy * self.cMidy, \
-                            0.0)
-        Vy2Mid = 0.5 * self.g * hMidy * hMidy
-        hvnew = hv[1:-1,1:-1] - \
-                self.dt / self.dxc * (VxMid[1:,:] - VxMid[:-1,:]) - \
-                self.dt / self.dy1c * (Vy1Mid[:,1:] - Vy1Mid[:,:-1]) - \
-                self.dt / self.dyc * (Vy2Mid[:,1:] - Vy2Mid[:,:-1]) - \
-                self.dt * (self.f[1:-1,1:-1] + \
-                            0.25 * (huMidx[:-1,:] / hMidx[:-1,:] + \
-                                    huMidx[1:,:] / hMidx[1:,:] + \
-                                    huMidy[:,:-1] / hMidy[:,:-1] + \
-                                    huMidy[:,1:] / hMidy[:,1:]) * \
-                            self.tg / self.a) * \
-                0.25 * (huMidx[:-1,:] + huMidx[1:,:] + huMidy[:,:-1] + huMidy[:,1:]) - \
-                self.dt * self.g * \
-                0.25 * (hMidx[:-1,:] + hMidx[1:,:] + hMidy[:,:-1] + hMidy[:,1:]) * \
-                (self.hs[1:-1,2:] - self.hs[1:-1,:-2]) / (self.dy1[1:-1,:-1] + self.dy1[1:-1,1:])
+            # Update latitudinal moment
+            VxMid = np.where(hMidx > 0.0, \
+                                hvMidx * huMidx / hMidx, \
+                                0.0)
+            Vy1Mid = np.where(hMidy > 0.0, \
+                                hvMidy * hvMidy / hMidy * self.cMidy, \
+                                0.0)
+            Vy2Mid = 0.5 * self.g * hMidy * hMidy
+            hvnew = hv[1:-1,1:-1] - \
+                    self.dt / self.dxc * (VxMid[1:,:] - VxMid[:-1,:]) - \
+                    self.dt / self.dy1c * (Vy1Mid[:,1:] - Vy1Mid[:,:-1]) - \
+                    self.dt / self.dyc * (Vy2Mid[:,1:] - Vy2Mid[:,:-1]) - \
+                    self.dt * (self.f[1:-1,1:-1] + \
+                                0.25 * (huMidx[:-1,:] / hMidx[:-1,:] + \
+                                        huMidx[1:,:] / hMidx[1:,:] + \
+                                        huMidy[:,:-1] / hMidy[:,:-1] + \
+                                        huMidy[:,1:] / hMidy[:,1:]) * \
+                                self.tg / self.a) * \
+                    0.25 * (huMidx[:-1,:] + huMidx[1:,:] + huMidy[:,:-1] + huMidy[:,1:]) - \
+                    self.dt * self.g * \
+                    0.25 * (hMidx[:-1,:] + hMidx[1:,:] + hMidy[:,:-1] + hMidy[:,1:]) * \
+                    (self.hs[1:-1,2:] - self.hs[1:-1,:-2]) / (self.dy1[1:-1,:-1] + self.dy1[1:-1,1:])
 
-        # Come back to original variables
-        unew = hunew / hnew
-        vnew = hvnew / hnew
+            # Come back to original variables
+            unew = hunew / hnew
+            vnew = hvnew / hnew
 
-        # --- Add diffusion --- #
+            # --- Add diffusion --- #
 
-        if (self.diffusion):
-            # Extend fluid height
-            hext = np.concatenate((h[-4:-3,:], h, h[3:4,:]), axis = 0)
-            hext = np.concatenate((hext[:,0:1], hext, hext[:,-1:]), axis = 1)
+            if (self.diffusion):
+                # Extend fluid height
+                hext = np.concatenate((h[-4:-3,:], h, h[3:4,:]), axis = 0)
+                hext = np.concatenate((hext[:,0:1], hext, hext[:,-1:]), axis = 1)
 
-            # Add the Laplacian
-            hnew += self.dt * self.nu * self.computeLaplacian(hext)
+                # Add the Laplacian
+                hnew += self.dt * self.nu * self.computeLaplacian(hext)
 
-            # Extend longitudinal velocity
-            uext = np.concatenate((u[-4:-3,:], u, u[3:4,:]), axis = 0)
-            uext = np.concatenate((uext[:,0:1], uext, uext[:,-1:]), axis = 1)
+                # Extend longitudinal velocity
+                uext = np.concatenate((u[-4:-3,:], u, u[3:4,:]), axis = 0)
+                uext = np.concatenate((uext[:,0:1], uext, uext[:,-1:]), axis = 1)
 
-            # Add the Laplacian
-            unew += self.dt * self.nu * self.computeLaplacian(uext)
+                # Add the Laplacian
+                unew += self.dt * self.nu * self.computeLaplacian(uext)
 
-            # Extend fluid height
-            vext = np.concatenate((v[-4:-3,:], v, v[3:4,:]), axis = 0)
-            vext = np.concatenate((vext[:,0:1], vext, vext[:,-1:]), axis = 1)
+                # Extend fluid height
+                vext = np.concatenate((v[-4:-3,:], v, v[3:4,:]), axis = 0)
+                vext = np.concatenate((vext[:,0:1], vext, vext[:,-1:]), axis = 1)
 
-            # Add the Laplacian
-            vnew += self.dt * self.nu * self.computeLaplacian(vext)
-
-        return hnew, unew, vnew
+                # Add the Laplacian
+                vnew += self.dt * self.nu * self.computeLaplacian(vext)
 
 
     def solve(self, verbose, save):
@@ -566,6 +639,10 @@ class Solver:
             
             # --- TO DO --- # 
             # call our function
+            # LaxWendroff_stencil(
+            #     # args, kwargs
+            # )
+            ## get back to numpy
             # --- TO DO --- # 
             
             hnew, unew, vnew = self.LaxWendroff(self.h, self.u, self.v)
@@ -584,6 +661,8 @@ class Solver:
             self.v[:,0]  = self.v[:,1]
             self.v[:,-1] = self.v[:,-2]
 
+            # -- TO DO: get back to numpy arrays --- #
+            
             # --- Print and save --- #
 
             if (verbose > 0 and (n % verbose == 0)):
