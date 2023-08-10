@@ -432,6 +432,7 @@ class Solver:
         self.tg = gt.storage.from_array(np.expand_dims(self.tg,axis=2), self.backend, self.default_origin)
         self.tgMidx = gt.storage.from_array(np.expand_dims(self.tgMidx,axis=2), self.backend, self.default_origin)
         self.tgMidy = gt.storage.from_array(np.expand_dims(self.tgMidy,axis=2), self.backend, self.default_origin)
+        self.f = gt.storage.from_array(np.expand_dims(self.f,axis=2), self.backend, self.default_origin)
         
         # grid spacing
         self.dx = gt.storage.from_array(np.expand_dims(self.dx,axis=2), self.backend, self.default_origin)
@@ -718,6 +719,12 @@ class Solver:
         t = 0.0
 
         while (t < self.T):
+            print("H")
+            print(np.mean(self.h))
+            print("U")
+            print(np.mean(self.u))
+            print("V")
+            print(np.mean(self.v))
 
             # Update number of iterations
             n += 1
@@ -736,14 +743,18 @@ class Solver:
             # Compute timestep
             dtmax = np.minimum(self.dxmin/eigenx, self.dymin/eigeny)
             self.dt = self.CFL * dtmax
-
+            
+            #Convert to numpy
+            self.dt=float(np.asarray(self.dt))
+            
+            
             # If needed, adjust timestep not to exceed final time
             if (t + self.dt > self.T):
                 self.dt = self.T - t
                 t = self.T
             else:
                 t += self.dt
-
+            
             # --- Update solution --- #
             
             # --- TO DO --- # 
@@ -755,25 +766,10 @@ class Solver:
             # --- TO DO --- # 
             
             self.temp_variables(u=self.u,v=self.v,h=self.h,c=self.c,hu=self.hu,hv=self.hv,v1=self.v1, origin=self.default_origin, domain=self.shape)
-            
-            print("Start")
-            print(np.shape(self.u))
-            print(np.shape(self.v))
-            print("Nu Hier")
-            print(np.shape(self.h))
-            print(np.shape(self.hu))
-            print(np.shape(self.hv))
-            print(np.shape(self.f))
-            print(np.shape(self.dx))
-            print("Hier")
-            print(np.shape(self.tgMidx))
-            print(np.shape(self.hMidx))
-            print(np.shape(self.huMidx))
-            print(np.shape(self.hvMidx))
-            
+
             self.x_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,f=self.f, dx=self.dx,tgMidx=self.tgMidx,hMidx=self.hMidx,huMidx=self.huMidx,hvMidx=self.hvMidx,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_x)
             
-            self.y_staggered(u=u,v=v,h=h,hu=hu,hv=hv,v1=v1,f=f,dy=dy,dy1=dy1,tgMidy=tgMidy,hMidy=hMidy,huMidy=huMidy,hvMidy=hvMidy,dt=dt,g=g,a=a, origin=default_origin, domain=shape_staggered_y)
+            self.y_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,v1=self.v1,f=self.f,dy=self.dy,dy1=self.dy1,tgMidy=self.tgMidy,hMidy=self.hMidy,huMidy=self.huMidy,hvMidy=self.hvMidy,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_y)
             
             self.combined(h=self.h,hu=self.hu, hv=self.hv, hs=self.hs, f=self.f, tg=self.tg, huMidx=self.huMidx, huMidy=self.huMidy, hvMidx=self.hvMidx, \
          hvMidy=self.hvMidy,hMidx=self.hMidx, hMidy=self.hMidy,cMidy=self.cMidy, dx=self.dx, dy1=self.dy1,dxc=self.dxc,dyc=self.dyc,dy1c=self.dy1c,\
@@ -785,15 +781,15 @@ class Solver:
 
             # --- Update solution applying BCs --- #
 
-            self.h[:,1:-1] = np.concatenate((hnew[-2:-1,:], hnew, hnew[1:2,:]), axis = 0)
+            self.h[:,1:-1] = np.concatenate((self.hnew[-2:-1,:], self.hnew, self.hnew[1:2,:]), axis = 0)
             self.h[:,0]  = self.h[:,1]
             self.h[:,-1] = self.h[:,-2]
 
-            self.u[:,1:-1] = np.concatenate((unew[-2:-1,:], unew, unew[1:2,:]), axis = 0)
+            self.u[:,1:-1] = np.concatenate((self.unew[-2:-1,:], self.unew, self.unew[1:2,:]), axis = 0)
             self.u[:,0]  = self.u[:,1]
             self.u[:,-1] = self.u[:,-2]
 
-            self.v[:,1:-1] = np.concatenate((vnew[-2:-1,:], vnew, vnew[1:2,:]), axis = 0)
+            self.v[:,1:-1] = np.concatenate((self.vnew[-2:-1,:], self.vnew, self.vnew[1:2,:]), axis = 0)
             self.v[:,0]  = self.v[:,1]
             self.v[:,-1] = self.v[:,-2]
 
@@ -812,7 +808,8 @@ class Solver:
                 hsave = np.concatenate((hsave, self.h[1:-1, :, np.newaxis]), axis = 2)
                 usave = np.concatenate((usave, self.u[1:-1, :, np.newaxis]), axis = 2)
                 vsave = np.concatenate((vsave, self.v[1:-1, :, np.newaxis]), axis = 2)
-
+        print(t)
+        print(self.T)
         # --- Return --- #
 
         if (save > 0):
