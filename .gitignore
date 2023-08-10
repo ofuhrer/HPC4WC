@@ -130,3 +130,8 @@ dmypy.json
 
 # gt4py
 .gt_cache/
+
+# data
+projects/2023/project06_shallow_water/data/
+projects/2023/project06_shallow_water/sw_numpy/data/
+projects/2023/project06_shallow_water/sw/gt4py/data/
