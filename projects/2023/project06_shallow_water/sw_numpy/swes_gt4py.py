@@ -3,6 +3,8 @@
 import sys
 import math
 import numpy as np
+import gt4py as gt
+from gt4py import gtscript
 from scipy.stats import norm
 
 
@@ -163,6 +165,19 @@ class Solver:
         # --- DONE --- #
         # --- move all needed fields to GT4Py
         
+        # storage shape
+        nx=np.shape(h)[0]
+        ny=np.shape(h)[1]
+        nz=1
+        self.shape = (nx, ny, nz)
+        self.default_shape = (nx-2,ny-2,nz)
+        self.shape_staggered_x = (nx-1, ny, nz)
+        self.shape_staggered_y = (nx, ny-1, nz)
+
+        # default origin (trust it for now!)
+        self.default_origin = (0, 0, 0)
+        self.origin_staggered = (0,0,0)
+        
         # coordinates
         self.theta = gt.storage.from_array(self.theta, self.backend, self.default_origin)
         self.phi = gt.storage.from_array(self.phi, self.backend, self.default_origin)
@@ -210,13 +225,11 @@ class Solver:
         # --- DONE --- #
         # compile  stencil
         kwargs = {"verbose": True} if backend in ("gtx86", "gtmc", "gtcuda") else {}
-        self.LaxWendroff_stencil = gtscript.stencil(
-            definition=self.LaxWendroff_defs,
-            backend=self.backend,
-            externals={"computeLaplacian": computeLaplacian}, # external parameters not needed here
-            rebuild=False,
-            **kwargs,
-        )
+        
+        self.temp_variables = gtscript.stencil(definition=compute_temp_variables, backend=backend)
+        self.x_staggered = gtscript.stencil(definition=x_staggered_first_step, backend=backend, externals={"xMid": xMid, "yMid": yMid, "xMid_hu": xMid_hu, "yMid_hu": yMid_hu, "xMid_hv": xMid_hv, "yMid_hv": yMid_hv}, rebuild=False,**kwargs)
+        self.y_staggered = gtscript.stencil(definition=y_staggered_first_step, backend=backend, externals={"xMid": xMid, "yMid": yMid, "xMid_hu": xMid_hu, "yMid_hu": yMid_hu, "xMid_hv": xMid_hv, "yMid_hv": yMid_hv}, rebuild=False,**kwargs)
+        self.combined = gtscript.stencil(definition=combined_last_step, backend=backend, externals={"compute_hnew":compute_hnew, "compute_hunew":compute_hunew, "compute_hvnew":compute_hvnew}, rebuild=False,**kwargs)
         # --- DONE --- #
 
     def setPlanetConstants(self):
@@ -340,12 +353,7 @@ class Solver:
         self.u = u
         self.v = v
 
-    # --- TO DO --- #
-    @gtscript.function
-    def computeLaplacian(self, q):
-        print('not implemented')
-        pass
-    # --- TO DO --- #
+  
     
     def computeLaplacian(self, q):
         """
@@ -399,170 +407,248 @@ class Solver:
     #     return 
     # --- ALTERNATIVE --- #
     
-    def LaxWendroff_defs( ### self?
-        h: gtscript.Field[float],
-        u: gtscript.Field[float],
+    #Compute x staggered
+    @gtscript.function
+    def xMid(dx, dt, h, hu):
+        return 0.5 * (h[1, 0,0] + h[0,0,0]) - 0.5 * dt / dx[0,0,0] * (hu[1,0,0] - hu[0,0,0])
+
+    @gtscript.function
+    def yMid(dy1, dt, h, hv1):
+        return 0.5 * (h[0,1,0] + h[0,0,0]) - 0.5 * dt / dy1[0,0,0] * (hv1[0,1,0] - hv1[0,0,0])
+
+    @gtscript.function
+    def xMid_hu(dx, dt, hu, hv, Ux, f, u, tgMidx, a):
+        return (0.5 * (hu[1, 0,0] + hu[0,0,0]) - 0.5 * dt / dx[0,0,0] * (Ux[1,0,0] - Ux[0,0,0]) + \
+                0.5 * dt * \
+                (0.5 * (f[1,0,0] + f[0,0,0]) + \
+                0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * \
+                (0.5 * (hv[1,0,0] + hv[0,0,0])))           
+
+    @gtscript.function
+    def yMid_hu(dy1, dt, hu, hv, Uy, f, u, tgMidy, a):
+        return (0.5 * (hu[0,1,0] + hu[0,0,0]) - 0.5 * dt / dy1[0,0,0] * (Uy[0,1,0] - Uy[0,0,0]) + \
+            0.5 * dt * \
+            (0.5 * (f[0,1,0] + f[0,0,0]) + \
+            0.5 * (u[0,1,0] + u[0,0,0]) * tgMidy / a) * \
+            (0.5 * (hv[0,1,0] + hv[0,0,0])))
+
+
+    @gtscript.function
+    def xMid_hv(dx, dt, hu, hv, Vx, f, u, tgMidx, a):
+        return (0.5 * (hv[1, 0,0] + hv[0,0,0]) - 0.5 * dt / dx[0,0,0] * (Vx[1,0,0] - Vx[0,0,0]) - \
+                0.5 * dt * \
+                (0.5 * (f[1,0,0] + f[0,0,0]) + \
+                0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * \
+                (0.5 * (hu[1,0,0] + hu[0,0,0])))    
+
+
+    @gtscript.function
+    def yMid_hv(dy1, dy, dt, hu, hv,  Vy1, Vy2, f, u, tgMidy, a):
+        return (0.5 * (hv[0,1,0] + hv[0,0,0]) \
+                - 0.5 * dt / dy1[0,0,0] * (Vy1[0,1,0] - Vy1[0,0,0]) -  \
+                0.5 * dt / dy[0,0,0] * (Vy2[0,1,0] - Vy2[0,0,0]) -\
+                0.5 * dt * \
+                (0.5 * (f[0,1,0] + f[0,0,0]) + \
+                0.5 * (u[0,1,0] + u[0,0,0]) * tgMidy / a) * \
+                (0.5 * (hu[0,1,0] + hu[0,0,0])))
+
+
+    def compute_temp_variables(self, 
+        u: gtscript.Field[float], 
         v: gtscript.Field[float],
+        h: gtscript.Field[float],
+        c: gtscript.Field[float],
+
+        hu: gtscript.Field[float],
+        hv: gtscript.Field[float],
+        v1: gtscript.Field[float]):
+
+        with computation(PARALLEL), interval(...):
+            hu = h * u
+            v1 = v * c
+            hv = h * v
+
+
+    def x_staggered_first_step(self, 
+        u: gtscript.Field[float], 
+        v: gtscript.Field[float],
+        h: gtscript.Field[float],
+
+        hu: gtscript.Field[float],
+        hv: gtscript.Field[float],
+        f: gtscript.Field[float],
+
+        dx: gtscript.Field[float],
+        tgMidx: gtscript.Field[float],
+
+        hMidx: gtscript.Field[float],
+        huMidx: gtscript.Field[float],
+        hvMidx: gtscript.Field[float],
+        *,
+        dt: float,
+        g: float,
+        a: float):
+        from __gtscript__ import PARALLEL, computation, interval
+        from __externals__ import xMid, yMid, xMid_hu, yMid_hu, xMid_hv, yMid_hv
+
+        with computation(PARALLEL), interval(...):
+                Ux = hu * u + 0.5 * g * h * h
+                Vx = hu * v
+
+                # Mid-point value for h along x
+                hMidx = xMid(dx, h, hu, dt)
+                huMidx = xMid_hu(dx, dt, hu, hv, Ux, f, u, tgMidx, a)
+                hvMidx = xMid_hv(dx, dt, hu, hv, Vx, f, u, tgMidx, a)
+
+
+    def y_staggered_first_step(self, 
+        u: gtscript.Field[float], 
+        v: gtscript.Field[float],
+        h: gtscript.Field[float],
+
+        hu: gtscript.Field[float],
+        hv: gtscript.Field[float],
+        v1: gtscript.Field[float],
+        f: gtscript.Field[float],
+
+        dy: gtscript.Field[float],
+        dy1: gtscript.Field[float],
+        tgMidy: gtscript.Field[float],
+
+        hMidy: gtscript.Field[float],
+        huMidy: gtscript.Field[float],
+        hvMidy: gtscript.Field[float],   
+        *,
+        dt: float,
+        g: float,
+        a: float):
+        from __gtscript__ import PARALLEL, computation, interval
+        from __externals__ import xMid, yMid, xMid_hu, yMid_hu, xMid_hv, yMid_hv
+
+        with computation(PARALLEL), interval(...):
+                hv1 = h * v1
+                Uy = hu * v1
+                Vy1 = hv * v1
+                Vy2 = 0.5 * g * h * h
+
+                # Mid-point value for h along y
+                hMidy = yMid(dy1, h, hv1, dt)
+                huMidy = yMid_hu(dy1, dt, hu, hv, Uy, f, u, tgMidy, a)
+                hvMidy = yMid_hv(dy1, dy, dt, hu, hv,  Vy1, Vy2, f, u, tgMidy, a)
+
+    @gtscript.function
+    def compute_hnew(h, dt, dxc, huMidx, dy1c, hvMidy, cMidy):
+        return h[1,1,0] -  dt / dxc[0,0,0] * (huMidx[1,0,0] - huMidx[0,0,0]) - dt /dy1c[0,0,0] * (hvMidy[0,1,0]*cMidy[0,1,0] - hvMidy[0,0,0]*cMidy[0,0,0])
+
+    @gtscript.function
+    def compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMidy,tg, a, hvMidx,hvMidy,g, hs,dx):
+        first= dt / dxc * (UxMid[1,0,0] - UxMid[0,0,0])
+
+        second= dt / dy1c * (UyMid[0,1,0] - UyMid[0,0,0])
+
+        third= dt * (f[1,1,0] +  0.25 * (huMidx[0,0,0] / hMidx[0,0,0] + \
+                                        huMidx[1,0,0] / hMidx[1,0,0] + \
+                                        huMidy[0,0,0] / hMidy[0,0,0] + \
+                                        huMidy[0,1,0] / hMidy[0,1,0]) * \
+                                        tg /a) * \
+                                        0.25 * (hvMidx[0,0,0] + hvMidx[1,0,0] + hvMidy[0,0,0] + hvMidy[0,1,0])
+
+        fourth= dt * g * 0.25 * (hMidx[0,0,0] + hMidx[1,0,0] + hMidy[0,0,0] + hMidy[0,1,0]) * \
+                    (hs[2,0,0] - hs[0,0,0]) / (dx[0,0,0] + dx[1,0,0])
+
+        return hu[1,1,0] - first - second + third - fourth
+
+
+    @gtscript.function
+    def compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1):
+
+        first  = dt / dxc * (VxMid[1,0,0] - VxMid[0,0,0])
+        second = dt / dy1c * (Vy1Mid[0,1,0] - Vy1Mid[0,0,0])
+        third  = dt / dyc * (Vy2Mid[0,1,0] - Vy2Mid[0,0,0])
+
+        fourth = dt * (f[0,0,0] + 0.25 * (huMidx[0,0,0] / hMidx[0,0,0] + \
+                                        huMidx[1,0,0] / hMidx[1,0,0] + \
+                                        huMidy[0,0,0] / hMidy[0,0,0] + \
+                                        huMidy[0,1,0] / hMidy[0,1,0]) * \
+                                        tg / a) * \
+                                        0.25 * (huMidx[0,0,0] + huMidx[1,0,0] + huMidy[0,0,0] + huMidy[0,1,0])
+
+        fifth  = dt * g * 0.25 * (hMidx[0,0,0] + hMidx[1,0,0] + hMidy[0,0,0] + hMidy[0,1,0]) * (hs[1,2,0] - hs[1,0,0]) / (dy1[1,1,0] + dy1[1,0,0]) 
+
+        return hv[1,1,0] - first - second - third - fourth - fifth
+    
+    def combined_last_step(
+        h: gtscript.Field[float], 
+
+        hu: gtscript.Field[float],
+        hv: gtscript.Field[float],
+        hs: gtscript.Field[float],
+
+        f: gtscript.Field[float],
+        tg: gtscript.Field[float],
+
+        huMidx: gtscript.Field[float],
+        huMidy: gtscript.Field[float],
+        hvMidx: gtscript.Field[float],
+        hvMidy: gtscript.Field[float],
+        hMidx: gtscript.Field[float],
+        hMidy: gtscript.Field[float],
+        cMidy: gtscript.Field[float],
+
+        dx: gtscript.Field[float],
+        dy1: gtscript.Field[float],
+        dxc: gtscript.Field[float],
+        dyc: gtscript.Field[float],
+        dy1c: gtscript.Field[float],
+
         hnew: gtscript.Field[float],
         unew: gtscript.Field[float],
         vnew: gtscript.Field[float],
-        *, 
-    ):
-        # --- TO DO: pass all constants --- #
-        # --- TO DO: update description --- #
-        # --- TO DO: update stencil computations to gt4py syntax --- #
-        """
-        Update solution through finite difference Lax-Wendroff scheme.
-        Note that Coriolis effect is taken into account in Lax-Wendroff step,
-        while diffusion is separately added afterwards.
-
-        :param	h:	fluid height at current timestep
-        :param	u:	longitudinal velocity at current timestep
-        :param	v:	latitudinal velocity at current timestep
-
-        :return	hnew:	updated fluid height
-        :return	unew:	updated longitudinal velocity
-        :return	vnew:	updated latitudinal velocity
-        """
-        from __externals__ import laplacian
+        *,
+        dt: float,
+        g: float,
+        a: float):
         from __gtscript__ import PARALLEL, computation, interval
+        from __externals__ import compute_hnew, compute_hunew, compute_hvnew
 
         with computation(PARALLEL), interval(...):
-            
-
-            # --- Auxiliary variables --- #
-
-            v1	= v * self.c
-            hu	= h * u
-            hv	= h * v
-            hv1 = h * v1
-
-            # --- Compute mid-point values after half timestep --- #
-
-            # # Mid-point value for h along x
-            hMidx = 0.5 * (h[1:,1:-1] + h[:-1,1:-1]) - \
-                 0.5 * self.dt / self.dx[:,1:-1] * (hu[1:,1:-1] - hu[:-1,1:-1])
-            
-            # Mid-point value for h along y
-            hMidy = 0.5 * (h[1:-1,1:] + h[1:-1,:-1]) - \
-                 0.5 * self.dt / self.dy1[1:-1,:] * (hv1[1:-1,1:] - hv1[1:-1,:-1])
-
-            # Mid-point value for hu along x
-            Ux = hu * u + 0.5 * self.g * h * h
-            huMidx = 0.5 * (hu[1:,1:-1] + hu[:-1,1:-1]) - \
-                    0.5 * self.dt / self.dx[:,1:-1] * (Ux[1:,1:-1] - Ux[:-1,1:-1]) + \
-                    0.5 * self.dt * \
-                    (0.5 * (self.f[1:,1:-1] + self.f[:-1,1:-1]) + \
-                    0.5 * (self.u[1:,1:-1] + self.u[:-1,1:-1]) * self.tgMidx / self.a) * \
-                    (0.5 * (hv[1:,1:-1] + hv[:-1,1:-1]))
-
-            # Mid-point value for hu along y
-            Uy = hu * v1
-            huMidy = 0.5 * (hu[1:-1,1:] + hu[1:-1,:-1]) - \
-                    0.5 * self.dt / self.dy1[1:-1,:] * (Uy[1:-1,1:] - Uy[1:-1,:-1]) + \
-                    0.5 * self.dt * \
-                    (0.5 * (self.f[1:-1,1:] + self.f[1:-1,:-1]) + \
-                    0.5 * (u[1:-1,1:] + u[1:-1,:-1]) * self.tgMidy / self.a) * \
-                    (0.5 * (hv[1:-1,1:] + hv[1:-1,:-1]))
-
-            # Mid-point value for hv along x
-            Vx = hu * v
-            hvMidx = 0.5 * (hv[1:,1:-1] + hv[:-1,1:-1]) - \
-                    0.5 * self.dt / self.dx[:,1:-1] * (Vx[1:,1:-1] - Vx[:-1,1:-1]) - \
-                    0.5 * self.dt * \
-                    (0.5 * (self.f[1:,1:-1] + self.f[:-1,1:-1]) + \
-                    0.5 * (u[1:,1:-1] + u [:-1,1:-1]) * self.tgMidx / self.a) * \
-                    (0.5 * (hu[1:,1:-1] + hu[:-1,1:-1]))
-
-            # Mid-point value for hv along y
-            Vy1 = hv * v1
-            Vy2 = 0.5 * self.g * h * h
-            hvMidy = 0.5 * (hv[1:-1,1:] + hv[1:-1,:-1]) - \
-                    0.5 * self.dt / self.dy1[1:-1,:] * (Vy1[1:-1,1:] - Vy1[1:-1,:-1]) - \
-                    0.5 * self.dt / self.dy[1:-1,:] * (Vy2[1:-1,1:] - Vy2[1:-1,:-1]) - \
-                    0.5 * self.dt * \
-                    (0.5 * (self.f[1:-1,1:] + self.f[1:-1,:-1]) + \
-                    0.5 * (u[1:-1,1:] + u[1:-1,:-1]) * self.tgMidy / self.a) * \
-                    (0.5 * (hu[1:-1,1:] + hu[1:-1,:-1]))
-
-            # --- Compute solution at next timestep --- #
-
             # Update fluid height
-            hnew = h[1:-1,1:-1] - \
-                   self.dt / self.dxc * (huMidx[1:,:] - huMidx[:-1,:]) - \
-                   self.dt / self.dy1c * (hvMidy[:,1:]*self.cMidy[:,1:] - hvMidy[:,:-1]*self.cMidy[:,:-1])
+            hnew=compute_hnew(h, dt, dxc, huMidx, dy1c, hvMidy, cMidy)
 
             # Update longitudinal moment
-            UxMid = np.where(hMidx > 0.0, \
-                                huMidx * huMidx / hMidx + 0.5 * self.g * hMidx * hMidx, \
-                                0.5 * self.g * hMidx * hMidx)
-            UyMid = np.where(hMidy > 0.0, \
-                                hvMidy * self.cMidy * huMidy / hMidy, \
-                                0.0)
-            hunew = hu[1:-1,1:-1] - \
-                    self.dt / self.dxc * (UxMid[1:,:] - UxMid[:-1,:]) - \
-                    self.dt / self.dy1c * (UyMid[:,1:] - UyMid[:,:-1]) + \
-                    self.dt * (self.f[1:-1,1:-1] + \
-                                0.25 * (huMidx[:-1,:] / hMidx[:-1,:] + \
-                                        huMidx[1:,:] / hMidx[1:,:] + \
-                                        huMidy[:,:-1] / hMidy[:,:-1] + \
-                                        huMidy[:,1:] / hMidy[:,1:]) * \
-                                self.tg / self.a) * \
-                    0.25 * (hvMidx[:-1,:] + hvMidx[1:,:] + hvMidy[:,:-1] + hvMidy[:,1:]) - \
-                    self.dt * self.g * \
-                    0.25 * (hMidx[:-1,:] + hMidx[1:,:] + hMidy[:,:-1] + hMidy[:,1:]) * \
-                    (self.hs[2:,1:-1] - self.hs[:-2,1:-1]) / (self.dx[:-1,1:-1] + self.dx[1:,1:-1])
+
+            #---RECPLACED NUMPY WHERE----------------------------------------
+            temp_bool=hMidx > 0.0        
+            UxMid = temp_bool* (huMidx * huMidx / hMidx + 0.5 * g * hMidx * hMidx)
+            temp_bool=hMidx <= 0.0
+            UxMid=UxMid +  temp_bool*(0.5 * g * hMidx * hMidx)
+
+            temp_bool=hMidy > 0.0        
+            UyMid = temp_bool* (hvMidy * cMidy * huMidy / hMidy)
+            #---RECPLACED NUMPY WHERE----------------------------------------
+
+            hunew = compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMidy,tg, a, hvMidx,hvMidy,g, hs,dx)
+
+
+            #---RECPLACED NUMPY WHERE----------------------------------------
 
             # Update latitudinal moment
-            VxMid = np.where(hMidx > 0.0, \
-                                hvMidx * huMidx / hMidx, \
-                                0.0)
-            Vy1Mid = np.where(hMidy > 0.0, \
-                                hvMidy * hvMidy / hMidy * self.cMidy, \
-                                0.0)
-            Vy2Mid = 0.5 * self.g * hMidy * hMidy
-            hvnew = hv[1:-1,1:-1] - \
-                    self.dt / self.dxc * (VxMid[1:,:] - VxMid[:-1,:]) - \
-                    self.dt / self.dy1c * (Vy1Mid[:,1:] - Vy1Mid[:,:-1]) - \
-                    self.dt / self.dyc * (Vy2Mid[:,1:] - Vy2Mid[:,:-1]) - \
-                    self.dt * (self.f[1:-1,1:-1] + \
-                                0.25 * (huMidx[:-1,:] / hMidx[:-1,:] + \
-                                        huMidx[1:,:] / hMidx[1:,:] + \
-                                        huMidy[:,:-1] / hMidy[:,:-1] + \
-                                        huMidy[:,1:] / hMidy[:,1:]) * \
-                                self.tg / self.a) * \
-                    0.25 * (huMidx[:-1,:] + huMidx[1:,:] + huMidy[:,:-1] + huMidy[:,1:]) - \
-                    self.dt * self.g * \
-                    0.25 * (hMidx[:-1,:] + hMidx[1:,:] + hMidy[:,:-1] + hMidy[:,1:]) * \
-                    (self.hs[1:-1,2:] - self.hs[1:-1,:-2]) / (self.dy1[1:-1,:-1] + self.dy1[1:-1,1:])
+            temp_bool=hMidx > 0.0
+            VxMid = temp_bool * (hvMidx * huMidx / hMidx)
+
+            temp_bool=hMidy > 0.0
+            Vy1Mid = temp_bool * (hvMidy * hvMidy / hMidy * cMidy)
+
+            Vy2Mid = 0.5 * g * hMidy * hMidy
+            #---RECPLACED NUMPY WHERE----------------------------------------
+
+            hvnew = compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1) #Klopt dit laatste?
+
 
             # Come back to original variables
             unew = hunew / hnew
             vnew = hvnew / hnew
 
-            # --- Add diffusion --- #
-
-            if (self.diffusion):
-                # Extend fluid height
-                hext = np.concatenate((h[-4:-3,:], h, h[3:4,:]), axis = 0)
-                hext = np.concatenate((hext[:,0:1], hext, hext[:,-1:]), axis = 1)
-
-                # Add the Laplacian
-                hnew += self.dt * self.nu * self.computeLaplacian(hext)
-
-                # Extend longitudinal velocity
-                uext = np.concatenate((u[-4:-3,:], u, u[3:4,:]), axis = 0)
-                uext = np.concatenate((uext[:,0:1], uext, uext[:,-1:]), axis = 1)
-
-                # Add the Laplacian
-                unew += self.dt * self.nu * self.computeLaplacian(uext)
-
-                # Extend fluid height
-                vext = np.concatenate((v[-4:-3,:], v, v[3:4,:]), axis = 0)
-                vext = np.concatenate((vext[:,0:1], vext, vext[:,-1:]), axis = 1)
-
-                # Add the Laplacian
-                vnew += self.dt * self.nu * self.computeLaplacian(vext)
 
 
     def solve(self, verbose, save):
@@ -645,7 +731,17 @@ class Solver:
             ## get back to numpy
             # --- TO DO --- # 
             
-            hnew, unew, vnew = self.LaxWendroff(self.h, self.u, self.v)
+            self.temp_variables(u=self.u,v=self.v,h=self.h,c=self.c,hu=self.hu,hv=self.hv,v1=self.v1, origin=self.default_origin, domain=self.shape)
+            self.x_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,f=self.f,dx=self.dx,tgMidx=self.tgMidx,hMidx=self.hMidx,huMidx=self.huMidx,hvMidx=self.hvMidx,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_x)
+            self.y_staggered(u=u,v=v,h=h,hu=hu,hv=hv,v1=v1,f=f,dy=dy,dy1=dy1,tgMidy=tgMidy,hMidy=hMidy,huMidy=huMidy,hvMidy=hvMidy,dt=dt,g=g,a=a, origin=default_origin, domain=shape_staggered_y)
+            
+            self.combined(h=self.h,hu=self.hu, hv=self.hv, hs=self.hs, f=self.f, tg=self.tg, huMidx=self.huMidx, huMidy=self.huMidy, hvMidx=self.hvMidx, \
+         hvMidy=self.hvMidy,hMidx=self.hMidx, hMidy=self.hMidy,cMidy=self.cMidy, dx=self.dx, dy1=self.dy1,dxc=self.dxc,dyc=self.dyc,dy1c=self.dy1c,\
+         hnew=self.hnew, unew=self.unew, vnew=self.vnew, \
+         dt=self.dt, g=self.g, a=self.a, origin=(0,0,0), domain=self.default_shape)
+            
+            
+            #hnew, unew, vnew = self.LaxWendroff(self.h, self.u, self.v)
 
             # --- Update solution applying BCs --- #
 

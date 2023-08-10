@@ -18,7 +18,9 @@ version = 'numpy'
 # Import
 if (version == 'numpy'):
     import swes_numpy as SWES
-
+elif (version == 'gt4py'):
+    import swes_gt4py as SWES
+    
 # Initial condition:
 #	* 0: sixth test case of Williamson's suite
 #	* 1: second test case of Williamson's suite
@@ -26,7 +28,7 @@ IC = 0
 
 # Simulation length (in days); better to use integer values.
 # Suggested simulation length for Williamson's test cases:
-T = 5
+T = 4
 
 # Grid dimensions
 M = 180
@@ -37,7 +39,7 @@ CFL = 0.5
 
 # Various solver settings:
 #	* diffusion: take diffusion into account
-diffusion = True
+diffusion = False
 
 # Output settings:
 #	* verbose: 	specify number of iterations between two consecutive output
@@ -56,7 +58,7 @@ else:
 # --- STORE THE SOLUTION --- #
 
 if (save > 0):
-    GRIDTOOLS_ROOT = os.environ.get('GRIDTOOLS_ROOT')
+    GRIDTOOLS_ROOT = "." #os.environ.get('GRIDTOOLS_ROOT')
     baseName = GRIDTOOLS_ROOT + '/data/swes-%s-%s-M%i-N%i-T%i-%i-' % (version, str(IC), M, N, T, diffusion)
 
     # Save h
