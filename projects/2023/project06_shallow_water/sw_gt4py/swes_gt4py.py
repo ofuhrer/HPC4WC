@@ -135,7 +135,7 @@ def x_staggered_first_step(
             Vx = hu * v
 
             # Mid-point value for h along x
-            hMidx = xMid(dx, h, hu, dt)
+            hMidx = xMid(dx, dt, h, hu)
             huMidx = xMid_hu(dx, dt, hu, hv, Ux, f, u, tgMidx, a)
             hvMidx = xMid_hv(dx, dt, hu, hv, Vx, f, u, tgMidx, a)
 
@@ -172,7 +172,7 @@ def y_staggered_first_step(
             Vy2 = 0.5 * g * h * h
 
             # Mid-point value for h along y
-            hMidy = yMid(dy1, h, hv1, dt)
+            hMidy = yMid(dy1, dt, h, hv1)
             huMidy = yMid_hu(dy1, dt, hu, hv, Uy, f, u, tgMidy, a)
             hvMidy = yMid_hv(dy1, dy, dt, hu, hv,  Vy1, Vy2, f, u, tgMidy, a)
                 
@@ -204,6 +204,10 @@ def combined_last_step(
     hnew: gtscript.Field[float],
     unew: gtscript.Field[float],
     vnew: gtscript.Field[float],
+    
+    hunew: gtscript.Field[float],
+    UxMidnew: gtscript.Field[float],
+    UyMidnew: gtscript.Field[float],
     *,
     dt: float,
     g: float,
@@ -219,12 +223,14 @@ def combined_last_step(
 
         #---RECPLACED NUMPY WHERE----------------------------------------
         temp_bool=hMidx > 0.0        
-        UxMid = temp_bool* (huMidx * huMidx / hMidx + 0.5 * g * hMidx * hMidx)
+        UxMid_temp = temp_bool* (huMidx * huMidx / hMidx + 0.5 * g * hMidx * hMidx)
         temp_bool=hMidx <= 0.0
-        UxMid=UxMid +  temp_bool*(0.5 * g * hMidx * hMidx)
+        UxMid=UxMid_temp +  temp_bool*(0.5 * g * hMidx * hMidx)
 
-        temp_bool=hMidy > 0.0        
-        UyMid = temp_bool* (hvMidy * cMidy * huMidy / hMidy)
+        if hMidy > 0.0:        
+            UyMid = hvMidy * cMidy * huMidy / hMidy
+        else:
+            UyMid = 0.0
         #---RECPLACED NUMPY WHERE----------------------------------------
 
         hunew = compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMidy,tg, a, hvMidx,hvMidy,g, hs,dx)
@@ -233,12 +239,16 @@ def combined_last_step(
         #---RECPLACED NUMPY WHERE----------------------------------------
 
         # Update latitudinal moment
-        temp_bool=hMidx > 0.0
-        VxMid = temp_bool * (hvMidx * huMidx / hMidx)
-
-        temp_bool=hMidy > 0.0
-        Vy1Mid = temp_bool * (hvMidy * hvMidy / hMidy * cMidy)
-
+        if hMidx > 0.0:
+            VxMid = hvMidx * huMidx / hMidx
+        else:
+            VxMid=0.0
+            
+        if hMidy > 0.0:
+            Vy1Mid = hvMidy * hvMidy / hMidy * cMidy
+        else:
+            Vy1Mid = 0.0
+    
         Vy2Mid = 0.5 * g * hMidy * hMidy
         #---RECPLACED NUMPY WHERE----------------------------------------
 
@@ -248,6 +258,9 @@ def combined_last_step(
         # Come back to original variables
         unew = hunew / hnew
         vnew = hvnew / hnew
+        
+        UxMidnew=UxMid
+        UyMidnew=UyMid
                 
                 
 class Solver:
@@ -478,6 +491,11 @@ class Solver:
         self.unew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
         self.vnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
         self.hnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        
+        
+        self.hunew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        self.UxMidnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        self.UyMidnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
         # --- DONE --- #
             
         # --- DONE --- #
@@ -725,6 +743,7 @@ class Solver:
             print(np.mean(self.u))
             print("V")
             print(np.mean(self.v))
+            
 
             # Update number of iterations
             n += 1
@@ -771,16 +790,59 @@ class Solver:
             
             self.y_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,v1=self.v1,f=self.f,dy=self.dy,dy1=self.dy1,tgMidy=self.tgMidy,hMidy=self.hMidy,huMidy=self.huMidy,hvMidy=self.hvMidy,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_y)
             
+            print("H")
+            print(np.mean(self.h))
+            print("HU")
+            print(np.mean(self.hu))
+            print("HV")
+            print(np.mean(self.hv))
+            
+            print("huMidx")
+            print(np.mean(self.huMidx))
+            print("huMidy")
+            print(np.mean(self.huMidy))
+            print("hMidx")
+            print(np.mean(self.hMidx[:,1:-1,:]))
+            print("hMidy")
+            print(np.mean(self.hMidy[1:-1,:,:]))
+            print("hMidx")
+            print(np.mean(self.hMidx))
+            print("hMidy")
+            print(np.mean(self.hMidy))
+            print("cMidy")
+            print(np.mean(self.cMidy))
+            print("tg")
+            print(np.mean(self.tg))
+            
+            print("hs")
+            print(np.mean(self.hs))
+            print("dx")
+            print(np.mean(self.dx))
+            
+            
             self.combined(h=self.h,hu=self.hu, hv=self.hv, hs=self.hs, f=self.f, tg=self.tg, huMidx=self.huMidx, huMidy=self.huMidy, hvMidx=self.hvMidx, \
          hvMidy=self.hvMidy,hMidx=self.hMidx, hMidy=self.hMidy,cMidy=self.cMidy, dx=self.dx, dy1=self.dy1,dxc=self.dxc,dyc=self.dyc,dy1c=self.dy1c,\
-         hnew=self.hnew, unew=self.unew, vnew=self.vnew, \
+         hnew=self.hnew, unew=self.unew, vnew=self.vnew, hunew=self.hunew, UxMidnew=self.UxMidnew, UyMidnew=self.UyMidnew,\
          dt=self.dt, g=self.g, a=self.a, origin=(0,0,0), domain=self.default_shape)
             
+            print("hunew")
+            print(np.mean(self.hunew))
+            print("UxMid")
+            print(np.mean(self.UxMidnew))
+            print("UyMidnew")
+            print(np.mean(self.UyMidnew))
             
             #hnew, unew, vnew = self.LaxWendroff(self.h, self.u, self.v)
 
             # --- Update solution applying BCs --- #
-
+            
+            print("H")
+            print(np.mean(self.hnew))
+            print("U")
+            print(np.mean(self.unew))
+            print("V")
+            print(np.mean(self.vnew))
+            
             self.h[:,1:-1] = np.concatenate((self.hnew[-2:-1,:], self.hnew, self.hnew[1:2,:]), axis = 0)
             self.h[:,0]  = self.h[:,1]
             self.h[:,-1] = self.h[:,-2]
