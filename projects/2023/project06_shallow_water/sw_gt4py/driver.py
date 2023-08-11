@@ -7,8 +7,12 @@ solver for Shallow Water Equations on a Sphere (SWES).
 import os
 import pickle
 import math
+from animation_v2 import make_animation
 
 # --- SETTINGS --- #
+
+TEST = True
+PLOT = True
 
 # Solver version:
 #	* numpy (NumPy version)
@@ -28,7 +32,7 @@ IC = 0
 
 # Simulation length (in days); better to use integer values.
 # Suggested simulation length for Williamson's test cases:
-T = 4
+T = 1 if TEST else 4
 
 # Grid dimensions
 M = 180
@@ -45,7 +49,7 @@ diffusion = False
 #	* verbose: 	specify number of iterations between two consecutive output
 #	* save:		specify number of iterations between two consecutive stored timesteps
 verbose = 500
-save = 500
+save = 50 if TEST else 500
 
 # --- RUN THE SOLVER --- #
 
@@ -72,3 +76,8 @@ if (save > 0):
     # Save v
     with open(baseName + 'v', 'wb') as f:
         pickle.dump([M, N, t, phi, theta, v], f, protocol = 2)
+
+    # --- PLOT THE SOLUTION --- #
+
+    if PLOT:
+        make_animation(baseName) # default settings for plotting h
