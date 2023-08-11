@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import time
 import sys
 import math
 import numpy as np
@@ -35,11 +35,11 @@ def yMid_hu(dy1, dt, hu, hv, Uy, f, u, tgMidy, a):
 
 @gtscript.function
 def xMid_hv(dx, dt, hu, hv, Vx, f, u, tgMidx, a):
-    return (0.5 * (hv[1, 0,0] + hv[0,0,0]) - 0.5 * dt / dx[0,0,0] * (Vx[1,0,0] - Vx[0,0,0]) - \
-            0.5 * dt * \
-            (0.5 * (f[1,0,0] + f[0,0,0]) + \
-            0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * \
-            (0.5 * (hu[1,0,0] + hu[0,0,0])))    
+    first= 0.5 * (hv[1, 0,0] + hv[0,0,0])
+    second = 0.5 * dt / dx[0,0,0] * (Vx[1,0,0] - Vx[0,0,0])
+    third = 0.5 * dt * (0.5 * (f[1,0,0] + f[0,0,0]) + 0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * (0.5 * (hu[1,0,0] + hu[0,0,0]))
+                        
+    return first - second - third 
 
 
 @gtscript.function
@@ -54,23 +54,23 @@ def yMid_hv(dy1, dy, dt, hu, hv,  Vy1, Vy2, f, u, tgMidy, a):
 
 @gtscript.function
 def compute_hnew(h, dt, dxc, huMidx, dy1c, hvMidy, cMidy):
-    return h[1,1,0] -  dt / dxc[0,0,0] * (huMidx[1,0,0] - huMidx[0,0,0]) - dt /dy1c[0,0,0] * (hvMidy[0,1,0]*cMidy[0,1,0] - hvMidy[0,0,0]*cMidy[0,0,0])
+    return h[1,1,0] -  dt / dxc[0,0,0] * (huMidx[1,1,0] - huMidx[0,1,0]) - dt /dy1c[0,0,0] * (hvMidy[1,1,0]*cMidy[1,1,0] - hvMidy[1,0,0]*cMidy[1,0,0])
 
 @gtscript.function
 def compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMidy,tg, a, hvMidx,hvMidy,g, hs,dx):
-    first= dt / dxc * (UxMid[1,0,0] - UxMid[0,0,0])
+    first= dt / dxc * (UxMid[1,1,0] - UxMid[0,1,0])
 
-    second= dt / dy1c * (UyMid[0,1,0] - UyMid[0,0,0])
+    second= dt / dy1c * (UyMid[1,1,0] - UyMid[1,0,0])
 
-    third= dt * (f[1,1,0] +  0.25 * (huMidx[0,0,0] / hMidx[0,0,0] + \
-                                    huMidx[1,0,0] / hMidx[1,0,0] + \
-                                    huMidy[0,0,0] / hMidy[0,0,0] + \
-                                    huMidy[0,1,0] / hMidy[0,1,0]) * \
+    third= dt * (f[1,1,0] +  0.25 * (huMidx[0,1,0] / hMidx[0,1,0] + \
+                                    huMidx[1,1,0] / hMidx[1,1,0] + \
+                                    huMidy[1,0,0] / hMidy[1,0,0] + \
+                                    huMidy[1,1,0] / hMidy[1,1,0]) * \
                                     tg /a) * \
-                                    0.25 * (hvMidx[0,0,0] + hvMidx[1,0,0] + hvMidy[0,0,0] + hvMidy[0,1,0])
+                                    0.25 * (hvMidx[0,1,0] + hvMidx[1,1,0] + hvMidy[1,0,0] + hvMidy[1,1,0])
 
-    fourth= dt * g * 0.25 * (hMidx[0,0,0] + hMidx[1,0,0] + hMidy[0,0,0] + hMidy[0,1,0]) * \
-                (hs[2,0,0] - hs[0,0,0]) / (dx[0,0,0] + dx[1,0,0])
+    fourth= dt * g * 0.25 * (hMidx[0,1,0] + hMidx[1,1,0] + hMidy[1,0,0] + hMidy[1,1,0]) * \
+                (hs[2,1,0] - hs[0,1,0]) / (dx[0,1,0] + dx[1,1,0])
 
     return hu[1,1,0] - first - second + third - fourth
 
@@ -78,20 +78,38 @@ def compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMid
 @gtscript.function
 def compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1):
 
-    first  = dt / dxc * (VxMid[1,0,0] - VxMid[0,0,0])
-    second = dt / dy1c * (Vy1Mid[0,1,0] - Vy1Mid[0,0,0])
-    third  = dt / dyc * (Vy2Mid[0,1,0] - Vy2Mid[0,0,0])
+    first  = dt / dxc * (VxMid[1,1,0] - VxMid[0,1,0])
+    second = dt / dy1c * (Vy1Mid[1,1,0] - Vy1Mid[1,0,0])
+    third  = dt / dyc * (Vy2Mid[1,1,0] - Vy2Mid[1,0,0])
 
-    fourth = dt * (f[0,0,0] + 0.25 * (huMidx[0,0,0] / hMidx[0,0,0] + \
-                                    huMidx[1,0,0] / hMidx[1,0,0] + \
-                                    huMidy[0,0,0] / hMidy[0,0,0] + \
-                                    huMidy[0,1,0] / hMidy[0,1,0]) * \
+    fourth = dt * (f[1,1,0] + 0.25 * (huMidx[0,1,0] / hMidx[0,1,0] + \
+                                    huMidx[1,1,0] / hMidx[1,1,0] + \
+                                    huMidy[1,0,0] / hMidy[1,0,0] + \
+                                    huMidy[1,1,0] / hMidy[1,1,0]) * \
                                     tg / a) * \
-                                    0.25 * (huMidx[0,0,0] + huMidx[1,0,0] + huMidy[0,0,0] + huMidy[0,1,0])
+                                    0.25 * (huMidx[0,1,0] + huMidx[1,1,0] + huMidy[1,0,0] + huMidy[1,1,0])#
 
-    fifth  = dt * g * 0.25 * (hMidx[0,0,0] + hMidx[1,0,0] + hMidy[0,0,0] + hMidy[0,1,0]) * (hs[1,2,0] - hs[1,0,0]) / (dy1[1,1,0] + dy1[1,0,0]) 
+    fifth  = dt * g * 0.25 * (hMidx[0,1,0] + hMidx[1,1,0] + hMidy[1,0,0] + hMidy[1,1,0]) * (hs[1,2,0] - hs[1,0,0]) / (dy1[1,1,0] + dy1[1,0,0]) 
 
     return hv[1,1,0] - first - second - third - fourth - fifth
+
+
+#def compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1):
+
+#    first  = dt / dxc * (VxMid[1,0,0] - VxMid[0,0,0])
+#    second = dt / dy1c * (Vy1Mid[0,1,0] - Vy1Mid[0,0,0])
+#    third  = dt / dyc * (Vy2Mid[0,1,0] - Vy2Mid[0,0,0])
+
+#    fourth = dt * (f[1,1,0] + 0.25 * (huMidx[0,0,0] / hMidx[0,0,0] + \
+#                                    huMidx[1,0,0] / hMidx[1,0,0] + \
+#                                    huMidy[0,0,0] / hMidy[0,0,0] + \
+#                                    huMidy[0,1,0] / hMidy[0,1,0]) * \
+#                                    tg / a) * \
+#                                    0.25 * (huMidx[0,0,0] + huMidx[1,0,0] + huMidy[0,0,0] + huMidy[0,1,0])#
+
+#    fifth  = dt * g * 0.25 * (hMidx[0,0,0] + hMidx[1,0,0] + hMidy[0,0,0] + hMidy[0,1,0]) * (hs[1,2,0] - hs[1,0,0]) / (dy1[1,1,0] + dy1[1,0,0]) 
+
+#    return hv[1,1,0] - first - second - third - fourth - fifth
 
 def compute_temp_variables(
     u: gtscript.Field[float], 
@@ -135,9 +153,9 @@ def x_staggered_first_step(
             Vx = hu * v
 
             # Mid-point value for h along x
-            hMidx = xMid(dx, dt, h, hu)
-            huMidx = xMid_hu(dx, dt, hu, hv, Ux, f, u, tgMidx, a)
-            hvMidx = xMid_hv(dx, dt, hu, hv, Vx, f, u, tgMidx, a)
+            hMidx = xMid(dx=dx, dt=dt, h=h, hu=hu)
+            huMidx = xMid_hu(dx=dx, dt=dt, hu=hu, hv=hv, Ux=Ux, f=f, u=u, tgMidx=tgMidx, a=a)
+            hvMidx = xMid_hv(dx=dx, dt=dt, hu=hu, hv=hv, Vx=Vx, f=f, u=u, tgMidx=tgMidx, a=a)
 
             
 
@@ -172,9 +190,9 @@ def y_staggered_first_step(
             Vy2 = 0.5 * g * h * h
 
             # Mid-point value for h along y
-            hMidy = yMid(dy1, dt, h, hv1)
-            huMidy = yMid_hu(dy1, dt, hu, hv, Uy, f, u, tgMidy, a)
-            hvMidy = yMid_hv(dy1, dy, dt, hu, hv,  Vy1, Vy2, f, u, tgMidy, a)
+            hMidy = yMid(dy1=dy1, dt=dt, h=h, hv1=hv1)
+            huMidy = yMid_hu(dy1=dy1, dt=dt, hu=hu, hv=hv, Uy=Uy, f=f, u=u, tgMidy=tgMidy, a=a)
+            hvMidy = yMid_hv(dy1=dy1, dy=dy, dt=dt, hu=hu, hv=hv,  Vy1=Vy1, Vy2=Vy2, f=f, u=u, tgMidy=tgMidy, a=a)
                 
                 
 def combined_last_step(
@@ -205,9 +223,10 @@ def combined_last_step(
     unew: gtscript.Field[float],
     vnew: gtscript.Field[float],
     
-    hunew: gtscript.Field[float],
-    UxMidnew: gtscript.Field[float],
-    UyMidnew: gtscript.Field[float],
+    hvnew: gtscript.Field[float],
+    VxMidnew: gtscript.Field[float],
+    Vy1Midnew: gtscript.Field[float],
+    Vy2Midnew: gtscript.Field[float],
     *,
     dt: float,
     g: float,
@@ -233,34 +252,44 @@ def combined_last_step(
             UyMid = 0.0
         #---RECPLACED NUMPY WHERE----------------------------------------
 
-        hunew = compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMidy,tg, a, hvMidx,hvMidy,g, hs,dx)
+        hunew = compute_hunew(hu=hu, dt=dt, dxc=dxc, UxMid=UxMid, dy1c=dy1c, UyMid=UyMid, f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy,hMidy=hMidy,tg=tg, a=a, hvMidx=hvMidx,hvMidy=hvMidy,g=g, hs=hs,dx=dx)
 
 
         #---RECPLACED NUMPY WHERE----------------------------------------
 
         # Update latitudinal moment
-        if hMidx > 0.0:
-            VxMid = hvMidx * huMidx / hMidx
-        else:
-            VxMid=0.0
+        #if hMidx > 0.0:
+        #    VxMid = hvMidx * huMidx / hMidx
+        #else:
+        #    VxMid=0.0
             
+        VxMid = (hvMidx[0,0,0] * huMidx[0,0,0] / hMidx[0,0,0]) if (hMidx[0,0,0] > 0.0) else 0.0   
+        #temp_bool=hMidx > 0.0
+        #VxMid=temp_bool * hvMidx * huMidx / hMidx   
+        
+        
         if hMidy > 0.0:
             Vy1Mid = hvMidy * hvMidy / hMidy * cMidy
         else:
             Vy1Mid = 0.0
     
         Vy2Mid = 0.5 * g * hMidy * hMidy
+        
+        
+        #VxMid=VxMidnew
+        #Vy1Mid=Vy1Midnew
+        #Vy2Mid=Vy2Midnew
+        
         #---RECPLACED NUMPY WHERE----------------------------------------
 
-        hvnew = compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1) #Klopt dit laatste?
+        hvnew = compute_hvnew(hv=hv, dt=dt, dxc=dxc, VxMid=VxMid, dy1c=dy1c, Vy1Mid=Vy1Mid, dyc=dyc, Vy2Mid=Vy2Mid, f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy, hMidy=hMidy, tg=tg, a=a, g=g, hs=hs, dy1=dy1) #Klopt dit laatste?
 
 
         # Come back to original variables
         unew = hunew / hnew
         vnew = hvnew / hnew
         
-        UxMidnew=UxMid
-        UyMidnew=UyMid
+        
                 
                 
 class Solver:
@@ -332,8 +361,11 @@ class Solver:
 
         # Cosine of mid-point values for theta along y
         self.c = np.cos(self.theta)
-        self.cMidy = np.cos(0.5 * (self.theta[1:-1,1:] + self.theta[1:-1,:-1]))
+        #self.cMidy = np.cos(0.5 * (self.theta[1:-1,1:] + self.theta[1:-1,:-1]))
+        
+        self.cMidy = np.cos(0.5 * (self.theta[:,1:] + self.theta[:,:-1]))
 
+        
         # Compute $\tan(\theta)$
 #        self.tg = np.tan(self.theta[1:-1,1:-1])
 #        self.tgMidx = np.tan(0.5 * (self.theta[:-1,1:-1] + self.theta[1:,1:-1]))
@@ -493,9 +525,10 @@ class Solver:
         self.hnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
         
         
-        self.hunew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
-        self.UxMidnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
-        self.UyMidnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        self.hvnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        self.VxMidnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
+        self.Vy1Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
+        self.Vy2Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
         # --- DONE --- #
             
         # --- DONE --- #
@@ -727,9 +760,13 @@ class Solver:
         # Save
         if (save > 0):
             tsave = np.array([[0.0]])
-            hsave = self.h[1:-1, :, np.newaxis]
-            usave = self.u[1:-1, :, np.newaxis]
-            vsave = self.v[1:-1, :, np.newaxis]
+            #hsave = self.h[1:-1, :, np.newaxis]
+            #usave = self.u[1:-1, :, np.newaxis]
+            #vsave = self.v[1:-1, :, np.newaxis]
+            
+            hsave = self.h[1:-1, :, :]
+            usave = self.u[1:-1, :, :]
+            vsave = self.v[1:-1, :, :]
 
         # --- Time marching --- #
 
@@ -737,12 +774,7 @@ class Solver:
         t = 0.0
 
         while (t < self.T):
-            print("H")
-            print(np.mean(self.h))
-            print("U")
-            print(np.mean(self.u))
-            print("V")
-            print(np.mean(self.v))
+            
             
 
             # Update number of iterations
@@ -784,64 +816,177 @@ class Solver:
             ## get back to numpy
             # --- TO DO --- # 
             
-            self.temp_variables(u=self.u,v=self.v,h=self.h,c=self.c,hu=self.hu,hv=self.hv,v1=self.v1, origin=self.default_origin, domain=self.shape)
-
-            self.x_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,f=self.f, dx=self.dx,tgMidx=self.tgMidx,hMidx=self.hMidx,huMidx=self.huMidx,hvMidx=self.hvMidx,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_x)
             
+            #print("H")
+            #print(np.mean(self.h))
+            #print("U")
+            #print(np.mean(self.u))
+            #print("V")
+            #print(np.mean(self.v))
+            
+            self.temp_variables(u=self.u,v=self.v,h=self.h,c=self.c,hu=self.hu,hv=self.hv,v1=self.v1, origin=self.default_origin, domain=self.shape)
+            
+            
+            #dx, dt, hu, hv, Vx, f, u, tgMidx, a
+            #print("dx")
+            #print(np.mean(self.dx))
+            #print("dt")
+            #print(self.dt)
+            #print("HU")
+            #print(np.mean(self.hu))
+            #print("HV")
+            #print(np.mean(self.hv))
+            #print("Vx")
+            #print(np.mean(self.hu * self.v))
+            #print("f")
+            #print(np.mean(self.f))
+            #print("U")
+            #print(np.mean(self.u))
+            #print("tgMidx")
+            #print(np.mean(self.tgMidx))     
+            #print("a")
+            #vprint(self.a)
+           
+            self.x_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,f=self.f, dx=self.dx,tgMidx=self.tgMidx,hMidx=self.hMidx,huMidx=self.huMidx,hvMidx=self.hvMidx,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_x)
+            #print("hvMidx")
+            #print(np.mean(self.hvMidx))
+            #print("hvMidx")
+            #print(np.mean(self.hvMidx[:,1:-1,:]))
             self.y_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,v1=self.v1,f=self.f,dy=self.dy,dy1=self.dy1,tgMidy=self.tgMidy,hMidy=self.hMidy,huMidy=self.huMidy,hvMidy=self.hvMidy,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_y)
             
-            print("H")
-            print(np.mean(self.h))
-            print("HU")
-            print(np.mean(self.hu))
-            print("HV")
-            print(np.mean(self.hv))
+            #hv=hv, dt=dt, dxc=dxc, VxMid=VxMid, dy1c=dy1c, Vy1Mid=Vy1Mid, dyc=dyc, Vy2Mid=Vy2Mid, f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy, hMidy=hMidy, tg=tg, a=a, g=g, hs=hs, dy1=dy1
             
-            print("huMidx")
-            print(np.mean(self.huMidx))
-            print("huMidy")
-            print(np.mean(self.huMidy))
-            print("hMidx")
-            print(np.mean(self.hMidx[:,1:-1,:]))
-            print("hMidy")
-            print(np.mean(self.hMidy[1:-1,:,:]))
-            print("hMidx")
-            print(np.mean(self.hMidx))
-            print("hMidy")
-            print(np.mean(self.hMidy))
-            print("cMidy")
-            print(np.mean(self.cMidy))
-            print("tg")
-            print(np.mean(self.tg))
+            #print("H")
+            #print(np.mean(self.h))
+            #print("HU")
+            #print(np.mean(self.hu))
             
-            print("hs")
-            print(np.mean(self.hs))
-            print("dx")
-            print(np.mean(self.dx))
+            
+            #print("hvMidx")
+            #print(np.mean(self.hvMidx))
+            #print("hvMidy")
+            ##print(np.mean(self.hvMidy))
+            #print("cMidy")
+            #print(np.mean(self.cMidy))
+            #print("tg")
+            #print(np.mean(self.tg))
+            
+            #print("hs")
+            #print(np.mean(self.hs))
+            #print("dx")
+            #print(np.mean(self.dx))
+            #hvMidx * huMidx / hMidx
+            #print("hvMidx")
+            #print(np.mean(self.hvMidx[:, 1:-1, :]))
+            #print("huMidx")
+            #print(np.mean(self.huMidx[:, 1:-1, :]))
+            #print("hMidx")
+            #print(np.mean(self.hMidx[:, 1:-1, :]))
+            #print("V")
+            #print(np.mean(self.v))
+            
+            #print("VxMid first try")
+            #temp_bool=self.hMidx > 0.0
+            #new=temp_bool*self.hvMidx * self.huMidx / self.hMidx
+            #print(np.mean(new[:,1:-1,:]))
+            
+            #print("Test")
+            #print(np.shape(self.hvMidy))
+            #print(np.shape(self.hMidy))
+            #print(np.shape(self.cMidy))
+            #print(np.shape(self.tg))
+            #print(np.shape(self.dyc))
+            #print(np.shape(self.dy1c))
+            #print(np.shape(self.dxc))
+            #print(np.shape(self.h))
+            
+            #self.VxMidnew=new
+            
+            #self.Vy1Midnew = np.where(self.hMidy > 0.0, \
+            #                self.hvMidy * self.hvMidy / self.hMidy * self.cMidy, \
+            #                0.0)
+            #self.Vy2Midnew = 0.5 * self.g * self.hMidy * self.hMidy
             
             
             self.combined(h=self.h,hu=self.hu, hv=self.hv, hs=self.hs, f=self.f, tg=self.tg, huMidx=self.huMidx, huMidy=self.huMidy, hvMidx=self.hvMidx, \
          hvMidy=self.hvMidy,hMidx=self.hMidx, hMidy=self.hMidy,cMidy=self.cMidy, dx=self.dx, dy1=self.dy1,dxc=self.dxc,dyc=self.dyc,dy1c=self.dy1c,\
-         hnew=self.hnew, unew=self.unew, vnew=self.vnew, hunew=self.hunew, UxMidnew=self.UxMidnew, UyMidnew=self.UyMidnew,\
+         hnew=self.hnew, unew=self.unew, vnew=self.vnew, hvnew=self.hvnew, VxMidnew=self.VxMidnew, Vy1Midnew=self.Vy1Midnew, Vy2Midnew=self.Vy2Midnew,\
          dt=self.dt, g=self.g, a=self.a, origin=(0,0,0), domain=self.default_shape)
             
-            print("hunew")
-            print(np.mean(self.hunew))
-            print("UxMid")
-            print(np.mean(self.UxMidnew))
-            print("UyMidnew")
-            print(np.mean(self.UyMidnew))
+            
+            #print("-------Compute HVNEW---------------")
+            #print("HV")
+            #print(np.mean(self.hv))
+            #print("dt")
+            #print(self.dt)
+            #print("dxc")
+            #print(np.mean(self.dxc))
+            #print("VxMidnew")
+            #print(np.mean(self.VxMidnew[:,1:-1,:]))
+            #print("dy1c")
+            #print(np.mean(self.dy1c))
+            #print("Vy1Midnew")
+            #print(np.mean(self.Vy1Midnew[1:-1, :, :]))
+            #print("dyc")
+            #print(np.mean(self.dyc))
+            #print("Vy2Midnew")
+            #print(np.mean(self.Vy2Midnew[1:-1, :, :]))
+            #print("f")
+            #print(np.mean(self.f))
+            #print("huMidx")
+            #print(np.mean(self.huMidx[:,1:-1,:]))
+            #print("huMidy")
+            #print(np.mean(self.huMidy[1:-1,:,:]))
+            #print("hMidx")
+            #print(np.mean(self.hMidx[:,1:-1,:]))
+            #print("hMidy")
+            #print(np.mean(self.hMidy[1:-1,:,:]))
+            #print("tg")
+            #print(np.mean(self.tg))
+            #print("a")
+            #print(self.a)
+            #print("g")
+            #print(self.g)
+            #print("hs")
+            #print(np.mean(self.hs))
+            #print("dy1")
+            #print(np.mean(self.dy1))
+            #print("-------END: compute HVNEW---------------")
+            
+            
+            #print("hvnew")
+            #print(np.mean(self.hvnew[1:-1, 1:-1, :]))
+            #print("VxMid")
+            #print(np.mean(self.VxMidnew[:,1:-1, :]))
+            #print("Vy1Midnew")
+            #print(np.mean(self.Vy1Midnew[1:-1, :, :]))
+            #print("Vy2Midnew")
+            #print(np.mean(self.Vy2Midnew[1:-1, :, :]))
+            
+
+            #print("VxMid new try")
+            #print(np.mean(np.where(self.hMidx > 0.0, \
+            #                self.hvMidx * self.huMidx / self.hMidx, \
+            #                0.0)[:,1:-1,:]))
+            #print("VxMid last try")
+            #temp_bool=self.hMidx > 0.0
+            #new=temp_bool*self.hvMidx * self.huMidx / self.hMidx
+            #print(np.mean(new[:,1:-1,:]))
+            
             
             #hnew, unew, vnew = self.LaxWendroff(self.h, self.u, self.v)
 
             # --- Update solution applying BCs --- #
             
-            print("H")
-            print(np.mean(self.hnew))
-            print("U")
-            print(np.mean(self.unew))
-            print("V")
-            print(np.mean(self.vnew))
+            #print("H")
+            #print(np.mean(self.hnew))
+            #print("U")
+            #print(np.mean(self.unew))
+            #print("V")
+            #print(np.mean(self.vnew))
+            
+            
+            #time.sleep(3)
             
             self.h[:,1:-1] = np.concatenate((self.hnew[-2:-1,:], self.hnew, self.hnew[1:2,:]), axis = 0)
             self.h[:,0]  = self.h[:,1]
@@ -867,16 +1012,20 @@ class Solver:
 
             if (save > 0 and (n % save == 0)):
                 tsave = np.concatenate((tsave, np.array([[t]])), axis = 0)
-                hsave = np.concatenate((hsave, self.h[1:-1, :, np.newaxis]), axis = 2)
-                usave = np.concatenate((usave, self.u[1:-1, :, np.newaxis]), axis = 2)
-                vsave = np.concatenate((vsave, self.v[1:-1, :, np.newaxis]), axis = 2)
+                #hsave = np.concatenate((hsave, self.h[1:-1, :, np.newaxis]), axis = 2)
+                #usave = np.concatenate((usave, self.u[1:-1, :, np.newaxis]), axis = 2)
+                #vsave = np.concatenate((vsave, self.v[1:-1, :, np.newaxis]), axis = 2)
+                
+                hsave = np.concatenate((hsave, self.h[1:-1, :, :]), axis = 2)
+                usave = np.concatenate((usave, self.u[1:-1, :, :]), axis = 2)
+                vsave = np.concatenate((vsave, self.v[1:-1, :, :]), axis = 2)
+
         print(t)
         print(self.T)
         # --- Return --- #
 
         if (save > 0):
-            return tsave, self.phi, self.theta, hsave, usave, vsave
+            return tsave, self.phi[:,:,0], self.theta[:,:,0], hsave, usave, vsave
         else:
             return self.h, self.u, self.v
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  

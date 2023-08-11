@@ -103,7 +103,7 @@ if __name__ == '__main__':
     
     GRIDTOOLS_ROOT = '.' #os.environ.get('GRIDTOOLS_ROOT')
     #baseName = GRIDTOOLS_ROOT + '/data/swes-numpy-0-M180-N90-T5-1-'
-    baseName = GRIDTOOLS_ROOT + '/data/swes-numpy-0-M180-N90-T4-1-'
+    baseName = GRIDTOOLS_ROOT + '/data/swes-gt4py-0-M180-N90-T4-0-'
 
     make_animation(baseName)
     

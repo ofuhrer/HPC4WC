@@ -8,11 +8,12 @@ import os
 import pickle
 import math
 from animation_v2 import make_animation
+import numpy as np
 
 # --- SETTINGS --- #
 
 TEST = True
-PLOT = True
+PLOT = False
 
 # Solver version:
 #	* numpy (NumPy version)
@@ -56,9 +57,16 @@ save = 50 if TEST else 500
 pb = SWES.Solver(T, M, N, IC, CFL, diffusion)
 if (save > 0):
     t, phi, theta, h, u, v = pb.solve(verbose, save)
+    t=np.asarray(t)
+    phi=np.asarray(phi)
+    theta=np.asarray(theta)
 else:
     h, u, v = pb.solve(verbose, save)
 
+h=np.asarray(h)
+u=np.asarray(u)
+v=np.asarray(v)
+    
 # --- STORE THE SOLUTION --- #
 
 if (save > 0):
