@@ -2,7 +2,7 @@ import ast
 from typing import List
 
 import dsl.ir.ir as ir
-from dsl.ir.ir import IR, Horizontal, Vertical
+from dsl.ir.ir import IR, Horizontal, Vertical, BinaryOp, SliceExpr, UnaryOp
 
 
 class LanguageParser(ast.NodeVisitor):
@@ -40,7 +40,7 @@ class LanguageParser(ast.NodeVisitor):
         size = [self.visit(_) for _ in node.slice.elts]
 
         field_declaration = ir.FieldDeclaration(name, size)
-        self._scope.body.append(field_declaration)
+        #self._scope.body.append(field_declaration)
         return field_declaration
 
     def visit_With(self, node: ast.With) -> ir.Node:
@@ -81,5 +81,26 @@ class LanguageParser(ast.NodeVisitor):
                     self.visit(stmt)
                 self._scope = self._parent.pop()
 
-    def visit_Slice(self, node: ast.Slice) -> List[int]:
-        return [self.visit(node.lower), self.visit(node.upper)]
+    #def visit_Slice(self, node: ast.Slice) -> List[int]:
+    #    return [self.visit(node.lower), self.visit(node.upper)]
+
+    def visit_BinOp(self, node: ast.BinOp) -> ir.BinaryOp:
+        left_expr = self.visit(node.left)
+        right_expr = self.visit(node.right)
+
+        if isinstance(node.op, ast.Add):
+            return BinaryOp(left_expr, right_expr, '+')
+        elif isinstance(node.op, ast.Sub):
+            return BinaryOp(left_expr, right_expr, '-')
+
+
+    def visit_UnaryOp(self, node: ast.UnaryOp) -> ir.UnaryOp:
+        operand = self.visit(node.operand)
+        return UnaryOp(operand, '-')
+
+
+
+    def visit_Slice(self, node: ast.Slice) -> ir.SliceExpr:
+        start = self.visit(node.lower) if node.lower else None
+        stop = self.visit(node.upper) if node.upper else None
+        return SliceExpr(start, stop)

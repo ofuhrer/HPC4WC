@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 
 class Node:
@@ -54,6 +54,24 @@ class Vertical(Node):
         self.body: List[Stmt] = []
         self.extent = extent
 
+class BinaryOp(Expr):
+    """Any binary operator expression"""
+    def __init__(self, left: Expr, right: Expr, operator: str):
+        self.left = left
+        self.right = right
+        self.operator = operator
+
+
+class UnaryOp(Expr):
+    """for field[1:-1] oä"""
+    def __init__(self, operand: Expr, operator: str):
+        self.operand = operand
+        self.operator = operator
+
+class SliceExpr(Expr):
+    def __init__(self, start: Optional[Expr]=None, stop: Optional[Expr]=None):
+        self.start = start
+        self.stop = stop
 
 class IR(Node):
     def __init__(self):

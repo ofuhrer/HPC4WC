@@ -19,19 +19,19 @@ class CodeGen(IRNodeVisitor):
         return node.value
 
     def visit_AssignmentStmt(self, node: ir.AssignmentStmt) -> str:
-        return self.visit(node.left) + "[i,j,k]" + " = " + self.visit(node.right)
+        return "    " + self.visit(node.left) + " = " + self.visit(node.right)
 
     def visit_Vertical(self, node: ir.Vertical) -> str:
         code = f"""
-    for k in range({self.visit(node.extent[0][0])}, {self.visit(node.extent[0][1])}):"""
+    for k in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):"""
         for stmt in node.body:
             code += self.visit(stmt)
         return code
 
     def visit_Horizontal(self, node: ir.Horizontal) -> str:
         code = f"""
-        for i in range({self.visit(node.extent[0][0])}, {self.visit(node.extent[0][1])}):
-            for j in range({self.visit(node.extent[1][0])}, {self.visit(node.extent[1][1])}):
+        for i in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):
+            for j in range({self.visit(node.extent[1].start)},{self.visit(node.extent[1].stop)}):
 """
         for stmt in node.body:
             code += f"                {self.visit(stmt)}\n"
@@ -46,8 +46,9 @@ class CodeGen(IRNodeVisitor):
                                 + {self.visit(node.args[0])}[i,j-1,k] + {self.visit(node.args[0])}[i,j+1,k]
                                 )
                     """
-        elif node.name == "malzehn":  # Das chasch au lösche lol, isch nur so zum Spass ksi. U get the idea :)
-            code = f""" {self.visit(node.args[0])}[i,j,k] * 10"""
+        elif node.name == "update_halo_bottom_edge":
+            code = f"""{self.visit(node.args[0])}[i,j+(ny-2*num_halo),k]
+                """
 
         else:
             print("this is an unknown function!")
@@ -65,4 +66,20 @@ class CodeGen(IRNodeVisitor):
         return
 
     def visit_FieldDeclaration(self, node: ir.FieldDeclaration) -> str:
-        return "    " + self.visit(node.name) + " = np.zeros([" + ", ".join([self.visit(_) for _ in node.size]) + "])"
+        # das isch nüm wük e field declaration (eh trash ksi vorher) sondern epis wo mer chan bruche falls mers "+[i,j,k]"
+        # bim assignment statment wegnehmed. En asatz zum da flexibler si und zb sege field[1,0,2]=5. Field[1:2,-3,j+1] gaht aber ned.
+        # Mir bruched das im Moment ned wil mer update halo mit With glöst hend.
+        code = f"""{self.visit(node.name)}[{self.visit(node.size[0])},{self.visit(node.size[1])},{self.visit(node.size[2])}]"""
+        return code
+
+    def visit_BinaryOp(self, node: ir.BinaryOp) -> str:
+        return self.visit(node.left) + ' ' + node.operator + ' ' + self.visit(node.right)
+
+    def visit_UnaryOp(self, node: ir.UnaryOp) -> str:
+        return node.operator + ' ' + self.visit(node.operand)
+
+    def visit_SliceExpr(self, node: ir.SliceExpr) -> str:
+        start = self.visit(node.start) if node.start else ''
+        stop = self.visit(node.stop) if node.stop else ''
+        code = f"""{start}:{stop}"""
+        return code
