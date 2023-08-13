@@ -7,7 +7,7 @@ solver for Shallow Water Equations on a Sphere (SWES).
 import os
 import pickle
 import math
-from animation_v2 import make_animation
+from animation import make_animation
 import numpy as np
 
 # --- SETTINGS --- #
