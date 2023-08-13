@@ -118,13 +118,11 @@ def make_animation(
     if make_pngs:
         update(0)
         plt.tight_layout()
-        plt.savefig(baseName+'_IC.png')
+        plt.savefig(baseName+"_"+what_to_plot+'_IC.png')
         
         update(-1)
         plt.tight_layout()
-        plt.savefig(baseName+'_T.png')
-        
-        print(baseName+'_T.png')
+        plt.savefig(baseName+"_"+what_to_plot+'_T.png')
             
 if __name__ == '__main__':
     
@@ -132,15 +130,18 @@ if __name__ == '__main__':
     #baseName = GRIDTOOLS_ROOT + '/data/swes-numpy-0-M180-N90-T5-1-'
     # baseName = GRIDTOOLS_ROOT + '/data/swes-gt4py-0-M180-N90-T4-0-'
     
-    # baseName = './data/IC0_T4_noDiff_gt4py/swes-gt4py-0-M180-N90-T4-0-'
-    baseName = './data/IC1_T4_noDiff_gt4py/swes-gt4py-1-M180-N90-T4-0-'
+    baseName = './data/IC0_T4_noDiff_gt4py/swes-gt4py-0-M180-N90-T4-0-'
+    # baseName = './data/IC1_T4_noDiff_gt4py/swes-gt4py-1-M180-N90-T4-0-'
+    print('[animation.py] Will be saving to '+baseName+'... .')
+    
+    make_gif = False
     
     print('[animation.py] Plotting h...')
-    make_animation(baseName, what_to_plot='h')
+    make_animation(baseName, what_to_plot='h',make_gif=make_gif)
     print('[animation.py] Plotting u...')
-    make_animation(baseName, what_to_plot='u')
+    make_animation(baseName, what_to_plot='u',make_gif=make_gif)
     print('[animation.py] Plotting v...')
-    make_animation(baseName, what_to_plot='v')
+    make_animation(baseName, what_to_plot='v',make_gif=make_gif)
     print('[animation.py] Done.')
     
     # --- TO DO: add settings as keywords with defaults and/or line arguments --- #
