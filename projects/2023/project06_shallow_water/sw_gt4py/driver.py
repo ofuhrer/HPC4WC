@@ -12,7 +12,7 @@ import numpy as np
 
 # --- SETTINGS --- #
 
-TEST = False
+TEST = True
 PLOT = True
 
 # Solver version:
@@ -50,7 +50,7 @@ diffusion = False
 #	* verbose: 	specify number of iterations between two consecutive output
 #	* save:		specify number of iterations between two consecutive stored timesteps
 verbose = 500
-save = 100 if TEST else 500
+save = 500
 
 # --- RUN THE SOLVER --- #
 
@@ -78,8 +78,15 @@ if (save > 0):
     with open(baseName + 'v', 'wb') as f:
         pickle.dump([M, N, t, phi, theta, v], f, protocol = 2)
 
+    print('\nDone computing.\n')
+    
     # --- PLOT THE SOLUTION --- #
 
     if PLOT:
-        print('Plotting animation...')
-        make_animation(baseName) # default settings for plotting h
+        print('[animation.py] Plotting h...')
+        make_animation(baseName, what_to_plot='h')
+        print('[animation.py] Plotting u...')
+        make_animation(baseName, what_to_plot='u')
+        print('[animation.py] Plotting v...')
+        make_animation(baseName, what_to_plot='v')
+        print('[animation.py] Done.')
