@@ -12,8 +12,8 @@ import numpy as np
 
 # --- SETTINGS --- #
 
-TEST = True
-PLOT = False
+TEST = False
+PLOT = True
 
 # Solver version:
 #	* numpy (NumPy version)
@@ -33,7 +33,7 @@ IC = 0
 
 # Simulation length (in days); better to use integer values.
 # Suggested simulation length for Williamson's test cases:
-T = 1 if TEST else 4
+T = 0.5 if TEST else 4
 
 # Grid dimensions
 M = 180
@@ -50,23 +50,16 @@ diffusion = False
 #	* verbose: 	specify number of iterations between two consecutive output
 #	* save:		specify number of iterations between two consecutive stored timesteps
 verbose = 500
-save = 50 if TEST else 500
+save = 100 if TEST else 500
 
 # --- RUN THE SOLVER --- #
 
 pb = SWES.Solver(T, M, N, IC, CFL, diffusion)
 if (save > 0):
     t, phi, theta, h, u, v = pb.solve(verbose, save)
-    t=np.asarray(t)
-    phi=np.asarray(phi)
-    theta=np.asarray(theta)
 else:
     h, u, v = pb.solve(verbose, save)
 
-h=np.asarray(h)
-u=np.asarray(u)
-v=np.asarray(v)
-    
 # --- STORE THE SOLUTION --- #
 
 if (save > 0):
@@ -88,4 +81,5 @@ if (save > 0):
     # --- PLOT THE SOLUTION --- #
 
     if PLOT:
+        print('Plotting animation...')
         make_animation(baseName) # default settings for plotting h
