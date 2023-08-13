@@ -23,6 +23,8 @@ import cartopy.crs as ccrs
 def make_animation(
     baseName,
     what_to_plot='h',
+    make_gif=True,
+    make_pngs=True,
 ):
 
     # --- SETTINGS --- #
@@ -90,7 +92,7 @@ def make_animation(
     var = plot_variables[what_to_plot]
     title = plot_titles[what_to_plot]
     
-    fig1 = plt.figure(figsize=[15,8])
+    fig1 = plt.figure(figsize=[8,8])
 
     if (projection == 'cyl'):
         proj=ccrs.PlateCarree(central_longitude=0.0, globe=None)
@@ -109,14 +111,28 @@ def make_animation(
         ax.set_title(f'{title}: time = {t[frame] / 3600.0:5.2f} hours\n')
         return ax
 
-    ani = animation.FuncAnimation(fig=fig1, func=update, frames=Nt, interval=1)
-    ani.save(filename=baseName+"_"+what_to_plot+".gif", writer="pillow")
-
+    if make_gif:
+        ani = animation.FuncAnimation(fig=fig1, func=update, frames=Nt, interval=1)
+        ani.save(filename=baseName+"_"+what_to_plot+".gif", writer="pillow")
+    
+    if make_pngs:
+        update(0)
+        plt.tight_layout()
+        plt.savefig(baseName+'_IC.png')
+        
+        update(-1)
+        plt.tight_layout()
+        plt.savefig(baseName+'_T.png')
+        
+        print(baseName+'_T.png')
+            
 if __name__ == '__main__':
     
     GRIDTOOLS_ROOT = '.' #os.environ.get('GRIDTOOLS_ROOT')
     #baseName = GRIDTOOLS_ROOT + '/data/swes-numpy-0-M180-N90-T5-1-'
     # baseName = GRIDTOOLS_ROOT + '/data/swes-gt4py-0-M180-N90-T4-0-'
+    
+    # baseName = './data/IC0_T4_noDiff_gt4py/swes-gt4py-0-M180-N90-T4-0-'
     baseName = './data/IC1_T4_noDiff_gt4py/swes-gt4py-1-M180-N90-T4-0-'
     
     print('[animation.py] Plotting h...')
