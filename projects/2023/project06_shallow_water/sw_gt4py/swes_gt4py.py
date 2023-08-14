@@ -7,109 +7,7 @@ import gt4py as gt
 from gt4py import gtscript
 from scipy.stats import norm
 
-#Compute x staggered
-@gtscript.function
-def xMid(dx, dt, h, hu):
-    return 0.5 * (h[1, 0,0] + h[0,0,0]) - 0.5 * dt / dx[0,0,0] * (hu[1,0,0] - hu[0,0,0])
-
-@gtscript.function
-def yMid(dy1, dt, h, hv1):
-    return 0.5 * (h[0,1,0] + h[0,0,0]) - 0.5 * dt / dy1[0,0,0] * (hv1[0,1,0] - hv1[0,0,0])
-
-@gtscript.function
-def xMid_hu(dx, dt, hu, hv, Ux, f, u, tgMidx, a):
-    return (0.5 * (hu[1, 0,0] + hu[0,0,0]) - 0.5 * dt / dx[0,0,0] * (Ux[1,0,0] - Ux[0,0,0]) + \
-            0.5 * dt * \
-            (0.5 * (f[1,0,0] + f[0,0,0]) + \
-            0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * \
-            (0.5 * (hv[1,0,0] + hv[0,0,0])))           
-
-@gtscript.function
-def yMid_hu(dy1, dt, hu, hv, Uy, f, u, tgMidy, a):
-    return (0.5 * (hu[0,1,0] + hu[0,0,0]) - 0.5 * dt / dy1[0,0,0] * (Uy[0,1,0] - Uy[0,0,0]) + \
-        0.5 * dt * \
-        (0.5 * (f[0,1,0] + f[0,0,0]) + \
-        0.5 * (u[0,1,0] + u[0,0,0]) * tgMidy / a) * \
-        (0.5 * (hv[0,1,0] + hv[0,0,0])))
-
-
-@gtscript.function
-def xMid_hv(dx, dt, hu, hv, Vx, f, u, tgMidx, a):
-    first= 0.5 * (hv[1, 0,0] + hv[0,0,0])
-    second = 0.5 * dt / dx[0,0,0] * (Vx[1,0,0] - Vx[0,0,0])
-    third = 0.5 * dt * (0.5 * (f[1,0,0] + f[0,0,0]) + 0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * (0.5 * (hu[1,0,0] + hu[0,0,0]))
-                        
-    return first - second - third 
-
-
-@gtscript.function
-def yMid_hv(dy1, dy, dt, hu, hv,  Vy1, Vy2, f, u, tgMidy, a):
-    return (0.5 * (hv[0,1,0] + hv[0,0,0]) \
-            - 0.5 * dt / dy1[0,0,0] * (Vy1[0,1,0] - Vy1[0,0,0]) -  \
-            0.5 * dt / dy[0,0,0] * (Vy2[0,1,0] - Vy2[0,0,0]) -\
-            0.5 * dt * \
-            (0.5 * (f[0,1,0] + f[0,0,0]) + \
-            0.5 * (u[0,1,0] + u[0,0,0]) * tgMidy / a) * \
-            (0.5 * (hu[0,1,0] + hu[0,0,0])))
-
-@gtscript.function
-def compute_hnew(h, dt, dxc, huMidx, dy1c, hvMidy, cMidy):
-    return h[1,1,0] -  dt / dxc[0,0,0] * (huMidx[1,1,0] - huMidx[0,1,0]) - dt /dy1c[0,0,0] * (hvMidy[1,1,0]*cMidy[1,1,0] - hvMidy[1,0,0]*cMidy[1,0,0])
-
-@gtscript.function
-def compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMidy,tg, a, hvMidx,hvMidy,g, hs,dx):
-    first= dt / dxc * (UxMid[1,1,0] - UxMid[0,1,0])
-
-    second= dt / dy1c * (UyMid[1,1,0] - UyMid[1,0,0])
-
-    third= dt * (f[1,1,0] +  0.25 * (huMidx[0,1,0] / hMidx[0,1,0] + \
-                                    huMidx[1,1,0] / hMidx[1,1,0] + \
-                                    huMidy[1,0,0] / hMidy[1,0,0] + \
-                                    huMidy[1,1,0] / hMidy[1,1,0]) * \
-                                    tg /a) * \
-                                    0.25 * (hvMidx[0,1,0] + hvMidx[1,1,0] + hvMidy[1,0,0] + hvMidy[1,1,0])
-
-    fourth= dt * g * 0.25 * (hMidx[0,1,0] + hMidx[1,1,0] + hMidy[1,0,0] + hMidy[1,1,0]) * \
-                (hs[2,1,0] - hs[0,1,0]) / (dx[0,1,0] + dx[1,1,0])
-
-    return hu[1,1,0] - first - second + third - fourth
-
-
-@gtscript.function
-def compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1):
-
-    first  = dt / dxc * (VxMid[1,1,0] - VxMid[0,1,0])
-    second = dt / dy1c * (Vy1Mid[1,1,0] - Vy1Mid[1,0,0])
-    third  = dt / dyc * (Vy2Mid[1,1,0] - Vy2Mid[1,0,0])
-
-    fourth = dt * (f[1,1,0] + 0.25 * (huMidx[0,1,0] / hMidx[0,1,0] + \
-                                    huMidx[1,1,0] / hMidx[1,1,0] + \
-                                    huMidy[1,0,0] / hMidy[1,0,0] + \
-                                    huMidy[1,1,0] / hMidy[1,1,0]) * \
-                                    tg / a) * \
-                                    0.25 * (huMidx[0,1,0] + huMidx[1,1,0] + huMidy[1,0,0] + huMidy[1,1,0])#
-
-    fifth  = dt * g * 0.25 * (hMidx[0,1,0] + hMidx[1,1,0] + hMidy[1,0,0] + hMidy[1,1,0]) * (hs[1,2,0] - hs[1,0,0]) / (dy1[1,1,0] + dy1[1,0,0]) 
-
-    return hv[1,1,0] - first - second - third - fourth - fifth
-
-
-#def compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1):
-
-#    first  = dt / dxc * (VxMid[1,0,0] - VxMid[0,0,0])
-#    second = dt / dy1c * (Vy1Mid[0,1,0] - Vy1Mid[0,0,0])
-#    third  = dt / dyc * (Vy2Mid[0,1,0] - Vy2Mid[0,0,0])
-
-#    fourth = dt * (f[1,1,0] + 0.25 * (huMidx[0,0,0] / hMidx[0,0,0] + \
-#                                    huMidx[1,0,0] / hMidx[1,0,0] + \
-#                                    huMidy[0,0,0] / hMidy[0,0,0] + \
-#                                    huMidy[0,1,0] / hMidy[0,1,0]) * \
-#                                    tg / a) * \
-#                                    0.25 * (huMidx[0,0,0] + huMidx[1,0,0] + huMidy[0,0,0] + huMidy[0,1,0])#
-
-#    fifth  = dt * g * 0.25 * (hMidx[0,0,0] + hMidx[1,0,0] + hMidy[0,0,0] + hMidy[0,1,0]) * (hs[1,2,0] - hs[1,0,0]) / (dy1[1,1,0] + dy1[1,0,0]) 
-
-#    return hv[1,1,0] - first - second - third - fourth - fifth
+# --- STEP 0 --- #
 
 def compute_temp_variables(
     u: gtscript.Field[float], 
@@ -126,6 +24,50 @@ def compute_temp_variables(
         v1 = v * c
         hv = h * v
         
+# --- STEP 1 --- #
+
+@gtscript.function
+def compute_hMidx(dx, dt, h, hu):
+    return 0.5 * (h[1, 0,0] + h[0,0,0]) - 0.5 * dt / dx[0,0,0] * (hu[1,0,0] - hu[0,0,0])
+
+@gtscript.function
+def compute_hMidy(dy1, dt, h, hv1):
+    return 0.5 * (h[0,1,0] + h[0,0,0]) - 0.5 * dt / dy1[0,0,0] * (hv1[0,1,0] - hv1[0,0,0])
+
+@gtscript.function
+def compute_huMidx(dx, dt, hu, hv, Ux, f, u, tgMidx, a):
+    return (0.5 * (hu[1, 0,0] + hu[0,0,0]) - 0.5 * dt / dx[0,0,0] * (Ux[1,0,0] - Ux[0,0,0]) + \
+            0.5 * dt * \
+            (0.5 * (f[1,0,0] + f[0,0,0]) + \
+            0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * \
+            (0.5 * (hv[1,0,0] + hv[0,0,0])))           
+
+@gtscript.function
+def compute_huMidy(dy1, dt, hu, hv, Uy, f, u, tgMidy, a):
+    return (0.5 * (hu[0,1,0] + hu[0,0,0]) - 0.5 * dt / dy1[0,0,0] * (Uy[0,1,0] - Uy[0,0,0]) + \
+        0.5 * dt * \
+        (0.5 * (f[0,1,0] + f[0,0,0]) + \
+        0.5 * (u[0,1,0] + u[0,0,0]) * tgMidy / a) * \
+        (0.5 * (hv[0,1,0] + hv[0,0,0])))
+
+@gtscript.function
+def compute_hvMidx(dx, dt, hu, hv, Vx, f, u, tgMidx, a):
+    first= 0.5 * (hv[1, 0,0] + hv[0,0,0])
+    second = 0.5 * dt / dx[0,0,0] * (Vx[1,0,0] - Vx[0,0,0])
+    third = 0.5 * dt * (0.5 * (f[1,0,0] + f[0,0,0]) + 0.5 * (u[1,0,0] + u[0,0,0]) * tgMidx / a) * (0.5 * (hu[1,0,0] + hu[0,0,0]))
+                        
+    return first - second - third 
+
+@gtscript.function
+def compute_hvMidy(dy1, dy, dt, hu, hv,  Vy1, Vy2, f, u, tgMidy, a):
+    return (0.5 * (hv[0,1,0] + hv[0,0,0]) \
+            - 0.5 * dt / dy1[0,0,0] * (Vy1[0,1,0] - Vy1[0,0,0]) -  \
+            0.5 * dt / dy[0,0,0] * (Vy2[0,1,0] - Vy2[0,0,0]) -\
+            0.5 * dt * \
+            (0.5 * (f[0,1,0] + f[0,0,0]) + \
+            0.5 * (u[0,1,0] + u[0,0,0]) * tgMidy / a) * \
+            (0.5 * (hu[0,1,0] + hu[0,0,0])))
+
 def x_staggered_first_step(
     u: gtscript.Field[float], 
     v: gtscript.Field[float],
@@ -146,18 +88,16 @@ def x_staggered_first_step(
     g: float,
     a: float):
     from __gtscript__ import PARALLEL, computation, interval
-    from __externals__ import xMid, yMid, xMid_hu, yMid_hu, xMid_hv, yMid_hv
+    from __externals__ import compute_hMidx, compute_huMidx, compute_hvMidx
 
     with computation(PARALLEL), interval(...):
             Ux = hu * u + 0.5 * g * h * h
             Vx = hu * v
 
             # Mid-point value for h along x
-            hMidx = xMid(dx=dx, dt=dt, h=h, hu=hu)
-            huMidx = xMid_hu(dx=dx, dt=dt, hu=hu, hv=hv, Ux=Ux, f=f, u=u, tgMidx=tgMidx, a=a)
-            hvMidx = xMid_hv(dx=dx, dt=dt, hu=hu, hv=hv, Vx=Vx, f=f, u=u, tgMidx=tgMidx, a=a)
-
-            
+            hMidx = compute_hMidx(dx=dx, dt=dt, h=h, hu=hu)
+            huMidx = compute_huMidx(dx=dx, dt=dt, hu=hu, hv=hv, Ux=Ux, f=f, u=u, tgMidx=tgMidx, a=a)
+            hvMidx = compute_hvMidx(dx=dx, dt=dt, hu=hu, hv=hv, Vx=Vx, f=f, u=u, tgMidx=tgMidx, a=a)
 
 def y_staggered_first_step(
     u: gtscript.Field[float], 
@@ -181,8 +121,8 @@ def y_staggered_first_step(
     g: float,
     a: float):
     from __gtscript__ import PARALLEL, computation, interval
-    from __externals__ import xMid, yMid, xMid_hu, yMid_hu, xMid_hv, yMid_hv
-
+    from __externals__ import compute_hMidy, compute_huMidy, compute_hvMidy
+    
     with computation(PARALLEL), interval(...):
             hv1 = h * v1
             Uy = hu * v1
@@ -190,11 +130,53 @@ def y_staggered_first_step(
             Vy2 = 0.5 * g * h * h
 
             # Mid-point value for h along y
-            hMidy = yMid(dy1=dy1, dt=dt, h=h, hv1=hv1)
-            huMidy = yMid_hu(dy1=dy1, dt=dt, hu=hu, hv=hv, Uy=Uy, f=f, u=u, tgMidy=tgMidy, a=a)
-            hvMidy = yMid_hv(dy1=dy1, dy=dy, dt=dt, hu=hu, hv=hv,  Vy1=Vy1, Vy2=Vy2, f=f, u=u, tgMidy=tgMidy, a=a)
+            hMidy = compute_hMidy(dy1=dy1, dt=dt, h=h, hv1=hv1)
+            huMidy = compute_huMidy(dy1=dy1, dt=dt, hu=hu, hv=hv, Uy=Uy, f=f, u=u, tgMidy=tgMidy, a=a)
+            hvMidy = compute_hvMidy(dy1=dy1, dy=dy, dt=dt, hu=hu, hv=hv,  Vy1=Vy1, Vy2=Vy2, f=f, u=u, tgMidy=tgMidy, a=a)       
                 
-                
+# --- STEP 2 --- #
+
+@gtscript.function
+def compute_hnew(h, dt, dxc, huMidx, dy1c, hvMidy, cMidy):
+    return h[1,1,0] -  dt / dxc[0,0,0] * (huMidx[1,1,0] - huMidx[0,1,0]) - \
+                       dt /dy1c[0,0,0] * (hvMidy[1,1,0]*cMidy[1,1,0] - hvMidy[1,0,0]*cMidy[1,0,0])
+
+@gtscript.function
+def compute_hunew(hu, dt, dxc, UxMid, dy1c, UyMid, f, huMidx, hMidx, huMidy,hMidy,tg, a, hvMidx,hvMidy,g, hs,dx):
+    first= dt / dxc * (UxMid[1,1,0] - UxMid[0,1,0])
+
+    second= dt / dy1c * (UyMid[1,1,0] - UyMid[1,0,0])
+
+    third= dt * (f[1,1,0] +  0.25 * (huMidx[0,1,0] / hMidx[0,1,0] + \
+                                    huMidx[1,1,0] / hMidx[1,1,0] + \
+                                    huMidy[1,0,0] / hMidy[1,0,0] + \
+                                    huMidy[1,1,0] / hMidy[1,1,0]) * \
+                                    tg /a) * \
+                                    0.25 * (hvMidx[0,1,0] + hvMidx[1,1,0] + hvMidy[1,0,0] + hvMidy[1,1,0])
+
+    fourth= dt * g * 0.25 * (hMidx[0,1,0] + hMidx[1,1,0] + hMidy[1,0,0] + hMidy[1,1,0]) * \
+                (hs[2,1,0] - hs[0,1,0]) / (dx[0,1,0] + dx[1,1,0])
+
+    return hu[1,1,0] - first - second + third - fourth
+
+@gtscript.function
+def compute_hvnew(hv, dt, dxc, VxMid, dy1c, Vy1Mid, dyc, Vy2Mid, f, huMidx, hMidx, huMidy, hMidy, tg, a, g, hs, dy1):
+
+    first  = dt / dxc * (VxMid[1,1,0] - VxMid[0,1,0])
+    second = dt / dy1c * (Vy1Mid[1,1,0] - Vy1Mid[1,0,0])
+    third  = dt / dyc * (Vy2Mid[1,1,0] - Vy2Mid[1,0,0])
+
+    fourth = dt * (f[1,1,0] + 0.25 * (huMidx[0,1,0] / hMidx[0,1,0] + \
+                                    huMidx[1,1,0] / hMidx[1,1,0] + \
+                                    huMidy[1,0,0] / hMidy[1,0,0] + \
+                                    huMidy[1,1,0] / hMidy[1,1,0]) * \
+                                    tg / a) * \
+                                    0.25 * (huMidx[0,1,0] + huMidx[1,1,0] + huMidy[1,0,0] + huMidy[1,1,0])#
+
+    fifth  = dt * g * 0.25 * (hMidx[0,1,0] + hMidx[1,1,0] + hMidy[1,0,0] + hMidy[1,1,0]) * (hs[1,2,0] - hs[1,0,0]) / (dy1[1,1,0] + dy1[1,0,0]) 
+
+    return hv[1,1,0] - first - second - third - fourth - fifth
+
 def combined_last_step(
     h: gtscript.Field[float], 
 
@@ -223,21 +205,25 @@ def combined_last_step(
     unew: gtscript.Field[float],
     vnew: gtscript.Field[float],
     
-    hvnew: gtscript.Field[float],
     VxMidnew: gtscript.Field[float],
     Vy1Midnew: gtscript.Field[float],
     Vy2Midnew: gtscript.Field[float],
+    
     *,
+    
     dt: float,
     g: float,
-    a: float):
+    a: float
+):
     from __gtscript__ import PARALLEL, computation, interval
     from __externals__ import compute_hnew, compute_hunew, compute_hvnew
 
     with computation(PARALLEL), interval(...):
+        
         # Update fluid height
         hnew=compute_hnew(h, dt, dxc, huMidx, dy1c, hvMidy, cMidy)
 
+        
         # Update longitudinal moment
 
         #---RECPLACED NUMPY WHERE----------------------------------------
@@ -252,46 +238,46 @@ def combined_last_step(
             UyMid = 0.0
         #---RECPLACED NUMPY WHERE----------------------------------------
 
-        hunew = compute_hunew(hu=hu, dt=dt, dxc=dxc, UxMid=UxMid, dy1c=dy1c, UyMid=UyMid, f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy,hMidy=hMidy,tg=tg, a=a, hvMidx=hvMidx,hvMidy=hvMidy,g=g, hs=hs,dx=dx)
+        hunew = compute_hunew(
+            hu=hu, dt=dt, dxc=dxc, UxMid=UxMid, dy1c=dy1c, UyMid=UyMid, 
+            f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy,hMidy=hMidy,tg=tg,
+            a=a, hvMidx=hvMidx,hvMidy=hvMidy,g=g, hs=hs,dx=dx
+        )
 
 
-        #---RECPLACED NUMPY WHERE----------------------------------------
 
         # Update latitudinal moment
-        #if hMidx > 0.0:
-        #    VxMid = hvMidx * huMidx / hMidx
-        #else:
-        #    VxMid=0.0
             
+        #---RECPLACED NUMPY WHERE----------------------------------------
         VxMid = (hvMidx[0,0,0] * huMidx[0,0,0] / hMidx[0,0,0]) if (hMidx[0,0,0] > 0.0) else 0.0   
-        #temp_bool=hMidx > 0.0
-        #VxMid=temp_bool * hvMidx * huMidx / hMidx   
-        
-        
         if hMidy > 0.0:
             Vy1Mid = hvMidy * hvMidy / hMidy * cMidy
         else:
             Vy1Mid = 0.0
-    
         Vy2Mid = 0.5 * g * hMidy * hMidy
-        
-        
-        #VxMid=VxMidnew
-        #Vy1Mid=Vy1Midnew
-        #Vy2Mid=Vy2Midnew
-        
         #---RECPLACED NUMPY WHERE----------------------------------------
 
-        hvnew = compute_hvnew(hv=hv, dt=dt, dxc=dxc, VxMid=VxMid, dy1c=dy1c, Vy1Mid=Vy1Mid, dyc=dyc, Vy2Mid=Vy2Mid, f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy, hMidy=hMidy, tg=tg, a=a, g=g, hs=hs, dy1=dy1) #Klopt dit laatste?
+        hvnew = compute_hvnew(
+            hv=hv, dt=dt, dxc=dxc, VxMid=VxMid, dy1c=dy1c, Vy1Mid=Vy1Mid,
+            dyc=dyc, Vy2Mid=Vy2Mid, f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy,
+            hMidy=hMidy, tg=tg, a=a, g=g, hs=hs, dy1=dy1) 
 
 
         # Come back to original variables
         unew = hunew / hnew
         vnew = hvnew / hnew
         
-        
-                
-                
+
+# --- DIFFUSION --- #
+
+# --- TO DO --- #
+@gtscript.function
+def computeLaplacian_new(q):
+    # print('Laplacian not implemented')
+    pass
+# --- TO DO --- #
+    
+       
 class Solver:
     """
     NumPy implementation of a solver class for
@@ -325,14 +311,6 @@ class Solver:
                     * TRUE to take viscous diffusion into account,
                     * FALSE otherwise
         """
-
-        # --- DONE --- #
-        # initialize GT4Py
-        self.num_halo = 1
-        self.default_origin = (self.num_halo, self.num_halo)
-        self.backend = 'numpy' # give options, take as input
-        # --- DONE --- #
-
         
         # --- Build grid --- #
 
@@ -364,12 +342,6 @@ class Solver:
         #self.cMidy = np.cos(0.5 * (self.theta[1:-1,1:] + self.theta[1:-1,:-1]))
         
         self.cMidy = np.cos(0.5 * (self.theta[:,1:] + self.theta[:,:-1]))
-
-        
-        # Compute $\tan(\theta)$
-#        self.tg = np.tan(self.theta[1:-1,1:-1])
-#        self.tgMidx = np.tan(0.5 * (self.theta[:-1,1:-1] + self.theta[1:,1:-1]))
-#        self.tgMidy = np.tan(0.5 * (self.theta[1:-1,:-1] + self.theta[1:-1,1:]))
 
         self.tg = np.tan(self.theta[1:-1,1:-1])
         self.tgMidx = np.tan(0.5 * (self.theta[:-1,:] + self.theta[1:,:]))
@@ -453,64 +425,69 @@ class Solver:
             self.Cy = - self.dy[1:-1,1:] / (self.dy[1:-1,:-1] * (self.dy[1:-1,1:] + self.dy[1:-1,:-1]))
             self.Cy = np.concatenate((self.Cy[:,0:1], self.Cy, self.Cy[:,-1:]), axis = 1)
 
-        # --- DONE --- #
-        # --- move all needed fields to GT4Py
+        # --- GT4Py settings --- #
         
-        # storage shape
-        nx=np.shape(self.h)[0]
-        ny=np.shape(self.h)[1]
-        nz=1
-        self.shape = (nx, ny, nz)
-        self.default_shape = (nx-2,ny-2,nz)
-        self.shape_staggered_x = (nx-1, ny, nz)
-        self.shape_staggered_y = (nx, ny-1, nz)
+        # self.num_halo = 1 # not needed
+        self.backend = 'cuda' # 'numpy' # TO DO give options, take as input
+        
+        nx, ny = np.shape(self.h)
+        nz = 1
+        
+        self.shape             = (  nx,   ny, nz) # full domain size w/ halo
+        self.default_shape     = (nx-2, ny-2, nz) # physical domain size w/o halo
+        self.shape_staggered_x = (nx-1,   ny, nz) # full but staggered in x
+        self.shape_staggered_y = (  nx, ny-1, nz) # full but staggered in y
 
-        # default origin (trust it for now!)
-        self.default_origin = (0, 0, 0)
+        self.default_origin  =  (0,0,0)
         self.origin_staggered = (0,0,0)
         
+        # --- move all fields to GT4Py --- #
+        
         # coordinates
-        self.theta = gt.storage.from_array(np.expand_dims(self.theta,axis=2), self.backend, self.default_origin)
-        self.phi = gt.storage.from_array(np.expand_dims(self.phi,axis=2), self.backend, self.default_origin)
-        self.c = gt.storage.from_array(np.expand_dims(self.c,axis=2), self.backend, self.default_origin)
-        self.cMidy = gt.storage.from_array(np.expand_dims(self.cMidy,axis=2), self.backend, self.default_origin)
-        self.tg = gt.storage.from_array(np.expand_dims(self.tg,axis=2), self.backend, self.default_origin)
+        self.theta =  gt.storage.from_array(np.expand_dims(self.theta,axis=2), self.backend, self.default_origin)
+        self.phi =    gt.storage.from_array(np.expand_dims(self.phi,axis=2), self.backend, self.default_origin)
+        self.c =      gt.storage.from_array(np.expand_dims(self.c,axis=2), self.backend, self.default_origin)
+        self.cMidy =  gt.storage.from_array(np.expand_dims(self.cMidy,axis=2), self.backend, self.default_origin)
+        self.tg =     gt.storage.from_array(np.expand_dims(self.tg,axis=2), self.backend, self.default_origin)
         self.tgMidx = gt.storage.from_array(np.expand_dims(self.tgMidx,axis=2), self.backend, self.default_origin)
         self.tgMidy = gt.storage.from_array(np.expand_dims(self.tgMidy,axis=2), self.backend, self.default_origin)
-        self.f = gt.storage.from_array(np.expand_dims(self.f,axis=2), self.backend, self.default_origin)
+        self.f =      gt.storage.from_array(np.expand_dims(self.f,axis=2), self.backend, self.default_origin)
         
         # grid spacing
-        self.dx = gt.storage.from_array(np.expand_dims(self.dx,axis=2), self.backend, self.default_origin)
-        self.dy = gt.storage.from_array(np.expand_dims(self.dy,axis=2), self.backend, self.default_origin)
-        self.dy1 = gt.storage.from_array(np.expand_dims(self.dy1,axis=2), self.backend, self.default_origin)
-        self.dxc = gt.storage.from_array(np.expand_dims(self.dxc,axis=2), self.backend, self.default_origin)
-        self.dyc = gt.storage.from_array(np.expand_dims(self.dyc,axis=2), self.backend, self.default_origin)
-        self.dy1c = gt.storage.from_array(np.expand_dims(self.dy1c,axis=2), self.backend, self.default_origin)
+        self.dx =    gt.storage.from_array(np.expand_dims(self.dx,axis=2), self.backend, self.default_origin)
+        self.dy =    gt.storage.from_array(np.expand_dims(self.dy,axis=2), self.backend, self.default_origin)
+        self.dy1 =   gt.storage.from_array(np.expand_dims(self.dy1,axis=2), self.backend, self.default_origin)
+        self.dxc =   gt.storage.from_array(np.expand_dims(self.dxc,axis=2), self.backend, self.default_origin)
+        self.dyc =   gt.storage.from_array(np.expand_dims(self.dyc,axis=2), self.backend, self.default_origin)
+        self.dy1c =  gt.storage.from_array(np.expand_dims(self.dy1c,axis=2), self.backend, self.default_origin)
         
-        # emtpy field
-        self.hs = gt.storage.from_array(np.expand_dims(self.hs,axis=2), self.backend, self.default_origin)
+        # terrain height (zero)
+        self.hs =    gt.storage.from_array(np.expand_dims(self.hs,axis=2), self.backend, self.default_origin)
         
         # initial condition
-        self.h = gt.storage.from_array(np.expand_dims(self.h,axis=2), self.backend, self.default_origin)
-        self.u = gt.storage.from_array(np.expand_dims(self.u,axis=2), self.backend, self.default_origin)
-        self.v = gt.storage.from_array(np.expand_dims(self.v,axis=2), self.backend, self.default_origin)
-        
+        self.h =     gt.storage.from_array(np.expand_dims(self.h,axis=2), self.backend, self.default_origin)
+        self.u =     gt.storage.from_array(np.expand_dims(self.u,axis=2), self.backend, self.default_origin)
+        self.v =     gt.storage.from_array(np.expand_dims(self.v,axis=2), self.backend, self.default_origin)
         
         # empty fields
-        self.hu = gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
-        self.hv = gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
-        self.hv1 = gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
-        self.v1 = gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
+        self.hu =    gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
+        self.hv =    gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
+        self.hv1 =   gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
+        self.v1 =    gt.storage.empty(self.backend, self.default_origin, self.shape, dtype=float)
         
-        #Temp_files
-        self.hMidx=gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
-        self.huMidx=gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
-        self.hvMidx=gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
+        # temporary staggered fields
+        self.hMidx = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
+        self.huMidx= gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
+        self.hvMidx= gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
         
-        self.hMidy=gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
-        self.huMidy=gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
-        self.hvMidy=gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
+        self.hMidy=  gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
+        self.huMidy= gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
+        self.hvMidy= gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
         
+        self.VxMidnew =  gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
+        self.Vy1Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
+        self.Vy2Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
+            
         # diffusion
         #self.Ax = gt.storage.from_array(self.Ax, self.backend, self.default_origin)
         #self.Bx = gt.storage.from_array(self.Bx, self.backend, self.default_origin)
@@ -520,29 +497,56 @@ class Solver:
         #self.Cy = gt.storage.from_array(self.Cy, self.backend, self.default_origin)
         
         # output fields
-        self.unew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
-        self.vnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
-        self.hnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        self.hnew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)        
+        self.unew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        self.vnew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
         
+        # --- compile  stencils --- #
         
-        self.hvnew = gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
-        self.VxMidnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
-        self.Vy1Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
-        self.Vy2Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
-        # --- DONE --- #
-            
-        # --- DONE --- #
-        # compile  stencil
         kwargs = {"verbose": True} if self.backend in ("gtx86", "gtmc", "gtcuda") else {}
         
-        self.temp_variables = gtscript.stencil(definition=compute_temp_variables, backend=self.backend, rebuild=False,**kwargs)
+        self.temp_variables = gtscript.stencil(
+            definition=compute_temp_variables,
+            backend=self.backend,
+            rebuild=False,
+            **kwargs
+        )
         
-        self.combined = gtscript.stencil(definition=combined_last_step, backend=self.backend, externals={"compute_hnew":compute_hnew, "compute_hunew":compute_hunew, "compute_hvnew":compute_hvnew}, rebuild=False,**kwargs)
+        self.x_staggered = gtscript.stencil(
+            definition=x_staggered_first_step, 
+            backend=self.backend, 
+            externals={
+                "compute_hMidx":compute_hMidx, 
+                "compute_huMidx":compute_huMidx,
+                "compute_hvMidx":compute_hvMidx
+            }, 
+            rebuild=False,
+            **kwargs
+        )
         
-        self.x_staggered = gtscript.stencil(definition=x_staggered_first_step, backend=self.backend, externals={"xMid":xMid, "yMid":yMid, "xMid_hu":xMid_hu, "yMid_hu":yMid_hu, "xMid_hv":xMid_hv, "yMid_hv":yMid_hv}, rebuild=False,**kwargs)
+        self.y_staggered = gtscript.stencil(
+            definition=y_staggered_first_step, 
+            backend=self.backend, 
+            externals={
+                "compute_hMidy":compute_hMidy, 
+                "compute_huMidy":compute_huMidy,
+                "compute_hvMidy":compute_hvMidy
+            },
+            rebuild=False,
+            **kwargs
+        )
         
-        self.y_staggered = gtscript.stencil(definition=y_staggered_first_step, backend=self.backend, externals={"xMid": xMid, "yMid": yMid, "xMid_hu": xMid_hu, "yMid_hu": yMid_hu, "xMid_hv": xMid_hv, "yMid_hv": yMid_hv}, rebuild=False,**kwargs)
-        # --- DONE --- #
+        self.combined = gtscript.stencil(
+            definition=combined_last_step,
+            backend=self.backend, 
+            externals={
+                "compute_hnew":compute_hnew,
+                "compute_hunew":compute_hunew, 
+                "compute_hvnew":compute_hvnew
+            },
+            rebuild=False,
+            **kwargs
+        )
 
     def setPlanetConstants(self):
         """
@@ -664,13 +668,7 @@ class Solver:
         self.h = h
         self.u = u
         self.v = v
-
-    # --- TO DO --- #
-    @gtscript.function
-    def computeLaplacian_new(self, q):
-        #print('not implemented')
-        pass
-    # --- TO DO --- #
+    
     
     def computeLaplacian(self, q):
         """
@@ -715,17 +713,7 @@ class Solver:
 
         return qlap
 
-    # --- ALTERNATIVE --- #
-    # @gtscript.function
-    # def get_staggered(self,a):
-    #     ## rationale: we introduce 4 fields instead of 2 here
-    #     ## but the speedup should be of about 10x, then a factor of 2 slower is fine
-    #     # return aMidx_left, aMidx_right, aMidy_top, aMidy_bottom
-    #     return 
-    # --- ALTERNATIVE --- #
     
-
-
     def solve(self, verbose, save):
         """
         Solver.
@@ -760,10 +748,6 @@ class Solver:
         # Save
         if (save > 0):
             tsave = np.array([[0.0]])
-            #hsave = self.h[1:-1, :, np.newaxis]
-            #usave = self.u[1:-1, :, np.newaxis]
-            #vsave = self.v[1:-1, :, np.newaxis]
-            
             hsave = self.h[1:-1, :, :]
             usave = self.u[1:-1, :, :]
             vsave = self.v[1:-1, :, :]
@@ -772,11 +756,10 @@ class Solver:
 
         n = 0
         t = 0.0
-
+        wall_zero = time.time()
+        
         while (t < self.T):
             
-            
-
             # Update number of iterations
             n += 1
 
@@ -808,185 +791,54 @@ class Solver:
             
             # --- Update solution --- #
             
-            # --- TO DO --- # 
-            # call our function
-            # LaxWendroff_stencil(
-            #     # args, kwargs
-            # )
-            ## get back to numpy
-            # --- TO DO --- # 
+            self.temp_variables(
+                u=self.u,v=self.v,h=self.h,
+                c=self.c,
+                hu=self.hu,hv=self.hv,v1=self.v1,
+                origin=self.default_origin, domain=self.shape
+            )
             
-            
-            #print("H")
-            #print(np.mean(self.h))
-            #print("U")
-            #print(np.mean(self.u))
-            #print("V")
-            #print(np.mean(self.v))
-            
-            self.temp_variables(u=self.u,v=self.v,h=self.h,c=self.c,hu=self.hu,hv=self.hv,v1=self.v1, origin=self.default_origin, domain=self.shape)
-            
-            
-            #dx, dt, hu, hv, Vx, f, u, tgMidx, a
-            #print("dx")
-            #print(np.mean(self.dx))
-            #print("dt")
-            #print(self.dt)
-            #print("HU")
-            #print(np.mean(self.hu))
-            #print("HV")
-            #print(np.mean(self.hv))
-            #print("Vx")
-            #print(np.mean(self.hu * self.v))
-            #print("f")
-            #print(np.mean(self.f))
-            #print("U")
-            #print(np.mean(self.u))
-            #print("tgMidx")
-            #print(np.mean(self.tgMidx))     
-            #print("a")
-            #vprint(self.a)
-           
-            self.x_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,f=self.f, dx=self.dx,tgMidx=self.tgMidx,hMidx=self.hMidx,huMidx=self.huMidx,hvMidx=self.hvMidx,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_x)
-            #print("hvMidx")
-            #print(np.mean(self.hvMidx))
-            #print("hvMidx")
-            #print(np.mean(self.hvMidx[:,1:-1,:]))
-            self.y_staggered(u=self.u,v=self.v,h=self.h,hu=self.hu,hv=self.hv,v1=self.v1,f=self.f,dy=self.dy,dy1=self.dy1,tgMidy=self.tgMidy,hMidy=self.hMidy,huMidy=self.huMidy,hvMidy=self.hvMidy,dt=self.dt,g=self.g,a=self.a, origin=self.default_origin, domain=self.shape_staggered_y)
-            
-            #hv=hv, dt=dt, dxc=dxc, VxMid=VxMid, dy1c=dy1c, Vy1Mid=Vy1Mid, dyc=dyc, Vy2Mid=Vy2Mid, f=f, huMidx=huMidx, hMidx=hMidx, huMidy=huMidy, hMidy=hMidy, tg=tg, a=a, g=g, hs=hs, dy1=dy1
-            
-            #print("H")
-            #print(np.mean(self.h))
-            #print("HU")
-            #print(np.mean(self.hu))
-            
-            
-            #print("hvMidx")
-            #print(np.mean(self.hvMidx))
-            #print("hvMidy")
-            ##print(np.mean(self.hvMidy))
-            #print("cMidy")
-            #print(np.mean(self.cMidy))
-            #print("tg")
-            #print(np.mean(self.tg))
-            
-            #print("hs")
-            #print(np.mean(self.hs))
-            #print("dx")
-            #print(np.mean(self.dx))
-            #hvMidx * huMidx / hMidx
-            #print("hvMidx")
-            #print(np.mean(self.hvMidx[:, 1:-1, :]))
-            #print("huMidx")
-            #print(np.mean(self.huMidx[:, 1:-1, :]))
-            #print("hMidx")
-            #print(np.mean(self.hMidx[:, 1:-1, :]))
-            #print("V")
-            #print(np.mean(self.v))
-            
-            #print("VxMid first try")
-            #temp_bool=self.hMidx > 0.0
-            #new=temp_bool*self.hvMidx * self.huMidx / self.hMidx
-            #print(np.mean(new[:,1:-1,:]))
-            
-            #print("Test")
-            #print(np.shape(self.hvMidy))
-            #print(np.shape(self.hMidy))
-            #print(np.shape(self.cMidy))
-            #print(np.shape(self.tg))
-            #print(np.shape(self.dyc))
-            #print(np.shape(self.dy1c))
-            #print(np.shape(self.dxc))
-            #print(np.shape(self.h))
-            
-            #self.VxMidnew=new
-            
-            #self.Vy1Midnew = np.where(self.hMidy > 0.0, \
-            #                self.hvMidy * self.hvMidy / self.hMidy * self.cMidy, \
-            #                0.0)
-            #self.Vy2Midnew = 0.5 * self.g * self.hMidy * self.hMidy
-            
-            
-            self.combined(h=self.h,hu=self.hu, hv=self.hv, hs=self.hs, f=self.f, tg=self.tg, huMidx=self.huMidx, huMidy=self.huMidy, hvMidx=self.hvMidx, \
-         hvMidy=self.hvMidy,hMidx=self.hMidx, hMidy=self.hMidy,cMidy=self.cMidy, dx=self.dx, dy1=self.dy1,dxc=self.dxc,dyc=self.dyc,dy1c=self.dy1c,\
-         hnew=self.hnew, unew=self.unew, vnew=self.vnew, hvnew=self.hvnew, VxMidnew=self.VxMidnew, Vy1Midnew=self.Vy1Midnew, Vy2Midnew=self.Vy2Midnew,\
-         dt=self.dt, g=self.g, a=self.a, origin=(0,0,0), domain=self.default_shape)
-            
-            
-            #print("-------Compute HVNEW---------------")
-            #print("HV")
-            #print(np.mean(self.hv))
-            #print("dt")
-            #print(self.dt)
-            #print("dxc")
-            #print(np.mean(self.dxc))
-            #print("VxMidnew")
-            #print(np.mean(self.VxMidnew[:,1:-1,:]))
-            #print("dy1c")
-            #print(np.mean(self.dy1c))
-            #print("Vy1Midnew")
-            #print(np.mean(self.Vy1Midnew[1:-1, :, :]))
-            #print("dyc")
-            #print(np.mean(self.dyc))
-            #print("Vy2Midnew")
-            #print(np.mean(self.Vy2Midnew[1:-1, :, :]))
-            #print("f")
-            #print(np.mean(self.f))
-            #print("huMidx")
-            #print(np.mean(self.huMidx[:,1:-1,:]))
-            #print("huMidy")
-            #print(np.mean(self.huMidy[1:-1,:,:]))
-            #print("hMidx")
-            #print(np.mean(self.hMidx[:,1:-1,:]))
-            #print("hMidy")
-            #print(np.mean(self.hMidy[1:-1,:,:]))
-            #print("tg")
-            #print(np.mean(self.tg))
-            #print("a")
-            #print(self.a)
-            #print("g")
-            #print(self.g)
-            #print("hs")
-            #print(np.mean(self.hs))
-            #print("dy1")
-            #print(np.mean(self.dy1))
-            #print("-------END: compute HVNEW---------------")
-            
-            
-            #print("hvnew")
-            #print(np.mean(self.hvnew[1:-1, 1:-1, :]))
-            #print("VxMid")
-            #print(np.mean(self.VxMidnew[:,1:-1, :]))
-            #print("Vy1Midnew")
-            #print(np.mean(self.Vy1Midnew[1:-1, :, :]))
-            #print("Vy2Midnew")
-            #print(np.mean(self.Vy2Midnew[1:-1, :, :]))
-            
+            self.x_staggered(
+                u=self.u,v=self.v,h=self.h,
+                hu=self.hu,hv=self.hv,
+                f=self.f,
+                dx=self.dx,
+                tgMidx=self.tgMidx,hMidx=self.hMidx,huMidx=self.huMidx,hvMidx=self.hvMidx,
+                dt=self.dt,
+                g=self.g,a=self.a,
+                origin=self.default_origin, domain=self.shape_staggered_x
+            )
 
-            #print("VxMid new try")
-            #print(np.mean(np.where(self.hMidx > 0.0, \
-            #                self.hvMidx * self.huMidx / self.hMidx, \
-            #                0.0)[:,1:-1,:]))
-            #print("VxMid last try")
-            #temp_bool=self.hMidx > 0.0
-            #new=temp_bool*self.hvMidx * self.huMidx / self.hMidx
-            #print(np.mean(new[:,1:-1,:]))
+            self.y_staggered(
+                u=self.u,v=self.v,h=self.h,
+                hu=self.hu,hv=self.hv,
+                v1=self.v1,
+                f=self.f,
+                dy=self.dy,dy1=self.dy1,
+                tgMidy=self.tgMidy,hMidy=self.hMidy,huMidy=self.huMidy,hvMidy=self.hvMidy,
+                dt=self.dt,
+                g=self.g,a=self.a, 
+                origin=self.default_origin, domain=self.shape_staggered_y
+            )
             
+            self.combined(
+                h=self.h,hu=self.hu,hv=self.hv,
+                hs=self.hs, 
+                f=self.f,
+                tg=self.tg,
+                huMidx=self.huMidx,huMidy=self.huMidy,
+                hvMidx=self.hvMidx,hvMidy=self.hvMidy,
+                hMidx=self.hMidx,hMidy=self.hMidy,
+                cMidy=self.cMidy, 
+                dx=self.dx, dy1=self.dy1,dxc=self.dxc,dyc=self.dyc,dy1c=self.dy1c,
+                hnew=self.hnew, unew=self.unew, vnew=self.vnew, 
+                VxMidnew=self.VxMidnew, Vy1Midnew=self.Vy1Midnew, Vy2Midnew=self.Vy2Midnew,
+                dt=self.dt,
+                g=self.g, a=self.a,
+                origin=self.default_origin, domain=self.default_shape
+            )
             
-            #hnew, unew, vnew = self.LaxWendroff(self.h, self.u, self.v)
-
             # --- Update solution applying BCs --- #
-            
-            #print("H")
-            #print(np.mean(self.hnew))
-            #print("U")
-            #print(np.mean(self.unew))
-            #print("V")
-            #print(np.mean(self.vnew))
-            
-            
-            #time.sleep(3)
             
             self.h[:,1:-1] = np.concatenate((self.hnew[-2:-1,:], self.hnew, self.hnew[1:2,:]), axis = 0)
             self.h[:,0]  = self.h[:,1]
@@ -1000,15 +852,14 @@ class Solver:
             self.v[:,0]  = self.v[:,1]
             self.v[:,-1] = self.v[:,-2]
 
-            # -- TO DO: get back to numpy arrays --- #
-            
             # --- Print and save --- #
 
             if (verbose > 0 and (n % verbose == 0)):
                 norm = np.sqrt(self.u*self.u + self.v*self.v)
                 umax = norm.max()
-                print("Time = %6.2f hours (max %i); max(|u|) = %16.16f" \
-                        % (t / 3600.0, int(self.T / 3600.0), umax))
+                wall_time = time.time() - wall_zero
+                print(f"\nIteration {n=}; {wall_time=:2.2f}s, saving = {n%save==0}")
+                print(f"Time = {t/3600:6.2f} hours (max {int(self.T / 3600.0)}); max(|u|) = {umax:6.4f}")
 
             if (save > 0 and (n % save == 0)):
                 tsave = np.concatenate((tsave, np.array([[t]])), axis = 0)
@@ -1019,14 +870,22 @@ class Solver:
                 hsave = np.concatenate((hsave, self.h[1:-1, :, :]), axis = 2)
                 usave = np.concatenate((usave, self.u[1:-1, :, :]), axis = 2)
                 vsave = np.concatenate((vsave, self.v[1:-1, :, :]), axis = 2)
-
-        print(t)
-        print(self.T)
+        
+        # --- Back to numpy format --- #
+        
+        self.phi = np.asarray(self.phi)
+        self.theta = np.asarray(self.theta)
+        self.h = np.asarray(self.h)
+        self.u = np.asarray(self.u)
+        self.v = np.asarray(self.v)
+        hsave = np.asarray(hsave)
+        usave = np.asarray(usave)
+        vsave = np.asarray(vsave)
+        
         # --- Return --- #
 
         if (save > 0):
             return tsave, self.phi[:,:,0], self.theta[:,:,0], hsave, usave, vsave
         else:
-            return self.h, self.u, self.v
+            return self.h[:,:,0], self.u[:,:,0], self.v[:,:,0]
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
