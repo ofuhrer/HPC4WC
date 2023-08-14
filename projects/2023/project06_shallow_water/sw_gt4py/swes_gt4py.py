@@ -888,4 +888,3 @@ class Solver:
             return tsave, self.phi[:,:,0], self.theta[:,:,0], hsave, usave, vsave
         else:
             return self.h[:,:,0], self.u[:,:,0], self.v[:,:,0]
-
