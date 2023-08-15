@@ -271,12 +271,35 @@ def combined_last_step(
 # --- DIFFUSION --- #
 
 # --- TO DO --- #
-@gtscript.function
-def computeLaplacian_new(q):
-    # print('Laplacian not implemented')
-    pass
-# --- TO DO --- #
+def computeLaplacian_new(
+    q: gtscript.Field[float],
+    Ax: gtscript.Field[float],
+    Bx: gtscript.Field[float],
+    Cx: gtscript.Field[float],
     
+    Ay: gtscript.Field[float],
+    By: gtscript.Field[float],
+    Cy: gtscript.Field[float],
+    
+    qlap: gtscript.Field[float]
+    ):
+    
+    from __gtscript__ import PARALLEL, computation, interval
+    
+    with computation(PARALLEL), interval(...):
+        # Compute second order derivative along longitude
+        qxx=Ax[1,0,0]*(Ax[1,0,0]*q[2,2,0]+Bx[1,0,0]*q[3,2,0]+Cx[1,0,0]*q[1,2,0]) + \
+            Bx[1,0,0]*(Ax[2,0,0]*q[3,2,0]+Bx[2,0,0]*q[4,2,0]+Cx[2,0,0]*q[2,2,0]) + \
+            Cx[1,0,0]*(Ax[0,0,0]*q[1,2,0]+Bx[0,0,0]*q[2,2,0]+Cx[0,0,0]*q[0,2,0])
+
+        qyy=Ay[0,1,0]*(Ay[0,1,0]*q[2,2,0]+By[0,1,0]*q[2,3,0]+Cy[0,1,0]*q[2,1,0]) + \
+            By[0,1,0]*(Ay[0,2,0]*q[2,3,0]+By[0,2,0]*q[2,4,0]+Cy[0,2,0]*q[2,2,0]) + \
+            Cy[0,1,0]*(Ay[0,0,0]*q[2,1,0]+By[0,0,0]*q[2,2,0]+Cy[0,0,0]*q[2,0,0])
+
+        qlap=qxx+qyy
+        #Test
+# --- TO DO --- #
+
        
 class Solver:
     """
@@ -428,7 +451,7 @@ class Solver:
         # --- GT4Py settings --- #
         
         # self.num_halo = 1 # not needed
-        self.backend = 'cuda' # 'numpy' # TO DO give options, take as input
+        self.backend = 'numpy' #'cuda' # 'numpy' # TO DO give options, take as input
         
         nx, ny = np.shape(self.h)
         nz = 1
@@ -487,15 +510,18 @@ class Solver:
         self.VxMidnew =  gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_x, dtype=float)
         self.Vy1Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
         self.Vy2Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
-            
-        # diffusion
-        #self.Ax = gt.storage.from_array(self.Ax, self.backend, self.default_origin)
-        #self.Bx = gt.storage.from_array(self.Bx, self.backend, self.default_origin)
-        #self.Cx = gt.storage.from_array(self.Cx, self.backend, self.default_origin)
-        #self.Ay = gt.storage.from_array(self.Ay, self.backend, self.default_origin)
-        #self.By = gt.storage.from_array(self.By, self.backend, self.default_origin)
-        #self.Cy = gt.storage.from_array(self.Cy, self.backend, self.default_origin)
         
+        if self.diffusion:
+            print('Converting Diffusion')
+            # diffusion
+            self.Ax = gt.storage.from_array(np.expand_dims(self.Ax,axis=2), self.backend, self.default_origin)
+            self.Bx = gt.storage.from_array(np.expand_dims(self.Bx,axis=2), self.backend, self.default_origin)
+            self.Cx = gt.storage.from_array(np.expand_dims(self.Cx,axis=2), self.backend, self.default_origin)
+            self.Ay = gt.storage.from_array(np.expand_dims(self.Ay,axis=2), self.backend, self.default_origin)
+            self.By = gt.storage.from_array(np.expand_dims(self.By,axis=2), self.backend, self.default_origin)
+            self.Cy = gt.storage.from_array(np.expand_dims(self.Cy,axis=2), self.backend, self.default_origin)
+            self.qlap =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float) 
+
         # output fields
         self.hnew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)        
         self.unew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
@@ -547,6 +573,9 @@ class Solver:
             rebuild=False,
             **kwargs
         )
+        
+        if self.diffusion:
+            self.laplacian = gtscript.stencil(definition=computeLaplacian_new, backend=self.backend, rebuild=False,  **kwargs)
 
     def setPlanetConstants(self):
         """
@@ -669,50 +698,6 @@ class Solver:
         self.u = u
         self.v = v
     
-    
-    def computeLaplacian(self, q):
-        """
-        Auxiliary methods evaluating the Laplacian of a given quantity
-        in all interior points of the grid. The approximations is given
-        by applying twice a centre finite difference formula along
-        both axis.
-
-        :param	q:	conserved quantity
-
-        :return qlap:	Laplacian of q
-        """
-        
-        # --- TO DO --- #
-        # turn into gt4py function
-        # --- TO DO --- #
-        
-        # Compute second order derivative along longitude
-        qxx = self.Ax[1:-1,:] * (self.Ax[1:-1,:] * q[2:-2,2:-2] + \
-                                 self.Bx[1:-1,:] * q[3:-1,2:-2] + \
-                                 self.Cx[1:-1,:] * q[1:-3,2:-2]) + \
-              self.Bx[1:-1,:] * (self.Ax[2:,:] * q[3:-1,2:-2] + \
-                                   self.Bx[2:,:] * q[4:,2:-2] + \
-                                   self.Cx[2:,:] * q[2:-2,2:-2]) + \
-              self.Cx[1:-1,:] * (self.Ax[:-2,:] * q[1:-3,2:-2] + \
-                                   self.Bx[:-2,:] * q[2:-2,2:-2] + \
-                                   self.Cx[:-2,:] * q[:-4,2:-2])
-
-        # Compute second order derivative along latitude
-        qyy = self.Ay[:,1:-1] * (self.Ay[:,1:-1] * q[2:-2,2:-2] + \
-                                 self.By[:,1:-1] * q[2:-2,3:-1] + \
-                                 self.Cy[:,1:-1] * q[2:-2,1:-3]) + \
-              self.By[:,1:-1] * (self.Ay[:,2:] * q[2:-2,3:-1] + \
-                                   self.By[:,2:] * q[2:-2,4:] + \
-                                   self.Cy[:,2:] * q[2:-2,2:-2]) + \
-              self.Cy[:,1:-1] * (self.Ay[:,:-2] * q[2:-2,1:-3] + \
-                                   self.By[:,:-2] * q[2:-2,2:-2] + \
-                                   self.Cy[:,:-2] * q[2:-2,:-4])
-
-        # Compute Laplacian
-        qlap = qxx + qyy
-
-        return qlap
-
     
     def solve(self, verbose, save):
         """
@@ -838,6 +823,37 @@ class Solver:
                 origin=self.default_origin, domain=self.default_shape
             )
             
+            
+            if (self.diffusion):
+                # Extend fluid height
+                hext = np.concatenate((self.h[-4:-3,:], self.h, self.h[3:4,:]), axis = 0)
+                hext = np.concatenate((hext[:,0:1], hext, hext[:,-1:]), axis = 1)
+                
+                # Compute Laplacian
+                self.laplacian(q=hext, Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, Ay=self.Ay, By=self.By, Cy=self.Cy, qlap=self.qlap, origin=self.default_origin, domain=self.default_shape)
+                # Add the Laplacian
+                self.hnew = self.hnew + self.dt * self.nu * self.qlap
+            
+                # Extend longitudinal velocity
+                uext = np.concatenate((self.u[-4:-3,:], self.u, self.u[3:4,:]), axis = 0)
+                uext = np.concatenate((uext[:,0:1], uext, uext[:,-1:]), axis = 1)
+            
+                # Compute Laplacian
+                self.laplacian(q=uext, Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, Ay=self.Ay, By=self.By, Cy=self.Cy, qlap=self.qlap, origin=self.default_origin, domain=self.default_shape)
+                # Add the Laplacian
+                self.unew = self.unew + self.dt * self.nu * self.qlap
+
+                # Extend fluid height
+                vext = np.concatenate((self.v[-4:-3,:], self.v, self.v[3:4,:]), axis = 0)
+                vext = np.concatenate((vext[:,0:1], vext, vext[:,-1:]), axis = 1)
+
+                # Compute Laplacian
+                self.laplacian(q=vext, Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, Ay=self.Ay, By=self.By, Cy=self.Cy, qlap=self.qlap, origin=self.default_origin, domain=self.default_shape)
+                # Add the Laplacian
+                self.vnew = self.vnew + self.dt * self.nu * self.qlap
+            
+            
+            
             # --- Update solution applying BCs --- #
             
             self.h[:,1:-1] = np.concatenate((self.hnew[-2:-1,:], self.hnew, self.hnew[1:2,:]), axis = 0)
@@ -877,18 +893,6 @@ class Solver:
         self.theta = np.asarray(self.theta)
         self.h = np.asarray(self.h)
         self.u = np.asarray(self.u)
-        self.v = np.asarray(self.v)
-        hsave = np.asarray(hsave)
-        usave = np.asarray(usave)
-        vsave = np.asarray(vsave)
-        
-        # --- Return --- #
-
-        if (save > 0):
-            return tsave, self.phi[:,:,0], self.theta[:,:,0], hsave, usave, vsave
-        else:
-            return self.h[:,:,0], self.u[:,:,0], self.v[:,:,0]
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        elf.u)
         self.v = np.asarray(self.v)
         hsave = np.asarray(hsave)
         usave = np.asarray(usave)
