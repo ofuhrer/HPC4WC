@@ -271,7 +271,7 @@ def combined_last_step(
 # --- DIFFUSION --- #
 
 # --- TO DO --- #
-def compute_Lapacian(
+def compute_Lapacian_old(
     q: gtscript.Field[float],
     Ax: gtscript.Field[float],
     Bx: gtscript.Field[float],
@@ -297,6 +297,38 @@ def compute_Lapacian(
             Cy[0,1,0]*(Ay[0,0,0]*q[2,1,0]+By[0,0,0]*q[2,2,0]+Cy[0,0,0]*q[2,0,0])
 
         qlap=qxx+qyy
+        
+
+def compute_Lapacian(
+    q: gtscript.Field[float],
+    Ax: gtscript.Field[float],
+    Bx: gtscript.Field[float],
+    Cx: gtscript.Field[float],
+    
+    Ay: gtscript.Field[float],
+    By: gtscript.Field[float],
+    Cy: gtscript.Field[float],
+    
+    qtemp: gtscript.Field[float],
+    qnew: gtscript.Field[float],
+    *,
+    dt: float,
+    nu: float,
+    ):
+    
+    from __gtscript__ import PARALLEL, computation, interval
+    
+    with computation(PARALLEL), interval(...):
+        # Compute second order derivative along longitude
+        qxx=Ax[1,0,0]*(Ax[1,0,0]*q[2,2,0]+Bx[1,0,0]*q[3,2,0]+Cx[1,0,0]*q[1,2,0]) + \
+            Bx[1,0,0]*(Ax[2,0,0]*q[3,2,0]+Bx[2,0,0]*q[4,2,0]+Cx[2,0,0]*q[2,2,0]) + \
+            Cx[1,0,0]*(Ax[0,0,0]*q[1,2,0]+Bx[0,0,0]*q[2,2,0]+Cx[0,0,0]*q[0,2,0])
+
+        qyy=Ay[0,1,0]*(Ay[0,1,0]*q[2,2,0]+By[0,1,0]*q[2,3,0]+Cy[0,1,0]*q[2,1,0]) + \
+            By[0,1,0]*(Ay[0,2,0]*q[2,3,0]+By[0,2,0]*q[2,4,0]+Cy[0,2,0]*q[2,2,0]) + \
+            Cy[0,1,0]*(Ay[0,0,0]*q[2,1,0]+By[0,0,0]*q[2,2,0]+Cy[0,0,0]*q[2,0,0])
+
+        qnew=qtemp+dt*nu*(qxx+qyy)
 # --- TO DO --- #
 
        
@@ -528,6 +560,10 @@ class Solver:
             
             
         # output fields
+        self.htemp=  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)        
+        self.utemp =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        self.vtemp =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
+        
         self.hnew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)        
         self.unew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
         self.vnew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
@@ -811,6 +847,7 @@ class Solver:
                 origin=self.default_origin, domain=self.shape_staggered_y
             )
             
+            
             self.combined(
                 h=self.h,hu=self.hu,hv=self.hv,
                 hs=self.hs, 
@@ -821,38 +858,37 @@ class Solver:
                 hMidx=self.hMidx,hMidy=self.hMidy,
                 cMidy=self.cMidy, 
                 dx=self.dx, dy1=self.dy1,dxc=self.dxc,dyc=self.dyc,dy1c=self.dy1c,
-                hnew=self.hnew, unew=self.unew, vnew=self.vnew, 
+                hnew=self.htemp, unew=self.utemp, vnew=self.vtemp, 
                 VxMidnew=self.VxMidnew, Vy1Midnew=self.Vy1Midnew, Vy2Midnew=self.Vy2Midnew,
                 dt=self.dt,
                 g=self.g, a=self.a,
                 origin=self.default_origin, domain=self.default_shape
             )
             
-            
+
             if (self.diffusion):
                 # Extend fluid height
                 self.hext = np.concatenate((self.h[-4:-3,:], self.h, self.h[3:4,:]), axis = 0)
                 self.hext = np.concatenate((self.hext[:,0:1,:], self.hext, self.hext[:,-1:,:]), axis = 1)
                 
                 self.hext = gt.storage.from_array(self.hext, self.backend, self.default_origin)
-
+                
                 # Compute Laplacian
                 self.laplacian(
                     q=self.hext, 
                     Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, 
                     Ay=self.Ay, By=self.By, Cy=self.Cy, 
-                    qlap=self.qlap, 
+                    qtemp=self.htemp, qnew=self.hnew, dt=self.dt, nu=self.nu,
                     origin=self.default_origin,
                     domain=self.default_shape
                 )
 
                 # Add the Laplacian
-                self.hnew = self.hnew + self.dt * self.nu * self.qlap
-            
+                #self.hnew = self.hnew[:,:,:] + self.dt * self.nu * self.qlap[:,:,:]
+                
                 # Extend longitudinal velocity
                 self.uext = np.concatenate((self.u[-4:-3,:], self.u, self.u[3:4,:]), axis = 0)
                 self.uext = np.concatenate((self.uext[:,0:1,:], self.uext, self.uext[:,-1:,:]), axis = 1)
-                print('np.mean(self.uext)',np.mean(self.uext))
                 
                 self.uext = gt.storage.from_array(self.uext, self.backend, self.default_origin)
             
@@ -861,13 +897,12 @@ class Solver:
                     q=self.uext, 
                     Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, 
                     Ay=self.Ay, By=self.By, Cy=self.Cy, 
-                    qlap=self.qlap,
+                    qtemp=self.utemp, qnew=self.unew, dt=self.dt, nu=self.nu,
                     origin=self.default_origin,
                     domain=self.default_shape
                 )
                 # Add the Laplacian
-                print('np.mean(self.qlap), np.mean(self.unew)',np.mean(self.qlap), np.mean(self.unew))
-                self.unew = self.unew + self.dt * self.nu * self.qlap
+                #self.unew = self.unew[:,:,:] + self.dt * self.nu * self.qlap[:,:,:]
 
                 # Extend fluid height
                 self.vext = np.concatenate((self.v[-4:-3,:], self.v, self.v[3:4,:]), axis = 0)
@@ -880,22 +915,22 @@ class Solver:
                     q=self.vext, 
                     Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, 
                     Ay=self.Ay, By=self.By, Cy=self.Cy, 
-                    qlap=self.qlap, 
+                    qtemp=self.vtemp, qnew=self.vnew, dt=self.dt, nu=self.nu,
                     origin=self.default_origin, 
                     domain=self.default_shape
                 )
                 # Add the Laplacian
-                self.vnew = self.vnew + self.dt * self.nu * self.qlap
+                #self.vnew = self.vnew[:,:,:]
             
-                print(np.mean(self.hnew), np.mean(self.unew))
-            
+            else:
+                self.hnew=self.htemp
+                self.unew=self.utemp
+                self.vnew=self.vtemp
             
             # --- Update solution applying BCs --- #
-            
             self.h[:,1:-1] = np.concatenate((self.hnew[-2:-1,:], self.hnew, self.hnew[1:2,:]), axis = 0)
             self.h[:,0]  = self.h[:,1]
             self.h[:,-1] = self.h[:,-2]
-
             self.u[:,1:-1] = np.concatenate((self.unew[-2:-1,:], self.unew, self.unew[1:2,:]), axis = 0)
             self.u[:,0]  = self.u[:,1]
             self.u[:,-1] = self.u[:,-2]
