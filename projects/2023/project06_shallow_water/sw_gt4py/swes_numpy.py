@@ -572,10 +572,12 @@ class Solver:
                 usave = np.concatenate((usave, self.u[1:-1, :, np.newaxis]), axis = 2)
                 vsave = np.concatenate((vsave, self.v[1:-1, :, np.newaxis]), axis = 2)
 
+        wall_time = time.time() - wall_zero
+                
         # --- Return --- #
 
         if (save > 0):
-            return tsave, self.phi, self.theta, hsave, usave, vsave
+            return wall_time, tsave, self.phi, self.theta, hsave, usave, vsave
         else:
-            return self.h, self.u, self.v
+            return wall_time, self.h, self.u, self.v
 
