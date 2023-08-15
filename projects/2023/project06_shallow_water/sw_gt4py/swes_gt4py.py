@@ -271,7 +271,7 @@ def combined_last_step(
 # --- DIFFUSION --- #
 
 # --- TO DO --- #
-def computeLaplacian_new(
+def compute_Lapacian(
     q: gtscript.Field[float],
     Ax: gtscript.Field[float],
     Bx: gtscript.Field[float],
@@ -297,7 +297,6 @@ def computeLaplacian_new(
             Cy[0,1,0]*(Ay[0,0,0]*q[2,1,0]+By[0,0,0]*q[2,2,0]+Cy[0,0,0]*q[2,0,0])
 
         qlap=qxx+qyy
-        #Test
 # --- TO DO --- #
 
        
@@ -318,7 +317,7 @@ class Solver:
     """
 
 
-    def __init__(self, T, M, N, IC, CFL, diffusion):
+    def __init__(self, T, M, N, IC, CFL, diffusion, backend='numpy'):
         """
         Constructor.
 
@@ -451,13 +450,14 @@ class Solver:
         # --- GT4Py settings --- #
         
         # self.num_halo = 1 # not needed
-        self.backend = 'numpy' #'cuda' # 'numpy' # TO DO give options, take as input
+        self.backend = backend # default: 'numpy'
         
         nx, ny = np.shape(self.h)
         nz = 1
         
         self.shape             = (  nx,   ny, nz) # full domain size w/ halo
         self.default_shape     = (nx-2, ny-2, nz) # physical domain size w/o halo
+        self.extended_shape    = (nx+2, ny+2, nz) # full domain size w/ two halos
         self.shape_staggered_x = (nx-1,   ny, nz) # full but staggered in x
         self.shape_staggered_y = (  nx, ny-1, nz) # full but staggered in y
 
@@ -512,7 +512,7 @@ class Solver:
         self.Vy2Midnew = gt.storage.empty(self.backend, self.default_origin, self.shape_staggered_y, dtype=float)
         
         if self.diffusion:
-            print('Converting Diffusion')
+            # print('Converting Diffusion')
             # diffusion
             self.Ax = gt.storage.from_array(np.expand_dims(self.Ax,axis=2), self.backend, self.default_origin)
             self.Bx = gt.storage.from_array(np.expand_dims(self.Bx,axis=2), self.backend, self.default_origin)
@@ -521,7 +521,12 @@ class Solver:
             self.By = gt.storage.from_array(np.expand_dims(self.By,axis=2), self.backend, self.default_origin)
             self.Cy = gt.storage.from_array(np.expand_dims(self.Cy,axis=2), self.backend, self.default_origin)
             self.qlap =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float) 
-
+            
+            self.hext =  gt.storage.empty(self.backend, self.default_origin, self.extended_shape, dtype=float) 
+            self.uext =  gt.storage.empty(self.backend, self.default_origin, self.extended_shape, dtype=float) 
+            self.vext =  gt.storage.empty(self.backend, self.default_origin, self.extended_shape, dtype=float) 
+            
+            
         # output fields
         self.hnew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)        
         self.unew =  gt.storage.empty(self.backend, self.default_origin, self.default_shape, dtype=float)
@@ -575,7 +580,7 @@ class Solver:
         )
         
         if self.diffusion:
-            self.laplacian = gtscript.stencil(definition=computeLaplacian_new, backend=self.backend, rebuild=False,  **kwargs)
+            self.laplacian = gtscript.stencil(definition=compute_Lapacian, backend=self.backend, rebuild=False,  **kwargs)
 
     def setPlanetConstants(self):
         """
@@ -826,32 +831,63 @@ class Solver:
             
             if (self.diffusion):
                 # Extend fluid height
-                hext = np.concatenate((self.h[-4:-3,:], self.h, self.h[3:4,:]), axis = 0)
-                hext = np.concatenate((hext[:,0:1], hext, hext[:,-1:]), axis = 1)
+                self.hext = np.concatenate((self.h[-4:-3,:], self.h, self.h[3:4,:]), axis = 0)
+                self.hext = np.concatenate((self.hext[:,0:1,:], self.hext, self.hext[:,-1:,:]), axis = 1)
                 
+                self.hext = gt.storage.from_array(self.hext, self.backend, self.default_origin)
+
                 # Compute Laplacian
-                self.laplacian(q=hext, Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, Ay=self.Ay, By=self.By, Cy=self.Cy, qlap=self.qlap, origin=self.default_origin, domain=self.default_shape)
+                self.laplacian(
+                    q=self.hext, 
+                    Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, 
+                    Ay=self.Ay, By=self.By, Cy=self.Cy, 
+                    qlap=self.qlap, 
+                    origin=self.default_origin,
+                    domain=self.default_shape
+                )
+
                 # Add the Laplacian
                 self.hnew = self.hnew + self.dt * self.nu * self.qlap
             
                 # Extend longitudinal velocity
-                uext = np.concatenate((self.u[-4:-3,:], self.u, self.u[3:4,:]), axis = 0)
-                uext = np.concatenate((uext[:,0:1], uext, uext[:,-1:]), axis = 1)
+                self.uext = np.concatenate((self.u[-4:-3,:], self.u, self.u[3:4,:]), axis = 0)
+                self.uext = np.concatenate((self.uext[:,0:1,:], self.uext, self.uext[:,-1:,:]), axis = 1)
+                print('np.mean(self.uext)',np.mean(self.uext))
+                
+                self.uext = gt.storage.from_array(self.uext, self.backend, self.default_origin)
             
                 # Compute Laplacian
-                self.laplacian(q=uext, Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, Ay=self.Ay, By=self.By, Cy=self.Cy, qlap=self.qlap, origin=self.default_origin, domain=self.default_shape)
+                self.laplacian(
+                    q=self.uext, 
+                    Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, 
+                    Ay=self.Ay, By=self.By, Cy=self.Cy, 
+                    qlap=self.qlap,
+                    origin=self.default_origin,
+                    domain=self.default_shape
+                )
                 # Add the Laplacian
+                print('np.mean(self.qlap), np.mean(self.unew)',np.mean(self.qlap), np.mean(self.unew))
                 self.unew = self.unew + self.dt * self.nu * self.qlap
 
                 # Extend fluid height
-                vext = np.concatenate((self.v[-4:-3,:], self.v, self.v[3:4,:]), axis = 0)
-                vext = np.concatenate((vext[:,0:1], vext, vext[:,-1:]), axis = 1)
+                self.vext = np.concatenate((self.v[-4:-3,:], self.v, self.v[3:4,:]), axis = 0)
+                self.vext = np.concatenate((self.vext[:,0:1,:], self.vext, self.vext[:,-1:,:]), axis = 1)
+                
+                self.vext = gt.storage.from_array(self.vext, self.backend, self.default_origin)
 
                 # Compute Laplacian
-                self.laplacian(q=vext, Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, Ay=self.Ay, By=self.By, Cy=self.Cy, qlap=self.qlap, origin=self.default_origin, domain=self.default_shape)
+                self.laplacian(
+                    q=self.vext, 
+                    Ax=self.Ax, Bx=self.Bx, Cx=self.Cx, 
+                    Ay=self.Ay, By=self.By, Cy=self.Cy, 
+                    qlap=self.qlap, 
+                    origin=self.default_origin, 
+                    domain=self.default_shape
+                )
                 # Add the Laplacian
                 self.vnew = self.vnew + self.dt * self.nu * self.qlap
             
+                print(np.mean(self.hnew), np.mean(self.unew))
             
             
             # --- Update solution applying BCs --- #
@@ -879,13 +915,12 @@ class Solver:
 
             if (save > 0 and (n % save == 0)):
                 tsave = np.concatenate((tsave, np.array([[t]])), axis = 0)
-                #hsave = np.concatenate((hsave, self.h[1:-1, :, np.newaxis]), axis = 2)
-                #usave = np.concatenate((usave, self.u[1:-1, :, np.newaxis]), axis = 2)
-                #vsave = np.concatenate((vsave, self.v[1:-1, :, np.newaxis]), axis = 2)
                 
                 hsave = np.concatenate((hsave, self.h[1:-1, :, :]), axis = 2)
                 usave = np.concatenate((usave, self.u[1:-1, :, :]), axis = 2)
                 vsave = np.concatenate((vsave, self.v[1:-1, :, :]), axis = 2)
+        
+        wall_time = time.time() - wall_zero
         
         # --- Back to numpy format --- #
         
@@ -901,7 +936,6 @@ class Solver:
         # --- Return --- #
 
         if (save > 0):
-            return tsave, self.phi[:,:,0], self.theta[:,:,0], hsave, usave, vsave
+            return wall_time, tsave, self.phi[:,:,0], self.theta[:,:,0], hsave, usave, vsave
         else:
-            return self.h[:,:,0], self.u[:,:,0], self.v[:,:,0]
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+            return wall_time, self.h[:,:,0], self.u[:,:,0], self.v[:,:,0]
