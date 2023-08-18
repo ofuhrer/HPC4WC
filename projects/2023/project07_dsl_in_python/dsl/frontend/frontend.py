@@ -37,6 +37,8 @@ class LanguageParser(ast.NodeVisitor):
     def visit_Subscript(self, node: ast.Subscript) -> ir.FieldDeclaration:
         name = self.visit(node.value)
         size = [self.visit(_) for _ in node.slice.elts]
+        self.visit(node.value)
+        [self.visit(_) for _ in node.slice.elts]
 
         field_declaration = ir.FieldDeclaration(name, size)
         return field_declaration
@@ -87,6 +89,8 @@ class LanguageParser(ast.NodeVisitor):
             return BinaryOp(left_expr, right_expr, '+')
         elif isinstance(node.op, ast.Sub):
             return BinaryOp(left_expr, right_expr, '-')
+        elif isinstance(node.op, ast.Mult):
+            return BinaryOp(left_expr, right_expr, '*')
 
     def visit_UnaryOp(self, node: ast.UnaryOp) -> ir.UnaryOp:
         operand = self.visit(node.operand)
