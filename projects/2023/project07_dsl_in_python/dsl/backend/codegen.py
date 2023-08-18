@@ -2,94 +2,139 @@ import os
 
 import dsl.ir.ir as ir
 from dsl.ir.visitor import IRNodeVisitor
-#hiiiii
+
+
+# hiiiii
 
 class CodeGen(IRNodeVisitor):
     def __init__(self):
+        self.indention = 0
         self.code = "import numpy as np\n\n"
         self.code += "def generated_function(in_field, out_field, num_halo, nx, ny, nz, num_iter, tmp_field, alpha):"
+        self.indent()
+
+    def indent(self):
+        self.code += "\n"
+        self.indention += 1
+
+    def dedent(self):
+        self.code += "\n"
+        self.indention -= 1
+
+    def get_indent(self):
+        idt = "    "
+        return self.indention * idt
+
+    def set_indent(self, to):
+        self.code += "\n"
+        self.indention = to
 
     def apply(self, ir: ir.IR) -> str:
         self.visit(ir)
 
     def visit_FieldAccessExpr(self, node: ir.FieldAccessExpr) -> str:
-        return node.name
+        self.code += node.name
 
     def visit_LiteralExpr(self, node: ir.LiteralExpr) -> str:
-        return node.value
+        self.code += node.value
 
     def visit_AssignmentStmt(self, node: ir.AssignmentStmt) -> str:
-        code = f"""
-                    {self.visit(node.left)} = {self.visit(node.right)}"""
-        return code
+        self.code += self.get_indent()
+        self.visit(node.left)
+        self.code += " = "
+        self.visit(node.right)
 
-    def visit_Iterations(self, node: ir.Iterations) -> str:
-        code = f"""
-    for n in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):"""
+    def visit_Vertical(self, node: ir.Vertical):
+        self.generate_loop_bounds(node, "k")
         for stmt in node.body:
-            code += self.visit(stmt)
-        return code
-
-    def visit_Vertical(self, node: ir.Vertical) -> str:
-        code = f"""
-        
-        for k in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):"""
-        for stmt in node.body:
-            code += self.visit(stmt)
-        return code
+            self.visit(stmt)
+        self.dedent()
 
     def visit_Horizontal(self, node: ir.Horizontal) -> str:
-        code = f"""
-            for j in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):
-                for i in range({self.visit(node.extent[1].start)},{self.visit(node.extent[1].stop)}):
-"""
-        for stmt in node.body:
-            code += f"                {self.visit(stmt)}\n"
+        outer_indention = self.indention
 
-        return code
+        self.generate_loop_bounds(node, "j")
+        self.generate_loop_bounds(node, "i")
+
+        for stmt in node.body:
+            self.visit(stmt)
+            self.code += "\n"
+
+        self.set_indent(outer_indention)
+
+    def visit_Iterations(self, node: ir.Iterations) -> str:
+        self.generate_loop_bounds(node, "n")
+        for stmt in node.body:
+            self.visit(stmt)
+            self.code += "\n"
+        self.dedent()
 
     def visit_Function(self, node: ir.Function) -> str:
         if node.name == "lap":
-            code = f"""(
-                                -4.0 * {self.visit(node.args[0])}[i,j,k]
-                                + {self.visit(node.args[0])}[i-1,j,k] + {self.visit(node.args[0])}[i+1,j,k]
-                                + {self.visit(node.args[0])}[i,j-1,k] + {self.visit(node.args[0])}[i,j+1,k]
-                                )
-                    """
+            self.code += f"-4.0 *"
+            self.visit(node.args[0])
+            self.code += "[i, j, k] + "
+            self.visit(node.args[0])
+            self.code += "[i-1, j, k] + "
+            self.visit(node.args[0])
+            self.code += "[i+1, j, k] + "
+            self.visit(node.args[0])
+            self.code += "[i, j-1, k] + "
+            self.visit(node.args[0])
+            self.code += "[i, j+1, k]"
+
         elif node.name == "update_halo_bottom_edge":
-            code = f"""{self.visit(node.args[0])}[i,j+(ny-2*num_halo),k]
-                """
+            self.code += f"{self.visit(node.args[0])}[i, j+(ny - 2 * num_halo), k]"
 
         else:
             print("this is an unknown function!")
-            code = f"""#unknown function"""
-
-        return code
+            self.code += "#unknown function"
 
     def visit_IR(self, node: ir.IR, filepath: os.PathLike = os.path.join("dsl", "generated", "main.py")) -> str:
         for stmt in node.body:
-            self.code += self.visit(stmt) + "\n"
+            self.visit(stmt)
+            self.code += "\n"
 
         with open(filepath, "w") as f:
             f.write(self.code)
 
-        return
-
-    def visit_FieldDeclaration(self, node: ir.FieldDeclaration) -> str:
+    def visit_FieldAccess(self, node: ir.FieldDeclaration) -> str:
         # das isch nüm wük e field declaration (eh trash ksi vorher) sondern epis wo mer chan bruche falls mers "+[i,j,k]"
         # bim assignment statment wegnehmed. En asatz zum da flexibler si und zb sege field[1,0,2]=5. Field[1:2,-3,j+1] gaht aber ned.
         # Mir bruched das im Moment ned wil mer update halo mit With glöst hend.
-        code = f"""{self.visit(node.name)}[{self.visit(node.size[0])},{self.visit(node.size[1])},{self.visit(node.size[2])}]"""
-        return code
+        self.visit(node.name)
+        self.code += "["
+        for n in range(0, len(node.size)):
+            self.visit(node.size[n])
+            if n != len(node.size) - 1:
+                self.code += ","
+        self.code += "]"
 
     def visit_BinaryOp(self, node: ir.BinaryOp) -> str:
-        return self.visit(node.left) + ' ' + node.operator + ' ' + self.visit(node.right)
+        self.visit(node.left)
+        self.code += node.operator
+        self.visit(node.right)
 
     def visit_UnaryOp(self, node: ir.UnaryOp) -> str:
-        return node.operator + ' ' + self.visit(node.operand)
+        self.code += node.operator
+        self.visit(node.operand)
 
     def visit_SliceExpr(self, node: ir.SliceExpr) -> str:
-        start = self.visit(node.start) if node.start else ''
-        stop = self.visit(node.stop) if node.stop else ''
-        code = f"""{start}:{stop}"""
-        return code
+        if node.start:
+            self.visit(node.start)
+        else:
+            self.code += ""
+        self.code += ":"
+        if node.stop:
+            self.visit(node.stop)
+        else:
+            self.code += ""
+
+    def generate_loop_bounds(self, node, variable):
+        self.code += self.get_indent()
+        self.code += f"for {variable} in range("
+        self.visit(node.extent[0].start)
+        self.code += ","
+        self.visit(node.extent[0].stop)
+        self.code += "):"
+        self.indent()
