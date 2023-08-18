@@ -54,6 +54,11 @@ class Vertical(Node):
         self.body: List[Stmt] = []
         self.extent = extent
 
+class Iterations(Node):
+    def __init__(self, extent: List):
+        self.body: List[Stmt] = []
+        self.extent = extent
+
 class BinaryOp(Expr):
     """Any binary operator expression"""
     def __init__(self, left: Expr, right: Expr, operator: str):

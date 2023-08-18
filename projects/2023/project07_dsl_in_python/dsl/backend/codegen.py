@@ -19,19 +19,26 @@ class CodeGen(IRNodeVisitor):
         return node.value
 
     def visit_AssignmentStmt(self, node: ir.AssignmentStmt) -> str:
-        return "    " + self.visit(node.left) + " = " + self.visit(node.right)
+        return "        " + self.visit(node.left) + " = " + self.visit(node.right)
+
+    def visit_Iterations(self, node: ir.Iterations) -> str:
+        code = f"""
+    for n in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):"""
+        for stmt in node.body:
+            code += self.visit(stmt)
+        return code
 
     def visit_Vertical(self, node: ir.Vertical) -> str:
         code = f"""
-    for k in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):"""
+        for k in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):"""
         for stmt in node.body:
             code += self.visit(stmt)
         return code
 
     def visit_Horizontal(self, node: ir.Horizontal) -> str:
         code = f"""
-        for i in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):
-            for j in range({self.visit(node.extent[1].start)},{self.visit(node.extent[1].stop)}):
+            for i in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):
+                for j in range({self.visit(node.extent[1].start)},{self.visit(node.extent[1].stop)}):
 """
         for stmt in node.body:
             code += f"                {self.visit(stmt)}\n"

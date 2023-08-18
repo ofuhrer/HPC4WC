@@ -2,7 +2,7 @@ import ast
 from typing import List
 
 import dsl.ir.ir as ir
-from dsl.ir.ir import IR, Horizontal, Vertical, BinaryOp, SliceExpr, UnaryOp
+from dsl.ir.ir import IR, Horizontal, Vertical, BinaryOp, SliceExpr, UnaryOp, Iterations
 
 
 class LanguageParser(ast.NodeVisitor):
@@ -46,6 +46,27 @@ class LanguageParser(ast.NodeVisitor):
     def visit_With(self, node: ast.With) -> ir.Node:
         expr = node.items[0].context_expr
         if isinstance(expr, ast.Subscript):
+            if expr.value.id == "Iterations":
+                self._parent.append(self._scope)
+
+                assert len(node.items) == 1
+                extent = []
+                extent.append(self.visit(expr.slice))
+
+                # Create the Iterations node
+                self._scope.body.append(Iterations(extent))
+
+                # Set the scope to the body of the new Vertical node
+                self._scope = self._scope.body[-1]
+
+                for stmt in node.body:
+                    self.visit(stmt)
+                self._scope = self._parent.pop()
+
+
+
+
+
             if expr.value.id == "Vertical":
                 self._parent.append(self._scope)
 
