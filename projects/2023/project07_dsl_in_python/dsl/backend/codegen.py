@@ -41,7 +41,7 @@ class CodeGen(IRNodeVisitor):
     def visit_Function(self, node: ir.Function) -> str:
         if node.name == "lap":
             code = f"""(
-                                -4.0 * + {self.visit(node.args[0])}[i,j,k]
+                                -4.0 * {self.visit(node.args[0])}[i,j,k]
                                 + {self.visit(node.args[0])}[i-1,j,k] + {self.visit(node.args[0])}[i+1,j,k]
                                 + {self.visit(node.args[0])}[i,j-1,k] + {self.visit(node.args[0])}[i,j+1,k]
                                 )
