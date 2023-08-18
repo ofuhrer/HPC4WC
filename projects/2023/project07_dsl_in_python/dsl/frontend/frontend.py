@@ -15,7 +15,6 @@ class LanguageParser(ast.NodeVisitor):
         for stmt in self._IR.body:
             print(stmt)
 
-
     def visit_Name(self, node: ast.Name) -> ir.FieldAccessExpr:
         symbol = node.id
         return ir.FieldAccessExpr(name=symbol)
@@ -40,7 +39,6 @@ class LanguageParser(ast.NodeVisitor):
         size = [self.visit(_) for _ in node.slice.elts]
 
         field_declaration = ir.FieldDeclaration(name, size)
-        #self._scope.body.append(field_declaration)
         return field_declaration
 
     def visit_With(self, node: ast.With) -> ir.Node:
@@ -81,9 +79,6 @@ class LanguageParser(ast.NodeVisitor):
                     self.visit(stmt)
                 self._scope = self._parent.pop()
 
-    #def visit_Slice(self, node: ast.Slice) -> List[int]:
-    #    return [self.visit(node.lower), self.visit(node.upper)]
-
     def visit_BinOp(self, node: ast.BinOp) -> ir.BinaryOp:
         left_expr = self.visit(node.left)
         right_expr = self.visit(node.right)
@@ -93,12 +88,9 @@ class LanguageParser(ast.NodeVisitor):
         elif isinstance(node.op, ast.Sub):
             return BinaryOp(left_expr, right_expr, '-')
 
-
     def visit_UnaryOp(self, node: ast.UnaryOp) -> ir.UnaryOp:
         operand = self.visit(node.operand)
         return UnaryOp(operand, '-')
-
-
 
     def visit_Slice(self, node: ast.Slice) -> ir.SliceExpr:
         start = self.visit(node.lower) if node.lower else None
