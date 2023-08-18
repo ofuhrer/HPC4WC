@@ -1,13 +1,29 @@
 import time
 import numpy as np
 from dsl.generated.main import generated_function
-from dsl.baseline.baseline_functions import mean_with_numpy, mean_without_numpy
+#from dsl.baseline.baseline_functions import mean_with_numpy, mean_without_numpy
 
 
 def main(kinds=None):
     # Input fields
-    field1 = np.zeros([10, 10, 20])
-    field2 = np.zeros([10, 10, 20])
+    nx = 10
+    ny = 10
+    nz = 10
+    num_iter = 10
+    num_halo = 2
+    alpha = 1.0 / 32.0
+
+    in_field = np.zeros((nx + 2 * num_halo, ny + 2 * num_halo,nz))
+
+    in_field[
+    num_halo + nx // 4: num_halo + 3 * nx // 4,
+    num_halo + ny // 4: num_halo + 3 * ny // 4,
+    nz // 4: 3 * nz // 4
+    ] = 1.0
+
+    out_field = np.copy(in_field)
+    tmp_field = np.empty_like(in_field)
+
 
     # Timers
     start_times = {}
@@ -15,7 +31,7 @@ def main(kinds=None):
 
     for kind in kinds:
         start_times[kind] = time.time()
-        run_function(kind, field1, field2)
+        run_function(kind, in_field, out_field, num_halo, nx, ny, nz, num_iter,tmp_field,alpha)
         exec_times[kind] = time.time() - start_times[kind]
 
     # Output diagnostics
@@ -24,12 +40,12 @@ def main(kinds=None):
     # TODO: Verify results
 
 
-def run_function(kind, field1, field2):
+def run_function(kind, in_field, out_field, num_halo, nx, ny, nz, num_iter,tmp_field,alpha):
     if kind == "base":
         # TODO: Baseline implementation
-        return mean_without_numpy(field1)
+        pass
     if kind == "gen":
-        return generated_function(field1, field2)
+        return generated_function(in_field, out_field, num_halo, nx, ny, nz, num_iter,tmp_field,alpha)
 
 
 def diagnostics(times):

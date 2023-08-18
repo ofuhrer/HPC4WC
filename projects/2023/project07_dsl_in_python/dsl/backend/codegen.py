@@ -7,7 +7,7 @@ from dsl.ir.visitor import IRNodeVisitor
 class CodeGen(IRNodeVisitor):
     def __init__(self):
         self.code = "import numpy as np\n\n"
-        self.code += "def generated_function(field_1, field_2):"
+        self.code += "def generated_function(in_field, out_field, num_halo, nx, ny, nz, num_iter, tmp_field, alpha):"
 
     def apply(self, ir: ir.IR) -> str:
         self.visit(ir)
@@ -19,7 +19,9 @@ class CodeGen(IRNodeVisitor):
         return node.value
 
     def visit_AssignmentStmt(self, node: ir.AssignmentStmt) -> str:
-        return "        " + self.visit(node.left) + " = " + self.visit(node.right)
+        code = f"""
+                    {self.visit(node.left)} = {self.visit(node.right)}"""
+        return code
 
     def visit_Iterations(self, node: ir.Iterations) -> str:
         code = f"""
@@ -30,6 +32,7 @@ class CodeGen(IRNodeVisitor):
 
     def visit_Vertical(self, node: ir.Vertical) -> str:
         code = f"""
+        
         for k in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):"""
         for stmt in node.body:
             code += self.visit(stmt)
@@ -37,8 +40,8 @@ class CodeGen(IRNodeVisitor):
 
     def visit_Horizontal(self, node: ir.Horizontal) -> str:
         code = f"""
-            for i in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):
-                for j in range({self.visit(node.extent[1].start)},{self.visit(node.extent[1].stop)}):
+            for j in range({self.visit(node.extent[0].start)},{self.visit(node.extent[0].stop)}):
+                for i in range({self.visit(node.extent[1].start)},{self.visit(node.extent[1].stop)}):
 """
         for stmt in node.body:
             code += f"                {self.visit(stmt)}\n"
