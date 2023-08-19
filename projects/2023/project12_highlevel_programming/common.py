@@ -7,6 +7,8 @@ def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np
     This function initializes the 3D fields with some patterns to help validating
     the stencil update functions.
     """
+
+    assert num_halo < NX // 2 and num_halo < NY // 2
     
     # Initialize 3D fields
     rng = np.random.default_rng()
