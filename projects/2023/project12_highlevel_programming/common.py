@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+# import gt4py as gt
 
 def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np.float64):
     """
@@ -28,7 +28,7 @@ def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np
         in_field[:, NY//2 - NY//4 : NY//2 + NY//4, NX//2 - NX//4 : NX//2 + NX//4] = 1
     else:
         raise ValueError("Wrong mode")
-    
+
     out_field = np.copy(in_field)
     
     return in_field, out_field
@@ -38,3 +38,19 @@ def plot_field(field, k=0):
     plt.figure(figsize=(7, 5), dpi=100)
     plt.imshow(field[k, :, :], origin='lower', vmin=-1, vmax=1);
     plt.colorbar();
+
+def array_to_gt_storage(in_field, out_field, dtype=np.float64, backend="numpy", index=(0, 0, 0)):
+    # I still need time to figure out the usage of dimensions
+    # attributes, so now a transpose is used
+    in_field = gt.storage.from_array(
+        in_field.swapaxes(0,2),
+        dtype=dtype,
+        backend=backend,
+        aligned_index=index
+    )
+    out_field = gt.storage.from_array(
+        out_field.swapaxes(0,2),
+        dtype=dtype,
+        backend=backend,
+        aligned_index=index
+    )
