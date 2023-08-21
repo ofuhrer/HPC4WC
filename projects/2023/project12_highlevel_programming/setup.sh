@@ -11,6 +11,7 @@ fi
 if [ -d HPC4WC_project12_venv ] ; then
     echo "HPC4WC_project12_venv already exists! Deleting before recreating venv."
     rm -r HPC4WC_project12_venv
+    rm -r .local/share/jupyter/kernels/HPC4WC_project12_kernel/
 fi
 
 module load daint-gpu

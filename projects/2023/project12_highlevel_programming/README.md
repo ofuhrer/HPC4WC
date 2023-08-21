@@ -1,4 +1,4 @@
-# Project 12: 
+# Project 12: High-level programming paradigm comparison
 
 ## Setup environment
 
@@ -7,7 +7,7 @@
 3. Execute the following commands:
 ```bash
 ssh daint.cscs.ch
-git clone -b 2023-project-12 https://github.com/iyanmv/HPC4WC.git HPC4WC_project12
+git clone https://github.com/iyanmv/HPC4WC.git HPC4WC_project12
 ./HPC4WC_project12/projects/2023/project12_highlevel_programming/setup.sh
 exit
 ```
