@@ -1,5 +1,5 @@
 [project]
-name = "Project 12 Highlevel Programming"
+name = "project-12-highlevel-programming"
 version = "1.0"
 description = "Benchmarking a few different stencils using a selection of high-level programming techniques available in Python"
 authors = [
@@ -12,6 +12,8 @@ dependencies = [
     "numexpr>=2.8.5",
     "taichi>=1.6.0",
     "matplotlib>=3.7.2",
+    "ipython>=8.14.0",
+    "ipykernel>=6.25.1",
 ]
 requires-python = ">=3.9,<3.12"
 readme = "README.md"
