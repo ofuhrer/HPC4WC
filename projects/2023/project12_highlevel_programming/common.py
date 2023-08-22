@@ -14,7 +14,7 @@ def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np
     rng = np.random.default_rng()
     
     # Order dimensions: [Z, Y, X]
-    in_field = np.zeros([NZ, NY, NX], order=order, dtype=dtype)
+    in_field = np.zeros([NZ, NY, NX], dtype=dtype)
 
     if mode == "random":
         tmp = rng.random(size=[NZ, NY - 2 * num_halo, NX - 2 * num_halo], dtype=dtype)
@@ -36,7 +36,12 @@ def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np
             
     out_field = np.copy(in_field)
     
-    return in_field, out_field
+    if order == "C":
+        return np.ascontiguousarray(in_field), np.ascontiguousarray(out_field)
+    else:
+        return np.asfortranarray(in_field), np.asfortranarray(out_field)
+    
+    
 
 def plot_field(field, k=0, x_first=False):
     field = np.array(field)

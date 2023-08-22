@@ -12,6 +12,8 @@ array_numba_pointwise,pc,10.5e-3,87.1e-6
 array_numba_pointwise,cscs,44.9e-3,70e-6
 numpy_numba_pointwise,pc,12.2e-3,60.3e-6
 numpy_numba_pointwise,cscs,55.9e-3,205e-6
+array_numba_parallel_pointwise,cscs,11.7e-3,130e-6
+numexpr_pointwise,cscs,15.3e-3,369e-6
 list_sin_pointwise,thinkpad,3.64,159e-3
 list_sin_pointwise,pc,2.51,16.1e-3
 list_sin_pointwise,cscs,13.6,193e-3
@@ -27,6 +29,7 @@ array_numba_parallel_sin_pointwise,pc,41.5e-3,355e-6
 array_numba_parallel_sin_pointwise,cscs,46.6e-3,446e-6
 numpy_numba_sin_pointwise,pc,359e-3,11.5e-3
 numpy_numba_sin_pointwise,cscs,420e-3,497e-6
+numexpr_sin_pointwise,cscs,47.6e-3,952e-6
 list_1D_same_col_row_update,thinkpad,10.4,122e-3
 list_1D_same_col_row_update,pc,8.03,81.8e-3
 list_1D_same_col_row_update,cscs,36.7,71.4e-3
