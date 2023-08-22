@@ -7,13 +7,15 @@ authors = [
     {name = "Jingzhi Zhang", email = "zhangjing@student.ethz.ch"},
 ]
 dependencies = [
-    "numpy>=1.24.4",
+    "numpy>=1.23",
     "numba>=0.57.1",
     "numexpr>=2.8.5",
     "taichi>=1.6.0",
     "matplotlib>=3.7.2",
     "ipython>=8.14.0",
     "ipykernel>=6.25.1",
+    "nbdime>=3.2.1",
+    "gt4py @ git+https://github.com/gridtools/gt4py.git@v1.0.1",
 ]
 requires-python = ">=3.9,<3.12"
 readme = "README.md"
