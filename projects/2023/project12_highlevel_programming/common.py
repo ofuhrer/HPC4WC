@@ -2,6 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import gt4py as gt
 
+
+# Initialize NumPy PRNG with a seed so that Notebooks are reproducible
+rng = np.random.default_rng(1337)
+
+
 def initialize_fields(NX, NY, NZ, dim_order="ZYX", mode="random", num_halo=0, array_order="C", dtype=np.float64):
     """
     This function initializes the 3D fields with some patterns to help validating
@@ -9,9 +14,6 @@ def initialize_fields(NX, NY, NZ, dim_order="ZYX", mode="random", num_halo=0, ar
     """
 
     assert num_halo < NX // 2 and num_halo < NY // 2
-    
-    # Initialize 3D fields
-    rng = np.random.default_rng()
     
     # We do all the initialization assuming the dim_order="ZYX"
     in_field = np.zeros([NZ, NY, NX], dtype=dtype)
