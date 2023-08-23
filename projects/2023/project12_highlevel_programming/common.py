@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import gt4py as gt
 
-def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np.float64, x_first=False):
+def initialize_fields(NX, NY, NZ, dim_order="ZYX", mode="random", num_halo=0, array_order="C", dtype=np.float64):
     """
     This function initializes the 3D fields with some patterns to help validating
     the stencil update functions.
@@ -13,9 +13,10 @@ def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np
     # Initialize 3D fields
     rng = np.random.default_rng()
     
-    # Order dimensions: [Z, Y, X]
+    # We do all the initialization assuming the dim_order="ZYX"
     in_field = np.zeros([NZ, NY, NX], dtype=dtype)
 
+    assert isinstance(mode, str)
     if mode == "random":
         tmp = rng.random(size=[NZ, NY - 2 * num_halo, NX - 2 * num_halo], dtype=dtype)
         # Uniformly distributed in [-1, 1)
@@ -30,29 +31,58 @@ def initialize_fields(NX, NY, NZ, mode="random", num_halo=0, order="C", dtype=np
     else:
         raise ValueError("Wrong mode")
     
-    # Order dimensions: [X, Y, Z]
-    if x_first:
-        in_field = np.swapaxes(in_field, 0, 2)
+    # Rearrange dimensions to dim_order
+    assert isinstance(dim_order, str)
+    if dim_order == "ZYX":
+        pass
+    elif dim_order == "XZY":
+        in_field = np.transpose(in_field, axes=[2, 0, 1])
+    elif dim_order == "YXZ":
+        in_field = np.transpose(in_field, axes=[1, 2, 0])
+    elif dim_order == "XYZ":
+        in_field = np.transpose(in_field, axes=[2, 1, 0])
+    elif dim_order == "ZXY":
+        in_field = np.transpose(in_field, axes=[0, 2, 1])
+    elif dim_order == "YZX":
+        in_field = np.transpose(in_field, axes=[1, 0, 2])
+    else:
+        raise ValueError("Wrong dim order")
             
     out_field = np.copy(in_field)
     
-    if order == "C":
+    # Enforce returning arrays using the right C or Fortran order
+    assert isinstance(array_order, str)
+    if array_order == "C":
         return np.ascontiguousarray(in_field), np.ascontiguousarray(out_field)
-    else:
+    elif array_order == "F":
         return np.asfortranarray(in_field), np.asfortranarray(out_field)
+    else:
+        raise ValueError("Wrong array order")
     
     
-
-def plot_field(field, k=0, x_first=False):
-    field = np.array(field)
+def plot_field(in_field, dim_order="ZYX", k=0):
+    field = np.array(in_field)
     
     plt.figure(figsize=(7, 5), dpi=100)
     
-    if x_first:
-        plt.imshow(field[:, :, k], origin='lower', vmin=-1, vmax=1);
+    # Rearrange dimensions to the desire
+    assert isinstance(dim_order, str)
+    if dim_order == "ZYX":
+        pass
+    elif dim_order == "XZY":
+        field = np.transpose(field, axes=[1, 2, 0])
+    elif dim_order == "YXZ":
+        field = np.transpose(field, axes=[2, 0, 1])
+    elif dim_order == "XYZ":
+        field = np.transpose(field, axes=[2, 1, 0])
+    elif dim_order == "ZXY":
+        field = np.transpose(field, axes=[0, 2, 1])
+    elif dim_order == "YZX":
+        field = np.transpose(field, axes=[1, 0, 2])
     else:
-        plt.imshow(field[k, :, :], origin='lower', vmin=-1, vmax=1);
+        raise ValueError("Wrong dim order")
     
+    plt.imshow(field[k, :, :], origin='lower', vmin=-1, vmax=1);    
     plt.colorbar();
              
 
