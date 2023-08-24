@@ -3,7 +3,6 @@ import numpy as np
 import IPython
 from datetime import datetime
 import matplotlib.pyplot as plt
-import gt4py as gt
 
 
 # Initialize NumPy PRNG with a seed so that Notebooks are reproducible
@@ -91,6 +90,7 @@ def plot_field(in_field, dim_order="ZYX", k=0):
              
 
 def array_to_gt_storage(field, dtype=np.float64, backend="numpy", index=(0, 0, 0)):
+    import gt4py as gt
     return gt.storage.from_array(
         field,
         dtype=dtype,
@@ -99,9 +99,7 @@ def array_to_gt_storage(field, dtype=np.float64, backend="numpy", index=(0, 0, 0
     )
 
 
-def save_result(result, test_name, file="results.csv", overwrite=False, header=False):
-    assert isinstance(result, IPython.core.magics.execution.TimeitResult)
-    
+def save_result(result, test_name=None, file="results.csv", overwrite=False, header=False):
     if overwrite:
         open(file, "w").close()
     
@@ -109,4 +107,26 @@ def save_result(result, test_name, file="results.csv", overwrite=False, header=F
         if header:
             print("timestamp,function,hardware,timeit_avg,timeit_std", file=f)
         
-        print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
+        if result is not None:
+            assert isinstance(result, IPython.core.magics.execution.TimeitResult)
+            assert isinstance(test_name, str)
+            print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
+
+
+def compare_results(a, b, mode="faster"):
+    assert isinstance(mode, str)
+    assert mode in ["faster", "faster-%"]
+
+    if mode == "faster":
+        "A is x times as fast as B"
+        if a == 0:
+            return "∞"
+        return f"~{b / a:.1f}"
+    elif mode == "faster-%":
+        "A is x% faster than B"
+        assert a <= b
+        if a == 0:
+            return "∞"
+        return f"~{(b - a) / a * 100:.0f}%"
+    else:
+        raise ValueError("Wrong comparison mode")
