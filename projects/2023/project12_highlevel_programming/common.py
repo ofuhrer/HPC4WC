@@ -3,7 +3,6 @@ import numpy as np
 import IPython
 from datetime import datetime
 import matplotlib.pyplot as plt
-import gt4py as gt
 
 
 # Initialize NumPy PRNG with a seed so that Notebooks are reproducible
@@ -91,6 +90,7 @@ def plot_field(in_field, dim_order="ZYX", k=0):
              
 
 def array_to_gt_storage(field, dtype=np.float64, backend="numpy", index=(0, 0, 0)):
+    import gt4py as gt
     return gt.storage.from_array(
         field,
         dtype=dtype,
