@@ -1,4 +1,7 @@
+import os
 import numpy as np
+import IPython
+from datetime import datetime
 import matplotlib.pyplot as plt
 import gt4py as gt
 
@@ -94,3 +97,16 @@ def array_to_gt_storage(field, dtype=np.float64, backend="numpy", index=(0, 0, 0
         backend=backend,
         aligned_index=index
     )
+
+
+def save_result(result, test_name, file="results.csv", overwrite=False, header=False):
+    assert isinstance(result, IPython.core.magics.execution.TimeitResult)
+    
+    if overwrite:
+        open(file, "w").close()
+    
+    with open(file, "a") as f:
+        if header:
+            print("timestamp,function,hardware,timeit_avg,timeit_std", file=f)
+        
+        print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
