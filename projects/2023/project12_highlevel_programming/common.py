@@ -99,9 +99,7 @@ def array_to_gt_storage(field, dtype=np.float64, backend="numpy", index=(0, 0, 0
     )
 
 
-def save_result(result, test_name, file="results.csv", overwrite=False, header=False):
-    assert isinstance(result, IPython.core.magics.execution.TimeitResult)
-    
+def save_result(result, test_name=None, file="results.csv", overwrite=False, header=False):
     if overwrite:
         open(file, "w").close()
     
@@ -109,4 +107,7 @@ def save_result(result, test_name, file="results.csv", overwrite=False, header=F
         if header:
             print("timestamp,function,hardware,timeit_avg,timeit_std", file=f)
         
-        print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
+        if result is not None:
+            assert isinstance(result, IPython.core.magics.execution.TimeitResult)
+            assert isinstance(test_name, str)
+            print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
