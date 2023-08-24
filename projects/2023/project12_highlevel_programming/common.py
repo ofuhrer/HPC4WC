@@ -111,3 +111,22 @@ def save_result(result, test_name=None, file="results.csv", overwrite=False, hea
             assert isinstance(result, IPython.core.magics.execution.TimeitResult)
             assert isinstance(test_name, str)
             print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
+
+
+def compare_results(a, b, mode="faster"):
+    assert isinstance(mode, str)
+    assert mode in ["faster", "faster-%"]
+
+    if mode == "faster":
+        "A is x times as fast as B"
+        if a == 0:
+            return "∞"
+        return f"~{b / a:.1f}"
+    elif mode == "faster-%":
+        "A is x% faster than B"
+        assert a <= b
+        if a == 0:
+            return "∞"
+        return f"~{(b - a) / a * 100:.0f}%"
+    else:
+        raise ValueError("Wrong comparison mode")
