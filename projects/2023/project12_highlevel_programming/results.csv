@@ -1,94 +1,12 @@
-function,hardware,timeit_avg,timeit_std
-list_pointwise,thinkpad,2.11,2.82E-02
-list_pointwise,pc,1.68,9.70E-03
-list_pointwise,cscs,8.4,2.08E-02
-array_pointwise,thinkpad,10.7,1.04E-01
-array_pointwise,pc,5.62,4.47E-02
-array_pointwise,cscs,15.3,7.77E-03
-numpy_pointwise,thinkpad,3.67E-02,1.63E-03
-numpy_pointwise,pc,1.14E-02,5.73E-06
-numpy_pointwise,cscs,6.08E-02,5.62E-04
-array_numba_pointwise,pc,1.05E-02,8.71E-05
-array_numba_pointwise,cscs,4.49E-02,7.00E-05
-numpy_numba_pointwise,pc,1.22E-02,6.03E-05
-numpy_numba_pointwise,cscs,5.59E-02,2.05E-04
-array_numba_parallel_pointwise,cscs,1.17E-02,1.30E-04
-numexpr_pointwise,cscs,1.53E-02,3.69E-04
-gt4py_pointwise,cscs,3.97E-02,8.72E-04
-list_sin_pointwise,thinkpad,3.64,1.59E-01
-list_sin_pointwise,pc,2.51,1.61E-02
-list_sin_pointwise,cscs,13.6,1.93E-01
-array_sin_pointwise,thinkpad,13.6,1.21E-01
-array_sin_pointwise,pc,7.94,1.69E-01
-array_sin_pointwise,cscs,22.8,2.34E-02
-numpy_sin_pointwise,thinkpad,2.82E-01,5.16E-03
-numpy_sin_pointwise,pc,3.48E-01,7.21E-05
-numpy_sin_pointwise,cscs,4.06E-01,7.36E-04
-array_numba_sin_pointwise,pc,3.53E-01,2.37E-04
-array_numba_sin_pointwise,cscs,3.98E-01,7.80E-04
-array_numba_parallel_sin_pointwise,pc,4.15E-02,3.55E-04
-array_numba_parallel_sin_pointwise,cscs,4.66E-02,4.46E-04
-numpy_numba_sin_pointwise,pc,3.59E-01,1.15E-02
-numpy_numba_sin_pointwise,cscs,4.20E-01,4.97E-04
-numexpr_sin_pointwise,cscs,4.76E-02,9.52E-04
-list_1D_same_col_row_update,thinkpad,10.4,1.22E-01
-list_1D_same_col_row_update,pc,8.03,8.18E-02
-list_1D_same_col_row_update,cscs,36.7,7.14E-02
-array_1D_same_col_row_update,thinkpad,46.9,1.25
-array_1D_same_col_row_update,pc,25.7,1.35
-array_1D_same_col_row_update,cscs,75,1.19
-array_numba_parallel_1D_same_col_row_update,pc,2.45E-02,3.59E-04
-array_numba_parallel_1D_same_col_row_uppdate,cscs,5.82E-02,1.09E-03
-numpy_1D_same_col_order_C,thinkpad,2.02E-01,9.23E-03
-numpy_1D_same_col_order_C,pc,5.67E-02,3.85E-04
-numpy_1D_same_col_order_C,cscs,2.02E-01,1.81E-03
-numpy_numba_1D_same_col_order_C,pc,7.61E-02,7.32E-04
-numpy_numba_1D_same_col_order_C,cscs,1.94E-01,3.59E-04
-numpy_1D_same_col_order_F,thinkpad,1.26E-01,5.56E-03
-numpy_1D_same_col_order_F,pc,3.40E-02,4.02E-04
-numpy_1D_same_col_order_F,cscs,1.35E-01,1.81E-03
-numpy_numba_1D_same_col_order_F,pc,5.27E-01,9.29E-03
-numpy_numba_1D_same_col_order_F,cscs,6.38E-01,1.05E-02
-list_1D_same_col_col_update,thinkpad,4.19,1.20E-01
-list_1D_same_col_col_update,pc,3.24,5.43E-02
-list_1D_same_col_col_update,cscs,15.1,1.83E-02
-array_1D_same_col_col_update,thinkpad,24.2,1.09
-array_1D_same_col_col_update,pc,12.1,2.47E-01
-array_1D_same_col_col_update,cscs,34.2,1.07
-array_numba_parallel_1D_same_col_col_update,pc,1.75E-02,4.74E-05
-array_numba_parallel_1D_same_col_col_update,cscs,1.18E-02,7.65E-05
-numpy_gt4py_1D_col_order_C,cscs,1.53E-01,2.06E-03
-numpy_gt4py_1D_col_order_F,cscs,1.42E-01,2.28E-03
-list_1D_same_row_row_update,thinkpad,5.65,5.51E-02
-list_1D_same_row_row_update,pc,4.03,1.02E-01
-list_1D_same_row_row_update,cscs,16.8,4.39E-02
-array_1D_same_row_row_update,thinkpad,24.4,1.06
-array_1D_same_row_row_update,pc,14.1,9.45E-01
-array_1D_same_row_row_update,cscs,33.6,2.10E-01
-array_numba_parallel_1D_same_row_row_update,pc,2.07E-02,2.66E-04
-array_numba_parallel_1D_same_row_row_update,cscs,2.98E-02,9.23E-04
-list_1D_same_row_col_update,thinkpad,9.18,1.28E-01
-list_1D_same_row_col_update,pc,7.03,1.09E-01
-list_1D_same_row_col_update,cscs,33.9,6.85E-02
-array_1D_same_row_col_update,thinkpad,50.7,1.35
-array_1D_same_row_col_update,pc,24.9,3.18E-02
-array_1D_same_row_col_update,cscs,73,2.28E-01
-array_numba_parallel_1D_same_row_col_update,pc,1.81E-02,1.37E-05
-array_numba_parallel_1D_same_row_col_update,cscs,1.32E-02,4.71E-04
-numpy_1D_same_row_order_C,thinkpad,1.38E-01,2.11E-03
-numpy_1D_same_row_order_C,pc,3.11E-02,2.62E-04
-numpy_1D_same_row_order_C,cscs,1.26E-01,1.09E-04
-numpy_numba_1D_same_row_order_C,pc,7.96E-02,2.53E-03
-numpy_numba_1D_same_row_order_C,cscs,1.91E-01,8.87E-04
-numpy_1D_same_row_order_F,thinkpad,1.37E-01,2.51E-03
-numpy_1D_same_row_order_F,pc,3.14E-02,2.62E-04
-numpy_1D_same_row_order_F,1.25E-01,2.61E-04,
-numpy_numba_1D_same_row_order_F,pc,5.63E-01,1.18E-03
-numpy_numba_1D_same_row_order_F,cscs,6.62E-01,5.97E-03
-numpy_gt4py_1D_row_order_C,cscs,1.45E-01,1.27E-03
-numpy_gt4py_1D_row_order_F,cscs,1.37E-01,8.98E-04
-numpy_2D,thinkpad,1.14,3.00E-02
-numpy_2D,pc,4.01E-01,4.90E-03
-numpy_2D,cscs,1.23,2.87E-04
-numpy_2D_numba,cscs,3.16E-02,2.67E-03
-numpy_gt4py_2D,cscs,4.64,1.88E-02
+timestamp,hostname,test,timeit_avg,timeit_std
+2023-08-25 22:12:36.006039,nid02448,list_pointwise,8.27e+00,1.24e-02
+2023-08-25 22:18:39.505297,nid02448,list_sin_pointwise,1.46e+01,2.33e-01
+2023-08-25 22:19:47.307843,nid02448,array_pointwise,1.52e+01,7.80e-02
+2023-08-25 22:25:31.199301,nid02448,array_sin_pointwise,2.23e+01,4.92e-03
+2023-08-25 22:25:34.690080,nid02448,numpy_pointwise,3.63e-05,2.18e-07
+2023-08-25 22:25:41.969342,nid02448,numpy_sin_pointwise,8.73e-01,4.82e-03
+2023-08-25 22:28:52.523187,nid02448,list_1D_same_col_ZYX,1.51e+01,6.80e-02
+2023-08-25 22:31:36.511778,nid02448,numpy_1D_same_col,1.17e-01,7.54e-04
+2023-08-25 22:36:50.691790,nid02448,list_1D_same_row_ZXY,1.49e+01,2.29e-02
+2023-08-25 22:37:52.860346,nid02448,numpy_1D_same_row,1.02e-01,3.73e-05
+2023-08-25 22:38:03.172976,nid02448,numpy_2D,1.06e+00,5.52e-03

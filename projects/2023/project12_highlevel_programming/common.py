@@ -1,4 +1,4 @@
-import os
+import socket
 import numpy as np
 import IPython
 from datetime import datetime
@@ -22,7 +22,9 @@ def initialize_field(NX, NY, NZ, dim_order="ZYX", mode="random", num_halo=0, arr
 
     assert isinstance(mode, str)
     if mode == "random":
-        tmp = rng.random(size=[NZ, NY - 2 * num_halo, NX - 2 * num_halo], dtype=dtype)
+        # random.Generator.random() only supports np.float32 and np.float64
+        # for that reason we create a copy with the desired dtype using astype()
+        tmp = rng.random(size=[NZ, NY - 2 * num_halo, NX - 2 * num_halo]).astype(dtype)
         # Uniformly distributed in [-1, 1)
         field[:, num_halo : NY - num_halo, num_halo : NX - num_halo] = 2 * tmp - 1  
     elif mode == "horizontal-bars":
@@ -94,12 +96,12 @@ def save_result(result, test_name=None, file="results.csv", overwrite=False, hea
     
     with open(file, "a") as f:
         if header:
-            print("timestamp,function,hardware,timeit_avg,timeit_std", file=f)
+            print("timestamp,hostname,test,timeit_avg,timeit_std", file=f)
         
         if result is not None:
             assert isinstance(result, IPython.core.magics.execution.TimeitResult)
             assert isinstance(test_name, str)
-            print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
+            print(f"{datetime.utcnow()},{socket.gethostname()},{test_name},{result.average:.2e},{result.stdev:.2e}", file=f)
 
 
 def compare_results(a, b, mode="faster"):
