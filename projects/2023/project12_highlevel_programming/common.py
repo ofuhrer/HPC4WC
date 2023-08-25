@@ -1,4 +1,4 @@
-import os
+import socket
 import numpy as np
 import IPython
 from datetime import datetime
@@ -107,12 +107,12 @@ def save_result(result, test_name=None, file="results.csv", overwrite=False, hea
     
     with open(file, "a") as f:
         if header:
-            print("timestamp,function,hardware,timeit_avg,timeit_std", file=f)
+            print("timestamp,hostname,test,timeit_avg,timeit_std", file=f)
         
         if result is not None:
             assert isinstance(result, IPython.core.magics.execution.TimeitResult)
             assert isinstance(test_name, str)
-            print(f"{datetime.utcnow()},{test_name},{os.uname()[1]},{result.average:.2e},{result.stdev:.2e}", file=f)
+            print(f"{datetime.utcnow()},{socket.gethostname()},{test_name},{result.average:.2e},{result.stdev:.2e}", file=f)
 
 
 def compare_results(a, b, mode="faster"):
