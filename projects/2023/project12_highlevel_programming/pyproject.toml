@@ -16,6 +16,7 @@ dependencies = [
     "ipykernel>=6.25.1",
     "nbdime>=3.2.1",
     "gt4py @ git+https://github.com/gridtools/gt4py.git@v1.0.1",
+    "pandas>=2.0.3",
 ]
 requires-python = ">=3.9,<3.12"
 readme = "README.md"
