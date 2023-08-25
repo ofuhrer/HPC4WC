@@ -121,7 +121,12 @@ def compare_results(a, b, mode="faster"):
         "A is x times as fast as B"
         if a == 0:
             return "∞"
-        return f"~{b / a:.1f}"
+        res = b / a
+        if res > 10:
+            # We don't care about decimals in this case
+            return f"~{b / a:.0f}"
+        else:
+            return f"~{b / a:.1f}"
     elif mode == "faster-%":
         "A is x% faster than B"
         assert a <= b
