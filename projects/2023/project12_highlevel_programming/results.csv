@@ -19,3 +19,6 @@ timestamp,hostname,test,timeit_avg,timeit_std
 2023-08-26 17:51:52.192552,nid06343,numba_vectorized_1D_same_col,1.06e-02,3.70e-04
 2023-08-26 17:52:33.702458,nid06343,numba_1D_same_row,3.77e-03,2.16e-04
 2023-08-26 17:52:58.217166,nid06343,numba_2D,2.25e-02,5.26e-04
+2023-08-26 18:43:37.214547,nid06343,numexpr_pointwise,1.15e-02,1.79e-04
+2023-08-26 18:43:44.853917,nid06343,numexpr_sin_pointwise,8.65e-02,3.94e-04
+2023-08-26 18:43:53.223224,nid06343,numexpr_1D_same_col,9.59e-02,7.28e-04
