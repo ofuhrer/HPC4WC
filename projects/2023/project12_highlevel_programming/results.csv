@@ -10,3 +10,12 @@ timestamp,hostname,test,timeit_avg,timeit_std
 2023-08-26 09:25:56.651977,nid06343,list_1D_same_row_ZXY,1.49e+01,1.59e-02
 2023-08-26 09:26:59.255966,nid06343,numpy_1D_same_row,1.06e-01,7.17e-06
 2023-08-26 09:27:09.987411,nid06343,numpy_2D,1.11e+00,4.56e-03
+2023-08-26 14:55:44.269637,nid06343,numba_pointwise,3.20e-02,2.74e-04
+2023-08-26 14:56:00.388114,nid06343,numba_sin_pointwise,8.64e-01,3.11e-03
+2023-08-26 14:56:06.489390,nid06343,numba_parallel_sin_pointwise,6.24e-02,2.56e-03
+2023-08-26 14:56:10.314814,nid06343,numba_parallel_pointwise,3.38e-03,2.05e-04
+2023-08-26 14:56:17.744850,nid06343,numba_vectorized_sin_pointwise,7.71e-02,3.15e-03
+2023-08-26 14:56:31.092820,nid06343,numba_1D_same_col,3.81e-03,2.27e-04
+2023-08-26 14:56:41.350228,nid06343,numba_vectorized_1D_same_col,1.05e-02,2.36e-04
+2023-08-26 14:57:10.001026,nid06343,numba_1D_same_row,3.87e-03,3.12e-04
+2023-08-26 14:57:34.456462,nid06343,numba_2D,2.26e-02,4.89e-04
