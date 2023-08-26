@@ -146,7 +146,7 @@ def compare_results(a, b, mode="faster"):
     assert mode in ["faster", "faster-%"]
 
     if mode == "faster":
-        "A is x times as fast as B"
+        "A is x times faster than B"
         if a == 0:
             return "∞"
         res = b / a
