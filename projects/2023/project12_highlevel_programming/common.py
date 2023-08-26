@@ -92,16 +92,6 @@ def plot_field(in_field, dim_order="ZYX", k=0):
     plt.colorbar();
 
 
-def array_to_gt_storage(field, dtype=np.float64, backend="numpy", index=(0, 0, 0)):
-    import gt4py as gt
-    return gt.storage.from_array(
-        field,
-        dtype=dtype,
-        backend=backend,
-        aligned_index=index
-    )
-
-
 def save_result(result, test_name=None, file="results.csv", overwrite=False, header=False):
     if overwrite:
         open(file, "w").close()
