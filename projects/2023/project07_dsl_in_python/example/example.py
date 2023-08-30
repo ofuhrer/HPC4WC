@@ -3,21 +3,100 @@ from dsl.frontend.parser import parse_function
 
 
 def example_function():
-    with Vertical[1:10]:
-        with Horizontal[1:10,1:10]:
-            field=lap(field)
+    with Iterations[1:num_iter - 1]:
+        # Halo Update:
+        # bottom edge (without corners)
+        in_field[:, :num_halo, num_halo:-num_halo] = in_field[
+                                                     :, -2 * num_halo: -num_halo, num_halo:-num_halo
+                                                     ]
 
-    #Jetzt chemmer s halo update entweder direkt wie im stencil mache:
-    field[:, :num_halo, num_halo:-num_halo] = field[
-                                              :, -2 * num_halo: -num_halo, num_halo:-num_halo
-                                              ] #to be fair mir brüchtet da no multiplikation wegemm -2*num_halo
+        # top edge (without corners)
+        in_field[:, -num_halo:, num_halo:-num_halo] = in_field[
+                                                      :, num_halo: 2 * num_halo, num_halo:-num_halo
+                                                      ]
 
-    #Oder eso:
-    with Vertical[num_halo:(nz - num_halo)]:
-        with Horizontal[0:nx, 0:num_halo]:
-            field = update_halo_bottom_edge(field)
+        # left edge (including corners)
+        in_field[:, :, :num_halo] = in_field[:, :, -2 * num_halo: -num_halo]
 
-    #Ich find die erst Version eleganter. PS: I beidne Fäll isch das jz mal nur für bottom edge.
+        # right edge (including corners)
+        in_field[:, :, -num_halo:] = in_field[:, :, num_halo: 2 * num_halo]
+
+        # First Laplacian:
+        with Vertical[
+             1:nz]:  # überall ein +1 dazu weil laplacian code ist inspired von fortran version und da ist do1,10 incl 10
+            with Horizontal[num_halo: ny + num_halo + 1, num_halo: nx + num_halo + 1]:
+                tmp_field[i, j, k] = lap(in_field)
+
+        # Second Laplacian:
+        with Vertical[1:nz]:
+            with Horizontal[1 + num_halo: ny + num_halo, 1 + num_halo: nx + num_halo]:
+                out_field[i, j, k] = lap(tmp_field)
+
+        # Achtung ab hier sollte es nicht mehr im body vom with vertical with horizontal sein!!
+
+        # Updating Out Field I guess
+        out_field[:, num_halo:-num_halo, num_halo:-num_halo] = (in_field[:, num_halo:-num_halo, num_halo:-num_halo]
+                                                                - alpha * out_field[:, num_halo:-num_halo,
+                                                                          num_halo:-num_halo])
+
+        # in_field, out_field = out_field, in_field: Hier mit tmp field gelöst (das wird nachher eh neu gfüllt)
+        tmp_field[:, :, :] = in_field[:, :, :]
+        in_field[:, :, :] = out_field[:, :, :]
+        out_field[:, :, :] = tmp_field[:, :, :]
+
+    # LAST "ITERATION"
+    # Halo Update:
+    # bottom edge (without corners)
+    in_field[:, :num_halo, num_halo:-num_halo] = in_field[
+                                                 :, -2 * num_halo: -num_halo, num_halo:-num_halo
+                                                 ]
+
+    # top edge (without corners)
+    in_field[:, -num_halo:, num_halo:-num_halo] = in_field[
+                                                  :, num_halo: 2 * num_halo, num_halo:-num_halo
+                                                  ]
+
+    # left edge (including corners)
+    in_field[:, :, :num_halo] = in_field[:, :, -2 * num_halo: -num_halo]
+
+    # right edge (including corners)
+    in_field[:, :, -num_halo:] = in_field[:, :, num_halo: 2 * num_halo]
+
+    # First Laplacian:
+    with Vertical[1:nz]:
+        with Horizontal[num_halo: ny + num_halo + 1, num_halo: nx + num_halo + 1]:
+            tmp_field[i, j, k] = lap(in_field)
+
+    # Second Laplacian:
+    with Vertical[1:nz]:
+        with Horizontal[1 + num_halo: ny + num_halo, 1 + num_halo: nx + num_halo]:
+            out_field[i, j, k] = lap(tmp_field)
+
+    # Achtung ab hier sollte es nicht mehr im body vom with vertical with horizontal sein!!
+
+    # Updating Out Field I guess
+    out_field[:, num_halo:-num_halo, num_halo:-num_halo] = (
+            in_field[:, num_halo:-num_halo, num_halo:-num_halo]
+            - alpha * out_field[:, num_halo:-num_halo, num_halo:-num_halo]
+    )
+
+    # ANOTHER FINAL HALO UPDATE:
+    # Halo Update:
+    # bottom edge (without corners)
+    in_field[:, :num_halo, num_halo:-num_halo] = in_field[
+                                                 :, -2 * num_halo: -num_halo, num_halo:-num_halo
+                                                 ]
+
+    # top edge (without corners)
+    in_field[:, -num_halo:, num_halo:-num_halo] = in_field[
+                                                  :, num_halo: 2 * num_halo, num_halo:-num_halo
+                                                  ]
+
+    # left edge (including corners)
+    in_field[:, :, :num_halo] = in_field[:, :, -2 * num_halo: -num_halo]
+
+    # right edge (including corners)
+    in_field[:, :, -num_halo:] = in_field[:, :, num_halo: 2 * num_halo]
 
 
 if __name__ == "__main__":
