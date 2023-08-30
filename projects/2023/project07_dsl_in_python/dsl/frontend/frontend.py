@@ -63,10 +63,6 @@ class LanguageParser(ast.NodeVisitor):
                     self.visit(stmt)
                 self._scope = self._parent.pop()
 
-
-
-
-
             if expr.value.id == "Vertical":
                 self._parent.append(self._scope)
 

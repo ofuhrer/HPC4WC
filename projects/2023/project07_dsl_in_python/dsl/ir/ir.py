@@ -18,6 +18,7 @@ class Function(Node):
         self.name = name
         self.args = args
 
+
 class FieldAccessExpr(Expr):
     def __init__(self, name: str):
         self.name = name
@@ -54,13 +55,16 @@ class Vertical(Node):
         self.body: List[Stmt] = []
         self.extent = extent
 
+
 class Iterations(Node):
     def __init__(self, extent: List):
         self.body: List[Stmt] = []
         self.extent = extent
 
+
 class BinaryOp(Expr):
     """Any binary operator expression"""
+
     def __init__(self, left: Expr, right: Expr, operator: str):
         self.left = left
         self.right = right
@@ -69,14 +73,17 @@ class BinaryOp(Expr):
 
 class UnaryOp(Expr):
     """for field[1:-1] oä"""
+
     def __init__(self, operand: Expr, operator: str):
         self.operand = operand
         self.operator = operator
 
+
 class SliceExpr(Expr):
-    def __init__(self, start: Optional[Expr]=None, stop: Optional[Expr]=None):
+    def __init__(self, start: Optional[Expr] = None, stop: Optional[Expr] = None):
         self.start = start
         self.stop = stop
+
 
 class IR(Node):
     def __init__(self):
