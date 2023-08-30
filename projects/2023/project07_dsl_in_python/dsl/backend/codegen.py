@@ -138,3 +138,16 @@ class CodeGen(IRNodeVisitor):
         self.visit(node.extent[0].stop)
         self.code += "):"
         self.indent()
+
+
+    def visit_FieldDeclaration(self, node: ir.FieldDeclaration) -> str:
+        # das isch nüm wük e field declaration (eh trash ksi vorher) sondern epis wo mer chan bruche falls mers "+[i,j,k]"
+        # bim assignment statment wegnehmed. En asatz zum da flexibler si und zb sege field[1,0,2]=5. Field[1:2,-3,j+1] gaht aber ned.
+        # Mir bruched das im Moment ned wil mer update halo mit With glöst hend.
+        self.visit(node.name)
+        self.code += "["
+        for n in range(0, len(node.size)):
+            self.visit(node.size[n])
+            if n != len(node.size) - 1:
+                self.code += ","
+        self.code += "]"
