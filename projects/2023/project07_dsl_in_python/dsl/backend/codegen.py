@@ -95,6 +95,11 @@ class CodeGen(IRNodeVisitor):
             self.visit(stmt)
             self.code += "\n"
 
+        self.code += self.get_indent()
+        self.code += "return out_field"
+
+        self.dedent()
+
         with open(filepath, "w") as f:
             f.write(self.code)
 
@@ -138,7 +143,6 @@ class CodeGen(IRNodeVisitor):
         self.visit(node.extent[0].stop)
         self.code += "):"
         self.indent()
-
 
     def visit_FieldDeclaration(self, node: ir.FieldDeclaration) -> str:
         # das isch nüm wük e field declaration (eh trash ksi vorher) sondern epis wo mer chan bruche falls mers "+[i,j,k]"
