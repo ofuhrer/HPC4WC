@@ -1,7 +1,9 @@
 import time
 import numpy as np
+# import cupy as cp
 from dsl.generated.main import generated_function
-#from dsl.baseline.baseline_functions import mean_with_numpy, mean_without_numpy
+
+from dsl.baseline.baseline_stencil import baseline_stencil
 
 
 def main(kinds=None):
@@ -13,7 +15,7 @@ def main(kinds=None):
     num_halo = 2
     alpha = 1.0 / 32.0
 
-    in_field = np.zeros((nx + 2 * num_halo, ny + 2 * num_halo,nz))
+    in_field = np.zeros((nx + 2 * num_halo, ny + 2 * num_halo, nz))
 
     in_field[
     num_halo + nx // 4: num_halo + 3 * nx // 4,
@@ -24,28 +26,46 @@ def main(kinds=None):
     out_field = np.copy(in_field)
     tmp_field = np.empty_like(in_field)
 
-
     # Timers
     start_times = {}
     exec_times = {}
+    out_fields = {}
 
     for kind in kinds:
         start_times[kind] = time.time()
-        run_function(kind, in_field, out_field, num_halo, nx, ny, nz, num_iter,tmp_field,alpha)
+        out_fields[kind] = run_function(kind, in_field, out_field, num_halo, nx, ny, nz, num_iter, tmp_field, alpha)
         exec_times[kind] = time.time() - start_times[kind]
+
+    # Output validaiton
+    validation(out_fields)
+
+    print("")
 
     # Output diagnostics
     diagnostics(exec_times)
 
-    # TODO: Verify results
 
-
-def run_function(kind, in_field, out_field, num_halo, nx, ny, nz, num_iter,tmp_field,alpha):
+def run_function(kind, in_field, out_field, num_halo, nx, ny, nz, num_iter, tmp_field, alpha):
     if kind == "base":
-        # TODO: Baseline implementation
-        pass
-    if kind == "gen":
-        return generated_function(in_field, out_field, num_halo, nx, ny, nz, num_iter,tmp_field,alpha)
+        return baseline_stencil(in_field, out_field, num_halo, nx, ny, nz, num_iter, tmp_field, alpha)
+    if kind == "generated":
+        return generated_function(in_field, out_field, num_halo, nx, ny, nz, num_iter, tmp_field, alpha)
+
+
+def validation(out_fields):
+    max_key_length = max(len(key) for key in out_fields.keys())
+
+    print("================")
+    print("Validaiton of output:")
+    print("================")
+
+    for key, value in out_fields.items():
+        if key != "base":
+            if (out_fields["base"] == out_fields[key]).all():
+                output = "{:<{width}}: passed".format(key, width=max_key_length)
+            else:
+                output = "{:<{width}}: failed".format(key, width=max_key_length)
+            print(output)
 
 
 def diagnostics(times):
@@ -60,5 +80,5 @@ def diagnostics(times):
 
 
 if __name__ == "__main__":
-    kinds = ["gen", "base"]
+    kinds = ["generated", "base"]
     main(kinds=kinds)
