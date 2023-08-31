@@ -1,5 +1,5 @@
 """
-Dummy functions for importing in source self.codeto make it legal python code
+Dummy functions for importing in source code make it legal python code
 """
 
 
