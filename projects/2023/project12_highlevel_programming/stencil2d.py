@@ -69,19 +69,23 @@ def update_halo(field, num_halo):
     field[:, :, -num_halo:] = field[:, :, num_halo : 2 * num_halo]
 
 
-def apply_diffusion(in_field, out_field, num_halo, num_iter=1):
+def apply_diffusion(in_field, num_halo, num_iter=1):
     """ Integrate 4th-order diffusion equation by a certain number of iterations.
 
     Parameters
     ----------
     in_field : array-like
         Input field (nz x ny x nx with halo in x- and y-direction).
-    lap_field : array-like
-        Result (must be same size as ``in_field``).
     num_iter : `int`, optional
         Number of iterations to execute.
+
+    Returns
+    -------
+    out_field: array-like
+        Output field after applying the diffusion operator
     """
     alpha = 1.0 / 32.0
+    out_field = np.empty_like(in_field)
     tmp_field = np.empty_like(in_field)
 
     for n in range(num_iter):
@@ -99,3 +103,7 @@ def apply_diffusion(in_field, out_field, num_halo, num_iter=1):
             in_field, out_field = out_field, in_field
         else:
             update_halo(out_field, num_halo)
+
+    # If out_field is not return, when num_iter is even in_field and
+    # out_field are swapped and do not correspond to the expected names
+    return out_field
