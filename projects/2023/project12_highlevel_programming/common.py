@@ -88,7 +88,7 @@ def plot_field(in_field, dim_order="ZYX", k=0):
     else:
         raise ValueError("Wrong dim order")
 
-    plt.imshow(field[k, :, :], origin='lower', vmin=-1, vmax=1);
+    plt.imshow(field[k, :, :], origin="upper", vmin=-1, vmax=1);
     plt.colorbar();
 
 
