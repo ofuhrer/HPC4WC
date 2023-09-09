@@ -114,3 +114,5 @@ def apply_diffusion(
         else:
             # halo update
             update_halo(copy_stencil, out_field, num_halo)
+
+    return out_field
