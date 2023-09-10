@@ -1,0 +1,146 @@
+out_2 = [None] * (12+1)
+# ranks nx ny ny nz num_iter time
+out_2[1] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.1696141E+02], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[2] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.9557168E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[3] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.7752648E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[4] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.7039993E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[5] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.8813870E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[6] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.8367240E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[7] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.9827600E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[8] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.1034923E+02], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[9] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.1006955E+02], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[10] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.1166840E+02], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[11] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.1311584E+02], \
+] )
+# ranks nx ny ny nz num_iter time
+out_2[12] = np.array( [ \
+[    2,  512,  512,   64,    1024,  0.1346842E+02], \
+] )
+out_3 = [None] * (8+1)
+# ranks nx ny ny nz num_iter time
+out_3[1] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.1193007E+02], \
+] )
+# ranks nx ny ny nz num_iter time
+out_3[2] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.7162840E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_3[3] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.6587690E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_3[4] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.7089628E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_3[5] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.7578813E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_3[6] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.7917157E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_3[7] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.1615925E+02], \
+] )
+# ranks nx ny ny nz num_iter time
+out_3[8] = np.array( [ \
+[    3,  512,  512,   64,    1024,  0.1099306E+02], \
+] )
+out_4 = [None] * (6+1)
+# ranks nx ny ny nz num_iter time
+out_4[1] = np.array( [ \
+[    4,  512,  512,   64,    1024,  0.9289170E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_4[2] = np.array( [ \
+[    4,  512,  512,   64,    1024,  0.6407547E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_4[3] = np.array( [ \
+[    4,  512,  512,   64,    1024,  0.6976177E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_4[4] = np.array( [ \
+[    4,  512,  512,   64,    1024,  0.7138305E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_4[5] = np.array( [ \
+[    4,  512,  512,   64,    1024,  0.7108426E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_4[6] = np.array( [ \
+[    4,  512,  512,   64,    1024,  0.7578090E+01], \
+] )
+out_6 = [None] * (4+1)
+# ranks nx ny ny nz num_iter time
+out_6[1] = np.array( [ \
+[    6,  512,  512,   64,    1024,  0.7126691E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_6[2] = np.array( [ \
+[    6,  512,  512,   64,    1024,  0.6866643E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_6[3] = np.array( [ \
+[    6,  512,  512,   64,    1024,  0.6762747E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_6[4] = np.array( [ \
+[    6,  512,  512,   64,    1024,  0.6544388E+01], \
+] )
+out_8 = [None] * (3+1)
+# ranks nx ny ny nz num_iter time
+out_8[1] = np.array( [ \
+[    8,  512,  512,   64,    1024,  0.6283640E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_8[2] = np.array( [ \
+[    8,  512,  512,   64,    1024,  0.6661279E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_8[3] = np.array( [ \
+[    8,  512,  512,   64,    1024,  0.8033301E+01], \
+] )
+out_12 = [None] * (2+1)
+# ranks nx ny ny nz num_iter time
+out_12[1] = np.array( [ \
+[   12,  512,  512,   64,    1024,  0.6428633E+01], \
+] )
+# ranks nx ny ny nz num_iter time
+out_12[2] = np.array( [ \
+[   12,  512,  512,   64,    1024,  0.6624506E+01], \
+] )
