@@ -115,10 +115,6 @@ def apply_diffusion(
             # halo update
             update_halo(copy_stencil, out_field, num_halo)
 
-<<<<<<< HEAD
     # If out_field is not return, when num_iter is even in_field and
     # out_field are swapped and do not correspond to the expected names            
     return out_field
-=======
-    return out_field
->>>>>>> 7a008fa74e2eb28dc277de235b7458bd0a5b52cd
