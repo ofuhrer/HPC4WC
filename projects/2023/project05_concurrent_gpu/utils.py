@@ -164,7 +164,6 @@ def step_stencil_2d_example(in_field, out_field, n_halo):
         + in_field[:-2, :-2]
     ) / 16.0
 
-    # out_field[:,:] = in_field[2:, 1:-1]
 
 # Example with a simple Gaussian filter
 def step_stencil_3d_example(in_field, out_field, n_halo):
@@ -211,7 +210,6 @@ def jacobi_stencil_2d(in_field, out_field, n_halo, alpha=0.5, beta=0.125):
         +  in_field[1:-1, 2:]+  in_field[1:-1, :-2] )
     )
 
-    
     
 # Example with a simple 5x5 Gaussian filter
 def gaussian_5x5_stencil_2d(in_field, out_field, n_halo):
