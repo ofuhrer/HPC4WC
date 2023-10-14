@@ -1,0 +1,1057 @@
+['gt4py-cuda', 'gt4py-gt:cpu_ifirst', 'gt4py-gt:cpu_kfirst', 'gt4py-gt:gpu']
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with cuda backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=3.67s, saving = False
+Time =   3.85 hours (max 24); max(|u|) = 469.6088
+
+Iteration n=1000; wall_time=7.32s, saving = False
+Time =   7.66 hours (max 24); max(|u|) = 352.7728
+
+Iteration n=1500; wall_time=10.97s, saving = False
+Time =  11.47 hours (max 24); max(|u|) = 329.6116
+
+Iteration n=2000; wall_time=14.63s, saving = False
+Time =  15.40 hours (max 24); max(|u|) = 290.6874
+
+Iteration n=2500; wall_time=18.28s, saving = False
+Time =  19.56 hours (max 24); max(|u|) = 327.0277
+
+Iteration n=3000; wall_time=21.94s, saving = False
+Time =  23.85 hours (max 24); max(|u|) = 309.2038
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with cuda backend
+in     0.37 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with cuda backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=5.17s, saving = False
+Time =   3.81 hours (max 24); max(|u|) = 476.7893
+
+Iteration n=1000; wall_time=10.32s, saving = False
+Time =   7.57 hours (max 24); max(|u|) = 346.1442
+
+Iteration n=1500; wall_time=15.48s, saving = False
+Time =  11.35 hours (max 24); max(|u|) = 357.0348
+
+Iteration n=2000; wall_time=20.63s, saving = False
+Time =  15.14 hours (max 24); max(|u|) = 293.5589
+
+Iteration n=2500; wall_time=25.79s, saving = False
+Time =  19.10 hours (max 24); max(|u|) = 343.3506
+
+Iteration n=3000; wall_time=30.94s, saving = False
+Time =  23.09 hours (max 24); max(|u|) = 338.5961
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with cuda backend
+in     0.54 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with cuda backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=8.24s, saving = False
+Time =   2.02 hours (max 24); max(|u|) = 392.8804
+
+Iteration n=1000; wall_time=16.50s, saving = False
+Time =   3.87 hours (max 24); max(|u|) = 483.5717
+
+Iteration n=1500; wall_time=24.73s, saving = False
+Time =   5.78 hours (max 24); max(|u|) = 354.5108
+
+Iteration n=2000; wall_time=32.95s, saving = False
+Time =   7.71 hours (max 24); max(|u|) = 350.1403
+
+Iteration n=2500; wall_time=41.18s, saving = False
+Time =   9.65 hours (max 24); max(|u|) = 320.7043
+
+Iteration n=3000; wall_time=49.40s, saving = False
+Time =  11.55 hours (max 24); max(|u|) = 281.2779
+
+Iteration n=3500; wall_time=57.62s, saving = False
+Time =  13.48 hours (max 24); max(|u|) = 296.2930
+
+Iteration n=4000; wall_time=65.85s, saving = False
+Time =  15.52 hours (max 24); max(|u|) = 280.0237
+
+Iteration n=4500; wall_time=74.07s, saving = False
+Time =  17.58 hours (max 24); max(|u|) = 299.1636
+
+Iteration n=5000; wall_time=82.29s, saving = False
+Time =  19.69 hours (max 24); max(|u|) = 301.1960
+
+Iteration n=5500; wall_time=90.51s, saving = False
+Time =  21.85 hours (max 24); max(|u|) = 332.6715
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with cuda backend
+in     1.64 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with cuda backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=15.90s, saving = False
+Time =   1.97 hours (max 24); max(|u|) = 431.8110
+
+Iteration n=1000; wall_time=31.80s, saving = False
+Time =   3.83 hours (max 24); max(|u|) = 488.9689
+
+Iteration n=1500; wall_time=47.68s, saving = False
+Time =   5.71 hours (max 24); max(|u|) = 350.6200
+
+Iteration n=2000; wall_time=63.61s, saving = False
+Time =   7.63 hours (max 24); max(|u|) = 340.8834
+
+Iteration n=2500; wall_time=79.52s, saving = False
+Time =   9.55 hours (max 24); max(|u|) = 319.0771
+
+Iteration n=3000; wall_time=95.44s, saving = False
+Time =  11.45 hours (max 24); max(|u|) = 359.0707
+
+Iteration n=3500; wall_time=111.36s, saving = False
+Time =  13.35 hours (max 24); max(|u|) = 299.8138
+
+Iteration n=4000; wall_time=127.29s, saving = False
+Time =  15.31 hours (max 24); max(|u|) = 281.6024
+
+Iteration n=4500; wall_time=143.19s, saving = False
+Time =  17.30 hours (max 24); max(|u|) = 268.3159
+
+Iteration n=5000; wall_time=159.11s, saving = False
+Time =  19.30 hours (max 24); max(|u|) = 319.2399
+
+Iteration n=5500; wall_time=175.03s, saving = False
+Time =  21.36 hours (max 24); max(|u|) = 303.9883
+
+Iteration n=6000; wall_time=190.96s, saving = False
+Time =  23.34 hours (max 24); max(|u|) = 312.0720
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with cuda backend
+in     3.27 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with cuda backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=33.24s, saving = False
+Time =   1.02 hours (max 24); max(|u|) = 650.7813
+
+Iteration n=1000; wall_time=66.37s, saving = False
+Time =   2.03 hours (max 24); max(|u|) = 409.6113
+
+Iteration n=1500; wall_time=99.58s, saving = False
+Time =   2.95 hours (max 24); max(|u|) = 436.7243
+
+Iteration n=2000; wall_time=132.73s, saving = False
+Time =   3.90 hours (max 24); max(|u|) = 496.8761
+
+Iteration n=2500; wall_time=165.92s, saving = False
+Time =   4.83 hours (max 24); max(|u|) = 386.2862
+
+Iteration n=3000; wall_time=199.05s, saving = False
+Time =   5.84 hours (max 24); max(|u|) = 357.1795
+
+Iteration n=3500; wall_time=232.28s, saving = False
+Time =   6.85 hours (max 24); max(|u|) = 380.4030
+
+Iteration n=4000; wall_time=265.41s, saving = False
+Time =   7.78 hours (max 24); max(|u|) = 356.0077
+
+Iteration n=4500; wall_time=298.62s, saving = False
+Time =   8.72 hours (max 24); max(|u|) = 347.9824
+
+Iteration n=5000; wall_time=331.75s, saving = False
+Time =   9.71 hours (max 24); max(|u|) = 320.6038
+
+Iteration n=5500; wall_time=364.98s, saving = False
+Time =  10.72 hours (max 24); max(|u|) = 385.2956
+
+Iteration n=6000; wall_time=398.12s, saving = False
+Time =  11.63 hours (max 24); max(|u|) = 279.5157
+
+Iteration n=6500; wall_time=431.33s, saving = False
+Time =  12.57 hours (max 24); max(|u|) = 311.9809
+
+Iteration n=7000; wall_time=464.46s, saving = False
+Time =  13.61 hours (max 24); max(|u|) = 290.3410
+
+Iteration n=7500; wall_time=497.67s, saving = False
+Time =  14.70 hours (max 24); max(|u|) = 288.1426
+
+Iteration n=8000; wall_time=530.81s, saving = False
+Time =  15.65 hours (max 24); max(|u|) = 275.3141
+
+Iteration n=8500; wall_time=564.03s, saving = False
+Time =  16.68 hours (max 24); max(|u|) = 266.6768
+
+Iteration n=9000; wall_time=597.16s, saving = False
+Time =  17.75 hours (max 24); max(|u|) = 307.7311
+
+Iteration n=9500; wall_time=630.37s, saving = False
+Time =  18.85 hours (max 24); max(|u|) = 314.3246
+
+Iteration n=10000; wall_time=663.52s, saving = False
+Time =  19.86 hours (max 24); max(|u|) = 288.4318
+
+Iteration n=10500; wall_time=696.73s, saving = False
+Time =  20.94 hours (max 24); max(|u|) = 258.0646
+
+Iteration n=11000; wall_time=729.86s, saving = False
+Time =  22.04 hours (max 24); max(|u|) = 324.7684
+
+Iteration n=11500; wall_time=763.08s, saving = False
+Time =  23.14 hours (max 24); max(|u|) = 311.6775
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with cuda backend
+in    13.17 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=3.42s, saving = False
+Time =   3.85 hours (max 24); max(|u|) = 469.6088
+
+Iteration n=1000; wall_time=6.73s, saving = False
+Time =   7.66 hours (max 24); max(|u|) = 352.7728
+
+Iteration n=1500; wall_time=10.03s, saving = False
+Time =  11.47 hours (max 24); max(|u|) = 329.6116
+
+Iteration n=2000; wall_time=13.42s, saving = False
+Time =  15.40 hours (max 24); max(|u|) = 290.6874
+
+Iteration n=2500; wall_time=16.69s, saving = False
+Time =  19.56 hours (max 24); max(|u|) = 327.0277
+
+Iteration n=3000; wall_time=20.02s, saving = False
+Time =  23.85 hours (max 24); max(|u|) = 309.2038
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+in     0.34 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=5.79s, saving = False
+Time =   3.81 hours (max 24); max(|u|) = 476.7893
+
+Iteration n=1000; wall_time=11.39s, saving = False
+Time =   7.57 hours (max 24); max(|u|) = 346.1442
+
+Iteration n=1500; wall_time=17.01s, saving = False
+Time =  11.35 hours (max 24); max(|u|) = 357.0348
+
+Iteration n=2000; wall_time=22.63s, saving = False
+Time =  15.14 hours (max 24); max(|u|) = 293.5589
+
+Iteration n=2500; wall_time=28.17s, saving = False
+Time =  19.10 hours (max 24); max(|u|) = 343.3506
+
+Iteration n=3000; wall_time=33.77s, saving = False
+Time =  23.09 hours (max 24); max(|u|) = 338.5961
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+in     0.58 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=10.09s, saving = False
+Time =   2.02 hours (max 24); max(|u|) = 392.8804
+
+Iteration n=1000; wall_time=19.94s, saving = False
+Time =   3.87 hours (max 24); max(|u|) = 483.5717
+
+Iteration n=1500; wall_time=30.01s, saving = False
+Time =   5.78 hours (max 24); max(|u|) = 354.5108
+
+Iteration n=2000; wall_time=39.81s, saving = False
+Time =   7.71 hours (max 24); max(|u|) = 350.1403
+
+Iteration n=2500; wall_time=49.90s, saving = False
+Time =   9.65 hours (max 24); max(|u|) = 320.7043
+
+Iteration n=3000; wall_time=59.78s, saving = False
+Time =  11.55 hours (max 24); max(|u|) = 281.2779
+
+Iteration n=3500; wall_time=69.75s, saving = False
+Time =  13.48 hours (max 24); max(|u|) = 296.2930
+
+Iteration n=4000; wall_time=79.60s, saving = False
+Time =  15.52 hours (max 24); max(|u|) = 280.0237
+
+Iteration n=4500; wall_time=89.74s, saving = False
+Time =  17.58 hours (max 24); max(|u|) = 299.1636
+
+Iteration n=5000; wall_time=99.65s, saving = False
+Time =  19.69 hours (max 24); max(|u|) = 301.1960
+
+Iteration n=5500; wall_time=109.71s, saving = False
+Time =  21.85 hours (max 24); max(|u|) = 332.6715
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+in     2.00 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=20.02s, saving = False
+Time =   1.97 hours (max 24); max(|u|) = 431.8110
+
+Iteration n=1000; wall_time=40.37s, saving = False
+Time =   3.83 hours (max 24); max(|u|) = 488.9689
+
+Iteration n=1500; wall_time=60.09s, saving = False
+Time =   5.71 hours (max 24); max(|u|) = 350.6200
+
+Iteration n=2000; wall_time=80.45s, saving = False
+Time =   7.63 hours (max 24); max(|u|) = 340.8834
+
+Iteration n=2500; wall_time=100.21s, saving = False
+Time =   9.55 hours (max 24); max(|u|) = 319.0771
+
+Iteration n=3000; wall_time=120.53s, saving = False
+Time =  11.45 hours (max 24); max(|u|) = 359.0707
+
+Iteration n=3500; wall_time=140.35s, saving = False
+Time =  13.35 hours (max 24); max(|u|) = 299.8138
+
+Iteration n=4000; wall_time=160.50s, saving = False
+Time =  15.31 hours (max 24); max(|u|) = 281.6024
+
+Iteration n=4500; wall_time=180.40s, saving = False
+Time =  17.30 hours (max 24); max(|u|) = 268.3159
+
+Iteration n=5000; wall_time=200.72s, saving = False
+Time =  19.30 hours (max 24); max(|u|) = 319.2399
+
+Iteration n=5500; wall_time=220.82s, saving = False
+Time =  21.36 hours (max 24); max(|u|) = 303.9883
+
+Iteration n=6000; wall_time=241.16s, saving = False
+Time =  23.34 hours (max 24); max(|u|) = 312.0720
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+in     4.13 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=39.61s, saving = False
+Time =   1.02 hours (max 24); max(|u|) = 650.7813
+
+Iteration n=1000; wall_time=78.95s, saving = False
+Time =   2.03 hours (max 24); max(|u|) = 409.6113
+
+Iteration n=1500; wall_time=118.64s, saving = False
+Time =   2.95 hours (max 24); max(|u|) = 436.7243
+
+Iteration n=2000; wall_time=157.87s, saving = False
+Time =   3.90 hours (max 24); max(|u|) = 496.8761
+
+Iteration n=2500; wall_time=197.60s, saving = False
+Time =   4.83 hours (max 24); max(|u|) = 386.2862
+
+Iteration n=3000; wall_time=237.04s, saving = False
+Time =   5.84 hours (max 24); max(|u|) = 357.1795
+
+Iteration n=3500; wall_time=276.74s, saving = False
+Time =   6.85 hours (max 24); max(|u|) = 380.4030
+
+Iteration n=4000; wall_time=316.24s, saving = False
+Time =   7.78 hours (max 24); max(|u|) = 356.0077
+
+Iteration n=4500; wall_time=355.67s, saving = False
+Time =   8.72 hours (max 24); max(|u|) = 347.9824
+
+Iteration n=5000; wall_time=394.96s, saving = False
+Time =   9.71 hours (max 24); max(|u|) = 320.6038
+
+Iteration n=5500; wall_time=434.65s, saving = False
+Time =  10.72 hours (max 24); max(|u|) = 385.2956
+
+Iteration n=6000; wall_time=473.66s, saving = False
+Time =  11.63 hours (max 24); max(|u|) = 279.5157
+
+Iteration n=6500; wall_time=513.25s, saving = False
+Time =  12.57 hours (max 24); max(|u|) = 311.9809
+
+Iteration n=7000; wall_time=552.33s, saving = False
+Time =  13.61 hours (max 24); max(|u|) = 290.3410
+
+Iteration n=7500; wall_time=591.64s, saving = False
+Time =  14.70 hours (max 24); max(|u|) = 288.1426
+
+Iteration n=8000; wall_time=631.00s, saving = False
+Time =  15.65 hours (max 24); max(|u|) = 275.3141
+
+Iteration n=8500; wall_time=670.64s, saving = False
+Time =  16.68 hours (max 24); max(|u|) = 266.6768
+
+Iteration n=9000; wall_time=709.90s, saving = False
+Time =  17.75 hours (max 24); max(|u|) = 307.7311
+
+Iteration n=9500; wall_time=749.43s, saving = False
+Time =  18.85 hours (max 24); max(|u|) = 314.3246
+
+Iteration n=10000; wall_time=788.88s, saving = False
+Time =  19.86 hours (max 24); max(|u|) = 288.4318
+
+Iteration n=10500; wall_time=828.54s, saving = False
+Time =  20.94 hours (max 24); max(|u|) = 258.0646
+
+Iteration n=11000; wall_time=867.58s, saving = False
+Time =  22.04 hours (max 24); max(|u|) = 324.7684
+
+Iteration n=11500; wall_time=907.30s, saving = False
+Time =  23.14 hours (max 24); max(|u|) = 311.6775
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_ifirst backend
+in    15.65 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=3.57s, saving = False
+Time =   3.85 hours (max 24); max(|u|) = 469.6088
+
+Iteration n=1000; wall_time=7.19s, saving = False
+Time =   7.66 hours (max 24); max(|u|) = 352.7728
+
+Iteration n=1500; wall_time=10.62s, saving = False
+Time =  11.47 hours (max 24); max(|u|) = 329.6116
+
+Iteration n=2000; wall_time=14.25s, saving = False
+Time =  15.40 hours (max 24); max(|u|) = 290.6874
+
+Iteration n=2500; wall_time=17.83s, saving = False
+Time =  19.56 hours (max 24); max(|u|) = 327.0277
+
+Iteration n=3000; wall_time=21.33s, saving = False
+Time =  23.85 hours (max 24); max(|u|) = 309.2038
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+in     0.36 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=5.89s, saving = False
+Time =   3.81 hours (max 24); max(|u|) = 476.7893
+
+Iteration n=1000; wall_time=11.87s, saving = False
+Time =   7.57 hours (max 24); max(|u|) = 346.1442
+
+Iteration n=1500; wall_time=17.75s, saving = False
+Time =  11.35 hours (max 24); max(|u|) = 357.0348
+
+Iteration n=2000; wall_time=23.68s, saving = False
+Time =  15.14 hours (max 24); max(|u|) = 293.5589
+
+Iteration n=2500; wall_time=29.57s, saving = False
+Time =  19.10 hours (max 24); max(|u|) = 343.3506
+
+Iteration n=3000; wall_time=35.38s, saving = False
+Time =  23.09 hours (max 24); max(|u|) = 338.5961
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+in     0.61 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=10.76s, saving = False
+Time =   2.02 hours (max 24); max(|u|) = 392.8804
+
+Iteration n=1000; wall_time=21.44s, saving = False
+Time =   3.87 hours (max 24); max(|u|) = 483.5717
+
+Iteration n=1500; wall_time=32.17s, saving = False
+Time =   5.78 hours (max 24); max(|u|) = 354.5108
+
+Iteration n=2000; wall_time=42.74s, saving = False
+Time =   7.71 hours (max 24); max(|u|) = 350.1403
+
+Iteration n=2500; wall_time=53.45s, saving = False
+Time =   9.65 hours (max 24); max(|u|) = 320.7043
+
+Iteration n=3000; wall_time=64.14s, saving = False
+Time =  11.55 hours (max 24); max(|u|) = 281.2779
+
+Iteration n=3500; wall_time=74.80s, saving = False
+Time =  13.48 hours (max 24); max(|u|) = 296.2930
+
+Iteration n=4000; wall_time=85.50s, saving = False
+Time =  15.52 hours (max 24); max(|u|) = 280.0237
+
+Iteration n=4500; wall_time=96.09s, saving = False
+Time =  17.58 hours (max 24); max(|u|) = 299.1636
+
+Iteration n=5000; wall_time=106.81s, saving = False
+Time =  19.69 hours (max 24); max(|u|) = 301.1960
+
+Iteration n=5500; wall_time=117.80s, saving = False
+Time =  21.85 hours (max 24); max(|u|) = 332.6715
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+in     2.14 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=20.91s, saving = False
+Time =   1.97 hours (max 24); max(|u|) = 431.8110
+
+Iteration n=1000; wall_time=41.91s, saving = False
+Time =   3.83 hours (max 24); max(|u|) = 488.9689
+
+Iteration n=1500; wall_time=62.46s, saving = False
+Time =   5.71 hours (max 24); max(|u|) = 350.6200
+
+Iteration n=2000; wall_time=83.35s, saving = False
+Time =   7.63 hours (max 24); max(|u|) = 340.8834
+
+Iteration n=2500; wall_time=103.93s, saving = False
+Time =   9.55 hours (max 24); max(|u|) = 319.0771
+
+Iteration n=3000; wall_time=124.95s, saving = False
+Time =  11.45 hours (max 24); max(|u|) = 359.0707
+
+Iteration n=3500; wall_time=145.57s, saving = False
+Time =  13.35 hours (max 24); max(|u|) = 299.8138
+
+Iteration n=4000; wall_time=166.56s, saving = False
+Time =  15.31 hours (max 24); max(|u|) = 281.6024
+
+Iteration n=4500; wall_time=187.17s, saving = False
+Time =  17.30 hours (max 24); max(|u|) = 268.3159
+
+Iteration n=5000; wall_time=207.79s, saving = False
+Time =  19.30 hours (max 24); max(|u|) = 319.2399
+
+Iteration n=5500; wall_time=228.26s, saving = False
+Time =  21.36 hours (max 24); max(|u|) = 303.9883
+
+Iteration n=6000; wall_time=248.78s, saving = False
+Time =  23.34 hours (max 24); max(|u|) = 312.0720
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+in     4.26 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=42.04s, saving = False
+Time =   1.02 hours (max 24); max(|u|) = 650.7813
+
+Iteration n=1000; wall_time=89.71s, saving = False
+Time =   2.03 hours (max 24); max(|u|) = 409.6113
+
+Iteration n=1500; wall_time=131.27s, saving = False
+Time =   2.95 hours (max 24); max(|u|) = 436.7243
+
+Iteration n=2000; wall_time=178.96s, saving = False
+Time =   3.90 hours (max 24); max(|u|) = 496.8761
+
+Iteration n=2500; wall_time=220.72s, saving = False
+Time =   4.83 hours (max 24); max(|u|) = 386.2862
+
+Iteration n=3000; wall_time=268.53s, saving = False
+Time =   5.84 hours (max 24); max(|u|) = 357.1795
+
+Iteration n=3500; wall_time=310.01s, saving = False
+Time =   6.85 hours (max 24); max(|u|) = 380.4030
+
+Iteration n=4000; wall_time=357.88s, saving = False
+Time =   7.78 hours (max 24); max(|u|) = 356.0077
+
+Iteration n=4500; wall_time=399.66s, saving = False
+Time =   8.72 hours (max 24); max(|u|) = 347.9824
+
+Iteration n=5000; wall_time=447.43s, saving = False
+Time =   9.71 hours (max 24); max(|u|) = 320.6038
+
+Iteration n=5500; wall_time=489.12s, saving = False
+Time =  10.72 hours (max 24); max(|u|) = 385.2956
+
+Iteration n=6000; wall_time=537.13s, saving = False
+Time =  11.63 hours (max 24); max(|u|) = 279.5157
+
+Iteration n=6500; wall_time=578.84s, saving = False
+Time =  12.57 hours (max 24); max(|u|) = 311.9809
+
+Iteration n=7000; wall_time=626.81s, saving = False
+Time =  13.61 hours (max 24); max(|u|) = 290.3410
+
+Iteration n=7500; wall_time=668.36s, saving = False
+Time =  14.70 hours (max 24); max(|u|) = 288.1426
+
+Iteration n=8000; wall_time=716.08s, saving = False
+Time =  15.65 hours (max 24); max(|u|) = 275.3141
+
+Iteration n=8500; wall_time=757.60s, saving = False
+Time =  16.68 hours (max 24); max(|u|) = 266.6768
+
+Iteration n=9000; wall_time=805.62s, saving = False
+Time =  17.75 hours (max 24); max(|u|) = 307.7311
+
+Iteration n=9500; wall_time=847.49s, saving = False
+Time =  18.85 hours (max 24); max(|u|) = 314.3246
+
+Iteration n=10000; wall_time=895.62s, saving = False
+Time =  19.86 hours (max 24); max(|u|) = 288.4318
+
+Iteration n=10500; wall_time=937.32s, saving = False
+Time =  20.94 hours (max 24); max(|u|) = 258.0646
+
+Iteration n=11000; wall_time=985.33s, saving = False
+Time =  22.04 hours (max 24); max(|u|) = 324.7684
+
+Iteration n=11500; wall_time=1026.92s, saving = False
+Time =  23.14 hours (max 24); max(|u|) = 311.6775
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:cpu_kfirst backend
+in    17.77 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:gpu backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=3.78s, saving = False
+Time =   3.85 hours (max 24); max(|u|) = 469.6088
+
+Iteration n=1000; wall_time=7.52s, saving = False
+Time =   7.66 hours (max 24); max(|u|) = 352.7728
+
+Iteration n=1500; wall_time=11.29s, saving = False
+Time =  11.47 hours (max 24); max(|u|) = 329.6116
+
+Iteration n=2000; wall_time=15.03s, saving = False
+Time =  15.40 hours (max 24); max(|u|) = 290.6874
+
+Iteration n=2500; wall_time=18.80s, saving = False
+Time =  19.56 hours (max 24); max(|u|) = 327.0277
+
+Iteration n=3000; wall_time=22.54s, saving = False
+Time =  23.85 hours (max 24); max(|u|) = 309.2038
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:gpu backend
+in     0.38 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:gpu backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=5.14s, saving = False
+Time =   3.81 hours (max 24); max(|u|) = 476.7893
+
+Iteration n=1000; wall_time=10.27s, saving = False
+Time =   7.57 hours (max 24); max(|u|) = 346.1442
+
+Iteration n=1500; wall_time=15.40s, saving = False
+Time =  11.35 hours (max 24); max(|u|) = 357.0348
+
+Iteration n=2000; wall_time=20.52s, saving = False
+Time =  15.14 hours (max 24); max(|u|) = 293.5589
+
+Iteration n=2500; wall_time=25.64s, saving = False
+Time =  19.10 hours (max 24); max(|u|) = 343.3506
+
+Iteration n=3000; wall_time=30.77s, saving = False
+Time =  23.09 hours (max 24); max(|u|) = 338.5961
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:gpu backend
+in     0.53 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:gpu backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=8.33s, saving = False
+Time =   2.02 hours (max 24); max(|u|) = 392.8804
+
+Iteration n=1000; wall_time=16.63s, saving = False
+Time =   3.87 hours (max 24); max(|u|) = 483.5717
+
+Iteration n=1500; wall_time=24.91s, saving = False
+Time =   5.78 hours (max 24); max(|u|) = 354.5108
+
+Iteration n=2000; wall_time=33.20s, saving = False
+Time =   7.71 hours (max 24); max(|u|) = 350.1403
+
+Iteration n=2500; wall_time=41.48s, saving = False
+Time =   9.65 hours (max 24); max(|u|) = 320.7043
+
+Iteration n=3000; wall_time=49.77s, saving = False
+Time =  11.55 hours (max 24); max(|u|) = 281.2779
+
+Iteration n=3500; wall_time=58.05s, saving = False
+Time =  13.48 hours (max 24); max(|u|) = 296.2930
+
+Iteration n=4000; wall_time=66.34s, saving = False
+Time =  15.52 hours (max 24); max(|u|) = 280.0237
+
+Iteration n=4500; wall_time=74.62s, saving = False
+Time =  17.58 hours (max 24); max(|u|) = 299.1636
+
+Iteration n=5000; wall_time=82.91s, saving = False
+Time =  19.69 hours (max 24); max(|u|) = 301.1960
+
+Iteration n=5500; wall_time=91.19s, saving = False
+Time =  21.85 hours (max 24); max(|u|) = 332.6715
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:gpu backend
+in     1.66 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:gpu backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=16.05s, saving = False
+Time =   1.97 hours (max 24); max(|u|) = 431.8110
+
+Iteration n=1000; wall_time=32.23s, saving = False
+Time =   3.83 hours (max 24); max(|u|) = 488.9689
+
+Iteration n=1500; wall_time=48.26s, saving = False
+Time =   5.71 hours (max 24); max(|u|) = 350.6200
+
+Iteration n=2000; wall_time=64.44s, saving = False
+Time =   7.63 hours (max 24); max(|u|) = 340.8834
+
+Iteration n=2500; wall_time=80.47s, saving = False
+Time =   9.55 hours (max 24); max(|u|) = 319.0771
+
+Iteration n=3000; wall_time=96.66s, saving = False
+Time =  11.45 hours (max 24); max(|u|) = 359.0707
+
+Iteration n=3500; wall_time=112.75s, saving = False
+Time =  13.35 hours (max 24); max(|u|) = 299.8138
+
+Iteration n=4000; wall_time=128.95s, saving = False
+Time =  15.31 hours (max 24); max(|u|) = 281.6024
+
+Iteration n=4500; wall_time=145.00s, saving = False
+Time =  17.30 hours (max 24); max(|u|) = 268.3159
+
+Iteration n=5000; wall_time=161.19s, saving = False
+Time =  19.30 hours (max 24); max(|u|) = 319.2399
+
+Iteration n=5500; wall_time=177.21s, saving = False
+Time =  21.36 hours (max 24); max(|u|) = 303.9883
+
+Iteration n=6000; wall_time=193.40s, saving = False
+Time =  23.34 hours (max 24); max(|u|) = 312.0720
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:gpu backend
+in     3.31 min.
+
+
+[driver.py] Starting SWES simulation
+in gt4py version
+with gt:gpu backend
+on the torus.
+
+r_major, r_minor:  11111914.573424948 2222382.91468499
+omega:  0.00035512040000000003
+Time =   0.00 hours (max 24); max(|u|) = 38.61068277
+
+Iteration n=500; wall_time=33.35s, saving = False
+Time =   1.02 hours (max 24); max(|u|) = 650.7813
+
+Iteration n=1000; wall_time=66.76s, saving = False
+Time =   2.03 hours (max 24); max(|u|) = 409.6113
+
+Iteration n=1500; wall_time=100.05s, saving = False
+Time =   2.95 hours (max 24); max(|u|) = 436.7243
+
+Iteration n=2000; wall_time=133.42s, saving = False
+Time =   3.90 hours (max 24); max(|u|) = 496.8761
+
+Iteration n=2500; wall_time=166.73s, saving = False
+Time =   4.83 hours (max 24); max(|u|) = 386.2862
+
+Iteration n=3000; wall_time=200.12s, saving = False
+Time =   5.84 hours (max 24); max(|u|) = 357.1795
+
+Iteration n=3500; wall_time=233.89s, saving = False
+Time =   6.85 hours (max 24); max(|u|) = 380.4030
+
+Iteration n=4000; wall_time=267.80s, saving = False
+Time =   7.78 hours (max 24); max(|u|) = 356.0077
+
+Iteration n=4500; wall_time=301.68s, saving = False
+Time =   8.72 hours (max 24); max(|u|) = 347.9824
+
+Iteration n=5000; wall_time=335.59s, saving = False
+Time =   9.71 hours (max 24); max(|u|) = 320.6038
+
+Iteration n=5500; wall_time=369.43s, saving = False
+Time =  10.72 hours (max 24); max(|u|) = 385.2956
+
+Iteration n=6000; wall_time=403.35s, saving = False
+Time =  11.63 hours (max 24); max(|u|) = 279.5157
+
+Iteration n=6500; wall_time=437.18s, saving = False
+Time =  12.57 hours (max 24); max(|u|) = 311.9809
+
+Iteration n=7000; wall_time=471.09s, saving = False
+Time =  13.61 hours (max 24); max(|u|) = 290.3410
+
+Iteration n=7500; wall_time=504.94s, saving = False
+Time =  14.70 hours (max 24); max(|u|) = 288.1426
+
+Iteration n=8000; wall_time=538.87s, saving = False
+Time =  15.65 hours (max 24); max(|u|) = 275.3141
+
+Iteration n=8500; wall_time=572.75s, saving = False
+Time =  16.68 hours (max 24); max(|u|) = 266.6768
+
+Iteration n=9000; wall_time=606.65s, saving = False
+Time =  17.75 hours (max 24); max(|u|) = 307.7311
+
+Iteration n=9500; wall_time=640.47s, saving = False
+Time =  18.85 hours (max 24); max(|u|) = 314.3246
+
+Iteration n=10000; wall_time=674.43s, saving = False
+Time =  19.86 hours (max 24); max(|u|) = 288.4318
+
+Iteration n=10500; wall_time=708.29s, saving = False
+Time =  20.94 hours (max 24); max(|u|) = 258.0646
+
+Iteration n=11000; wall_time=742.20s, saving = False
+Time =  22.04 hours (max 24); max(|u|) = 324.7684
+
+Iteration n=11500; wall_time=776.04s, saving = False
+Time =  23.14 hours (max 24); max(|u|) = 311.6775
+
+Done computing.
+
+
+[driver.py] Finished SWES simulation
+in gt4py version
+with gt:gpu backend
+in    13.40 min.
+

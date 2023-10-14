@@ -13,7 +13,13 @@ import matplotlib
 #matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as manimation
-from mpl_toolkits.basemap import Basemap
+
+from matplotlib.animation import PillowWriter 
+import cartopy.crs as ccrs
+import gt4py
+#-----------------------------------------------------------
+#from mpl_toolkits.basemap import Basemap
+#-----------------------------------------------------------
 
 
 # --- SETTINGS --- #
@@ -37,14 +43,15 @@ projection = 'cyl'
 #	* mpg
 # and the frames per seconds
 save_movie = True
-movie_format = 'mpg'
+movie_format = 'gif'
 fps = 15
 
 
 # --- LOAD DATA --- #
 
-GRIDTOOLS_ROOT = os.environ.get('GRIDTOOLS_ROOT')
-baseName = GRIDTOOLS_ROOT + '/data/swes-numpy-0-M180-N90-T5-1-'
+GRIDTOOLS_ROOT = '.' #os.environ.get('GRIDTOOLS_ROOT')
+#baseName = GRIDTOOLS_ROOT + '/data/swes-numpy-0-M180-N90-T5-1-'
+baseName = GRIDTOOLS_ROOT + '/data/swes-numpy-0-M180-N90-T2-1-'
 
 # Load h
 with open(baseName + 'h', 'rb') as f:
@@ -77,8 +84,15 @@ if (what_to_plot == 'h'):
     if (save_movie):
 
         # Instantiate writer class
-        FFMpegWriter = manimation.writers["ffmpeg"]
-        writer = FFMpegWriter(fps = fps)
+        
+        metadata = dict(artist='Matplotlib', comment='')
+        #writer = manimation.FFMpegWriter(fps=fps, metadata=metadata, bitrate=3500)
+        
+        writer = manimation.PillowWriter(fps=fps)#, bitrate=3500)
+        
+        #PillowWriter
+        #FFMpegWriter = manimation.writers["ffmpeg"]
+        #writer = FFMpegWriter(fps = fps)
 
         with writer.saving(fig1, baseName + 'h.' + movie_format, Nt):
 
@@ -86,24 +100,27 @@ if (what_to_plot == 'h'):
 
                 if (n == 0):
                     if (projection == 'cyl'):
-                        m1 = Basemap(projection = 'cyl',
-                                     llcrnrlat = -90,
-                                     urcrnrlat = 90,
-                                     llcrnrlon = 0,
-                                     urcrnrlon = 360)
+                        #m1 = Basemap(projection = 'cyl',
+                        #             llcrnrlat = -90,
+                        #             urcrnrlat = 90,
+                        #             llcrnrlon = 0,
+                        #             urcrnrlon = 360)
+                        proj=ccrs.PlateCarree(central_longitude=0.0, globe=None)
+                        
                     elif (projection == 'ortho'):
-                        m1 = Basemap(projection = 'ortho',
-                                     lat_0 = 45,
-                                     lon_0 = 8.9511, # Lugano longitude
-                                     resolution='l')
-
-                    x1, y1 = m1(phi*180.0/math.pi, theta*180.0/math.pi)
+                        proj=ccrs.Orthographic(central_longitude=0.0, central_latitude=0.0, globe=None)
+                    
+                    #m1=plt.subplot(1,1,1, projection=proj)
+                    m1=plt.subplot(1,1,1)
+                    
+                    #x1, y1 = m1(phi*180.0/math.pi, theta*180.0/math.pi)
+                    x1, y1 = phi*180.0/math.pi, theta*180.0/math.pi
                     x1[1,:] = 0.0
 
-                    m1.drawcoastlines()
-                    m1.drawparallels(np.arange(-80.,81.,20.))
-                    m1.drawmeridians(np.arange(0.,360.,20.))
-                    m1.drawmapboundary(fill_color='white')
+                    #m1.drawcoastlines()
+                    #m1.drawparallels(np.arange(-80.,81.,20.))
+                    #m1.drawmeridians(np.arange(0.,360.,20.))
+                    #m1.drawmapboundary(fill_color='white')
                 else:
                     for coll in surf.collections:
                         plt.gca().collections.remove(coll)
@@ -111,16 +128,18 @@ if (what_to_plot == 'h'):
                 x1[1,:] = 0.0
                 x1[-2,:] = 360.0
                 color_scale = np.linspace(h.min(), h.max(), 30, endpoint = True)
+                #surf = m1.contourf(x1[1:-1,:], y1[1:-1,:], h[:,:,n], color_scale,  transform = ccrs.PlateCarree())
                 surf = m1.contourf(x1[1:-1,:], y1[1:-1,:], h[:,:,n], color_scale)
 
+                
                 # Comment the following line to hide the title
                 plt.title('Fluid height [m]: time = %5.2f hours\n' % (t[n] / 3600.0))
 
-                # Uncomment the following lines to show the colorbar on the left side of the plot
+                #Uncomment the following lines to show the colorbar on the left side of the plot
                 #if (n == 0):
-                #	fig1.colorbar(surf)
-                #else:
-                #	surf.autoscale()
+               # 	fig1.colorbar(surf)
+               # else:
+               # 	surf.autoscale()
 
                 writer.grab_frame()
 

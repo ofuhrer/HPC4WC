@@ -1,0 +1,115 @@
+99a100,104
+>         # Compute $\sin(\theta)$
+>         self.sg = np.sin(self.theta[1:-1, 1:-1])
+>         self.sgMidx = np.sin(0.5 * (self.theta[:-1, 1:-1] + self.theta[1:, 1:-1]))
+>         self.sgMidy = np.sin(0.5 * (self.theta[1:-1, :-1] + self.theta[1:-1, 1:]))
+>         
+240c245
+<         self.g = 9.80616
+---
+>         self.g = 9.80616#e-2
+243c248
+<         self.omega = 0.0  # 7.292e-5
+---
+>         self.omega = 7.292e-5
+248c253
+<         self.aspect_ratio = 0.5
+---
+>         self.aspect_ratio = 0.1
+263,264c268,269
+<         # self.f = 2.0 * self.omega * np.sin(self.theta)
+<         self.f = 0 * self.omega * np.sin(self.theta)
+---
+>         self.f = 2.0 * self.omega * np.sin(self.theta)
+>         # self.f = 0 * self.omega * np.sin(self.theta)
+418,419c423,425
+<             h0 = 5e4
+<             h = h0 * np.ones_like(self.phi) + h0 / 5e4 * h_equilibrium + 300
+---
+>             h = 2e5 * np.ones_like(self.phi) 
+>             #h0 = 5e4
+>             #h = h0 * np.ones_like(self.phi) + h0 / 5e4 * h_equilibrium + 300
+422c428
+< 
+---
+>             
+541,543c547,549
+<         # Mid-point value for u along y (needed for the Coriolis term)
+<         # todo: this is a bad solution but the correct uMidy is not available at the time of computing the Coriolis term for u
+<         uMidy_temp = 0.5 * (u[1:-1, 1:] + u[1:-1, :-1])
+---
+>         ## Mid-point value for u along y (needed for the Coriolis term)
+>         ## todo: this is a bad solution but the correct uMidy is not available at the time of computing the Coriolis term for u
+>         ##uMidy_temp = 0.5 * (u[1:-1, 1:] + u[1:-1, :-1])
+554c560,562
+<                 + 0.5 * (self.u[1:, 1:-1] + self.u[:-1, 1:-1]) * self.tgMidx / self.a
+---
+>                 + 0.5 * (self.u[1:, 1:-1] + self.u[:-1, 1:-1]) * self.sgMidx / (
+>                     self.r_major + self.r_minor * np.cos(0.5*(self.theta[1:, 1:-1] + self.theta[:-1, 1:-1]))
+>                 )
+568c576,578
+<                 + 0.5 * (u[1:-1, 1:] + u[1:-1, :-1]) * self.tgMidy / self.a
+---
+>                 + 0.5 * (u[1:-1, 1:] + u[1:-1, :-1]) * self.sgMidy / (
+>                     self.r_major + self.r_minor * np.cos(0.5*(self.theta[1:-1, 1:] + self.theta[1:-1, :-1]))
+>                 )
+582c592,594
+<                 + 0.5 * (u[1:, 1:-1] + u[:-1, 1:-1]) * self.tgMidx / self.a
+---
+>                 + 0.5 * (u[1:, 1:-1] + u[:-1, 1:-1]) * self.sgMidx / (
+>                     self.r_major + self.r_minor * np.cos(0.5*(self.theta[1:, 1:-1] + self.theta[:-1, 1:-1]))
+>                 )
+597c609,611
+<                 + 0.5 * (u[1:-1, 1:] + u[1:-1, :-1]) * self.tgMidy / self.a
+---
+>                 + 0.5 * (u[1:-1, 1:] + u[1:-1, :-1]) * self.sgMidy / (
+>                     self.r_major + self.r_minor * np.cos(0.5*(self.theta[1:-1, 1:] + self.theta[1:-1, :-1]))
+>                 )
+622,624c636,638
+<         ) + 2 * self.omega * (
+<             uMidy_temp * np.sin(thetaMidy[1:-1, :])
+<         )  # add coriolis term
+---
+>         ) #+ 2 * self.omega * (
+>         #    uMidy_temp * np.sin(thetaMidy[1:-1,:])
+>         #)  # add coriolis term
+639,640c653,654
+<                 * self.tg
+<                 / self.a
+---
+>                 * self.sg
+>                 / (self.r_major + self.r_minor * np.cos(self.theta[1:-1, 1:-1]))
+656,664c670
+<         Vy2Mid = (
+<             0.5 * grav_r_Midy[1:-1, :] * hMidy * hMidy
+<             + grav_theta_Midy[1:-1, :] * hMidy  # horizontal gravity
+<             + 2
+<             * self.omega
+<             * (
+<                 -UyMid * np.sin(thetaMidy[1:-1, :])
+<             )  # Coriolis acceleration in y or theta direction
+<         )
+---
+>         Vy2Mid = 0.5 * grav_r_Midy[1:-1, :] * hMidy * hMidy #+ grav_theta_Midy[1:-1, :] * hMidy
+680,681c686,687
+<                 * self.tg
+<                 / self.a
+---
+>                 * self.sg
+>                 / (self.r_major + self.r_minor * np.cos(self.theta[1:-1, 1:-1]))
+684a691,696
+>             ###
+>             + self.dt
+>             * self.g_torus_theta[1:-1, 1:-1]
+>             * 0.25
+>             * (hMidx[:-1, :] + hMidx[1:, :] + hMidy[:, :-1] + hMidy[:, 1:])
+>             ###
+692c704
+< 
+---
+>         #print("max term", self.g_torus_theta.max(),self.dt,hMidx.max())
+696c708,709
+< 
+---
+>         #print('u,v',np.absolute(unew).max(),np.absolute(vnew).max())
+>         #print('h',h.max())
