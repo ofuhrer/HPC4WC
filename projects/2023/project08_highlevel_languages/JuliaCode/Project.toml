@@ -1,0 +1,14 @@
+name = "JuliaCode"
+uuid = "66771660-cb5d-48bc-b973-8d596a1911e7"
+authors = ["vsemenov <vsemenov@student.ethz.ch>"]
+version = "0.1.0"
+
+[deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
+LoopVectorization = "bdcacae8-1622-11e9-2a5c-532679323890"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
