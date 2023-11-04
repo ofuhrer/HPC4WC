@@ -22,7 +22,7 @@ Flask==1.1.4
 gt4py @ git+https://github.com/gridtools/gt4py.git@50503087eae255be4bb2cc5ede0da27f3696e424
 idna==2.10
 ipykernel==5.5.5
-ipython==7.31.1
+ipython==8.10.0
 ipython-genutils==0.2.0
 itsdangerous==1.1.0
 jedi==0.18.0
