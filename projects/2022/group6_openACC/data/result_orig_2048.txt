@@ -1,4 +1,0 @@
-# ranks nx ny nz num_iter time
-data = np.array( [ \
-[    1, 2048, 2048,   64,    1024,  0.7012886E+03], \
-] )
