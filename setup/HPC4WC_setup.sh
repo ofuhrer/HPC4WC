@@ -21,6 +21,7 @@ cp -r HPC4WC HPC4WC_orig
 echo "Creating virtual HPC4WC_venv Python virtual environment"
 python -m venv HPC4WC_venv
 source HPC4WC_venv/bin/activate
+pip install --upgrade pip
 pip install setuptools wheel
 MPICC=CC pip install -r ~/HPC4WC/setup/etc/requirements.txt
 
@@ -31,5 +32,5 @@ sed -i "s/if \[ \"\$SOURCE_JUPYTERHUBENV\" == true \]\; then//" ~/.local/share/j
 sed -i "s/fi//" ~/.local/share/jupyter/kernels/HPC4WC_kernel/launcher
 sed -i "s/export PYTHONPATH=''//" ~/.local/share/jupyter/kernels/HPC4WC_kernel/launcher
 
-echo "Sucessfully finished. You must restart you JupyterHub now!"
+echo "Sucessfully finished. You must restart your JupyterHub now!"
 
