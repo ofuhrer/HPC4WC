@@ -1,3 +1,4 @@
+
 ! ******************************************************
 !     Program: stencil2d
 !      Author: Oliver Fuhrer
@@ -7,111 +8,126 @@
 ! ******************************************************
 
 ! Driver for apply_diffusion() that sets up fields and does timings
-program main
-    use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
+program stencil2d
+    use mpi
+    use openacc
     implicit none
 
-    ! constants
-    integer, parameter :: wp = 4
-    
-    ! local
+    integer, parameter :: wp = kind(1.0d0)
     integer :: nx, ny, nz, num_iter
-    logical :: scan
-    
     integer :: num_halo = 2
-    real (kind=wp) :: alpha = 1.0_wp / 32.0_wp
+    real(wp) :: alpha = 1.0_wp / 32.0_wp
 
-    real (kind=wp), allocatable :: in_field(:, :, :)
-    real (kind=wp), allocatable :: out_field(:, :, :)
+    real(wp), allocatable :: in_field(:,:,:), out_field(:,:,:)
+    integer :: local_nx, local_ny, local_nz
+    integer :: rank, num_procs, ierr
+    integer :: cart_comm, dims(3)
+    logical :: periods(3)
+    integer :: coords(3)
+    integer :: left, right, up, down
+    real(wp) :: start_time, end_time
 
-    integer :: timer_work
-    real (kind=8) :: runtime
+    call MPI_Init(ierr)
+    call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+    call MPI_Comm_size(MPI_COMM_WORLD, num_procs, ierr)
 
-    integer :: cur_setup, num_setups = 1
-    integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
-    integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
+    call read_input()
+    call setup_domain_decomposition()
+    call allocate_fields()
+    call initialize_fields()
 
-#ifdef CRAYPAT
-    include "pat_apif.h"
-    integer :: istat
-    call PAT_record( PAT_STATE_OFF, istat )
-#endif
+    start_time = MPI_Wtime()
 
-    call init()
+    call apply_diffusion(in_field, out_field, alpha, num_iter)
 
-    if ( is_master() ) then
-        write(*, '(a)') '# ranks nx ny nz num_iter time'
-        write(*, '(a)') 'data = np.array( [ \'
+    end_time = MPI_Wtime()
+
+    if (rank == 0) then
+        print *, "Total time: ", end_time - start_time, " seconds"
     end if
 
-    if ( scan ) num_setups = size(nx_setups) * size(ny_setups)
-    do cur_setup = 0, num_setups - 1
-
-        if ( scan ) then
-            nx = nx_setups( modulo(cur_setup, size(ny_setups) ) + 1 )
-            ny = ny_setups( cur_setup / size(ny_setups) + 1 )
-        end if
-
-        call setup()
-
-        if ( .not. scan .and. is_master() ) &
-            call write_field_to_file( in_field, num_halo, "in_field.dat" )
-
-        ! warmup caches
-        call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
-
-        ! time the actual work
-#ifdef CRAYPAT
-        call PAT_record( PAT_STATE_ON, istat )
-#endif
-        timer_work = -999
-        call timer_start('work', timer_work)
-
-        call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter )
-        
-        call timer_end( timer_work )
-#ifdef CRAYPAT
-        call PAT_record( PAT_STATE_OFF, istat )
-#endif
-
-        if ( .not. scan .and. is_master() ) &
-            call write_field_to_file( out_field, num_halo, "out_field.dat" )
-
-        call cleanup()
-
-        runtime = timer_get( timer_work )
-        if ( is_master() ) &
-            write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
-                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
-
-    end do
-
-    if ( is_master() ) then
-        write(*, '(a)') '] )'
-    end if
-
-    call finalize()
+    call cleanup()
+    call MPI_Finalize(ierr)
 
 contains
 
-    subroutine compute_tmp_fields(in_field, tmp1_field, tmp2_field, nx, ny, nz, num_halo)
-        implicit none
-        real(kind=wp), intent(in) :: in_field(:, :, :)
-        real(kind=wp), intent(out) :: tmp1_field(:, :, :), tmp2_field(:, :, :)
-        integer, intent(in) :: nx, ny, nz, num_halo
-        integer :: i, j, k
+    ! Reads input parameters from command line arguments.
+    ! Parameters:
+    !   nx: Integer, grid size in x-direction
+    !   ny: Integer, grid size in y-direction
+    !   nz: Integer, grid size in z-direction
+    !   num_iter: Integer, number of iterations
+    ! Broadcasts the input parameters to all processes.
+    subroutine read_input()
+        character(len=32) :: arg
+        if (rank == 0) then
+            if (command_argument_count() /= 8) then
+                print *, "Usage: ./stencil2d-openacc.x --nx <nx> --ny <ny> --nz <nz> --num_iter <num_iter>"
+                call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+            end if
+            call get_command_argument(2, arg)
+            read(arg, *) nx
+            call get_command_argument(4, arg)
+            read(arg, *) ny
+            call get_command_argument(6, arg)
+            read(arg, *) nz
+            call get_command_argument(8, arg)
+            read(arg, *) num_iter
+            print *, "Input parameters:"
+            print *, "nx =", nx, "ny =", ny, "nz =", nz, "num_iter =", num_iter
+        end if
+        call MPI_Bcast(nx, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+        call MPI_Bcast(ny, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+        call MPI_Bcast(nz, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+        call MPI_Bcast(num_iter, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+    end subroutine read_input
 
-        ! Example computation logic for tmp fields
-        do k = 1, nz
-            do j = 1 + num_halo, ny + num_halo
-                do i = 1 + num_halo, nx + num_halo
-                    tmp1_field(i, j, k) = in_field(i, j, k) * 2.0_wp
-                    tmp2_field(i, j, k) = in_field(i, j, k) * 3.0_wp
+    ! Sets up the domain decomposition for parallel processing.
+    ! Creates a 3D Cartesian communicator and calculates local domain sizes.
+    ! Determines neighboring processes for halo exchange.
+    subroutine setup_domain_decomposition()
+        dims = 0
+        periods = [.false., .false., .false.]
+        call MPI_Dims_create(num_procs, 3, dims, ierr)
+        call MPI_Cart_create(MPI_COMM_WORLD, 3, dims, periods, .true., cart_comm, ierr)
+        call MPI_Cart_coords(cart_comm, rank, 3, coords, ierr)
+        call MPI_Cart_shift(cart_comm, 0, 1, left, right, ierr)
+        call MPI_Cart_shift(cart_comm, 1, 1, down, up, ierr)
+
+        local_nx = nx / dims(1)
+        local_ny = ny / dims(2)
+        local_nz = nz / dims(3)
+
+        if (coords(1) < mod(nx, dims(1))) local_nx = local_nx + 1
+        if (coords(2) < mod(ny, dims(2))) local_ny = local_ny + 1
+        if (coords(3) < mod(nz, dims(3))) local_nz = local_nz + 1
+    end subroutine setup_domain_decomposition
+    
+    ! Allocates memory for input and output fields.
+    ! Includes halo regions in the allocation.
+    subroutine allocate_fields()
+        allocate(in_field(0:local_nx+2*num_halo-1, 0:local_ny+2*num_halo-1, 0:local_nz+2*num_halo-1))
+        allocate(out_field(0:local_nx+2*num_halo-1, 0:local_ny+2*num_halo-1, 0:local_nz+2*num_halo-1))
+    end subroutine allocate_fields
+
+    ! Initializes the input and output fields.
+    ! Sets initial values for the simulation domain.
+    subroutine initialize_fields()
+        integer :: i, j, k
+        in_field = 0.0_wp
+        do k = num_halo, local_nz+num_halo-1
+            do j = num_halo, local_ny+num_halo-1
+                do i = num_halo, local_nx+num_halo-1
+                    if (i+coords(1)*local_nx >= nx/4 .and. i+coords(1)*local_nx < 3*nx/4 .and. &
+                        j+coords(2)*local_ny >= ny/4 .and. j+coords(2)*local_ny < 3*ny/4 .and. &
+                        k+coords(3)*local_nz >= nz/4 .and. k+coords(3)*local_nz < 3*nz/4) then
+                        in_field(i,j,k) = 1.0_wp
+                    end if
                 end do
             end do
         end do
-    end subroutine compute_tmp_fields
-
+        out_field = in_field
+    end subroutine initialize_fields
 
     ! Integrate 4th-order diffusion equation by a certain number of iterations.
     !
@@ -120,273 +136,137 @@ contains
     !  alpha             -- diffusion coefficient (dimensionless)
     !  num_iter          -- number of iterations to execute
     !
-    subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
-        implicit none
-
-        real (kind=wp), intent(inout) :: in_field(:, :, :)
-        real (kind=wp), intent(inout) :: out_field(:, :, :)
-        real (kind=wp), intent(in) :: alpha
+    subroutine apply_diffusion(in_field, out_field, alpha, num_iter)
+        real(wp), intent(inout) :: in_field(0:, 0:, 0:), out_field(0:, 0:, 0:)
+        real(wp), intent(in) :: alpha
         integer, intent(in) :: num_iter
-
-        real (kind=wp), allocatable :: tmp1_field(:, :, :)
-        real (kind=wp), allocatable :: tmp2_field(:, :, :)
+        real(wp), allocatable :: tmp_field(:,:,:)
         integer :: iter, i, j, k
 
-        if ( .not. allocated(tmp1_field) ) then
-            allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
-            allocate( tmp2_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
-            tmp1_field = 0.0_wp
-            tmp2_field = 0.0_wp
-        end if
+        allocate(tmp_field(0:local_nx+2*num_halo-1, 0:local_ny+2*num_halo-1, 0:local_nz+2*num_halo-1))
 
-        !$acc data copy(in_field) copyout(out_field) create(tmp1_field, tmp2_field)
+        !$acc data copy(in_field, out_field) create(tmp_field)
         do iter = 1, num_iter
-            call compute_tmp_fields(in_field, tmp1_field, tmp2_field, nx, ny, nz, num_halo)
+            call exchange_halos(in_field)
 
             !$acc parallel loop collapse(3)
-            do k = 1, nz
-            do j = 1 + num_halo, ny + num_halo
-            do i = 1 + num_halo, nx + num_halo
-                out_field(i, j, k) = in_field(i, j, k) - alpha * tmp2_field(i, j, k)
+            do k = num_halo, local_nz+num_halo-1
+                do j = num_halo, local_ny+num_halo-1
+                    do i = num_halo, local_nx+num_halo-1
+                        tmp_field(i,j,k) = -4.0_wp * in_field(i,j,k) + &
+                                           in_field(i-1,j,k) + in_field(i+1,j,k) + &
+                                           in_field(i,j-1,k) + in_field(i,j+1,k)
+                    end do
+                end do
             end do
+
+            !$acc parallel loop collapse(3)
+            do k = num_halo, local_nz+num_halo-1
+                do j = num_halo, local_ny+num_halo-1
+                    do i = num_halo, local_nx+num_halo-1
+                        out_field(i,j,k) = in_field(i,j,k) - alpha * tmp_field(i,j,k)
+                    end do
+                end do
             end do
-            end do
+
+            !$acc parallel
+            in_field = out_field
+            !$acc end parallel
         end do
         !$acc end data
 
-        call update_halo( out_field )
-
+        deallocate(tmp_field)
     end subroutine apply_diffusion
 
+    ! Exchanges halo regions between neighboring processes.
+    ! Parameters:
+    !   field: Real array, the field to exchange halos for
+    ! Uses non-blocking MPI communication for efficiency.
+    subroutine exchange_halos(field)
+        real(wp), intent(inout) :: field(0:, 0:, 0:)
+        integer :: requests(12), statuses(MPI_STATUS_SIZE,12)
+        integer :: count, datatype
+        integer :: sizes(3), subsizes(3), starts(3)
+        integer :: req_count
 
-    ! Compute Laplacian using 2nd-order centered differences.
-    !     
-    !  in_field          -- input field (nx x ny x nz with halo in x- and y-direction)
-    !  lap_field         -- result (must be same size as in_field)
-    !  num_halo          -- number of halo points
-    !  extend            -- extend computation into halo-zone by this number of points
-    !
-    subroutine laplacian( field, lap, num_halo, extend )
-        implicit none
-            
-        ! argument
-        real (kind=wp), intent(in) :: field(:, :, :)
-        real (kind=wp), intent(inout) :: lap(:, :, :)
-        integer, intent(in) :: num_halo, extend
-        
-        ! local
-        integer :: i, j, k
-            
-        do k = 1, nz
-        do j = 1 + num_halo - extend, ny + num_halo + extend
-        do i = 1 + num_halo - extend, nx + num_halo + extend
-            lap(i, j, k) = -4._wp * field(i, j, k)      &
-                + field(i - 1, j, k) + field(i + 1, j, k)  &
-                + field(i, j - 1, k) + field(i, j + 1, k)
-        end do
-        end do
-        end do
+        req_count = 0
 
-    end subroutine laplacian
-
-
-    ! Update the halo-zone using an up/down and left/right strategy.
-    !    
-    !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
-    !
-    !  Note: corners are updated in the left/right phase of the halo-update
-    !
-    subroutine update_halo( field )
-        implicit none
-            
-        ! argument
-        real (kind=wp), intent(inout) :: field(:, :, :)
-        
-        ! local
-        integer :: i, j, k
-            
-        ! bottom edge (without corners)
-        do k = 1, nz
-        do j = 1, num_halo
-        do i = 1 + num_halo, nx + num_halo
-            field(i, j, k) = field(i, j + ny, k)
-        end do
-        end do
-        end do
-            
-        ! top edge (without corners)
-        do k = 1, nz
-        do j = ny + num_halo + 1, ny + 2 * num_halo
-        do i = 1 + num_halo, nx + num_halo
-            field(i, j, k) = field(i, j - ny, k)
-        end do
-        end do
-        end do
-        
-        ! left edge (including corners)
-        do k = 1, nz
-        do j = 1, ny + 2 * num_halo
-        do i = 1, num_halo
-            field(i, j, k) = field(i + nx, j, k)
-        end do
-        end do
-        end do
-                
-        ! right edge (including corners)
-        do k = 1, nz
-        do j = 1, ny + 2 * num_halo
-        do i = nx + num_halo + 1, nx + 2 * num_halo
-            field(i, j, k) = field(i - nx, j, k)
-        end do
-        end do
-        end do
-        
-    end subroutine update_halo
-        
-
-    ! initialize at program start
-    ! (init MPI, read command line arguments)
-    subroutine init()
-        use mpi, only : MPI_INIT
-        use m_utils, only : error
-        implicit none
-
-        ! local
-        integer :: ierror
-
-        ! initialize MPI environment
-        call MPI_INIT(ierror)
-        call error(ierror /= 0, 'Problem with MPI_INIT', code=ierror)
-
-        call read_cmd_line_arguments()
-
-    end subroutine init
-
-
-    ! setup everything before work
-    ! (init timers, allocate memory, initialize fields)
-    subroutine setup()
-        use m_utils, only : timer_init
-        implicit none
-
-        ! local
-        integer :: i, j, k
-
-        call timer_init()
-
-        allocate( in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
-        in_field = 0.0_wp
-        do k = 1 + nz / 4, 3 * nz / 4
-        do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
-        do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
-            in_field(i, j, k) = 1.0_wp
-        end do
-        end do
-        end do
-
-        allocate( out_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
-        out_field = in_field
-
-    end subroutine setup
-
-
-    ! read and parse the command line arguments
-    ! (read values, convert type, ensure all required arguments are present,
-    !  ensure values are reasonable)
-    subroutine read_cmd_line_arguments()
-        use m_utils, only : error
-        implicit none
-
-        ! local
-        integer iarg, num_arg
-        character(len=256) :: arg, arg_val
-
-        ! setup defaults
-        nx = -1
-        ny = -1
-        nz = -1
-        num_iter = -1
-        scan = .false.
-
-        num_arg = command_argument_count()
-        iarg = 1
-        do while ( iarg <= num_arg )
-            call get_command_argument(iarg, arg)
-            select case (arg)
-            case ("--nx")
-                call error(iarg + 1 > num_arg, "Missing value for -nx argument")
-                call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -nx argument")
-                read(arg_val, *) nx
-                iarg = iarg + 1
-            case ("--ny")
-                call error(iarg + 1 > num_arg, "Missing value for -ny argument")
-                call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -ny argument")
-                read(arg_val, *) ny
-                iarg = iarg + 1
-            case ("--nz")
-                call error(iarg + 1 > num_arg, "Missing value for -nz argument")
-                call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -nz argument")
-                read(arg_val, *) nz
-                iarg = iarg + 1
-            case ("--num_iter")
-                call error(iarg + 1 > num_arg, "Missing value for -num_iter argument")
-                call get_command_argument(iarg + 1, arg_val)
-                call error(arg_val(1:1) == "-", "Missing value for -num_iter argument")
-                read(arg_val, *) num_iter
-                iarg = iarg + 1
-            case ("--scan")
-                scan = .true.
-            case default
-                call error(.true., "Unknown command line argument encountered: " // trim(arg))
-            end select
-            iarg = iarg + 1
-        end do
-
-        ! make sure everything is set
-        if (.not. scan) then
-            call error(nx == -1, 'You have to specify nx')
-            call error(ny == -1, 'You have to specify ny')
+        ! X direction
+        count = (local_ny + 2*num_halo) * (local_nz + 2*num_halo)
+        if (left /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Isend(field(num_halo,0,0), count, MPI_DOUBLE_PRECISION, left, 0, cart_comm, requests(req_count), ierr)
         end if
-        call error(nz == -1, 'You have to specify nz')
-        call error(num_iter == -1, 'You have to specify num_iter')
-
-        ! check consistency of values
-        if (.not. scan) then
-            call error(nx < 0 .or. nx > 1024*1024, "Please provide a reasonable value of nx")
-            call error(ny < 0 .or. ny > 1024*1024, "Please provide a reasonable value of ny")
+        if (right /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Irecv(field(local_nx+num_halo,0,0), count, MPI_DOUBLE_PRECISION, right, 0, cart_comm, requests(req_count), ierr)
         end if
-        call error(nz < 0 .or. nz > 1024, "Please provide a reasonable value of nz")
-        call error(num_iter < 1 .or. num_iter > 1024*1024, "Please provide a reasonable value of num_iter")
+        if (right /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Isend(field(local_nx+num_halo-1,0,0), count, MPI_DOUBLE_PRECISION, right, 1, cart_comm, requests(req_count), ierr)
+        end if
+        if (left /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Irecv(field(0,0,0), count, MPI_DOUBLE_PRECISION, left, 1, cart_comm, requests(req_count), ierr)
+        end if
 
-    end subroutine read_cmd_line_arguments
+        ! Y direction
+        sizes = [local_nx+2*num_halo, local_ny+2*num_halo, local_nz+2*num_halo]
+        subsizes = [local_nx+2*num_halo, num_halo, local_nz+2*num_halo]
+        starts = [0, 0, 0]
+        call MPI_Type_create_subarray(3, sizes, subsizes, starts, MPI_ORDER_FORTRAN, MPI_DOUBLE_PRECISION, datatype, ierr)
+        call MPI_Type_commit(datatype, ierr)
 
+        if (down /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Isend(field(0,num_halo,0), 1, datatype, down, 2, cart_comm, requests(req_count), ierr)
+        end if
+        if (up /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Irecv(field(0,local_ny+num_halo,0), 1, datatype, up, 2, cart_comm, requests(req_count), ierr)
+        end if
+        if (up /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Isend(field(0,local_ny+num_halo-1,0), 1, datatype, up, 3, cart_comm, requests(req_count), ierr)
+        end if
+        if (down /= MPI_PROC_NULL) then
+            req_count = req_count + 1
+            call MPI_Irecv(field(0,0,0), 1, datatype, down, 3, cart_comm, requests(req_count), ierr)
+        end if
 
-    ! cleanup at end of work
-    ! (report timers, free memory)
+        call MPI_Type_free(datatype, ierr)
+
+        ! Z direction
+        sizes = [local_nx+2*num_halo, local_ny+2*num_halo, local_nz+2*num_halo]
+        subsizes = [local_nx+2*num_halo, local_ny+2*num_halo, num_halo]
+        starts = [0, 0, 0]
+        call MPI_Type_create_subarray(3, sizes, subsizes, starts, MPI_ORDER_FORTRAN, MPI_DOUBLE_PRECISION, datatype, ierr)
+        call MPI_Type_commit(datatype, ierr)
+
+        if (coords(3) > 0) then
+            req_count = req_count + 1
+            call MPI_Isend(field(0,0,num_halo), 1, datatype, coords(3)-1, 4, cart_comm, requests(req_count), ierr)
+        end if
+        if (coords(3) < dims(3)-1) then
+            req_count = req_count + 1
+            call MPI_Irecv(field(0,0,local_nz+num_halo), 1, datatype, coords(3)+1, 4, cart_comm, requests(req_count), ierr)
+        end if
+        if (coords(3) < dims(3)-1) then
+            req_count = req_count + 1
+            call MPI_Isend(field(0,0,local_nz+num_halo-1), 1, datatype, coords(3)+1, 5, cart_comm, requests(req_count), ierr)
+        end if
+        if (coords(3) > 0) then
+            req_count = req_count + 1
+            call MPI_Irecv(field(0,0,0), 1, datatype, coords(3)-1, 5, cart_comm, requests(req_count), ierr)
+        end if
+
+        call MPI_Waitall(req_count, requests, statuses, ierr)
+        call MPI_Type_free(datatype, ierr)
+    end subroutine exchange_halos
+
+    ! Deallocates dynamically allocated memory.
     subroutine cleanup()
-        implicit none
-        
         deallocate(in_field, out_field)
-
     end subroutine cleanup
 
-
-    ! finalize at end of program
-    ! (finalize MPI)
-    subroutine finalize()
-        use mpi, only : MPI_FINALIZE
-        use m_utils, only : error
-        implicit none
-
-        integer :: ierror
-
-        call MPI_FINALIZE(ierror)
-        call error(ierror /= 0, 'Problem with MPI_FINALIZE', code=ierror)
-
-    end subroutine finalize
-
-
-end program main
+end program stencil2d
