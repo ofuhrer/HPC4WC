@@ -29,7 +29,7 @@ charset-normalizer==2.0.11
 click==8.0.3
 cloudpickle==2.0.0
 cmake==3.20.2
-cryptography==36.0.1
+cryptography==42.0.4
 cupy-cuda110==10.1.0
 cycler==0.11.0
 cytoolz==0.11.0
