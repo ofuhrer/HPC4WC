@@ -73,7 +73,7 @@ jupyter-client==7.1.2
 jupyter-core==4.9.1
 jupyter-resource-usage==0.6.1
 jupyter-server==1.13.5
-jupyter-server-proxy==3.2.1
+jupyter-server-proxy==3.2.4
 jupyter-telemetry==0.1.0
 jupyter_utils==0.1
 jupyterhub==1.4.2
