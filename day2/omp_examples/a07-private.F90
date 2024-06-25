@@ -20,7 +20,6 @@ program main
     end do
     !$omp end parallel do
 
-    ! Print final value of myvar
     write(*,*) 'myvar: ', myvar
 
 end program main

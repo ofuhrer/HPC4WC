@@ -5,7 +5,6 @@
 
 int main(int argc, char const* argv[]) {
 
-// parallel loop
 #pragma omp parallel for
   for(int i = 0; i < 10; ++i) {
 #pragma omp critical(output)

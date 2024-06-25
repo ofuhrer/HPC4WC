@@ -4,10 +4,8 @@ program main
 
     integer :: i
 
-    ! Print scheduling information
     write(*,*) 'schedule(static, 2)'
 
-    ! Parallel loop with static scheduling and chunk size 2
     !$omp parallel do schedule(static, 2)
     do i = 0, 9
         !$omp critical(output)
@@ -16,10 +14,8 @@ program main
     end do
     !$omp end parallel do
 
-    ! Print scheduling information
     write(*,*) 'schedule(static, 1)'
 
-    ! Parallel loop with static scheduling and chunk size 1
     !$omp parallel do schedule(static, 1)
     do i = 0, 9
         !$omp critical(output)

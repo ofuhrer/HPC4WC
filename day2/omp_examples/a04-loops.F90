@@ -4,7 +4,6 @@ program main
 
     integer :: i
 
-    ! Parallel loop
     !$omp parallel do
     do i = 0, 9
         !$omp critical(output)
