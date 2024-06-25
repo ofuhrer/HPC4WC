@@ -10,6 +10,6 @@ int main(int argc, char const* argv[]) {
     int size = omp_get_num_threads();
     int rank = omp_get_thread_num();
 #pragma omp critical(output)
-    std::cout << "I am rank " << rank << " of a total of " << size << " threads" << std::endl;
+    std::cout << "I am thread " << rank << " of a total of " << size << " threads" << std::endl;
   }
 }

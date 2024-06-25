@@ -6,8 +6,6 @@ int main(int argc, char const* argv[]) {
 
   int nThreads = atoi(argv[1]);
   omp_set_num_threads(nThreads);
-  
-
 
   double tic = omp_get_wtime();
 

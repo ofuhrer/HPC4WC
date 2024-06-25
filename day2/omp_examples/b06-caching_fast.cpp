@@ -14,7 +14,6 @@ int main(int argc, char const *argv[]) {
 #pragma omp parallel for schedule(static, 10000)
   for (int i = 0; i < input.size(); ++i) {
     output[i] = 2 * input[i];
-    input[i] = 0;
   }
 
   double toc = omp_get_wtime();
