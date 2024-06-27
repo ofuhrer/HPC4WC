@@ -67,7 +67,7 @@ class Partitioner:
     
     
     def global_shape(self):
-        """Returns the shape of a local field (including halo points)"""
+        """Returns the shape of a global field (including halo points)"""
         return self.__global_shape
     
 
