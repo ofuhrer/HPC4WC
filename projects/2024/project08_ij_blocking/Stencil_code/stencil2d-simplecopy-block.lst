@@ -1,0 +1,857 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                          S u m m a r y   R e p o r t
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Compilation
+-----------
+File     : /users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90
+Compiled : 08/25/24  13:07:58
+Compiler : Version 12.0.3
+Ftnlx    : Version 12.0.3 
+Target   : x86-64
+Command  : ftn_driver.exe -hcpu=haswell -haccel=nvidia_60 -hnetwork=aries
+           -hdynamic -D__CRAYXC -D__CRAY_HASWELL -D__CRAY_NVIDIA60
+           -D__CRAYXT_COMPUTE_LINUX_TARGET -O3 -hfp3 -eZ -ffree -N255 -ec -eC
+           -eI -eF -rm -c stencil2d-simplecopy-block.F90
+           -I/opt/cray/pe/cce/12.0.3/cce-clang/x86_64/lib/clang/12.0.0/include
+           -I/opt/cray/pe/cce/12.0.3/cce/x86_64/include/craylibs -I/usr/include
+           -I/opt/cray/pe/libsci/20.09.1/CRAYCLANG/9.0/x86_64/include
+           -I/opt/cray/pe/mpt/7.7.18/gni/mpich-crayclang/10.0/include
+           -I/usr/local/cuda-11.0/include -I/usr/local/cuda-11.0/nvvm/include
+           -I/opt/cray/rca/2.2.20-7.0.3.1_3.15__g8e3fb5b.ari/include
+           -I/opt/cray/pe/pmi/5.0.17/include -I/opt/cray/pe/atp/3.14.5/include
+           -I/opt/cray/xpmem/default/include -I/opt/cray/dmapp/default/include
+           -I/opt/cray/alps/6.6.67-7.0.3.1_3.18__gb91cd181.ari/include
+           -I/opt/cray/wlm_detect/1.3.3-7.0.3.1_3.6__g7109084.ari/include
+           -I/opt/cray/ugni/default/include
+           -I/opt/cray/gni-headers/default/include
+           -I/opt/cray/alps/6.6.67-7.0.3.1_3.18__gb91cd181.ari/include
+           -I/opt/cray/krca/2.2.8-7.0.3.1_3.14__g59af36e.ari/include
+           -I/opt/cray-hss-devel/9.0.0/include
+           -I/opt/cray/udreg/default/include -I/usr/include
+Program
+  Units  : MAIN
+
+ftnlx report
+------------
+Source   : /users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90
+Date     : 08/25/2024  13:08:00
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                          S o u r c e   L i s t i n g
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+     %%%    L o o p m a r k   L e g e n d    %%%
+
+     Primary Loop Type        Modifiers
+     ------- ---- ----        ---------
+     A - Pattern matched      a - atomic memory operation
+                              b - blocked
+     C - Collapsed            c - conditional and/or computed
+     D - Deleted               
+     E - Cloned                
+     F - Flat - No calls      f - fused
+     G - Accelerated          g - partitioned
+     I - Inlined              i - interchanged
+     M - Multithreaded        m - partitioned
+                              n - non-blocking remote transfer
+                              p - partial
+     R - Rerolling            r - unrolled
+                              s - shortloop
+     V - Vectorized           w - unwound
+
+     + - More messages listed at end of listing
+     ------------------------------------------
+
+
+    1.                          ! ******************************************************
+    2.                          !     Program: stencil2d
+    3.                          !      Author: Oliver Fuhrer
+    4.                          !       Email: oliverf@vulcan.com
+    5.                          !        Date: 20.05.2020
+    6.                          ! Description: Simple stencil example (4th-order diffusion)
+    7.                          ! ******************************************************
+    8.                          
+    9.                          ! Driver for apply_diffusion() that sets up fields and does timings
+   10.                          program main
+   11.                              use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
+   12.                              implicit none
+   13.                          
+   14.                              ! constants
+   15.                              integer, parameter :: wp = 4 ! working precision --> set values to doubles
+   16.                              
+   17.                              ! local
+   18.                              integer :: nx, ny, nz, num_iter, size_i, size_j
+   19.                              logical :: scan
+   20.                              
+   21.                              integer :: num_halo = 2
+   22.                              real (kind=wp) :: alpha = 1.0_wp / 32.0_wp
+   23.                          
+   24.                              real (kind=wp), allocatable :: in_field(:, :, :)
+   25.                              real (kind=wp), allocatable :: out_field(:, :, :)
+   26.                          
+   27.                              integer :: timer_work
+   28.                              real (kind=8) :: runtime
+   29.                          
+   30.                              integer :: cur_setup, num_setups = 1
+   31.                              integer :: nx_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
+   32.                              integer :: ny_setups(7) = (/ 16, 32, 48, 64, 96, 128, 192 /)
+   33.                          
+   34.                          #ifdef CRAYPAT
+   35.    D                         include "pat_apif.h"
+   36.    D                         integer :: istat
+   37.    D                         call PAT_record( PAT_STATE_OFF, istat )
+   38.                          #endif
+   39.                          
+   40.  +                           call init()
+   41.                          
+   42.    Ip                        if ( is_master() ) then
+   43.                                  write(*, '(a)') '# ranks nx ny nz num_iter time'
+   44.                                  write(*, '(a)') 'data = np.array( [ \'
+   45.                              end if
+   46.                          
+   47.                              if ( scan ) num_setups = size(nx_setups) * size(ny_setups)
+   48.  + 1-------------------<     do cur_setup = 0, num_setups - 1
+   49.    1                     
+   50.    1                             if ( scan ) then
+   51.    1                                 nx = nx_setups( modulo(cur_setup, size(ny_setups) ) + 1 )
+   52.    1                                 ny = ny_setups( cur_setup / size(ny_setups) + 1 )
+   53.    1                             end if
+   54.    1                     
+   55.  + 1                             call setup()
+   56.    1                     
+   57.    1 Ip                          if ( .not. scan .and. is_master() ) &
+   58.  + 1                                 call write_field_to_file( in_field, num_halo, "in_field.dat" )
+   59.    1                     
+   60.    1                             ! warmup caches
+   61.  + 1                             call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
+   62.    1                     
+   63.    1                             ! time the actual work
+   64.    1                     #ifdef CRAYPAT
+   65.    D                             call PAT_record( PAT_STATE_ON, istat )
+   66.    1                     #endif
+   67.    1                             timer_work = -999
+   68.    1 Ip                          call timer_start('work', timer_work)
+   69.    1                     
+   70.  + 1                             call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter )
+   71.    1                             
+   72.    1 Ip                          call timer_end( timer_work )
+   73.    1                     #ifdef CRAYPAT
+   74.    D                             call PAT_record( PAT_STATE_OFF, istat )
+   75.    1                     #endif
+   76.    1                     
+   77.    1 Ip                          if ( .not. scan .and. is_master() ) &
+   78.  + 1                                 call write_field_to_file( out_field, num_halo, "out_field.dat" )
+   79.    1                     
+   80.  + 1                             call cleanup()
+   81.    1                     
+   82.    1 Ip                          runtime = timer_get( timer_work )
+   83.    1 Ip                          if ( is_master() ) &
+   84.    1                                 write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
+   85.    1 Ip                                  '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
+   86.    1                     
+   87.    1------------------->     end do
+   88.                          
+   89.    Ip                        if ( is_master() ) then
+   90.                                  write(*, '(a)') '] )'
+   91.                              end if
+   92.                          
+   93.    Ip                        call finalize()
+   94.                          
+   95.                          contains
+   96.                          
+   97.                          
+   98.                              ! Integrate 4th-order diffusion equation by a certain number of iterations.
+   99.                              !
+  100.                              !  in_field          -- input field (nx x ny x nz with halo in x- and y-direction)
+  101.                              !  out_field         -- result (must be same size as in_field)
+  102.                              !  alpha             -- diffusion coefficient (dimensionless)
+  103.                              !  num_iter          -- number of iterations to execute
+  104.                              !
+  105.                              subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
+  106.                                  implicit none
+  107.                                  
+  108.                                  ! arguments
+  109.                                  real (kind=wp), intent(inout) :: in_field(:, :, :)
+  110.                                  real (kind=wp), intent(inout) :: out_field(:, :, :)
+  111.                                  real (kind=wp), intent(in) :: alpha
+  112.                                  integer, intent(in) :: num_iter
+  113.                                  
+  114.                                  ! local
+  115.                                  real (kind=wp), save, allocatable :: tmp1_field(:, :)
+  116.                                  integer :: iter, i, j, k, j_end, i_end
+  117.                                  
+  118.                                  ! this is only done the first time this subroutine is called (warmup)
+  119.                                  ! or when the dimensions of the fields change
+  120.  +                               if ( allocated(tmp1_field) .and. &
+  121.                                      any( shape(tmp1_field) /= (/num_halo + size_i, num_halo + size_j /) ) ) then
+  122.                                      deallocate( tmp1_field)
+  123.                                  end if
+  124.                                  if ( .not. allocated(tmp1_field) ) then
+  125.                                      allocate( tmp1_field(num_halo + size_i, num_halo + size_j) )
+  126.    AC-----------------<>             tmp1_field = 0.0_wp
+  127.                                  end if
+  128.                                  
+  129.  + F                             do iter = 1, num_iter
+  130.    F                                         
+  131.    F Vcr2 I-----------<>             call update_halo( in_field )
+  132.    F                                 
+  133.    F                                 ! do forward in time step
+  134.  + F 2-----------------<             do k = 1, nz
+  135.  + F 2 3---------------<             do j_end = size_j, ny, size_j 
+  136.  + F 2 3 4-------------<             do i_end = size_i, nx, size_i
+  137.  + F 2 3 4 5-----------<             do j = 1 + num_halo, size_j + num_halo
+  138.    F 2 3 4 5 Vcr2------<             do i = 1 + num_halo, size_i + num_halo
+  139.    F 2 3 4 5 Vcr2                        tmp1_field(i, j) = in_field(i + i_end - size_i, j + j_end - size_j, k)
+  140.    F 2 3 4 5 Vcr2                        out_field(i + i_end - size_i, j + j_end - size_j, k) = tmp1_field(i, j)
+  141.    F 2 3 4 5 Vcr2------>             end do
+  142.    F 2 3 4 5----------->             end do
+  143.    F 2 3 4------------->             end do
+  144.    F 2 3--------------->             end do
+  145.    F 2                               
+  146.    F 2                                   if ( iter /= num_iter ) then
+  147.  + F 2 3---------------<                     do j = 1 + num_halo, ny + num_halo
+  148.    F 2 3 Vcr2----------<                     do i = 1 + num_halo, nx + num_halo
+  149.    F 2 3 Vcr2                                    in_field(i, j, k) = out_field(i, j, k)
+  150.    F 2 3 Vcr2---------->                     end do
+  151.    F 2 3--------------->                     end do
+  152.    F 2                                   end if
+  153.    F 2                                   
+  154.    F 2----------------->             end do
+  155.    F                     
+  156.    F                     
+  157.    F------------------->         end do
+  158.                          
+  159.  +                               call update_halo( out_field )
+  160.                                      
+  161.                              end subroutine apply_diffusion
+  162.                          
+  163.                          
+  164.                              ! Update the halo-zone using an up/down and left/right strategy.
+  165.                              !    
+  166.                              !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
+  167.                              !
+  168.                              !  Note: corners are updated in the left/right phase of the halo-update
+  169.                              !
+  170.                              subroutine update_halo( field )
+  171.                                  implicit none
+  172.                                      
+  173.                                  ! argument
+  174.                                  real (kind=wp), intent(inout) :: field(:, :, :)
+  175.                                  
+  176.                                  ! local
+  177.                                  integer :: i, j, k
+  178.                                      
+  179.                                  ! bottom edge (without corners)
+  180.  + f-------------------<         do k = 1, nz
+  181.  + f 2-----------------<         do j = 1, num_halo
+  182.    f 2 Vcr2------------<         do i = 1 + num_halo, nx + num_halo
+  183.    f 2 Vcr2                          field(i, j, k) = field(i, j + ny, k)
+  184.    f 2 Vcr2------------>         end do
+  185.    f 2----------------->         end do
+  186.    f------------------->         end do
+  187.                                      
+  188.                                  ! top edge (without corners)
+  189.  + f-------------------<         do k = 1, nz
+  190.  + f 2-----------------<         do j = ny + num_halo + 1, ny + 2 * num_halo
+  191.    f 2 Vcr2------------<         do i = 1 + num_halo, nx + num_halo
+  192.    f 2 Vcr2                          field(i, j, k) = field(i, j - ny, k)
+  193.    f 2 Vcr2------------>         end do
+  194.    f 2----------------->         end do
+  195.    f------------------->         end do
+  196.                                  
+  197.                                  ! left edge (including corners)
+  198.  + f-------------------<         do k = 1, nz
+  199.  + f f-----------------<         do j = 1, ny + 2 * num_halo
+  200.    f f Vcr2------------<         do i = 1, num_halo
+  201.    f f Vcr2                          field(i, j, k) = field(i + nx, j, k)
+  202.    f f Vcr2------------>         end do
+  203.    f f----------------->         end do
+  204.    f------------------->         end do
+  205.                                          
+  206.                                  ! right edge (including corners)
+  207.  + f-------------------<         do k = 1, nz
+  208.  + f f-----------------<         do j = 1, ny + 2 * num_halo
+  209.    f f Vcr2------------<         do i = nx + num_halo + 1, nx + 2 * num_halo
+  210.    f f Vcr2                          field(i, j, k) = field(i - nx, j, k)
+  211.    f f Vcr2------------>         end do
+  212.    f f----------------->         end do
+  213.    f------------------->         end do
+  214.                                  
+  215.                              end subroutine update_halo
+  216.                                  
+  217.                          
+  218.                              ! initialize at program start
+  219.                              ! (init MPI, read command line arguments)
+  220.                              subroutine init()
+  221.                                  use mpi, only : MPI_INIT
+  222.                                  use m_utils, only : error
+  223.                                  implicit none
+  224.                          
+  225.                                  ! local
+  226.                                  integer :: ierror
+  227.                          
+  228.                                  ! initialize MPI environment
+  229.  +                               call MPI_INIT(ierror)
+  230.    Ip                            call error(ierror /= 0, 'Problem with MPI_INIT', code=ierror)
+  231.                          
+  232.  +                               call read_cmd_line_arguments()
+  233.                          
+  234.                              end subroutine init
+  235.                          
+  236.                          
+  237.                              ! setup everything before work
+  238.                              ! (init timers, allocate memory, initialize fields)
+  239.                              subroutine setup()
+  240.                                  use m_utils, only : timer_init
+  241.                                  implicit none
+  242.                          
+  243.                                  ! local
+  244.                                  integer :: i, j, k
+  245.                          
+  246.    Vw I---------------<>         call timer_init()
+  247.                          
+  248.                                  allocate( in_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+  249.    AC-----------------<>         in_field = 0.0_wp
+  250.  + 1-------------------<         do k = 1 + nz / 4, 3 * nz / 4
+  251.  + 1 2-----------------<         do j = 1 + num_halo + ny / 4, num_halo + 3 * ny / 4
+  252.    1 2 A---------------<         do i = 1 + num_halo + nx / 4, num_halo + 3 * nx / 4
+  253.    1 2 A                             in_field(i, j, k) = 1.0_wp
+  254.    1 2 A--------------->         end do
+  255.    1 2----------------->         end do
+  256.    1------------------->         end do
+  257.                          
+  258.                                  allocate( out_field(nx + 2 * num_halo, ny + 2 * num_halo, nz) )
+  259.    AC-----------------<>         out_field = in_field
+  260.                          
+  261.                              end subroutine setup
+  262.                          
+  263.                          
+  264.                              ! read and parse the command line arguments
+  265.                              ! (read values, convert type, ensure all required arguments are present,
+  266.                              !  ensure values are reasonable)
+  267.                              subroutine read_cmd_line_arguments()
+  268.                                  use m_utils, only : error
+  269.                                  implicit none
+  270.                          
+  271.                                  ! local
+  272.                                  integer iarg, num_arg
+  273.                                  character(len=256) :: arg, arg_val
+  274.                          
+  275.                                  ! setup defaults
+  276.                                  nx = -1
+  277.                                  ny = -1
+  278.                                  nz = -1
+  279.                                  size_i = 16
+  280.                                  size_j = 16
+  281.                                  num_iter = -1
+  282.                                  scan = .false.
+  283.                          
+  284.                                  num_arg = command_argument_count()
+  285.                                  iarg = 1
+  286.  + 1-------------------<         do while ( iarg <= num_arg )
+  287.    1                                 call get_command_argument(iarg, arg)
+  288.    1                                 select case (arg)
+  289.    1                                 case ("--nx")
+  290.    1 Ip                                  call error(iarg + 1 > num_arg, "Missing value for -nx argument")
+  291.    1                                     call get_command_argument(iarg + 1, arg_val)
+  292.    1 Ip                                  call error(arg_val(1:1) == "-", "Missing value for -nx argument")
+  293.    1                                     read(arg_val, *) nx
+  294.    1                                     iarg = iarg + 1
+  295.    1                                 case ("--ny")
+  296.    1 Ip                                  call error(iarg + 1 > num_arg, "Missing value for -ny argument")
+  297.    1                                     call get_command_argument(iarg + 1, arg_val)
+  298.    1 Ip                                  call error(arg_val(1:1) == "-", "Missing value for -ny argument")
+  299.    1                                     read(arg_val, *) ny
+  300.    1                                     iarg = iarg + 1
+  301.    1                                 case ("--nz")
+  302.    1 Ip                                  call error(iarg + 1 > num_arg, "Missing value for -nz argument")
+  303.    1                                     call get_command_argument(iarg + 1, arg_val)
+  304.    1 Ip                                  call error(arg_val(1:1) == "-", "Missing value for -nz argument")
+  305.    1                                     read(arg_val, *) nz
+  306.    1                                     iarg = iarg + 1
+  307.    1                                 case ("--num_iter")
+  308.    1 Ip                                  call error(iarg + 1 > num_arg, "Missing value for -num_iter argument")
+  309.    1                                     call get_command_argument(iarg + 1, arg_val)
+  310.    1 Ip                                  call error(arg_val(1:1) == "-", "Missing value for -num_iter argument")
+  311.    1                                     read(arg_val, *) num_iter
+  312.    1                                     iarg = iarg + 1
+  313.    1                                 case ("--size_i")
+  314.    1 Ip                                  call error(iarg + 1 > num_arg, "Missing value for -size_i argument")
+  315.    1                                     call get_command_argument(iarg + 1, arg_val)
+  316.    1 Ip                                  call error(arg_val(1:1) == "-", "Missing value for -size_i argument")
+  317.    1                                     read(arg_val, *) size_i
+  318.    1                                     iarg = iarg + 1
+  319.    1                                 case ("--size_j")
+  320.    1 Ip                                  call error(iarg + 1 > num_arg, "Missing value for -size_j argument")
+  321.    1                                     call get_command_argument(iarg + 1, arg_val)
+  322.    1 Ip                                  call error(arg_val(1:1) == "-", "Missing value for -size_j argument")
+  323.    1                                     read(arg_val, *) size_j
+  324.    1                                     iarg = iarg + 1 
+  325.    1                                 case ("--scan")
+  326.    1                                     scan = .true.
+  327.    1                                 case default
+  328.    1 Ip                                  call error(.true., "Unknown command line argument encountered: " // trim(arg))
+  329.    1                                 end select
+  330.    1                                 iarg = iarg + 1
+  331.    1------------------->         end do
+  332.                          
+  333.                                  ! make sure everything is set
+  334.                                  if (.not. scan) then
+  335.    Ip                                call error(nx == -1, 'You have to specify nx')
+  336.    Ip                                call error(ny == -1, 'You have to specify ny')
+  337.                                  end if
+  338.    Ip                            call error(nz == -1, 'You have to specify nz')
+  339.    Ip                            call error(num_iter == -1, 'You have to specify num_iter')
+  340.                          
+  341.                                  ! check consistency of values
+  342.                                  if (.not. scan) then
+  343.    Ip                                call error(nx < 0 .or. nx > 1024*1024, "Please provide a reasonable value of nx")
+  344.    Ip                                call error(ny < 0 .or. ny > 1024*1024, "Please provide a reasonable value of ny")
+  345.                                  end if
+  346.    Ip                            call error(nz < 0 .or. nz > 1024, "Please provide a reasonable value of nz")
+  347.    Ip                            call error(num_iter < 1 .or. num_iter > 1024*1024, "Please provide a reasonable value of num_iter")
+  348.                          
+  349.                              end subroutine read_cmd_line_arguments
+  350.                          
+  351.                          
+  352.                              ! cleanup at end of work
+  353.                              ! (report timers, free memory)
+  354.                              subroutine cleanup()
+  355.                                  implicit none
+  356.                                  
+  357.                                  deallocate(in_field, out_field)
+  358.                          
+  359.                              end subroutine cleanup
+  360.                          
+  361.                          
+  362.                              ! finalize at end of program
+  363.                              ! (finalize MPI)
+  364.                              subroutine finalize()
+  365.                                  use mpi, only : MPI_FINALIZE
+  366.                                  use m_utils, only : error
+  367.                                  implicit none
+  368.                          
+  369.                                  integer :: ierror
+  370.                          
+  371.  +                               call MPI_FINALIZE(ierror)
+  372.    Ip                            call error(ierror /= 0, 'Problem with MPI_FINALIZE', code=ierror)
+  373.                          
+  374.                              end subroutine finalize
+  375.                          
+  376.                          
+  377.                          end program main
+
+ftn-3118 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 40 
+  "init"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:220) not flattened because
+  "mpi_abort" is missing.
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 42 
+  Tree "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122)
+          "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+             "MPI_COMM_RANK"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+ftn-6288 ftn: VECTOR MAIN, File = stencil2d-simplecopy-block.F90, Line = 48 
+  A loop starting at line 48 was not vectorized because it contains a call to subroutine "setup" on line 55.
+
+ftn-3165 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 55 
+  "setup"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:239) was not inlined
+  because of deferred implementation - ALLOCATE encountered in callee.
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 57 
+  Tree "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122)
+          "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+             "MPI_COMM_RANK"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+ftn-3163 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 58 
+  "write_3d_float32_field_to_file"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:59) was not inlined
+  because the routine contains initialized data with the SAVE attribute.
+
+ftn-3165 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 61 
+  "apply_diffusion"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:105) was not
+  inlined because of deferred implementation - ALLOCATE encountered in callee.
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 68 
+  Tree "timer_start"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:225) was inlined.  NOT INLINED:  MPI_ABORT : MPI_WTIME.
+       "timer_start"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:225)
+          "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+             "MPI_ABORT"
+             "_STOP3"
+          "MPI_WTIME"
+
+ftn-3165 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 70 
+  "apply_diffusion"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:105) was not
+  inlined because of deferred implementation - ALLOCATE encountered in callee.
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 72 
+  Tree "timer_end"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:258) was inlined.  NOT INLINED:  MPI_WTIME.
+       "timer_end"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:258)
+          "MPI_WTIME"
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 77 
+  Tree "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122)
+          "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+             "MPI_COMM_RANK"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+ftn-3163 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 78 
+  "write_3d_float32_field_to_file"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:59) was not inlined
+  because the routine contains initialized data with the SAVE attribute.
+
+ftn-3165 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 80 
+  "cleanup"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:354) was not inlined
+  because of deferred implementation - ALLOCATE encountered in callee.
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 82 
+  Tree "timer_get"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:275) was inlined.  NOT INLINED:  MPI_REDUCE : MPI_COMM_SIZE : MPI_ABORT.
+       "timer_get"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:275)
+          "MPI_REDUCE"
+          "num_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:146)
+             "MPI_COMM_SIZE"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 83 
+  Tree "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122)
+          "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+             "MPI_COMM_RANK"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 85 
+  Tree "num_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:146) was inlined.  NOT INLINED:  MPI_COMM_SIZE : MPI_ABORT.
+       "num_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:146)
+          "MPI_COMM_SIZE"
+          "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+             "MPI_ABORT"
+             "_STOP3"
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 89 
+  Tree "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122)
+          "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+             "MPI_COMM_RANK"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+ftn-3001 ftn: IPA MAIN, File = stencil2d-simplecopy-block.F90, Line = 93 
+  Tree "finalize"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:364) was inlined.  NOT INLINED:  MPI_FINALIZE : MPI_ABORT.
+       "finalize"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:364)
+          "MPI_FINALIZE"
+          "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+             "MPI_ABORT"
+             "_STOP3"
+
+ftn-6334 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 120 
+  A loop starting at line 120 was not vectorized because it contains multiple potential exits.
+
+ftn-6066 ftn: SCALAR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 126 
+   A loop nest at line 126 collapsed to a single loop.
+
+ftn-6202 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 126 
+  A loop starting at line 126 was replaced by a library call.
+
+ftn-3182 ftn: IPA APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 129 
+  Loop has been flattened.
+
+ftn-6306 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 129 
+  A loop starting at line 129 was not vectorized because the iteration space is too irregular.
+
+ftn-3001 ftn: IPA APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 131 
+  Leaf "update_halo"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:170) was inlined.
+
+ftn-6005 ftn: SCALAR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 131 
+  A loop starting at line 131 was unrolled 2 times.
+
+ftn-6213 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 131 
+  A loop starting at line 131 was conditionally vectorized.
+
+ftn-6294 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 134 
+  A loop starting at line 134 was not vectorized because a better candidate was found at line 148.
+
+ftn-6306 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 135 
+  A loop starting at line 135 was not vectorized because the iteration space is too irregular.
+
+ftn-6315 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 136 
+  A loop starting at line 136 was not vectorized because the target array (tmp1_field) would require rank expansion.
+
+ftn-6303 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 137 
+  A loop starting at line 137 was not vectorized because an inter-loop dependence relation is too complicated.
+
+ftn-6005 ftn: SCALAR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 138 
+  A loop starting at line 138 was unrolled 2 times.
+
+ftn-6213 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 138 
+  A loop starting at line 138 was conditionally vectorized.
+
+ftn-6294 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 147 
+  A loop starting at line 147 was not vectorized because a better candidate was found at line 148.
+
+ftn-6005 ftn: SCALAR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 148 
+  A loop starting at line 148 was unrolled 2 times.
+
+ftn-6213 ftn: VECTOR APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 148 
+  A loop starting at line 148 was conditionally vectorized.
+
+ftn-3171 ftn: IPA APPLY_DIFFUSION, File = stencil2d-simplecopy-block.F90, Line = 159 
+  "update_halo"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:170) was not inlined
+  because it is not in the body of a loop.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 180 
+  A loop starting at line 180 was not vectorized because a better candidate was found at line 182.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 181 
+  A loop starting at line 181 was not vectorized because a better candidate was found at line 182.
+
+ftn-6005 ftn: SCALAR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 182 
+  A loop starting at line 182 was unrolled 2 times.
+
+ftn-6213 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 182 
+  A loop starting at line 182 was conditionally vectorized.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 189 
+  A loop starting at line 189 was not vectorized because a better candidate was found at line 191.
+
+ftn-6004 ftn: SCALAR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 189 
+  A loop starting at line 189 was fused with the loop starting at line 180.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 190 
+  A loop starting at line 190 was not vectorized because a better candidate was found at line 191.
+
+ftn-6005 ftn: SCALAR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 191 
+  A loop starting at line 191 was unrolled 2 times.
+
+ftn-6213 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 191 
+  A loop starting at line 191 was conditionally vectorized.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 198 
+  A loop starting at line 198 was not vectorized because a better candidate was found at line 200.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 199 
+  A loop starting at line 199 was not vectorized because a better candidate was found at line 200.
+
+ftn-6005 ftn: SCALAR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 200 
+  A loop starting at line 200 was unrolled 2 times.
+
+ftn-6213 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 200 
+  A loop starting at line 200 was conditionally vectorized.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 207 
+  A loop starting at line 207 was not vectorized because a better candidate was found at line 209.
+
+ftn-6004 ftn: SCALAR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 207 
+  A loop starting at line 207 was fused with the loop starting at line 198.
+
+ftn-6294 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 208 
+  A loop starting at line 208 was not vectorized because a better candidate was found at line 209.
+
+ftn-6004 ftn: SCALAR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 208 
+  A loop starting at line 208 was fused with the loop starting at line 199.
+
+ftn-6005 ftn: SCALAR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 209 
+  A loop starting at line 209 was unrolled 2 times.
+
+ftn-6213 ftn: VECTOR UPDATE_HALO, File = stencil2d-simplecopy-block.F90, Line = 209 
+  A loop starting at line 209 was conditionally vectorized.
+
+ftn-3021 ftn: IPA INIT, File = stencil2d-simplecopy-block.F90, Line = 229 
+  "mpi_init" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3001 ftn: IPA INIT, File = stencil2d-simplecopy-block.F90, Line = 230 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3118 ftn: IPA INIT, File = stencil2d-simplecopy-block.F90, Line = 232 
+  "read_cmd_line_arguments"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-simplecopy-block.F90:267) not
+  flattened because "mpi_abort" is missing.
+
+ftn-3001 ftn: IPA SETUP, File = stencil2d-simplecopy-block.F90, Line = 246 
+  Leaf "timer_init"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:203) was inlined.
+
+ftn-6373 ftn: VECTOR SETUP, File = stencil2d-simplecopy-block.F90, Line = 246 
+  A loop starting at line 246 with a trip count of 100 was unwound into 12 vector iterations.
+
+ftn-6204 ftn: VECTOR SETUP, File = stencil2d-simplecopy-block.F90, Line = 246 
+  A loop starting at line 246 was vectorized.
+
+ftn-6066 ftn: SCALAR SETUP, File = stencil2d-simplecopy-block.F90, Line = 249 
+   A loop nest at line 249 collapsed to a single loop.
+
+ftn-6202 ftn: VECTOR SETUP, File = stencil2d-simplecopy-block.F90, Line = 249 
+  A loop starting at line 249 was replaced by a library call.
+
+ftn-6294 ftn: VECTOR SETUP, File = stencil2d-simplecopy-block.F90, Line = 250 
+  A loop starting at line 250 was not vectorized because a better candidate was found at line 252.
+
+ftn-6294 ftn: VECTOR SETUP, File = stencil2d-simplecopy-block.F90, Line = 251 
+  A loop starting at line 251 was not vectorized because a better candidate was found at line 252.
+
+ftn-6202 ftn: VECTOR SETUP, File = stencil2d-simplecopy-block.F90, Line = 252 
+  A loop starting at line 252 was replaced by a library call.
+
+ftn-6066 ftn: SCALAR SETUP, File = stencil2d-simplecopy-block.F90, Line = 259 
+   A loop nest at line 259 collapsed to a single loop.
+
+ftn-6202 ftn: VECTOR SETUP, File = stencil2d-simplecopy-block.F90, Line = 259 
+  A loop starting at line 259 was replaced by a library call.
+
+ftn-6262 ftn: VECTOR READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 286 
+  A loop starting at line 286 was not vectorized because it contains a call to a subroutine or function on line 287.
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 290 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 292 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 296 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 298 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 302 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 304 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 308 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 310 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 314 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 316 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 320 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 322 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 328 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 1 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 335 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 336 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 338 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 339 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 343 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 344 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 346 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3001 ftn: IPA READ_CMD_LINE_ARGUMENTS, File = stencil2d-simplecopy-block.F90, Line = 347 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3021 ftn: IPA FINALIZE, File = stencil2d-simplecopy-block.F90, Line = 371 
+  "mpi_finalize" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3001 ftn: IPA FINALIZE, File = stencil2d-simplecopy-block.F90, Line = 372 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

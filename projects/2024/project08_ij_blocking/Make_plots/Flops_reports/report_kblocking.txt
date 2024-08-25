@@ -1,0 +1,149 @@
+# ranks nx ny nz num_iter time
+data = np.array( [ \
+[    1,  128,  128,   64,     128,  0.1801832E+00], \
+] )
+
+#################################################################
+#                                                               #
+#            CrayPat-lite Performance Statistics                #
+#                                                               #
+#################################################################
+
+CrayPat/X:  Version 21.09.0 Revision b02949528  08/17/21 03:14:02
+Experiment:                  lite  lite-samples
+Number of PEs (MPI ranks):      1
+Numbers of PEs per Node:        1
+Numbers of Threads per PE:      1
+Number of Cores per Socket:    12
+Accelerator Model: Nvidia P100-PCIE-16GB Memory: 16.00 GB Frequency: 1.19 GHz
+
+Accelerator Driver Version: 470.57.2
+
+Execution start time:  Sun Aug 25 12:56:28 2024
+System name and speed:  nid02342  2.970 GHz (nominal)
+Intel Haswell              CPU  Family:  6  Model: 63  Stepping:  2
+DRAM:  64 GiB DDR4-2400 on 2.6 GHz nodes
+
+
+
+Avg Process Time:          0.30 secs         
+High Memory:               73.5 MiBytes 73.5 MiBytes per PE
+Observed CPU clock boost: 122.5 %      
+Percent cycles stalled:    64.5 %      
+Instr per Cycle:           1.27
+
+Notes for table 1:
+
+  This table shows functions that have significant exclusive sample
+    hits, averaged across ranks.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O samp_profile ...
+
+Table 1:  Profile by Function
+
+  Samp% | Samp | Imb. |  Imb. | Group
+        |      | Samp | Samp% |  Function=[MAX10]
+       
+ 100.0% | 18.0 |   -- |    -- | Total
+|----------------------------------------------------
+| 100.0% | 18.0 |   -- |    -- | USER
+||---------------------------------------------------
+|| 100.0% | 18.0 |   -- |    -- | apply_diffusion$main_
+|====================================================
+
+Notes for table 2:
+
+  This table shows functions, and line numbers within functions, that
+    have significant exclusive sample hits, averaged across ranks.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O samp_profile+src ...
+
+Table 2:  Profile by Group, Function, and Line
+
+  Samp% | Samp | Imb. |  Imb. | Group
+        |      | Samp | Samp% |  Function=[MAX10]
+        |      |      |       |   Source
+        |      |      |       |    Line
+       
+ 100.0% | 18.0 |   -- |    -- | Total
+|-----------------------------------------------------------------------------
+| 100.0% | 18.0 |   -- |    -- | USER
+||----------------------------------------------------------------------------
+|| 100.0% | 18.0 |   -- |    -- | apply_diffusion$main_
+3|        |      |      |       |  Project/HPC4WC_project_ijblocking/Stencil_code/stencil2d-kblocking.F90
+||||--------------------------------------------------------------------------
+4|||   5.6% |  1.0 |   -- |    -- | line.134
+4|||  22.2% |  4.0 |   -- |    -- | line.138
+4|||  11.1% |  2.0 |   -- |    -- | line.139
+4|||   5.6% |  1.0 |   -- |    -- | line.142
+4|||  44.4% |  8.0 |   -- |    -- | line.143
+4|||   5.6% |  1.0 |   -- |    -- | line.149
+4|||   5.6% |  1.0 |   -- |    -- | line.150
+|=============================================================================
+
+Observation:  MPI utilization
+
+    No suggestions were made because each node has only one rank.
+
+
+Observation:  Program sensitivity to memory latency
+
+    The relatively low memory bandwidth utilization but significant rate
+    of stalls in the program suggest that its performance is limited by
+    memory latency.
+    It could be beneficial to improve prefetching in loops in functions
+    high in the profile, by modifying compiler-generated prefetches or
+    inserting directives into the source code.
+
+
+Notes for table 3:
+
+  This table shows memory traffic for numa nodes, taking for each numa
+    node the maximum value across nodes. It also shows the balance in
+    memory traffic by showing the top 3 and bottom 3 node values.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O mem_bw ...
+
+Table 3:  Memory Bandwidth by Numanode
+
+   Memory |    Local |   Thread |  Memory |  Memory | Numanode
+  Traffic |   Memory |     Time | Traffic | Traffic | 
+   GBytes |  Traffic |          |  GBytes |       / | 
+          |   GBytes |          |   / Sec | Nominal | 
+          |          |          |         |    Peak | 
+|---------------------------------------------------------------
+|     0.00 |     0.00 | 0.278944 |    0.00 |    0.0% | numanode.0
+|===============================================================
+
+Notes for table 4:
+
+  This table shows energy and power usage for the nodes with the
+    maximum, mean, and minimum usage, as well as the sum of usage over
+    all nodes.
+    Energy and power for accelerators is also shown, if applicable.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O program_energy ...
+
+Table 4:  Program energy and power usage (from Cray PM)
+
+   Node |     Node |  Process | Total
+ Energy |    Power |     Time | 
+    (J) |      (W) |          | 
+-------------------------------------
+     27 |   90.086 | 0.299714 | Total
+=====================================
+Program invocation:
+  /users/class169/Project/HPC4WC_project_ijblocking/Make_plots/../Stencil_code/stencil2d-kblocking.x --nx 128 --ny 128 --nz 64 --num_iter 128
+
+For a complete report with expanded tables and notes, run:
+  pat_report /users/class169/Project/HPC4WC_project_ijblocking/Make_plots/stencil2d-kblocking.x+12543-2342s
+
+For help identifying callers of particular functions:
+  pat_report -O callers+src /users/class169/Project/HPC4WC_project_ijblocking/Make_plots/stencil2d-kblocking.x+12543-2342s
+To see the entire call tree:
+  pat_report -O calltree+src /users/class169/Project/HPC4WC_project_ijblocking/Make_plots/stencil2d-kblocking.x+12543-2342s
+
+For interactive, graphical performance analysis, run:
+  app2 /users/class169/Project/HPC4WC_project_ijblocking/Make_plots/stencil2d-kblocking.x+12543-2342s
+
+================  End of CrayPat-lite output  ==========================
