@@ -1,0 +1,18 @@
+name: Lint and Commit
+on: push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - run: pip install ruff
+    - run: ruff check --fix . --config=.ruff.toml
+    - run: ruff format . --config=.ruff.toml
+    - uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: 'Style fixes by ruff'
+        commit_author: 'Actions Bot <actions@github.com>'

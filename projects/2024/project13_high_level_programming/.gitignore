@@ -1,0 +1,16 @@
+# Ruff
+.rff_cache
+
+# Ignore results from others, but keep the folder structure
+data/*/*
+!data/**/.gitkeep
+
+# Ignore temporary results
+results_tmp/*
+!results_tmp/*/.gitkeep
+
+# Ignore Pycache
+__pycache__
+
+# Ignore VSCode stuff
+.vscode
