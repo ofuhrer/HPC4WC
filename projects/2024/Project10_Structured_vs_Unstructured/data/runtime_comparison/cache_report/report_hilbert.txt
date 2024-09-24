@@ -1,0 +1,352 @@
+CrayPat/X:  Version 21.09.0 Revision b02949528  08/17/21 03:14:02
+
+Number of PEs (MPI ranks):   12
+                           
+Numbers of PEs per Node:     12
+                           
+Numbers of Threads per PE:    1
+                           
+Number of Cores per Socket:  12
+
+Accelerator Model: Nvidia P100-PCIE-16GB Memory: 16.00 GB Frequency: 1.19 GHz
+
+Accelerator Driver Version: 470.57.2
+
+Execution start time:  Sun Aug  4 18:06:24 2024
+
+System name and speed:  nid03875  3.080 GHz (nominal)
+
+Intel Haswell              CPU  Family:  6  Model: 63  Stepping:  2
+
+DRAM:  64 GiB DDR4-2400 on 2.6 GHz nodes
+
+
+Current path to data file:
+  /users/class164/Submission/stencil2d-hilbert.x+pat+434-3875t   (RTS, 12 data files)
+
+
+Notes for table 1:
+
+  This table shows functions that have significant exclusive time,
+    averaged across ranks.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O profile ...
+
+Table 1:  Profile by Function Group and Function
+
+  Time% |     Time |     Imb. |  Imb. | Calls | Group
+        |          |     Time | Time% |       |  Function
+        |          |          |       |       |   PE=HIDE
+       
+ 100.0% | 6.314306 |       -- |    -- | 403.0 | Total
+|--------------------------------------------------------
+| 100.0% | 6.313069 | 0.183894 |  3.1% |   1.0 | USER
+||-------------------------------------------------------
+|| 100.0% | 6.313069 | 0.183894 |  3.1% |   1.0 | main_
+|========================================================
+
+Notes for table 2:
+
+  This table shows functions that have the most significant exclusive
+    time, taking the maximum time across ranks and threads.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O profile_max ...
+
+Table 2:  Profile of maximum function times
+
+  Time% |     Time |     Imb. |  Imb. | Function
+        |          |     Time | Time% |  PE=[max,min]
+|----------------------------------------------------
+| 100.0% | 6.496963 | 0.183894 |  3.1% | main_
+||---------------------------------------------------
+|| 100.0% | 6.496963 |       -- |    -- | pe.2
+||  95.8% | 6.224670 |       -- |    -- | pe.7
+|====================================================
+
+Observation:  D1 cache utilization
+
+    All instrumented functions with significant execution time had D1
+    cache hit ratios above the desirable minimum of 75.0%.
+
+
+Observation:  D1 + D2 cache utilization
+
+    All instrumented functions with significant execution time had
+    combined D1 and D2 cache hit ratios above the desirable minimum of
+    80.0%.
+
+
+Observation:  TLB utilization
+
+    All instrumented functions with significant execution time had more
+    than the desirable minimum of 200 data references per TLB miss.
+
+
+Notes for table 3:
+
+  This table shows functions that have significant exclusive time,
+    averaged across ranks.
+    Processor HW counter data is also shown, if available.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O profile+hwpc ...
+
+Table 3:  Profile by Function Group and Function
+
+Group / Function / PE=HIDE
+
+  
+==============================================================================
+  Total
+------------------------------------------------------------------------------
+  Time%                                                  100.0% 
+  Time                                                 6.314306 secs
+  Imb. Time                                                  -- secs
+  Imb. Time%                                                 -- 
+  Calls                            63.823 /sec            403.0 calls
+  UNHALTED_REFERENCE_CYCLES                      16,287,320,284 
+  CPU_CLK_THREAD_UNHALTED:THREAD_P               19,457,328,897 
+  DTLB_LOAD_MISSES:MISS_CAUSES_A_WALK                   777,666 
+  DTLB_STORE_MISSES:MISS_CAUSES_A_WALK                    12.75 
+  L1D:REPLACEMENT                                   851,504,062 
+  L2_RQSTS:ALL_DEMAND_DATA_RD                       125,788,418 
+  L2_RQSTS:DEMAND_DATA_RD_HIT                        82,187,672 
+  MEM_UOPS_RETIRED:ALL_LOADS                     20,353,505,949 
+  CPU CLK Boost                                            1.19 X
+  TLB utilization               26,172.14 refs/miss       51.12 avg uses
+  D1 cache hit,miss ratios          95.8% hits             4.2% misses
+  D1 cache utilization (misses)     23.90 refs/miss        2.99 avg hits
+  D2 cache hit,miss ratio           94.9% hits             5.1% misses
+  D1+D2 cache hit,miss ratio        99.8% hits             0.2% misses
+  D1+D2 cache utilization          466.82 refs/miss       58.35 avg hits
+  D2 to D1 bandwidth                1.187GiB/sec  8,050,458,736 bytes
+  Average Time per Call                                0.015668 secs
+  CrayPat Overhead : Time            0.0%                       
+==============================================================================
+  USER
+------------------------------------------------------------------------------
+  Time%                                                  100.0% 
+  Time                                                 6.313069 secs
+  Imb. Time                                            0.183894 secs
+  Imb. Time%                                               3.1% 
+  Calls                             0.158 /sec              1.0 calls
+  UNHALTED_REFERENCE_CYCLES                      16,285,561,264 
+  CPU_CLK_THREAD_UNHALTED:THREAD_P               19,446,735,549 
+  DTLB_LOAD_MISSES:MISS_CAUSES_A_WALK                   777,493 
+  DTLB_STORE_MISSES:MISS_CAUSES_A_WALK                     3.17 
+  L1D:REPLACEMENT                                   851,497,466 
+  L2_RQSTS:ALL_DEMAND_DATA_RD                       125,787,889 
+  L2_RQSTS:DEMAND_DATA_RD_HIT                        82,187,507 
+  MEM_UOPS_RETIRED:ALL_LOADS                     20,353,240,758 
+  CPU CLK Boost                                            1.19 X
+  TLB utilization               26,177.92 refs/miss       51.13 avg uses
+  D1 cache hit,miss ratios          95.8% hits             4.2% misses
+  D1 cache utilization (misses)     23.90 refs/miss        2.99 avg hits
+  D2 cache hit,miss ratio           94.9% hits             5.1% misses
+  D1+D2 cache hit,miss ratio        99.8% hits             0.2% misses
+  D1+D2 cache utilization          466.81 refs/miss       58.35 avg hits
+  D2 to D1 bandwidth                1.188GiB/sec  8,050,424,875 bytes
+  Average Time per Call                                6.313069 secs
+  CrayPat Overhead : Time            0.0%                       
+==============================================================================
+  USER / main_
+------------------------------------------------------------------------------
+  Time%                                                  100.0% 
+  Time                                                 6.313069 secs
+  Imb. Time                                            0.183894 secs
+  Imb. Time%                                               3.1% 
+  Calls                             0.158 /sec              1.0 calls
+  UNHALTED_REFERENCE_CYCLES                      16,285,561,264 
+  CPU_CLK_THREAD_UNHALTED:THREAD_P               19,446,735,549 
+  DTLB_LOAD_MISSES:MISS_CAUSES_A_WALK                   777,493 
+  DTLB_STORE_MISSES:MISS_CAUSES_A_WALK                     3.17 
+  L1D:REPLACEMENT                                   851,497,466 
+  L2_RQSTS:ALL_DEMAND_DATA_RD                       125,787,889 
+  L2_RQSTS:DEMAND_DATA_RD_HIT                        82,187,507 
+  MEM_UOPS_RETIRED:ALL_LOADS                     20,353,240,758 
+  CPU CLK Boost                                            1.19 X
+  TLB utilization               26,177.92 refs/miss       51.13 avg uses
+  D1 cache hit,miss ratios          95.8% hits             4.2% misses
+  D1 cache utilization (misses)     23.90 refs/miss        2.99 avg hits
+  D2 cache hit,miss ratio           94.9% hits             5.1% misses
+  D1+D2 cache hit,miss ratio        99.8% hits             0.2% misses
+  D1+D2 cache utilization          466.81 refs/miss       58.35 avg hits
+  D2 to D1 bandwidth                1.188GiB/sec  8,050,424,875 bytes
+  Average Time per Call                                6.313069 secs
+  CrayPat Overhead : Time            0.0%                       
+==============================================================================
+
+Notes for table 4:
+
+  This table shows energy and power usage for the nodes with the
+    maximum, mean, and minimum usage, as well as the sum of usage over
+    all nodes.
+    Energy and power for accelerators is also shown, if applicable.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O program_energy ...
+
+Table 4:  Program energy and power usage (from Cray PM)
+
+   Node |     Node |  Process | PE=HIDE
+ Energy |    Power |     Time | 
+    (J) |      (W) |          | 
+---------------------------------------
+  1,201 |  182.696 | 6.573755 | Total
+=======================================
+
+Notes for table 5:
+
+  This table shows total wall clock time for the ranks with the
+    maximum, mean, and minimum time, as well as the average across
+    ranks.
+    It also shows maximum memory usage from /proc/self/numa_maps for
+    those ranks, and on average.  The usage is total size of all
+    pages, including huge pages, that were actually mapped into
+    physical memory from both private and shared memory segments.
+  For further explanation, see the "General table notes" below,
+    or use:  pat_report -v -O program_time ...
+
+Table 5:  Wall Clock Time, Memory High Water Mark
+
+  Process |   Process | PE=[mmm]
+     Time |     HiMem | 
+          | (MiBytes) | 
+         
+ 6.573755 |      77.0 | Total
+|-------------------------------
+| 6.573818 |      76.9 | pe.3
+| 6.573749 |      76.9 | pe.8
+| 6.573738 |      76.9 | pe.6
+|===============================
+
+========================  Additional details  ========================
+
+
+
+General table notes:
+
+    The default notes for a table are based on the default definition of
+    the table, and do not account for the effects of command-line options
+    that may modify the content of the table.
+    
+    Detailed notes, produced by the pat_report -v option, do account for
+    all command-line options, and also show how data is aggregated, and
+    if the table content is limited by thresholds, rank selections, etc.
+    
+    An imbalance metric in a line is based on values in main threads
+    across multiple ranks, or on values across all threads, as applicable.
+    
+    An imbalance percent in a line is relative to the maximum value
+    for that line across ranks or threads, as applicable.
+    
+Experiment:  trace
+
+Original path to data file:
+  /users/class164/Submission/stencil2d-hilbert.x+pat+434-3875t/xf-files   (RTS, 12 data files)
+
+Original program:  /users/class164/Submission/stencil2d-hilbert.x
+
+Instrumented with:
+  pat_build -Drtenv=PAT_RT_PERFCTR=1 -g mpi -u stencil2d-hilbert.x
+
+Instrumented program:
+  /users/class164/Submission/./stencil2d-hilbert.x+pat
+
+Program invocation:
+  /users/class164/Submission/./stencil2d-hilbert.x+pat --nx 128 --ny 128 --nz 64 --num_iter 1024
+
+Exit Status:  0 for 12 PEs
+
+Memory pagesize:  4 KiB
+
+Memory hugepagesize:  Not Available
+
+Programming environment:  CRAY
+
+Runtime environment variables:
+  ATP_VERSION=3.14.5
+  CRAYPAT_COMPILER_OPTIONS=1
+  CRAYPAT_LD_LIBRARY_PATH=/opt/cray/pe/gcc-libs:/opt/cray/gcc-libs:/opt/cray/pe/perftools/21.09.0/lib64
+  CRAYPAT_OPTS_EXECUTABLE=libexec64/opts
+  CRAYPAT_ROOT=/opt/cray/pe/perftools/21.09.0
+  CRAYPAT_SUBMODULE_VARS=CRAYPAT_COMPILER_OPTIONS
+  CRAYPE_VERSION=2.7.10
+  CRAY_BINUTILS_VERSION=/opt/cray/pe/cce/12.0.3
+  CRAY_CC_VERSION=12.0.3
+  CRAY_CRAYPE_VERSION=2.7.10
+  CRAY_CUDATOOLKIT_VERSION=11.0.2_3.38-8.1__g5b73779
+  CRAY_FTN_VERSION=12.0.3
+  CRAY_LIBSCI_VERSION=20.09.1
+  CRAY_MPICH_VERSION=7.7.18
+  CRAY_PERFTOOLS_VERSION=21.09.0
+  CRAY_PMI_VERSION=5.0.17
+  CRAY_PYTHON_VERSION=3.9.4.1
+  CRAY_R_VERSION=4.1.1.0
+  EBVERSIONBOOST=1.78.0
+  EBVERSIONBZIP2=1.0.8
+  EBVERSIONCONFIGURABLEMINHTTPMINPROXY=4.5.0
+  EBVERSIONCRAYGNU=21.09
+  EBVERSIONFFMPEG=5.0
+  EBVERSIONGRAPHVIZ=2.50.0
+  EBVERSIONJULIA=1.6.3
+  EBVERSIONJULIAEXTENSIONS=1.6.3
+  EBVERSIONJUPYTERLAB=3.2.8
+  EBVERSIONNASM=2.15.05
+  EBVERSIONNODEJS=16.13.2
+  EBVERSIONOGG=1.3.1
+  EBVERSIONTHEORA=1.2.0alpha1
+  EBVERSIONVORBIS=1.3.3
+  EBVERSIONX264=20191217
+  EBVERSIONX265=3.2.1
+  EBVERSIONZLIB=1.2.11
+  LIBSCI_VERSION=20.09.1
+  MODULE_VERSION=3.2.11.4
+  MODULE_VERSION_STACK=3.2.11.4
+  MPICH_ABORT_ON_ERROR=1
+  MPICH_DIR=/opt/cray/pe/mpt/7.7.18/gni/mpich-crayclang/10.0
+  PAT_BUILD_PAPI_LIBDIR=/opt/cray/pe/papi/6.0.0.9/lib64
+  PAT_RT_PERFCTR=1
+  PERFTOOLS_VERSION=21.09.0
+  PMI_CONTROL_PORT=27222
+  PMI_CRAY_NO_SMP_ORDER=0
+  PMI_GNI_COOKIE=2545745920:2546139136
+  PMI_GNI_DEV_ID=0:0
+  PMI_GNI_LOC_ADDR=5155:5155
+  PMI_GNI_PTAG=226:227
+  PMI_NO_FORK=1
+
+Report time environment variables:
+    CRAYPAT_ROOT=/opt/cray/pe/perftools/21.09.0
+
+Number of MPI control variables collected:  108
+
+  (To see the list, specify: -s mpi_cvar=show)
+
+Report command line options:  -o report.txt
+
+Operating system:
+  Linux 5.3.18-24.46_6.0.29-cray_ari_c #1 SMP Mon Mar 14 09:11:41 UTC 2022 (6c38a31)
+
+Hardware performance counter events:
+   UNHALTED_REFERENCE_CYCLES             Unhalted reference cycles
+   CPU_CLK_THREAD_UNHALTED:THREAD_P      Count core clock cycles whenever the clock signal on the specificcore is running (not halted):Cycles when thread is not halted
+   DTLB_LOAD_MISSES:MISS_CAUSES_A_WALK   Data TLB load misses:Misses in all DTLB levels that cause page walks
+   DTLB_STORE_MISSES:MISS_CAUSES_A_WALK  Data TLB store misses:Misses in all DTLB levels that cause page walks
+   L1D:REPLACEMENT                       L1D cache:L1D Data line replacements
+   L2_RQSTS:ALL_DEMAND_DATA_RD           L2 requests:Any data read request to L2 cache
+   L2_RQSTS:DEMAND_DATA_RD_HIT           L2 requests:Demand Data Read requests that hit L2 cache
+   MEM_UOPS_RETIRED:ALL_LOADS            Memory uops retired (Precise Event):All load uops retired
+
+  This set of HWPC events requires multiplexing, which reduces
+  the accuracy of the data collected. If the best possible
+  accuracy is needed, you should rerun to collect data for
+  smaller sets of events, that do not require multiplexing.
+
+Estimated minimum instrumentation overhead per call of a traced function,
+  which was subtracted from the data shown in this report
+  (for raw data, use the option:  -s overhead=include):
+    Time  5.687  microsecs
+
+Number of traced functions that were called:  6
+
+  (To see the list, specify:  -s traced_functions=show)
+
