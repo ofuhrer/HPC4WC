@@ -1,0 +1,527 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                          S u m m a r y   R e p o r t
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Compilation
+-----------
+File     : /users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90
+Compiled : 08/25/24  13:07:57
+Compiler : Version 12.0.3
+Ftnlx    : Version 12.0.3 
+Target   : x86-64
+Command  : ftn_driver.exe -hcpu=haswell -haccel=nvidia_60 -hnetwork=aries
+           -hdynamic -D__CRAYXC -D__CRAY_HASWELL -D__CRAY_NVIDIA60
+           -D__CRAYXT_COMPUTE_LINUX_TARGET -O3 -hfp3 -eZ -ffree -N255 -ec -eC
+           -eI -eF -rm -c m_utils.F90
+           -I/opt/cray/pe/cce/12.0.3/cce-clang/x86_64/lib/clang/12.0.0/include
+           -I/opt/cray/pe/cce/12.0.3/cce/x86_64/include/craylibs -I/usr/include
+           -I/opt/cray/pe/libsci/20.09.1/CRAYCLANG/9.0/x86_64/include
+           -I/opt/cray/pe/mpt/7.7.18/gni/mpich-crayclang/10.0/include
+           -I/usr/local/cuda-11.0/include -I/usr/local/cuda-11.0/nvvm/include
+           -I/opt/cray/rca/2.2.20-7.0.3.1_3.15__g8e3fb5b.ari/include
+           -I/opt/cray/pe/pmi/5.0.17/include -I/opt/cray/pe/atp/3.14.5/include
+           -I/opt/cray/xpmem/default/include -I/opt/cray/dmapp/default/include
+           -I/opt/cray/alps/6.6.67-7.0.3.1_3.18__gb91cd181.ari/include
+           -I/opt/cray/wlm_detect/1.3.3-7.0.3.1_3.6__g7109084.ari/include
+           -I/opt/cray/ugni/default/include
+           -I/opt/cray/gni-headers/default/include
+           -I/opt/cray/alps/6.6.67-7.0.3.1_3.18__gb91cd181.ari/include
+           -I/opt/cray/krca/2.2.8-7.0.3.1_3.14__g59af36e.ari/include
+           -I/opt/cray-hss-devel/9.0.0/include
+           -I/opt/cray/udreg/default/include -I/usr/include
+Program
+  Units  : M_UTILS
+
+ftnlx report
+------------
+Source   : /users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90
+Date     : 08/25/2024  13:07:58
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                          S o u r c e   L i s t i n g
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+     %%%    L o o p m a r k   L e g e n d    %%%
+
+     Primary Loop Type        Modifiers
+     ------- ---- ----        ---------
+     A - Pattern matched      a - atomic memory operation
+                              b - blocked
+     C - Collapsed            c - conditional and/or computed
+     D - Deleted               
+     E - Cloned                
+     F - Flat - No calls      f - fused
+     G - Accelerated          g - partitioned
+     I - Inlined              i - interchanged
+     M - Multithreaded        m - partitioned
+                              n - non-blocking remote transfer
+                              p - partial
+     R - Rerolling            r - unrolled
+                              s - shortloop
+     V - Vectorized           w - unwound
+
+     + - More messages listed at end of listing
+     ------------------------------------------
+
+
+    1.                 ! ******************************************************
+    2.                 !      Module: m_utils
+    3.                 !      Author: Oliver Fuhrer
+    4.                 !       Email: oliver.fuhrer@vulcan.com
+    5.                 !        Date: 09.09.2010
+    6.                 ! Description: Collection of utility routines for
+    7.                 !              program flow managment and timing.
+    8.                 ! ******************************************************
+    9.                 
+   10.                 module m_utils
+   11.                     use mpi, only : MPI_COMM_WORLD, MPI_Abort
+   12.                     implicit none
+   13.                 
+   14.                     integer, parameter :: stderr = 0
+   15.                 
+   16.                     integer, parameter :: dp = 8
+   17.                     integer, parameter :: max_timing = 100
+   18.                 
+   19.                     logical  :: ltiming = .false.
+   20.                     logical  :: ltiming_list(max_timing)
+   21.                     
+   22.                     character (len=28) :: tag_list(max_timing)
+   23.                     
+   24.                     integer :: cur_timing = 0
+   25.                     integer :: ncalls(max_timing)
+   26.                     
+   27.                     real (kind=dp) :: stiming(max_timing)
+   28.                     real (kind=dp) :: rtiming(max_timing)
+   29.                 
+   30.                     interface write_field_to_file
+   31.                         module procedure write_2d_float32_field_to_file, write_3d_float32_field_to_file, &
+   32.                                          write_2d_float64_field_to_file, write_3d_float64_field_to_file
+   33.                     end interface write_field_to_file
+   34.                     
+   35.                 contains
+   36.                 
+   37.                 
+   38.                     subroutine write_2d_float32_field_to_file( field, num_halo, filename )
+   39.                         implicit none
+   40.                 
+   41.                         ! arguments
+   42.                         real (kind=4), intent(in) :: field(:, :)
+   43.                         integer, intent(in) :: num_halo
+   44.                         character(len=*), intent(in) :: filename
+   45.                 
+   46.                         ! local
+   47.                         integer :: iunit = 42
+   48.                         integer :: i, j, k
+   49.                 
+   50.                         open(iunit, file=trim(filename), access="stream")
+   51.                         write(iunit) 2, 32, num_halo
+   52.                         write(iunit) shape(field)
+   53.                         write(iunit) field
+   54.                         close(iunit)
+   55.                 
+   56.                     end subroutine write_2d_float32_field_to_file
+   57.                 
+   58.                 
+   59.                     subroutine write_3d_float32_field_to_file( field, num_halo, filename )
+   60.                         implicit none
+   61.                 
+   62.                         ! arguments
+   63.                         real (kind=4), intent(in) :: field(:, :, :)
+   64.                         integer, intent(in) :: num_halo
+   65.                         character(len=*), intent(in) :: filename
+   66.                 
+   67.                         ! local
+   68.                         integer :: iunit = 42
+   69.                         integer :: i, j, k
+   70.                 
+   71.                         open(iunit, file=trim(filename), access="stream")
+   72.                         write(iunit) 3, 32, num_halo
+   73.                         write(iunit) shape(field)
+   74.                         write(iunit) field
+   75.                         close(iunit)
+   76.                 
+   77.                     end subroutine write_3d_float32_field_to_file
+   78.                 
+   79.                 
+   80.                     subroutine write_2d_float64_field_to_file( field, num_halo, filename )
+   81.                         implicit none
+   82.                 
+   83.                         ! arguments
+   84.                         real (kind=8), intent(in) :: field(:, :)
+   85.                         integer, intent(in) :: num_halo
+   86.                         character(len=*), intent(in) :: filename
+   87.                 
+   88.                         ! local
+   89.                         integer :: iunit = 42
+   90.                         integer :: i, j, k
+   91.                 
+   92.                         open(iunit, file=trim(filename), access="stream")
+   93.                         write(iunit) 2, 64, num_halo
+   94.                         write(iunit) shape(field)
+   95.                         write(iunit) field
+   96.                         close(iunit)
+   97.                 
+   98.                     end subroutine write_2d_float64_field_to_file
+   99.                 
+  100.                 
+  101.                     subroutine write_3d_float64_field_to_file( field, num_halo, filename )
+  102.                         implicit none
+  103.                 
+  104.                         ! arguments
+  105.                         real (kind=8), intent(in) :: field(:, :, :)
+  106.                         integer, intent(in) :: num_halo
+  107.                         character(len=*), intent(in) :: filename
+  108.                 
+  109.                         ! local
+  110.                         integer :: iunit = 42
+  111.                         integer :: i, j, k
+  112.                 
+  113.                         open(iunit, file=trim(filename), access="stream")
+  114.                         write(iunit) 3, 64, num_halo
+  115.                         write(iunit) shape(field)
+  116.                         write(iunit) field
+  117.                         close(iunit)
+  118.                 
+  119.                     end subroutine write_3d_float64_field_to_file
+  120.                 
+  121.                 
+  122.                     function is_master()
+  123.                         implicit none
+  124.                 
+  125.                         ! function value
+  126.                         logical :: is_master
+  127.                 
+  128.    Ip                   is_master = my_rank() == 0
+  129.                 
+  130.                     end function is_master
+  131.                 
+  132.                 
+  133.                     subroutine sync()
+  134.                         use mpi, only : MPI_COMM_WORLD, MPI_BARRIER
+  135.                         implicit none
+  136.                 
+  137.                         ! local
+  138.                         integer :: ierror
+  139.                 
+  140.  +                      call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+  141.    Ip                   call error(ierror /= 0, 'Problem with MPI_BARRIER', code=ierror)
+  142.                 
+  143.                     end subroutine
+  144.                 
+  145.                 
+  146.                     function num_rank()
+  147.                         use mpi, only : MPI_COMM_WORLD, MPI_COMM_SIZE
+  148.                         implicit none
+  149.                 
+  150.                         ! function value
+  151.                         integer :: num_rank
+  152.                 
+  153.                         ! local
+  154.                         integer :: ierror
+  155.                 
+  156.  +                      call MPI_COMM_SIZE(MPI_COMM_WORLD, num_rank, ierror)
+  157.    Ip                   call error(ierror /= 0, 'Problem with MPI_COMM_SIZE', code=ierror)
+  158.                 
+  159.                     end function num_rank
+  160.                 
+  161.                 
+  162.                     function my_rank()
+  163.                         use mpi, only : MPI_COMM_WORLD, MPI_COMM_RANK
+  164.                         implicit none
+  165.                 
+  166.                         ! function value
+  167.                         integer :: my_rank
+  168.                 
+  169.                         ! local
+  170.                         integer :: ierror
+  171.                 
+  172.  +                      call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierror)
+  173.    Ip                   call error(ierror /= 0, 'Problem with MPI_COMM_RANK', code=ierror)
+  174.                 
+  175.                     end function my_rank
+  176.                 
+  177.                 
+  178.                     subroutine error(yes, msg, code)
+  179.                         implicit none
+  180.                 
+  181.                         ! in
+  182.                         logical, intent(in) :: yes
+  183.                         character(len=*), intent(in) :: msg
+  184.                         integer, intent(in), optional :: code
+  185.                 
+  186.                         ! local
+  187.                         integer :: ierror
+  188.                 
+  189.                         if (yes) then
+  190.                             write(stderr,*) 'FATAL PROGRAM ERROR!'
+  191.                             write(stderr,*) msg
+  192.                             if (present(code)) then
+  193.                                 write(stderr,*) code
+  194.                             end if
+  195.                             write(stderr,*) 'Execution aborted...'
+  196.  +                          call MPI_Abort(MPI_COMM_WORLD, 42, ierror)
+  197.                             stop
+  198.                         end if
+  199.                 
+  200.                     end subroutine error
+  201.                 
+  202.                 
+  203.                     subroutine timer_init()
+  204.                         implicit none
+  205.                 
+  206.                         ltiming         = .true.
+  207.    fVw-------<>         ltiming_list(:) = .false.
+  208.    f---------<>         rtiming(:)      = 0.0_dp
+  209.    f---------<>         ncalls(:)       = 0
+  210.    f---------<>         stiming(:)      = -1.0_dp
+  211.                 
+  212.                     end subroutine timer_init
+  213.                 
+  214.                 
+  215.                     subroutine timer_reset()
+  216.                         implicit none
+  217.                 
+  218.    fVr2------<>         rtiming(:) = 0.0_dp
+  219.    f---------<>         ncalls(:)  = 0
+  220.    f---------<>         stiming(:) = -1.0_dp
+  221.                 
+  222.                     end subroutine timer_reset
+  223.                 
+  224.                 
+  225.                     subroutine timer_start(tag, inum)
+  226.                         use mpi, only : MPI_WTIME
+  227.                         implicit none
+  228.                 
+  229.                         ! arguments
+  230.                         character (LEN=*), intent(in) :: tag
+  231.                         integer, intent(inout) :: inum
+  232.                 
+  233.                         ! local
+  234.                         integer :: ierror
+  235.                 
+  236.                         ! assign new index
+  237.                         if (inum <= 0) then
+  238.                             cur_timing = cur_timing + 1
+  239.                             inum = cur_timing
+  240.                         end if
+  241.                 
+  242.                         ! check inum
+  243.    Ip                   call error(inum < 1 .or. inum > max_timing, &
+  244.                             'ERROR: Problem in start_loc_timing (inum < 1 or inum > max_timing)')
+  245.                 
+  246.                         ! save tag if this is the first call (check tag in debug mode otherwise)
+  247.                         if (stiming(inum) < 0.d0) then
+  248.                             tag_list(inum) = trim(tag)
+  249.                             ltiming_list(inum) = .true.
+  250.                         end if
+  251.                 
+  252.  +                      stiming(inum) = MPI_WTIME()
+  253.                         ncalls(inum) = ncalls(inum) + 1
+  254.                 
+  255.                     end subroutine timer_start
+  256.                 
+  257.                 
+  258.                     subroutine timer_end(inum)
+  259.                         use mpi, only : MPI_WTIME
+  260.                         implicit none
+  261.                 
+  262.                         ! arguments
+  263.                         integer, intent(in) :: inum
+  264.                 
+  265.                         ! local
+  266.                         real (kind=dp) :: ztime
+  267.                         integer :: ierror
+  268.                 
+  269.  +                      ztime = MPI_WTIME() - stiming(inum)
+  270.                         rtiming(inum) = rtiming(inum) + ztime
+  271.                 
+  272.                     end subroutine timer_end
+  273.                 
+  274.                 
+  275.                     function timer_get(inum)
+  276.                         use mpi, only : MPI_WTIME, MPI_DOUBLE_PRECISION, MPI_SUM
+  277.                         implicit none
+  278.                 
+  279.                         ! arguments
+  280.                         integer, intent(in) :: inum
+  281.                         real (kind=dp) :: timer_get
+  282.                 
+  283.                         ! local
+  284.                         real (kind=dp) :: ztime_sum
+  285.                         integer :: ierror
+  286.                 
+  287.  +                      call MPI_REDUCE(rtiming(inum), ztime_sum, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
+  288.    Ip                   timer_get = ztime_sum / REAL(num_rank(), dp)
+  289.                 
+  290.                     end function timer_get
+  291.                 
+  292.                 
+  293.                     subroutine timer_print()
+  294.                         use mpi, only : MPI_COMM_WORLD, MPI_DOUBLE_PRECISION, MPI_MIN, MPI_MAX, MPI_SUM
+  295.                         implicit none
+  296.                 
+  297.                         ! local
+  298.                         integer :: inum
+  299.                         real (kind=dp) :: ztime_mean, ztime_min, ztime_max
+  300.                         integer :: ierror
+  301.                 
+  302.                         if (ltiming) then
+  303.                 
+  304.    Ip                       if (is_master()) print *, ' Timer   Tag                     #calls        min[s]        max[s]       mean[s] '
+  305.                 
+  306.  + 1----------<             do inum = 1, max_timing
+  307.    1            
+  308.    1                            ! NOTE: this if-statement can go terribly wrong if not all locations are
+  309.    1                            ! called on all ranks (cf. MPI_REDUCE below)
+  310.    1                            if (ltiming_list(inum)) then 
+  311.    1            
+  312.    1                                ! get run time
+  313.  + 1                                call MPI_REDUCE(rtiming(inum), ztime_min, 1, MPI_DOUBLE_PRECISION, MPI_MIN, 0, MPI_COMM_WORLD, ierror)
+  314.  + 1                                call MPI_REDUCE(rtiming(inum), ztime_max, 1, MPI_DOUBLE_PRECISION, MPI_MAX, 0, MPI_COMM_WORLD, ierror)
+  315.  + 1                                call MPI_REDUCE(rtiming(inum), ztime_mean, 1, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
+  316.    1 Ip                             ztime_mean = ztime_mean / REAL(num_rank(), dp)
+  317.    1            
+  318.    1 Ip                             if (is_master()) WRITE(*,"(I4,A28,I8,F14.4,F14.4,F14.4)")  &
+  319.    1                                        inum, "      " // adjustl(tag_list(inum)), ncalls(inum), ztime_min, ztime_max, ztime_mean
+  320.    1            
+  321.    1                            end if
+  322.    1---------->             end do
+  323.                 
+  324.                         end if
+  325.                 
+  326.                     end subroutine timer_print
+  327.                 
+  328.                 
+  329.                 end module m_utils
+
+ftn-3001 ftn: IPA IS_MASTER, File = m_utils.F90, Line = 128 
+  Tree "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+          "MPI_COMM_RANK"
+          "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+             "MPI_ABORT"
+             "_STOP3"
+
+ftn-3021 ftn: IPA SYNC, File = m_utils.F90, Line = 140 
+  "mpi_barrier" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3001 ftn: IPA SYNC, File = m_utils.F90, Line = 141 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3021 ftn: IPA NUM_RANK, File = m_utils.F90, Line = 156 
+  "mpi_comm_size" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3001 ftn: IPA NUM_RANK, File = m_utils.F90, Line = 157 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3021 ftn: IPA MY_RANK, File = m_utils.F90, Line = 172 
+  "mpi_comm_rank" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3001 ftn: IPA MY_RANK, File = m_utils.F90, Line = 173 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3021 ftn: IPA ERROR, File = m_utils.F90, Line = 196 
+  "mpi_abort" was not inlined because the compiler was unable to locate the routine.
+
+ftn-6373 ftn: VECTOR TIMER_INIT, File = m_utils.F90, Line = 207 
+  A loop starting at line 207 with a trip count of 100 was unwound into 12 vector iterations.
+
+ftn-6204 ftn: VECTOR TIMER_INIT, File = m_utils.F90, Line = 207 
+  A loop starting at line 207 was vectorized.
+
+ftn-6004 ftn: SCALAR TIMER_INIT, File = m_utils.F90, Line = 208 
+  A loop starting at line 208 was fused with the loop starting at line 207.
+
+ftn-6004 ftn: SCALAR TIMER_INIT, File = m_utils.F90, Line = 209 
+  A loop starting at line 209 was fused with the loop starting at line 207.
+
+ftn-6004 ftn: SCALAR TIMER_INIT, File = m_utils.F90, Line = 210 
+  A loop starting at line 210 was fused with the loop starting at line 207.
+
+ftn-6005 ftn: SCALAR TIMER_RESET, File = m_utils.F90, Line = 218 
+  A loop starting at line 218 was unrolled 2 times.
+
+ftn-6204 ftn: VECTOR TIMER_RESET, File = m_utils.F90, Line = 218 
+  A loop starting at line 218 was vectorized.
+
+ftn-6004 ftn: SCALAR TIMER_RESET, File = m_utils.F90, Line = 219 
+  A loop starting at line 219 was fused with the loop starting at line 218.
+
+ftn-6004 ftn: SCALAR TIMER_RESET, File = m_utils.F90, Line = 220 
+  A loop starting at line 220 was fused with the loop starting at line 218.
+
+ftn-3001 ftn: IPA TIMER_START, File = m_utils.F90, Line = 243 
+  Tree "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178) was inlined because argument 3 is a constant.  NOT INLINED:  MPI_ABORT.
+       "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+          "MPI_ABORT"
+          "_STOP3"
+
+ftn-3021 ftn: IPA TIMER_START, File = m_utils.F90, Line = 252 
+  "mpi_wtime" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3021 ftn: IPA TIMER_END, File = m_utils.F90, Line = 269 
+  "mpi_wtime" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3021 ftn: IPA TIMER_GET, File = m_utils.F90, Line = 287 
+  "mpi_reduce" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3001 ftn: IPA TIMER_GET, File = m_utils.F90, Line = 288 
+  Tree "num_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:146) was inlined.  NOT INLINED:  MPI_COMM_SIZE : MPI_ABORT.
+       "num_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:146)
+          "MPI_COMM_SIZE"
+          "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+             "MPI_ABORT"
+             "_STOP3"
+
+ftn-3001 ftn: IPA TIMER_PRINT, File = m_utils.F90, Line = 304 
+  Tree "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122)
+          "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+             "MPI_COMM_RANK"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+ftn-6288 ftn: VECTOR TIMER_PRINT, File = m_utils.F90, Line = 306 
+  A loop starting at line 306 was not vectorized because it contains a call to subroutine "mpi_reduce" on line 313.
+
+ftn-3021 ftn: IPA TIMER_PRINT, File = m_utils.F90, Line = 313 
+  "mpi_reduce" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3021 ftn: IPA TIMER_PRINT, File = m_utils.F90, Line = 314 
+  "mpi_reduce" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3021 ftn: IPA TIMER_PRINT, File = m_utils.F90, Line = 315 
+  "mpi_reduce" was not inlined because the compiler was unable to locate the routine.
+
+ftn-3001 ftn: IPA TIMER_PRINT, File = m_utils.F90, Line = 316 
+  Tree "num_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:146) was inlined.  NOT INLINED:  MPI_COMM_SIZE : MPI_ABORT.
+       "num_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:146)
+          "MPI_COMM_SIZE"
+          "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+             "MPI_ABORT"
+             "_STOP3"
+
+ftn-3001 ftn: IPA TIMER_PRINT, File = m_utils.F90, Line = 318 
+  Tree "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122) was inlined.  NOT INLINED:  MPI_COMM_RANK : MPI_ABORT.
+       "is_master"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:122)
+          "my_rank"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:162)
+             "MPI_COMM_RANK"
+             "error"(/users/class169/Project/HPC4WC_project_ijblocking/Stencil_code/m_utils.F90:178)
+                "MPI_ABORT"
+                "_STOP3"
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,78 @@
+srun -n 1 ./../Stencil_code/stencil2d-kblocking.x+orig --nx 64 --ny 64 --nz 16 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,   64,   64,   16,     256,  0.2542877E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-small.x+orig --nx 64 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,   64,   64,   16,     256,  0.2871418E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-inline.x+orig --nx 64 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,   64,   64,   16,     256,  0.5156040E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-math.x+orig --nx 64 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,   64,   64,   16,     256,  0.2059627E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking2.x+orig --nx 64 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,   64,   64,   16,     256,  0.2338905E+00], \\', '] )']
+
+ ============================= 
+
+srun -n 1 ./../Stencil_code/stencil2d-kblocking.x+orig --nx 128 --ny 64 --nz 16 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  128,   64,   16,     256,  0.4666638E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-small.x+orig --nx 128 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  128,   64,   16,     256,  0.5726504E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-inline.x+orig --nx 128 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  128,   64,   16,     256,  0.1017063E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-math.x+orig --nx 128 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  128,   64,   16,     256,  0.4339910E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking2.x+orig --nx 128 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  128,   64,   16,     256,  0.4724886E+00], \\', '] )']
+
+ ============================= 
+
+srun -n 1 ./../Stencil_code/stencil2d-kblocking.x+orig --nx 256 --ny 64 --nz 16 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  256,   64,   16,     256,  0.8143115E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-small.x+orig --nx 256 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  256,   64,   16,     256,  0.1082284E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-inline.x+orig --nx 256 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  256,   64,   16,     256,  0.2031913E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-math.x+orig --nx 256 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  256,   64,   16,     256,  0.8182645E-01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking2.x+orig --nx 256 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  256,   64,   16,     256,  0.9422944E+00], \\', '] )']
+
+ ============================= 
+
+srun -n 1 ./../Stencil_code/stencil2d-kblocking.x+orig --nx 512 --ny 64 --nz 16 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  512,   64,   16,     256,  0.1826217E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-small.x+orig --nx 512 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  512,   64,   16,     256,  0.2212770E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-inline.x+orig --nx 512 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  512,   64,   16,     256,  0.4211378E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-math.x+orig --nx 512 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  512,   64,   16,     256,  0.1592417E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking2.x+orig --nx 512 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1,  512,   64,   16,     256,  0.2058580E+01], \\', '] )']
+
+ ============================= 
+
+srun -n 1 ./../Stencil_code/stencil2d-kblocking.x+orig --nx 1024 --ny 64 --nz 16 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 1024,   64,   16,     256,  0.3819959E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-small.x+orig --nx 1024 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 1024,   64,   16,     256,  0.4739113E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-inline.x+orig --nx 1024 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 1024,   64,   16,     256,  0.9281521E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-math.x+orig --nx 1024 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 1024,   64,   16,     256,  0.3516228E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking2.x+orig --nx 1024 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 1024,   64,   16,     256,  0.4207905E+01], \\', '] )']
+
+ ============================= 
+
+srun -n 1 ./../Stencil_code/stencil2d-kblocking.x+orig --nx 2048 --ny 64 --nz 16 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 2048,   64,   16,     256,  0.9715946E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-small.x+orig --nx 2048 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 2048,   64,   16,     256,  0.9776521E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-inline.x+orig --nx 2048 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['srun: Job 55667159 step creation temporarily disabled, retrying (Requested nodes are busy)', 'srun: Step created for job 55667159', '# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 2048,   64,   16,     256,  0.1819255E+01], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking-math.x+orig --nx 2048 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 2048,   64,   16,     256,  0.7235525E+00], \\', '] )']
+srun -n 1 ./../Stencil_code/stencil2d-ijblocking2.x+orig --nx 2048 --ny 64 --nz 16 --size_i 32 --size_j 32 --num_iter 256
+['# ranks nx ny nz num_iter time', 'data = np.array( [ \\', '[    1, 2048,   64,   16,     256,  0.8396392E+01], \\', '] )']
+
+ ============================= 
+

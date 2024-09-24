@@ -1,0 +1,15 @@
+# Project 8 ij-blocking
+## *Jonathan Ortved Melcher, Kwint Delbare, Lina Bernert, & Nikola Mang *
+
+This repository contains the code for our project. We have tried to improve the
+runtime of a 3d diffusion code based on ij-blocking this code is kept in Stencil_code. stencil2d-orig.F90 and the make file where provided by Oliver Fuhrer and Simon Adamov. We have then produced different versions of the stencil code. The name convention is as follows; averagning, lap, and simple copy relate to different algorithmic motives, nn, nnn is related to nearest neighboors with and without the diagonal. The ijblocking codes are different levels of improvement with the postfix inline, math, small, 2 signifying diffent optimization levels. This can be seen in the report table 2.1.
+
+
+In Make_plots the code to produce all our results can be found. 
+
+To produce the results in table 3.1 one has to run the file 'cache-hits.ipynb'. This code runs the kblocked and ij-blocking-math codes and uses craypat to construct a report with cache hits. The data for table 3.1 is found in the second table of the report files look for  corresponding names between the two.
+
+
+For figure 3.2 and 3.3 first 'automation_of_test.ipynb' needs to be run. This compiles all the scripts needed and makes experiments changing the algorithm, size of the domain and the ij-blocking size and shape. Thesse are written to files named 'best_optimization.txt' and 'best_shape.txt' and with python scripts of the same name the figures can be produced.s
+
+Figure 3.4 is made with 'experiment-algorithms.ipynb' this compares the diffent algorithmic motives. Be aware that the craypat code makes alot of directories in Make_plot.
