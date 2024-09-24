@@ -1,0 +1,4 @@
+click
+numpy
+matplotlib
+cupy-cuda12x
