@@ -1,0 +1,8 @@
+ipdb
+ipython
+matplotlib
+numpy
+pytest
+mpi4py
+ipcmagic-cscs
+ipyparallel
