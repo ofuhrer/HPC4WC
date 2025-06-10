@@ -95,17 +95,17 @@ class Partitioner:
     
     
     def right(self):
-        """Returns the rank of the left neighbor"""
+        """Returns the rank of the right neighbor"""
         return self.get_neighbor_rank( [0, +1] )
     
     
     def top(self):
-        """Returns the rank of the left neighbor"""
+        """Returns the rank of the top neighbor"""
         return self.get_neighbor_rank( [+1, 0] )
     
     
     def bottom(self):
-        """Returns the rank of the left neighbor"""
+        """Returns the rank of the bottom neighbor"""
         return self.get_neighbor_rank( [-1, 0] )
     
     
