@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+export PYTHONPATH=''
+source ${HOME}/HPC4WC_venv/bin/activate
+${HOME}/HPC4WC_venv/bin/python -m ipykernel_launcher $@
