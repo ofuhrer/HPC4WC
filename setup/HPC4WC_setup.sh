@@ -22,7 +22,27 @@ python -m pip install setuptools wheel
 python -m pip install -r ~/HPC4WC/setup/etc/requirements.txt
 
 echo "Creating HPC4WC_kernel kernel for Jupyter"
+
+# install the kernel
 python -m ipykernel install --user --name="HPC4WC_kernel" --display-name="HPC4WC_kernel"
+if [ ! -d ${HOME}/.local/share/jupyter/kernels/hpc4wc_kernel ] ; then
+    echo "ERROR: Problem installing the Jupyter kernel. Ask for help!"
+    exit 1
+fi
+
+# add a launcher which sources the Python virtual environment first
+cat > ${HOME}/.local/share/jupyter/kernels/hpc4wc_kernel/launcher <<EOF
+#!/usr/bin/env bash
+export PYTHONPATH=''
+source \${HOME}/HPC4WC_venv/bin/activate
+\${HOME}/HPC4WC_venv/bin/python -m ipykernel_launcher \$@
+EOF
+chmod +x ${HOME}/.local/share/jupyter/kernels/hpc4wc_kernel/launcher
+
+# make sure Python venv is picked up in JupyterHub terminal
+if ! grep -q "HPC4WC_venv/bin/activate" ${HOME}/.bashrc ; then
+    echo '. ${HOME}/HPC4WC_venv/bin/activate' >> ${HOME}/.bashrc
+fi
 
 echo "Sucessfully finished. You must restart your JupyterHub now!"
 
