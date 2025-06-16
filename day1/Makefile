@@ -20,19 +20,34 @@ ifdef NOOPT
 endif
 endif
 ifeq "$(HOSTNAME)" "nid"
-  F90 = ftn
-  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm
+  F90 = mpif90 #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+  #FFLAGS = -g1 -O1 -fno-tree-sra -fno-tree-loop-optimize -fno-tree-vectorize -march=native -fno-inline -fno-optimize-sibling-calls -fopenmp
 ifdef NOOPT
-  FFLAGS = -O0 -hfp0 -Oipa0 -Ovector0 -ffree -N255 -ec -eC -eI -eF -rm
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
+endif
+ifeq "$(HOSTNAME)" "santis-ln"
+  F90 = mpif90 #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+ifdef NOOPT
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
   TARGET = stencil2d-$(VERSION)-noopt.x
 endif
 endif
 ifeq "$(HOSTNAME)" "papaya"
-  F90 = mpif90 -cpp 
-  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
-    -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
-    -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
-    -finit-integer=9999999 -finit-logical=true -finit-character=35
+F90 = mpif90 -cpp 
+FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+-pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+-fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+-finit-integer=9999999 -finit-logical=true -finit-character=35
 endif
 ifndef F90
   $(error F90 is not set for $(HOSTNAME))
