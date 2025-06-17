@@ -45,9 +45,8 @@ program main
     !$omp end master
     !$omp end parallel
 
-
     if ( is_master() ) then
-        write(*, '(a)') '# threads nx ny ny nz num_iter time'
+        write(*, '(a)') '# ranks nx ny nz num_iter time'
         write(*, '(a)') 'data = np.array( [ \'
     end if
 
@@ -68,9 +67,6 @@ program main
         call apply_diffusion( in_field, out_field, alpha, num_iter=1 )
 
         ! time the actual work
-        !$omp parallel
-        !$omp barrier
-        !$omp end parallel
 #ifdef CRAYPAT
         call PAT_record( PAT_STATE_ON, istat )
 #endif
@@ -92,13 +88,9 @@ program main
 
         runtime = timer_get( timer_work )
         
-        !$omp parallel
-        !$omp master
         if ( is_master() ) &
             write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
-                '[', omp_get_num_threads(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
-        !$omp end master
-        !$omp end parallel
+                '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
 
     end do
 
@@ -146,6 +138,7 @@ contains
         do iter = 1, num_iter
                     
             call update_halo( in_field )
+
             !$omp parallel do default(none) private(tmp1_field, laplap) shared(nz, num_halo, ny, nx, in_field, num_iter, out_field, alpha, iter)
             do k = 1, nz
                 do j = 1 + num_halo - 1, ny + num_halo + 1
