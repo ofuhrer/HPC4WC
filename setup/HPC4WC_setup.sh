@@ -30,6 +30,9 @@ if [ ! -d ${HOME}/.local/share/jupyter/kernels/hpc4wc_kernel ] ; then
     exit 1
 fi
 
+# install bash kernel
+python -m bash_kernel.install
+
 # add a launcher which sources the Python virtual environment first
 cat > ${HOME}/.local/share/jupyter/kernels/hpc4wc_kernel/launcher <<EOF
 #!/usr/bin/env bash
