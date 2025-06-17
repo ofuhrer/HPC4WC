@@ -39,7 +39,7 @@ $(TARGET): $(OBJS)
 	cp $(TARGET) stencil2d.x
 
 clean: clean_examples
-	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report report_*.txt out.txt
+	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report report_*.txt out*.txt
 
 clean_examples:
 	rm -f *.out weak.txt caching.txt caching2.txt out.txt 
