@@ -1,4 +1,4 @@
-# HPC4WC Summer 2023
+# HPC4WC Summer 2025
 
 High Performance Computing for Weather and Climate Course
 
