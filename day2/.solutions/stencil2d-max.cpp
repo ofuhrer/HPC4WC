@@ -105,7 +105,7 @@ void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
 }
 
 void reportTime(const Storage3D<double> &storage, int nIter, double diff) {
-  std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
+  std::cout << "# ranks nx ny nz num_iter time\ndata = np.array( [ \\\n";
   int size;
 #pragma omp parallel
   {

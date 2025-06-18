@@ -249,6 +249,10 @@ contains
             ltiming_list(inum) = .true.
         end if
 
+        !$omp parallel
+        !$omp barrier
+        !$omp end parallel
+
         stiming(inum) = MPI_WTIME()
         ncalls(inum) = ncalls(inum) + 1
 
@@ -268,6 +272,10 @@ contains
 
         ztime = MPI_WTIME() - stiming(inum)
         rtiming(inum) = rtiming(inum) + ztime
+
+        !$omp parallel
+        !$omp barrier
+        !$omp end parallel
 
     end subroutine timer_end
 

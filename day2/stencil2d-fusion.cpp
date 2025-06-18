@@ -4,73 +4,76 @@
 #include <iostream>
 #include <omp.h>
 
+#ifdef CRAYPAT
 #include "pat_api.h"
+#endif
 #include "utils.h"
 
-void updateHalo(Storage3D<double>& inField) {
+void updateHalo(Storage3D<double> &inField) {
   const int xInterior = inField.xMax() - inField.xMin();
   const int yInterior = inField.yMax() - inField.yMin();
 
   // bottom edge (without corners)
-  for(std::size_t k = 0; k < inField.zMin(); ++k) {
-    for(std::size_t j = 0; j < inField.yMin(); ++j) {
-      for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
+  for (std::size_t k = 0; k < inField.zMin(); ++k) {
+    for (std::size_t j = 0; j < inField.yMin(); ++j) {
+      for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
         inField(i, j, k) = inField(i, j + yInterior, k);
       }
     }
   }
 
   // top edge (without corners)
-  for(std::size_t k = 0; k < inField.zMin(); ++k) {
-    for(std::size_t j = inField.yMax(); j < inField.ySize(); ++j) {
-      for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
+  for (std::size_t k = 0; k < inField.zMin(); ++k) {
+    for (std::size_t j = inField.yMax(); j < inField.ySize(); ++j) {
+      for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
         inField(i, j, k) = inField(i, j - yInterior, k);
       }
     }
   }
 
   // left edge (including corners)
-  for(std::size_t k = 0; k < inField.zMin(); ++k) {
-    for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-      for(std::size_t i = 0; i < inField.xMin(); ++i) {
+  for (std::size_t k = 0; k < inField.zMin(); ++k) {
+    for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
+      for (std::size_t i = 0; i < inField.xMin(); ++i) {
         inField(i, j, k) = inField(i + xInterior, j, k);
       }
     }
   }
 
   // right edge (including corners)
-  for(std::size_t k = 0; k < inField.zMin(); ++k) {
-    for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-      for(std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
+  for (std::size_t k = 0; k < inField.zMin(); ++k) {
+    for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
+      for (std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
         inField(i, j, k) = inField(i - xInterior, j, k);
       }
     }
   }
 }
 
-void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, double alpha,
-                     unsigned numIter, int x, int y, int z, int halo) {
+void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
+                     double alpha, unsigned numIter, int x, int y, int z,
+                     int halo) {
 
   Storage3D<double> tmp1Field(x, y, z, halo);
 
-  for(std::size_t iter = 0; iter < numIter; ++iter) {
+  for (std::size_t iter = 0; iter < numIter; ++iter) {
 
     updateHalo(inField);
 
-    for(std::size_t k = 0; k < inField.zMax(); ++k) {
+    for (std::size_t k = 0; k < inField.zMax(); ++k) {
 
-      // apply the computation
-      for(/* loopbounds here */;;) {
-        for(/* loopbounds here */;;) {
+      // apply the full diffusion
+      for (/* loopbounds here */;;) {
+        for (/* loopbounds here */;;) {
           // implementation here...
         }
       }
 
       // update the field
-      for(std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
-        for(std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
-          if(iter != numIter - 1) {
-            inField(i, j, k) = 0; // one variable here...
+      for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
+        for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
+          if (iter != numIter - 1) {
+            inField(i, j, k) = outField(i, j, k);
           }
         }
       }
@@ -78,7 +81,7 @@ void apply_diffusion(Storage3D<double>& inField, Storage3D<double>& outField, do
   }
 }
 
-void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
+void reportTime(const Storage3D<double> &storage, int nIter, double diff) {
   std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
   int size;
 #pragma omp parallel
@@ -87,12 +90,12 @@ void reportTime(const Storage3D<double>& storage, int nIter, double diff) {
     { size = omp_get_num_threads(); }
   }
   std::cout << "[ " << size << ", " << storage.xMax() - storage.xMin() << ", "
-            << storage.yMax() - storage.yMin() << ", " << storage.zMax() << ", " << nIter << ", "
-            << diff << "],\n";
+            << storage.yMax() - storage.yMin() << ", " << storage.zMax() << ", "
+            << nIter << ", " << diff << "],\n";
   std::cout << "] )" << std::endl;
 }
 
-int main(int argc, char const* argv[]) {
+int main(int argc, char const *argv[]) {
 #ifdef CRAYPAT
   PAT_record(PAT_STATE_OFF);
 #endif
@@ -130,7 +133,8 @@ int main(int argc, char const* argv[]) {
   fout.close();
 
   auto diff = end - start;
-  double timeDiff = std::chrono::duration<double, std::milli>(diff).count() / 1000.;
+  double timeDiff =
+      std::chrono::duration<double, std::milli>(diff).count() / 1000.;
   reportTime(output, iter, timeDiff);
 
   return 0;
