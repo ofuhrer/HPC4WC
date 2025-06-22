@@ -1,3 +1,8 @@
+# Phind ai-assistant (405B; 06-2025) was used for the development of this Python script.
+# Especially the different meanings of memory management types and how they relate to CuPy-settings was prompted.
+# The code has been adapted and reviewed before publication. The verification of the results was carried out
+# using visual aids and summary statistics. An in-depth analysis with an expert from CSCS/NVIDIA/CuPy is still outstanding.
+
 import timeit
 import numpy as np
 import cupy as cp
