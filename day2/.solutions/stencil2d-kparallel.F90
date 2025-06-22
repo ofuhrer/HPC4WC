@@ -8,6 +8,7 @@
 
 ! Driver for apply_diffusion() that sets up fields and does timings
 program main
+    use omp_lib
     use m_utils, only: timer_start, timer_end, timer_get, is_master, num_rank, write_field_to_file
     implicit none
 

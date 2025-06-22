@@ -38,13 +38,13 @@ program main
     call PAT_record( PAT_STATE_OFF, istat )
 #endif
 
+    call init()
+    
     !$omp parallel
     !$omp master
-    write(*,*) '# threads = ', omp_get_num_threads()
+    write(*,*) '#threads = ', omp_get_num_threads()
     !$omp end master
     !$omp end parallel
-
-    call init()
 
     if ( is_master() ) then
         write(*, '(a)') '# ranks nx ny nz num_iter time'
@@ -88,6 +88,7 @@ program main
         call cleanup()
 
         runtime = timer_get( timer_work )
+        
         if ( is_master() ) &
             write(*, '(a, i5, a, i5, a, i5, a, i5, a, i8, a, e15.7, a)') &
                 '[', num_rank(), ',', nx, ',', ny, ',', nz, ',', num_iter, ',', runtime, '], \'
@@ -138,10 +139,9 @@ contains
         do iter = 1, num_iter
                     
             call update_halo( in_field )
-        
-            do k = 1, nz
 
-                !$omp parallel do default(none) shared(nx, ny, num_halo, num_iter, alpha, in_field, tmp1_field, k, iter)
+            !$omp parallel do default(none) private(tmp1_field, laplap) shared(nz, num_halo, ny, nx, in_field, num_iter, out_field, alpha, iter)
+            do k = 1, nz
                 do j = 1 + num_halo - 1, ny + num_halo + 1
                 do i = 1 + num_halo - 1, nx + num_halo + 1
                     tmp1_field(i, j) = -4._wp * in_field(i, j, k)        &
@@ -149,9 +149,7 @@ contains
                         + in_field(i, j - 1, k) + in_field(i, j + 1, k)
                 end do
                 end do
-                !$omp end parallel do
-                
-                !$omp parallel do default(none) shared(nx, ny, num_halo, num_iter, alpha, in_field, tmp1_field, out_field, k, iter) private(laplap)
+
                 do j = 1 + num_halo, ny + num_halo
                 do i = 1 + num_halo, nx + num_halo
                 
@@ -167,9 +165,10 @@ contains
                     
                 end do
                 end do
-                !$omp end parallel do
 
             end do
+            !$omp end parallel do
+            
         end do
             
     end subroutine apply_diffusion
@@ -192,6 +191,8 @@ contains
         integer :: i, j, k
             
         ! bottom edge (without corners)
+        !$omp parallel
+        !$omp do collapse(2) nowait
         do k = 1, nz
         do j = 1, num_halo
         do i = 1 + num_halo, nx + num_halo
@@ -199,8 +200,10 @@ contains
         end do
         end do
         end do
+        !$omp end do
             
         ! top edge (without corners)
+        !$omp do collapse(2) nowait
         do k = 1, nz
         do j = ny + num_halo + 1, ny + 2 * num_halo
         do i = 1 + num_halo, nx + num_halo
@@ -208,8 +211,10 @@ contains
         end do
         end do
         end do
+        !$omp end do
         
         ! left edge (including corners)
+        !$omp do collapse(2) nowait
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = 1, num_halo
@@ -217,8 +222,10 @@ contains
         end do
         end do
         end do
+        !$omp end do
                 
         ! right edge (including corners)
+        !$omp do collapse(2) nowait
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
         do i = nx + num_halo + 1, nx + 2 * num_halo
@@ -226,6 +233,8 @@ contains
         end do
         end do
         end do
+        !$omp end do
+        !$omp end parallel
         
     end subroutine update_halo
         

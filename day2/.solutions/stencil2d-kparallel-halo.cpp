@@ -68,7 +68,8 @@ void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
   for (std::size_t iter = 0; iter < numIter; ++iter) {
 
     updateHalo(inField);
-
+#pragma omp parallel for default(none)                                         \
+    shared(inField, outField, alpha, numIter, iter) firstprivate(tmp1Field)
     for (std::size_t k = 0; k < inField.zMax(); ++k) {
 
       // apply the initial laplacian
@@ -115,6 +116,11 @@ void reportTime(const Storage3D<double> &storage, int nIter, double diff) {
 } // namespace
 
 int main(int argc, char const *argv[]) {
+#pragma omp parallel
+  {
+#pragma omp master
+    { std::cout << "#threads = " << omp_get_num_threads() << std::endl; }
+  }
 #ifdef CRAYPAT
   PAT_record(PAT_STATE_OFF);
 #endif
