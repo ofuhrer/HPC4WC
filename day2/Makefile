@@ -13,18 +13,45 @@ OBJS := $(SRCS:.F90=.o)
 
 ifeq "$(HOSTNAME)" "daint"
   F90 = ftn
-  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm -h omp
+  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm
+ifdef NOOPT
+  FFLAGS = -O0 -hfp0 -Oipa0 -Ovector0 -ffree -N255 -ec -eC -eI -eF -rm
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
 endif
 ifeq "$(HOSTNAME)" "nid"
-  F90 = ftn
-  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm -h omp
-endif
-ifeq "$(HOSTNAME)" "papaya"
-  F90 = mpif90 -cpp 
+  F90 = mpif90 #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+  #FFLAGS = -g1 -O1 -fno-tree-sra -fno-tree-loop-optimize -fno-tree-vectorize -march=native -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -fopenmp
+ifdef NOOPT
   FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
-    -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
-    -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
-    -finit-integer=9999999 -finit-logical=true -finit-character=35
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
+endif
+ifeq "$(HOSTNAME)" "santis-ln"
+  F90 = mpif90 #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+ifdef NOOPT
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
+endif
+ifeq "$(HOSTNAME)" "mango"
+  F90 = mpif90 -L/opt/homebrew/lib -lprofiler #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+ifdef NOOPT
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
 endif
 ifndef F90
   $(error F90 is not set for $(HOSTNAME))
@@ -38,8 +65,8 @@ $(TARGET): $(OBJS)
 	$(F90) $(FFLAGS) $(OBJS) -o $(TARGET)
 	cp $(TARGET) stencil2d.x
 
-clean: clean_examples
-	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report report_*.txt out*.txt
+clean: 
+	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report result_*.py report*.txt perf/* out*.txt
 
 clean_examples:
 	rm -f *.out weak.txt caching.txt caching2.txt out.txt out.png
