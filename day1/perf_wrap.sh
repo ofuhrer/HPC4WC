@@ -1,13 +1,19 @@
 #!/bin/bash
 
 if [ -z "$SLURM_PROCID" ]; then
-    echo "Error: SLURM_PROCID is not set. Aborting." >&2
-    exit 1
+    if [ -z "$OMPI_COMM_WORLD_RANK" ]; then
+        echo "Error: SLURM_PROCID and/or OMPI_COMM_WORLD_RANK are not set. Aborting." >&2
+        exit 1
+    fi
 fi
 
 mkdir -p perf
 
-rank=$(printf "%05d" "$SLURM_PROCID")
+if [ -z "$SLURM_PROCID" ]; then
+    rank=$(printf "%05d" "$OMPI_COMM_WORLD_RANK")
+else
+    rank=$(printf "%05d" "$SLURM_PROCID")
+fi
 
 outd=perf/${rank}.dat
 outf=perf/${rank}.txt
