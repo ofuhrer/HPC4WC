@@ -10,7 +10,7 @@ int main(int argc, char const *argv[]) {
   double sum;
 #pragma omp parallel for reduction(+ : sum)
   for (int i = 0; i < n_iter; ++i) {
-    sum += acos(cos(asin(sin(abs((double)i / n_iter)))));
+    sum += acos(cos(asin(sin(std::fabs((double)i / n_iter)))));
   }
 
   std::cout << sum << std::endl;

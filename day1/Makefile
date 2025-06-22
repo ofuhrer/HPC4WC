@@ -42,12 +42,16 @@ ifdef NOOPT
   TARGET = stencil2d-$(VERSION)-noopt.x
 endif
 endif
-ifeq "$(HOSTNAME)" "papaya"
-F90 = mpif90 -cpp 
-FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
--pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
--fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
--finit-integer=9999999 -finit-logical=true -finit-character=35
+ifeq "$(HOSTNAME)" "mango"
+  F90 = mpif90 -L/opt/homebrew/lib -lprofiler #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+ifdef NOOPT
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
 endif
 ifndef F90
   $(error F90 is not set for $(HOSTNAME))
@@ -62,10 +66,14 @@ $(TARGET): $(OBJS)
 	cp $(TARGET) stencil2d.x
 
 clean: 
-	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report result_*.py report*.txt perf/*
+	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report result_*.py report*.txt perf/* out*.txt
+
+clean_examples:
+	rm -f *.out weak.txt caching.txt caching2.txt out.txt out.png
 
 distclean: clean
 	-$(RM) -rf *.png *.dat *.npy *.x *.x+orig* *.x+[0-9]*
 
 %.o: %.F90
 	$(F90) $(FFLAGS) -c $*.F90
+

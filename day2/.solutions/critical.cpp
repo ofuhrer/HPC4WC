@@ -13,7 +13,7 @@ int main(int argc, char const *argv[]) {
 #pragma omp parallel for
   for (int i = 0; i < n_iter; ++i) {
 #pragma omp critical(math_and_update)
-    sum += acos(cos(asin(sin(abs((double)i / n_iter)))));
+    sum += acos(cos(asin(sin(std::fabs((double)i / n_iter)))));
   }
 
   ftime = omp_get_wtime();

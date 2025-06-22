@@ -9,9 +9,9 @@ int main(int argc, char const *argv[]) {
   omp_set_num_threads(atoi(argv[2]));
   double itime, ftime;
   itime = omp_get_wtime();
-  double sum = 0;
+  volatile double sum = 0;
   for (int i = 0; i < n_iter; ++i) {
-    sum += acos(cos(asin(sin(abs((double)i / n_iter)))));
+    sum += acos(cos(asin(sin(std::fabs((double)i / n_iter)))));
   }
 
   ftime = omp_get_wtime();

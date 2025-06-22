@@ -20,7 +20,7 @@ ifdef NOOPT
 endif
 endif
 ifeq "$(HOSTNAME)" "nid"
-  F90 = mpif90 #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  F90 = mpif90 -ffree-line-length-none #-L/user-tools/env/forge/lib/64 -lmap-sampler
   FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -march=native -funroll-loops -fopenmp -flto -fno-math-errno
   #FFLAGS = -g1 -O1 -fno-tree-sra -fno-tree-loop-optimize -fno-tree-vectorize -march=native -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -fopenmp
 ifdef NOOPT
@@ -32,7 +32,7 @@ ifdef NOOPT
 endif
 endif
 ifeq "$(HOSTNAME)" "santis-ln"
-  F90 = mpif90 #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  F90 = mpif90 -ffree-line-length-none #-L/user-tools/env/forge/lib/64 -lmap-sampler
   FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
 ifdef NOOPT
   FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
@@ -43,7 +43,7 @@ ifdef NOOPT
 endif
 endif
 ifeq "$(HOSTNAME)" "mango"
-  F90 = mpif90 -L/opt/homebrew/lib -lprofiler #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  F90 = mpif90 -ffree-line-length-none -L/opt/homebrew/lib -lprofiler #-L/user-tools/env/forge/lib/64 -lmap-sampler
   FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
 ifdef NOOPT
   FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \

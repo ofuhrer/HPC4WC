@@ -13,7 +13,7 @@ int main(int argc, char const *argv[]) {
   std::vector<double> localvals(n_iter);
 #pragma omp parallel for
   for (int i = 0; i < n_iter; ++i) {
-    localvals[i] = acos(cos(asin(sin(abs((double)i / n_iter)))));
+    localvals[i] = acos(cos(asin(sin(std::fabs((double)i / n_iter)))));
   }
 #pragma omp parallel for reduction(+ : sum)
   for (int i = 0; i < n_iter; ++i) {
