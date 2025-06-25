@@ -42,8 +42,8 @@ def diffusion_defs(in_field: IJKField, alpha: gtx.float64) -> IJKField:
 
 def update_halo(field: IJKField, num_halo: int):
     field.ndarray[...] = field.array_ns.pad(
-        field.ndarray[num_halo:-num_halo, num_halo:-num_halo],
-        ((num_halo, num_halo), (num_halo, num_halo)),
+        field.ndarray[num_halo:-num_halo, num_halo:-num_halo, :],
+        ((num_halo, num_halo), (num_halo, num_halo), (0, 0)),
         mode="wrap",
     )
 
