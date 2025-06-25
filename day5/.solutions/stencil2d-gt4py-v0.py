@@ -41,23 +41,11 @@ def diffusion_defs(in_field: IJKField, alpha: gtx.float64) -> IJKField:
 
 
 def update_halo(field: IJKField, num_halo: int):
-    # TODO consider upgrading to field syntax instead of operating on the ndarray
-
-    # bottom edge (without corners)
-    field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
-        num_halo:-num_halo, -2 * num_halo : -num_halo
-    ]
-
-    # top edge (without corners)
-    field.ndarray[num_halo:-num_halo, -num_halo:] = field.ndarray[
-        num_halo:-num_halo, num_halo : 2 * num_halo
-    ]
-
-    # left edge (including corners)
-    field.ndarray[:num_halo, :] = field.ndarray[-2 * num_halo : -num_halo, :]
-
-    # right edge (including corners)
-    field.ndarray[-num_halo:, :] = field.ndarray[num_halo : 2 * num_halo]
+    field.ndarray[...] = field.array_ns.pad(
+        field.ndarray[num_halo:-num_halo, num_halo:-num_halo],
+        ((num_halo, num_halo), (num_halo, num_halo)),
+        mode="wrap",
+    )
 
 
 def apply_diffusion(
