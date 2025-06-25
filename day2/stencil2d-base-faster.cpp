@@ -79,7 +79,8 @@ void apply_diffusion(T* __restrict__ inField, T* __restrict__ outField,
   const int zMin = halo;
   const int zMax = z + halo;
 
-  T* tmp1Field = new T[tmp1_size];
+  constexpr std::size_t alignment = 64;
+  T* tmp1Field = static_cast<T*>(std::aligned_alloc(alignment, tmp1_size * sizeof(T)));
 
   for (std::size_t iter = 0; iter < numIter; ++iter) {
     updateHalo<T>(inField, x, y, z, halo);
@@ -126,7 +127,7 @@ void apply_diffusion(T* __restrict__ inField, T* __restrict__ outField,
       }
     }
   }
-  delete[] tmp1Field;
+  free(tmp1Field);
 }
 
 template <typename T>
@@ -216,9 +217,10 @@ int main(int argc, char const *argv[]) {
   totalY = y + 2 * nHalo;
   totalZ = z + 2 * nHalo;
 
+  constexpr std::size_t alignment = 64;
   std::size_t size = static_cast<std::size_t>(totalX) * totalY * totalZ;
-  precision_t* input = new precision_t[size];
-  precision_t* output = new precision_t[size];
+  precision_t* input = static_cast<precision_t*>(std::aligned_alloc(alignment, size * sizeof(precision_t)));
+  precision_t* output = static_cast<precision_t*>(std::aligned_alloc(alignment, size * sizeof(precision_t)));
 
   initializeField<precision_t>(input, totalX, totalY, totalZ, nHalo);
   initializeField<precision_t>(output, totalX, totalY, totalZ, nHalo);
@@ -251,8 +253,8 @@ int main(int argc, char const *argv[]) {
       std::chrono::duration<double, std::milli>(diff_chrono).count() / 1000.;
   reportTime<precision_t>(x, y, z, iter, static_cast<precision_t>(timeDiff));
 
-  delete[] input;
-  delete[] output;
+  free(input);
+  free(output);
 
   return 0;
 }
