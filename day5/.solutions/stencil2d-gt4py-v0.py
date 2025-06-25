@@ -41,8 +41,6 @@ def diffusion_defs(in_field: IJKField, alpha: gtx.float64) -> IJKField:
 
 
 def update_halo(field: IJKField, num_halo: int):
-    # TODO consider upgrading to field syntax instead of operating on the ndarray
-
     # bottom edge (without corners)
     field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
         num_halo:-num_halo, -2 * num_halo : -num_halo
@@ -86,7 +84,6 @@ def apply_diffusion(
             alpha=alpha,
             out=out_field,
             domain=interior,
-            offset_provider={"_IOff": I, "_JOff": J},  # TODO fix GT4Py
         )
 
         if n < num_iter - 1:
@@ -157,7 +154,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     in_field[
         num_halo + nx // 4 : num_halo + 3 * nx // 4,
         num_halo + ny // 4 : num_halo + 3 * ny // 4,
-        nz // 4 : 3 * nz // 4,
+        :,
     ] = 1.0
 
     # write input field to file
@@ -167,7 +164,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     if plot_result:
         # plot initial field
         plt.ioff()
-        plt.imshow(in_field[:, :, 0], origin="lower")
+        plt.imshow(in_field[:, :, 0].asnumpy(), origin="lower")
         plt.colorbar()
         plt.savefig("in_field.png")
         plt.close()
@@ -198,7 +195,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     if plot_result:
         # plot the output field
         plt.ioff()
-        plt.imshow(out_field[:, :, 0], origin="lower")
+        plt.imshow(out_field.asnumpy()[:, :, 0], origin="lower")
         plt.colorbar()
         plt.savefig("out_field.png")
         plt.close()
