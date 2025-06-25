@@ -1,0 +1,63 @@
+pid 264313's current affinity list: 0-287
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-jparallel.x --nx 128 --ny 128 --nz 64 --num_iter 1024':
+
+   164,993,111,249      mem_access_rd:u                                                    
+     1,425,818,831      mem_access_wr:u                                                    
+       324,528,299      LLC-load-misses                                                    
+
+       1.810251179 seconds time elapsed
+
+     120.194387000 seconds user
+       1.230559000 seconds sys
+
+
+======= perf record ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 519K of event 'cpu-clock:u'
+# Event count (approx.): 129849250000
+#
+# Overhead  Command          Shared Object             Symbol                           
+# ........  ...............  ........................  .................................
+#
+    58.01%  stencil2d-jpara  libgomp.so.1.0.0          [.] omp_get_num_procs
+    37.49%  stencil2d-jpara  libgomp.so.1.0.0          [.] 0x0000000000045394
+     1.56%  stencil2d-jpara  libgomp.so.1.0.0          [.] omp_fulfill_event
+     1.51%  stencil2d-jpara  stencil2d-jparallel.x     [.] apply_diffusion.6._omp_fn.1
+     1.07%  stencil2d-jpara  stencil2d-jparallel.x     [.] apply_diffusion.6._omp_fn.0
+     0.18%  stencil2d-jpara  libgomp.so.1.0.0          [.] GOMP_single_copy_end
+     0.08%  stencil2d-jpara  stencil2d-jparallel.x     [.] update_halo.5
+     0.07%  stencil2d-jpara  libgomp.so.1.0.0          [.] omp_get_num_threads
+     0.01%  stencil2d-jpara  libc-2.31.so              [.] syscall
+     0.00%  stencil2d-jpara  libgomp.so.1.0.0          [.] omp_get_thread_num
+     0.00%  stencil2d-jpara  stencil2d-jparallel.x     [.] omp_get_thread_num@plt
+     0.00%  stencil2d-jpara  ld-2.31.so                [.] _dl_relocate_object
+     0.00%  stencil2d-jpara  libgomp.so.1.0.0          [.] 0x0000000000045390
+     0.00%  stencil2d-jpara  libgomp.so.1.0.0          [.] 0x0000000000045380
+     0.00%  stencil2d-jpara  libgomp.so.1.0.0          [.] 0x000000000004538c
+     0.00%  stencil2d-jpara  ld-2.31.so                [.] do_lookup_x
+     0.00%  stencil2d-jpara  stencil2d-jparallel.x     [.] omp_get_num_threads@plt
+     0.00%  stencil2d-jpara  ld-2.31.so                [.] _dl_lookup_symbol_x
+     0.00%  stencil2d-jpara  libc-2.31.so              [.] __memcpy_generic
+     0.00%  stencil2d-jpara  libgomp.so.1.0.0          [.] GOMP_parallel
+     0.00%  stencil2d-jpara  libgomp.so.1.0.0          [.] 0x0000000000045388
+     0.00%  stencil2d-jpara  ld-2.31.so                [.] _dl_name_match_p
+     0.00%  stencil2d-jpara  ld-2.31.so                [.] check_match
+     0.00%  stencil2d-jpara  libc-2.31.so              [.] __GI___syscall_error
+     0.00%  stencil2d-jpara  libc-2.31.so              [.] __strlen_generic
+     0.00%  stencil2d-jpara  libc-2.31.so              [.] strncmp
+     0.00%  stencil2d-jpara  libcudart.so.12.6.77      [.] __cudaRegisterUnifiedTable
+     0.00%  stencil2d-jpara  libgfortran.so.5.0.0      [.] _gfortran_st_flush
+     0.00%  stencil2d-jpara  libgomp.so.1.0.0          [.] 0x0000000000045384
+     0.00%  stencil2d-jpara  libmpi_gnu_123.so.12.0.0  [.] MPIR_T_cvar_init
+     0.00%  stencil2d-jpara  stencil2d-jparallel.x     [.] apply_diffusion.6.constprop.0
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
