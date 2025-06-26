@@ -1,86 +1,96 @@
 # ******************************************************
 #     Program: stencil2d-gt4py
-#      Author: Stefano Ubbiali
-#       Email: subbiali@phys.ethz.ch
-#        Date: 04.06.2020
-# Description: GT4Py implementation of 4th-order diffusion
+#      Author: HPC4WC
+#        Date: 11.06.2025
+# Description: GT4Py next implementation of 4th-order diffusion
 # ******************************************************
-import click
-import gt4py as gt
-from gt4py import gtscript
-import matplotlib.pyplot as plt
-import numpy as np
+from typing import Callable
 import time
 
+import click
+import gt4py.next as gtx
+import matplotlib.pyplot as plt
+import numpy as np
 
-@gtscript.function
-def laplacian(in_field):
+backend_str_to_backend = {"None": None, "cpu": gtx.gtfn_cpu, "gpu": gtx.gtfn_gpu}
+
+I = gtx.Dimension("I")
+J = gtx.Dimension("J")
+K = gtx.Dimension("K")
+
+IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
+
+
+@gtx.field_operator
+def laplacian(in_field: IJKField) -> IJKField:
     lap_field = (
-        -4.0 * in_field[0, 0, 0]
-        + in_field[-1, 0, 0]
-        + in_field[1, 0, 0]
-        + in_field[0, -1, 0]
-        + in_field[0, 1, 0]
+        -4.0 * in_field
+        + in_field(I - 1)
+        + in_field(I + 1)
+        + in_field(J - 1)
+        + in_field(J + 1)
     )
     return lap_field
 
 
+@gtx.field_operator
 def diffusion_defs(
-    in_field: gtscript.Field[float],
-    out_field: gtscript.Field[float],
-    *,
+    in_field: IJKField,
     a1: float,
     a2: float,
     a8: float,
     a20: float,
-):
-    from __gtscript__ import PARALLEL, computation, interval
-
-    with computation(PARALLEL), interval(...):
-        out_field = (
-            a1 * in_field[0, -2, 0]
-            + a2 * in_field[-1, -1, 0]
-            + a8 * in_field[0, -1, 0]
-            + a2 * in_field[1, -1, 0]
-            + a1 * in_field[-2, 0, 0]
-            + a8 * in_field[-1, 0, 0]
-            + a20 * in_field[0, 0, 0]
-            + a8 * in_field[1, 0, 0]
-            + a1 * in_field[2, 0, 0]
-            + a2 * in_field[-1, 1, 0]
-            + a8 * in_field[0, 1, 0]
-            + a2 * in_field[1, 1, 0]
-            + a1 * in_field[0, 2, 0]
-        )
+) -> IJKField:
+    return    a1 * in_field(       J - 2)  \
+            + a2 * in_field(I - 1, J - 1)  \
+            + a8 * in_field(       J - 1)  \
+            + a2 * in_field(I + 1, J - 1)  \
+            + a1 * in_field(I - 2)         \
+            + a8 * in_field(I - 1)         \
+            + a20 * in_field               \
+            + a8 * in_field(I + 1)         \
+            + a1 * in_field(I + 2)         \
+            + a2 * in_field(I - 1, J + 1)  \
+            + a8 * in_field(       J + 1)  \
+            + a2 * in_field(I + 1, J + 1)  \
+            + a1 * in_field(       J + 2)
 
 
-def update_halo(field, num_halo):
+
+def update_halo(field: IJKField, num_halo: int):
+    # TODO consider upgrading to field syntax instead of operating on the ndarray
+
     # bottom edge (without corners)
-    field[num_halo:-num_halo, :num_halo] = field[
+    field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
         num_halo:-num_halo, -2 * num_halo : -num_halo
     ]
 
     # top edge (without corners)
-    field[num_halo:-num_halo, -num_halo:] = field[
+    field.ndarray[num_halo:-num_halo, -num_halo:] = field.ndarray[
         num_halo:-num_halo, num_halo : 2 * num_halo
     ]
 
     # left edge (including corners)
-    field[:num_halo, :] = field[-2 * num_halo : -num_halo, :]
+    field.ndarray[:num_halo, :] = field.ndarray[-2 * num_halo : -num_halo, :]
 
     # right edge (including corners)
-    field[-num_halo:, :] = field[num_halo : 2 * num_halo]
+    field.ndarray[-num_halo:, :] = field.ndarray[num_halo : 2 * num_halo]
 
 
 def apply_diffusion(
-    diffusion_stencil, in_field, out_field, alpha, num_halo, num_iter=1
+    diffusion_stencil: Callable,
+    in_field: IJKField,
+    out_field: IJKField,
+    alpha: gtx.float64,
+    num_halo: int,
+    num_iter: int = 1,
 ):
-    # origin and extent of the computational domain
-    origin = (num_halo, num_halo, 0)
-    domain = (
-        in_field.shape[0] - 2 * num_halo,
-        in_field.shape[1] - 2 * num_halo,
-        in_field.shape[2],
+    interior = gtx.domain(
+        {
+            I: (0, in_field.shape[0] - 2 * num_halo),
+            J: (0, in_field.shape[1] - 2 * num_halo),
+            K: (0, in_field.shape[2]),
+        }
     )
 
     for n in range(num_iter):
@@ -90,13 +100,13 @@ def apply_diffusion(
         # run the stencil
         diffusion_stencil(
             in_field=in_field,
-            out_field=out_field,
+            out=out_field,
             a1=-alpha,
             a2=-2 * alpha,
             a8=8 * alpha,
             a20=1 - 20 * alpha,
-            origin=origin,
-            domain=domain,
+            domain=interior,
+            offset_provider={"_IOff": I, "_JOff": J},  # TODO fix GT4Py
         )
 
         if n < num_iter - 1:
@@ -125,42 +135,43 @@ def apply_diffusion(
     help="Number of halo-points in x- and y-direction",
 )
 @click.option(
-    "--backend", type=str, required=False, default="numpy", help="GT4Py backend."
+    "--backend", type=str, required=False, default="None", help="GT4Py backend."
 )
 @click.option(
     "--plot_result", type=bool, default=False, help="Make a plot of the result?"
 )
-def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
+def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     """Driver for apply_diffusion that sets up fields and does timings."""
 
-    assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx"
-    assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny"
-    assert 0 < nz <= 1024, "You have to specify a reasonable value for nz"
-    assert (
-        0 < num_iter <= 1024 * 1024
-    ), "You have to specify a reasonable value for num_iter"
-    assert (
-        2 <= num_halo <= 256
-    ), "You have to specify a reasonable number of halo points"
+    assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx (0 < nx <= 1024*1024)"
+    assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny (0 < ny <= 1024*1024)"
+    assert 0 < nz <= 1024, "You have to specify a reasonable value for nz (0 < nz <= 1024)"
+    assert 0 < num_iter <= 1024 * 1024, (
+        "You have to specify a reasonable value for num_iter (0 < num_iter <= 1024*1024)"
+    )
+    assert 2 <= num_halo <= 256, (
+        "You have to specify a reasonable number of halo points (2 < num_halo <= 256)"
+    )
     assert backend in (
-        "numpy",
-        "gt:cpu_ifirst",
-        "gt:cpu_kfirst",
-        "gt:gpu",
-        "cuda",
+        "None",
+        "cpu",
+        "gpu",
     ), "You have to specify a reasonable value for backend"
+
+    actual_backend = backend_str_to_backend[backend]
+
     alpha = 1.0 / 32.0
 
     # default origin
-    dorigin = (num_halo, num_halo, 0)
+    field_domain = {
+        I: (-num_halo, nx + num_halo),
+        J: (-num_halo, ny + num_halo),
+        K: (0, nz),
+    }
 
     # allocate input and output fields
-    in_field = gt.storage.zeros(
-        backend, dorigin, (nx + 2 * num_halo, ny + 2 * num_halo, nz), dtype=float
-    )
-    out_field = gt.storage.zeros(
-        backend, dorigin, (nx + 2 * num_halo, ny + 2 * num_halo, nz), dtype=float
-    )
+    in_field = gtx.zeros(field_domain, dtype=gtx.float64, allocator=actual_backend)
+    out_field = gtx.zeros(field_domain, dtype=gtx.float64, allocator=actual_backend)
 
     # prepare input field
     in_field[
@@ -171,7 +182,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
 
     # write input field to file
     # swap first and last axes for compatibility with day1/stencil2d.py
-    np.save("in_field", np.swapaxes(in_field, 0, 2))
+    np.save("in_field", np.swapaxes(in_field.asnumpy(), 0, 2))
 
     if plot_result:
         # plot initial field
@@ -181,15 +192,8 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
         plt.savefig("in_field.png")
         plt.close()
 
-    # compile diffusion stencil
-    kwargs = {"verbose": True} if backend in ("gtx86", "gtmc", "gtcuda") else {}
-    diffusion_stencil = gtscript.stencil(
-        definition=diffusion_defs,
-        backend=backend,
-        externals={"laplacian": laplacian},
-        rebuild=False,
-        **kwargs,
-    )
+    # select backend
+    diffusion_stencil = diffusion_defs.with_backend(actual_backend)
 
     # warmup caches
     apply_diffusion(diffusion_stencil, in_field, out_field, alpha, num_halo)
@@ -197,14 +201,19 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
     # time the actual work
     tic = time.time()
     apply_diffusion(
-        diffusion_stencil, in_field, out_field, alpha, num_halo, num_iter=num_iter
+        diffusion_stencil,
+        in_field,
+        out_field,
+        alpha,
+        num_halo,
+        num_iter=num_iter,
     )
     toc = time.time()
     print(f"Elapsed time for work = {toc - tic} s")
 
     # save output field
     # swap first and last axes for compatibility with day1/stencil2d.py
-    np.save("out_field", np.swapaxes(out_field, 0, 2))
+    np.save("out_field", np.swapaxes(out_field.asnumpy(), 0, 2))
 
     if plot_result:
         # plot the output field

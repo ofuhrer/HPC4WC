@@ -143,15 +143,15 @@ def apply_diffusion(
 def main(nx, ny, nz, num_iter, num_halo=2, backend="numpy", plot_result=False):
     """Driver for apply_diffusion that sets up fields and does timings."""
 
-    assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx"
-    assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny"
-    assert 0 < nz <= 1024, "You have to specify a reasonable value for nz"
-    assert (
-        0 < num_iter <= 1024 * 1024
-    ), "You have to specify a reasonable value for num_iter"
-    assert (
-        2 <= num_halo <= 256
-    ), "You have to specify a reasonable number of halo points"
+    assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx (0 < nx <= 1024*1024)"
+    assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny (0 < ny <= 1024*1024)"
+    assert 0 < nz <= 1024, "You have to specify a reasonable value for nz (0 < nz <= 1024)"
+    assert 0 < num_iter <= 1024 * 1024, (
+        "You have to specify a reasonable value for num_iter (0 < num_iter <= 1024*1024)"
+    )
+    assert 2 <= num_halo <= 256, (
+        "You have to specify a reasonable number of halo points (2 < num_halo <= 256)"
+    )
     assert backend in (
         "numpy",
         "gt:cpu_ifirst",
