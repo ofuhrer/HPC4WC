@@ -42,7 +42,7 @@ def diffusion(in_field: IJKField, alpha: gtx.float64) -> IJKField:
 
 def update_halo(field: IJKField, num_halo: int):
 
-    # TODO - make sure to add field.ndarray here
+    # Make sure to use field.ndarray here
     
     # bottom edge (without corners)
     field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
@@ -148,7 +148,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
 
     alpha = 1.0 / 32.0
 
-    # default origin
+    # define domain
     field_domain = {
         I: (-num_halo, nx + num_halo),
         J: (-num_halo, ny + num_halo),
