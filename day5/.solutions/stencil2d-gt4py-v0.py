@@ -120,9 +120,15 @@ def apply_diffusion(
 def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     """Driver for apply_diffusion that sets up fields and does timings."""
 
-    assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx (0 < nx <= 1024*1024)"
-    assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny (0 < ny <= 1024*1024)"
-    assert 0 < nz <= 1024, "You have to specify a reasonable value for nz (0 < nz <= 1024)"
+    assert 0 < nx <= 1024 * 1024, (
+        "You have to specify a reasonable value for nx (0 < nx <= 1024*1024)"
+    )
+    assert 0 < ny <= 1024 * 1024, (
+        "You have to specify a reasonable value for ny (0 < ny <= 1024*1024)"
+    )
+    assert 0 < nz <= 1024, (
+        "You have to specify a reasonable value for nz (0 < nz <= 1024)"
+    )
     assert 0 < num_iter <= 1024 * 1024, (
         "You have to specify a reasonable value for num_iter (0 < num_iter <= 1024*1024)"
     )
@@ -154,7 +160,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     in_field[
         num_halo + nx // 4 : num_halo + 3 * nx // 4,
         num_halo + ny // 4 : num_halo + 3 * ny // 4,
-        :,
+        nz // 4 : 3 * nz // 4,
     ] = 1.0
 
     # write input field to file
@@ -164,7 +170,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     if plot_result:
         # plot initial field
         plt.ioff()
-        plt.imshow(in_field[:, :, 0].asnumpy(), origin="lower")
+        plt.imshow(in_field.asnumpy()[:, :, in_field.shape[2] // 2], origin="lower")
         plt.colorbar()
         plt.savefig("in_field.png")
         plt.close()
@@ -195,7 +201,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     if plot_result:
         # plot the output field
         plt.ioff()
-        plt.imshow(out_field.asnumpy()[:, :, 0], origin="lower")
+        plt.imshow(out_field.asnumpy()[:, :, out_field.shape[2] // 2], origin="lower")
         plt.colorbar()
         plt.savefig("out_field.png")
         plt.close()
