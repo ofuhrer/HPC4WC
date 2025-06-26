@@ -82,7 +82,6 @@ def apply_diffusion(
             alpha=alpha,
             out=out_field,
             domain=interior,
-            offset_provider={"_IOff": I, "_JOff": J},  # TODO fix GT4Py
         )
 
         if n < num_iter - 1:
