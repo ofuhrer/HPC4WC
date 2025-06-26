@@ -20,18 +20,14 @@ K = gtx.Dimension("K")
 
 IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
 
-
 # TODO - insert Laplacian
-
 
 # TODO - implement a single timestep
 
 # TODO - implement ijk-ordered halo-update
 # Make sure to use field.ndarray here
 
-
 # TODO - define apply_diffusion() function
-
 
 @click.command()
 @click.option(
@@ -91,11 +87,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     # TODO
 
     # prepare input field
-    in_field[
-        num_halo + nx // 4 : num_halo + 3 * nx // 4,
-        num_halo + ny // 4 : num_halo + 3 * ny // 4,
-        nz // 4 : 3 * nz // 4,
-    ] = 1.0
+    # TODO
 
     # write input field to file
     # swap first and last axes for compatibility with day1/stencil2d.py
