@@ -22,18 +22,6 @@ IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
 
 
 @gtx.field_operator
-def laplacian(in_field: IJKField) -> IJKField:
-    lap_field = (
-        -4.0 * in_field
-        + in_field(I - 1)
-        + in_field(I + 1)
-        + in_field(J - 1)
-        + in_field(J + 1)
-    )
-    return lap_field
-
-
-@gtx.field_operator
 def diffusion_defs(
     in_field: IJKField,
     a1: float,
@@ -41,25 +29,24 @@ def diffusion_defs(
     a8: float,
     a20: float,
 ) -> IJKField:
-    return    a1 * in_field(       J - 2)  \
-            + a2 * in_field(I - 1, J - 1)  \
-            + a8 * in_field(       J - 1)  \
-            + a2 * in_field(I + 1, J - 1)  \
-            + a1 * in_field(I - 2)         \
-            + a8 * in_field(I - 1)         \
-            + a20 * in_field               \
-            + a8 * in_field(I + 1)         \
-            + a1 * in_field(I + 2)         \
-            + a2 * in_field(I - 1, J + 1)  \
-            + a8 * in_field(       J + 1)  \
-            + a2 * in_field(I + 1, J + 1)  \
-            + a1 * in_field(       J + 2)
-
+    return (
+        a1 * in_field(J - 2)
+        + a2 * in_field(I - 1, J - 1)
+        + a8 * in_field(J - 1)
+        + a2 * in_field(I + 1, J - 1)
+        + a1 * in_field(I - 2)
+        + a8 * in_field(I - 1)
+        + a20 * in_field
+        + a8 * in_field(I + 1)
+        + a1 * in_field(I + 2)
+        + a2 * in_field(I - 1, J + 1)
+        + a8 * in_field(J + 1)
+        + a2 * in_field(I + 1, J + 1)
+        + a1 * in_field(J + 2)
+    )
 
 
 def update_halo(field: IJKField, num_halo: int):
-    # TODO consider upgrading to field syntax instead of operating on the ndarray
-
     # bottom edge (without corners)
     field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
         num_halo:-num_halo, -2 * num_halo : -num_halo
@@ -106,7 +93,6 @@ def apply_diffusion(
             a8=8 * alpha,
             a20=1 - 20 * alpha,
             domain=interior,
-            offset_provider={"_IOff": I, "_JOff": J},  # TODO fix GT4Py
         )
 
         if n < num_iter - 1:
@@ -143,9 +129,15 @@ def apply_diffusion(
 def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     """Driver for apply_diffusion that sets up fields and does timings."""
 
-    assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx (0 < nx <= 1024*1024)"
-    assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny (0 < ny <= 1024*1024)"
-    assert 0 < nz <= 1024, "You have to specify a reasonable value for nz (0 < nz <= 1024)"
+    assert 0 < nx <= 1024 * 1024, (
+        "You have to specify a reasonable value for nx (0 < nx <= 1024*1024)"
+    )
+    assert 0 < ny <= 1024 * 1024, (
+        "You have to specify a reasonable value for ny (0 < ny <= 1024*1024)"
+    )
+    assert 0 < nz <= 1024, (
+        "You have to specify a reasonable value for nz (0 < nz <= 1024)"
+    )
     assert 0 < num_iter <= 1024 * 1024, (
         "You have to specify a reasonable value for num_iter (0 < num_iter <= 1024*1024)"
     )
@@ -187,7 +179,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     if plot_result:
         # plot initial field
         plt.ioff()
-        plt.imshow(in_field[:, :, 0], origin="lower")
+        plt.imshow(in_field.asnumpy()[:, :, in_field.shape[2] // 2], origin="lower")
         plt.colorbar()
         plt.savefig("in_field.png")
         plt.close()
@@ -218,7 +210,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     if plot_result:
         # plot the output field
         plt.ioff()
-        plt.imshow(out_field[:, :, 0], origin="lower")
+        plt.imshow(out_field.asnumpy()[:, :, out_field.shape[2] // 2], origin="lower")
         plt.colorbar()
         plt.savefig("out_field.png")
         plt.close()
