@@ -34,13 +34,16 @@ def laplacian(in_field: IJKField) -> IJKField:
 
 
 @gtx.field_operator
-def diffusion_defs(in_field: IJKField, alpha: gtx.float64) -> IJKField:
+def diffusion(in_field: IJKField, alpha: gtx.float64) -> IJKField:
     lap1 = laplacian(in_field)
     lap2 = laplacian(lap1)
     return in_field - alpha * lap2
 
 
 def update_halo(field: IJKField, num_halo: int):
+
+    # TODO - make sure to add field.ndarray here
+    
     # bottom edge (without corners)
     field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
         num_halo:-num_halo, -2 * num_halo : -num_halo
@@ -176,7 +179,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
         plt.close()
 
     # select backend
-    diffusion_stencil = diffusion_defs.with_backend(actual_backend)
+    diffusion_stencil = diffusion.with_backend(actual_backend)
 
     # warmup caches
     apply_diffusion(diffusion_stencil, in_field, out_field, alpha, num_halo)
