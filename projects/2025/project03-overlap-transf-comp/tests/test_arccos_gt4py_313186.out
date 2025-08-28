@@ -1,0 +1,15 @@
+Job started on nid005479 -> Running accuracy tests for gt4py
+Using Python at: /users/class182/HPC4WC_venv/bin/python
+Python 3.12.5
+build/gt4py/test_arccos_gt4py.py started
+
+
+Test successful!
+
+JobID           JobName    Elapsed     MaxRSS      State 
+------------ ---------- ---------- ---------- ---------- 
+313186       test_arcc+   00:00:37               RUNNING 
+313186.batch      batch   00:00:37               RUNNING 
+313186.exte+     extern   00:00:37               RUNNING 
+
+Job completed
