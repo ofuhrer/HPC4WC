@@ -1,0 +1,14 @@
+cupy-cuda12x>=13.4.1
+mpi4py>=4.1.0
+jupyter>=1.1.1
+ipykernel>=6.29.5
+matplotlib>=3.10.3
+ipcmagic-cscs>=1.1.0
+bash_kernel>=0.10.0
+numpy
+pandas
+matplotlib
+traitlets>=4.3.1
+ipython
+jupyterlab_launcher>=0.5.0
+git+https://github.com/GridTools/gt4py

@@ -1,0 +1,450 @@
+Job started on nid005212
+Running performance tests for cuda
+-- Cluster build: setting CUDA architecture to sm_90
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /users/class166/HPC4WC-overlapping/build
+[ 16%] Building CUDA object CMakeFiles/stencil2d_gpu.dir/src/cuda/stencil2d-gpu.cu.o
+[ 33%] Building CUDA object CMakeFiles/stencil2d_gpu.dir/src/cuda/stencil2d_helper/stencil_kernels.cu.o
+[ 50%] Linking CUDA executable stencil2d_gpu
+[ 50%] Built target stencil2d_gpu
+[ 66%] Building CUDA object CMakeFiles/cuda_arccos.dir/src/cuda/main.cu.o
+[ 83%] Building CUDA object CMakeFiles/cuda_arccos.dir/src/cuda/arccos_cuda.cu.o
+[100%] Linking CUDA executable cuda_arccos
+[100%] Built target cuda_arccos
+Saving results to: ../measurements/perf_test_cuda_257136.out
+Beginning performance tests...
+Beginning performance tests...
+Errors will be logged to: ../measurements/perf_test_cuda_257136.err
+Testing array size: 8 with 1 streams
+Testing array size: 8 with 1 streams
+### 8 1 3.7765e-05
+Testing array size: 8 with 2 streams
+Testing array size: 8 with 2 streams
+### 8 2 4.16018e-05
+Testing array size: 8 with 4 streams
+Testing array size: 8 with 4 streams
+### 8 4 5.307e-05
+Testing array size: 8 with 8 streams
+Testing array size: 8 with 8 streams
+### 8 8 7.22854e-05
+Testing array size: 8 with 16 streams
+Testing array size: 8 with 16 streams
+Testing array size: 8 with 32 streams
+Testing array size: 8 with 32 streams
+Testing array size: 8 with 64 streams
+Testing array size: 8 with 64 streams
+Testing array size: 8 with 128 streams
+Testing array size: 8 with 128 streams
+Testing array size: 8 with 256 streams
+Testing array size: 8 with 256 streams
+Testing array size: 8 with 512 streams
+Testing array size: 8 with 512 streams
+Testing array size: 32 with 1 streams
+Testing array size: 32 with 1 streams
+### 32 1 3.837e-05
+Testing array size: 32 with 2 streams
+Testing array size: 32 with 2 streams
+### 32 2 4.21169e-05
+Testing array size: 32 with 4 streams
+Testing array size: 32 with 4 streams
+### 32 4 5.39597e-05
+Testing array size: 32 with 8 streams
+Testing array size: 32 with 8 streams
+### 32 8 7.39335e-05
+Testing array size: 32 with 16 streams
+Testing array size: 32 with 16 streams
+### 32 16 0.000114351
+Testing array size: 32 with 32 streams
+Testing array size: 32 with 32 streams
+### 32 32 0.000196774
+Testing array size: 32 with 64 streams
+Testing array size: 32 with 64 streams
+Testing array size: 32 with 128 streams
+Testing array size: 32 with 128 streams
+Testing array size: 32 with 256 streams
+Testing array size: 32 with 256 streams
+Testing array size: 32 with 512 streams
+Testing array size: 32 with 512 streams
+Testing array size: 128 with 1 streams
+Testing array size: 128 with 1 streams
+### 128 1 3.64914e-05
+Testing array size: 128 with 2 streams
+Testing array size: 128 with 2 streams
+### 128 2 4.15634e-05
+Testing array size: 128 with 4 streams
+Testing array size: 128 with 4 streams
+### 128 4 5.18158e-05
+Testing array size: 128 with 8 streams
+Testing array size: 128 with 8 streams
+### 128 8 7.25607e-05
+Testing array size: 128 with 16 streams
+Testing array size: 128 with 16 streams
+### 128 16 0.000114809
+Testing array size: 128 with 32 streams
+Testing array size: 128 with 32 streams
+### 128 32 0.000194886
+Testing array size: 128 with 64 streams
+Testing array size: 128 with 64 streams
+### 128 64 0.000356128
+Testing array size: 128 with 128 streams
+Testing array size: 128 with 128 streams
+### 128 128 0.000696664
+Testing array size: 128 with 256 streams
+Testing array size: 128 with 256 streams
+Testing array size: 128 with 512 streams
+Testing array size: 128 with 512 streams
+Testing array size: 512 with 1 streams
+Testing array size: 512 with 1 streams
+### 512 1 3.78002e-05
+Testing array size: 512 with 2 streams
+Testing array size: 512 with 2 streams
+### 512 2 4.17233e-05
+Testing array size: 512 with 4 streams
+Testing array size: 512 with 4 streams
+### 512 4 5.13487e-05
+Testing array size: 512 with 8 streams
+Testing array size: 512 with 8 streams
+### 512 8 7.3207e-05
+Testing array size: 512 with 16 streams
+Testing array size: 512 with 16 streams
+### 512 16 0.000115967
+Testing array size: 512 with 32 streams
+Testing array size: 512 with 32 streams
+### 512 32 0.000192963
+Testing array size: 512 with 64 streams
+Testing array size: 512 with 64 streams
+### 512 64 0.000355303
+Testing array size: 512 with 128 streams
+Testing array size: 512 with 128 streams
+### 512 128 0.000690748
+Testing array size: 512 with 256 streams
+Testing array size: 512 with 256 streams
+### 512 256 0.0013408
+Testing array size: 512 with 512 streams
+Testing array size: 512 with 512 streams
+### 512 512 0.00261292
+Testing array size: 2048 with 1 streams
+Testing array size: 2048 with 1 streams
+### 2048 1 3.78675e-05
+Testing array size: 2048 with 2 streams
+Testing array size: 2048 with 2 streams
+### 2048 2 4.164e-05
+Testing array size: 2048 with 4 streams
+Testing array size: 2048 with 4 streams
+### 2048 4 5.28812e-05
+Testing array size: 2048 with 8 streams
+Testing array size: 2048 with 8 streams
+### 2048 8 7.1764e-05
+Testing array size: 2048 with 16 streams
+Testing array size: 2048 with 16 streams
+### 2048 16 0.000116066
+Testing array size: 2048 with 32 streams
+Testing array size: 2048 with 32 streams
+### 2048 32 0.000193494
+Testing array size: 2048 with 64 streams
+Testing array size: 2048 with 64 streams
+### 2048 64 0.000363655
+Testing array size: 2048 with 128 streams
+Testing array size: 2048 with 128 streams
+### 2048 128 0.000689202
+Testing array size: 2048 with 256 streams
+Testing array size: 2048 with 256 streams
+### 2048 256 0.00133994
+Testing array size: 2048 with 512 streams
+Testing array size: 2048 with 512 streams
+### 2048 512 0.00263516
+Testing array size: 8192 with 1 streams
+Testing array size: 8192 with 1 streams
+### 8192 1 3.69141e-05
+Testing array size: 8192 with 2 streams
+Testing array size: 8192 with 2 streams
+### 8192 2 4.34386e-05
+Testing array size: 8192 with 4 streams
+Testing array size: 8192 with 4 streams
+### 8192 4 5.20973e-05
+Testing array size: 8192 with 8 streams
+Testing array size: 8192 with 8 streams
+### 8192 8 7.20199e-05
+Testing array size: 8192 with 16 streams
+Testing array size: 8192 with 16 streams
+### 8192 16 0.000116207
+Testing array size: 8192 with 32 streams
+Testing array size: 8192 with 32 streams
+### 8192 32 0.000198665
+Testing array size: 8192 with 64 streams
+Testing array size: 8192 with 64 streams
+### 8192 64 0.000361114
+Testing array size: 8192 with 128 streams
+Testing array size: 8192 with 128 streams
+### 8192 128 0.000688382
+Testing array size: 8192 with 256 streams
+Testing array size: 8192 with 256 streams
+### 8192 256 0.00134605
+Testing array size: 8192 with 512 streams
+Testing array size: 8192 with 512 streams
+### 8192 512 0.00261878
+Testing array size: 32768 with 1 streams
+Testing array size: 32768 with 1 streams
+### 32768 1 3.90994e-05
+Testing array size: 32768 with 2 streams
+Testing array size: 32768 with 2 streams
+### 32768 2 4.9662e-05
+Testing array size: 32768 with 4 streams
+Testing array size: 32768 with 4 streams
+### 32768 4 6.26793e-05
+Testing array size: 32768 with 8 streams
+Testing array size: 32768 with 8 streams
+### 32768 8 8.19364e-05
+Testing array size: 32768 with 16 streams
+Testing array size: 32768 with 16 streams
+### 32768 16 0.00012628
+Testing array size: 32768 with 32 streams
+Testing array size: 32768 with 32 streams
+### 32768 32 0.000200403
+Testing array size: 32768 with 64 streams
+Testing array size: 32768 with 64 streams
+### 32768 64 0.000372512
+Testing array size: 32768 with 128 streams
+Testing array size: 32768 with 128 streams
+### 32768 128 0.00070906
+Testing array size: 32768 with 256 streams
+Testing array size: 32768 with 256 streams
+### 32768 256 0.00132762
+Testing array size: 32768 with 512 streams
+Testing array size: 32768 with 512 streams
+### 32768 512 0.00266541
+Testing array size: 131072 with 1 streams
+Testing array size: 131072 with 1 streams
+### 131072 1 5.36589e-05
+Testing array size: 131072 with 2 streams
+Testing array size: 131072 with 2 streams
+### 131072 2 5.78923e-05
+Testing array size: 131072 with 4 streams
+Testing array size: 131072 with 4 streams
+### 131072 4 7.25735e-05
+Testing array size: 131072 with 8 streams
+Testing array size: 131072 with 8 streams
+### 131072 8 8.93598e-05
+Testing array size: 131072 with 16 streams
+Testing array size: 131072 with 16 streams
+### 131072 16 0.000128632
+Testing array size: 131072 with 32 streams
+Testing array size: 131072 with 32 streams
+### 131072 32 0.00022917
+Testing array size: 131072 with 64 streams
+Testing array size: 131072 with 64 streams
+### 131072 64 0.000399676
+Testing array size: 131072 with 128 streams
+Testing array size: 131072 with 128 streams
+### 131072 128 0.000733862
+Testing array size: 131072 with 256 streams
+Testing array size: 131072 with 256 streams
+### 131072 256 0.00142292
+Testing array size: 131072 with 512 streams
+Testing array size: 131072 with 512 streams
+### 131072 512 0.00278681
+Testing array size: 524288 with 1 streams
+Testing array size: 524288 with 1 streams
+### 524288 1 9.21887e-05
+Testing array size: 524288 with 2 streams
+Testing array size: 524288 with 2 streams
+### 524288 2 8.79042e-05
+Testing array size: 524288 with 4 streams
+Testing array size: 524288 with 4 streams
+### 524288 4 9.09854e-05
+Testing array size: 524288 with 8 streams
+Testing array size: 524288 with 8 streams
+### 524288 8 0.00010703
+Testing array size: 524288 with 16 streams
+Testing array size: 524288 with 16 streams
+### 524288 16 0.000143748
+Testing array size: 524288 with 32 streams
+Testing array size: 524288 with 32 streams
+### 524288 32 0.000223964
+Testing array size: 524288 with 64 streams
+Testing array size: 524288 with 64 streams
+### 524288 64 0.000397519
+Testing array size: 524288 with 128 streams
+Testing array size: 524288 with 128 streams
+### 524288 128 0.000828505
+Testing array size: 524288 with 256 streams
+Testing array size: 524288 with 256 streams
+### 524288 256 0.00149362
+Testing array size: 524288 with 512 streams
+Testing array size: 524288 with 512 streams
+### 524288 512 0.00292353
+Testing array size: 2097152 with 1 streams
+Testing array size: 2097152 with 1 streams
+### 2097152 1 0.000233694
+Testing array size: 2097152 with 2 streams
+Testing array size: 2097152 with 2 streams
+### 2097152 2 0.00020599
+Testing array size: 2097152 with 4 streams
+Testing array size: 2097152 with 4 streams
+### 2097152 4 0.000219868
+Testing array size: 2097152 with 8 streams
+Testing array size: 2097152 with 8 streams
+### 2097152 8 0.000221903
+Testing array size: 2097152 with 16 streams
+Testing array size: 2097152 with 16 streams
+### 2097152 16 0.000248103
+Testing array size: 2097152 with 32 streams
+Testing array size: 2097152 with 32 streams
+### 2097152 32 0.000299074
+Testing array size: 2097152 with 64 streams
+Testing array size: 2097152 with 64 streams
+### 2097152 64 0.000421486
+Testing array size: 2097152 with 128 streams
+Testing array size: 2097152 with 128 streams
+### 2097152 128 0.000767464
+Testing array size: 2097152 with 256 streams
+Testing array size: 2097152 with 256 streams
+### 2097152 256 0.0014511
+Testing array size: 2097152 with 512 streams
+Testing array size: 2097152 with 512 streams
+### 2097152 512 0.00321856
+Testing array size: 8388608 with 1 streams
+Testing array size: 8388608 with 1 streams
+### 8388608 1 0.000836041
+Testing array size: 8388608 with 2 streams
+Testing array size: 8388608 with 2 streams
+### 8388608 2 0.000669122
+Testing array size: 8388608 with 4 streams
+Testing array size: 8388608 with 4 streams
+### 8388608 4 0.000624817
+Testing array size: 8388608 with 8 streams
+Testing array size: 8388608 with 8 streams
+### 8388608 8 0.000667657
+Testing array size: 8388608 with 16 streams
+Testing array size: 8388608 with 16 streams
+### 8388608 16 0.000657638
+Testing array size: 8388608 with 32 streams
+Testing array size: 8388608 with 32 streams
+### 8388608 32 0.000758572
+Testing array size: 8388608 with 64 streams
+Testing array size: 8388608 with 64 streams
+### 8388608 64 0.00088971
+Testing array size: 8388608 with 128 streams
+Testing array size: 8388608 with 128 streams
+### 8388608 128 0.00107184
+Testing array size: 8388608 with 256 streams
+Testing array size: 8388608 with 256 streams
+### 8388608 256 0.00153486
+Testing array size: 8388608 with 512 streams
+Testing array size: 8388608 with 512 streams
+### 8388608 512 0.00290198
+Testing array size: 33554432 with 1 streams
+Testing array size: 33554432 with 1 streams
+### 33554432 1 0.00323107
+Testing array size: 33554432 with 2 streams
+Testing array size: 33554432 with 2 streams
+### 33554432 2 0.00249624
+Testing array size: 33554432 with 4 streams
+Testing array size: 33554432 with 4 streams
+### 33554432 4 0.00218642
+Testing array size: 33554432 with 8 streams
+Testing array size: 33554432 with 8 streams
+### 33554432 8 0.00210829
+Testing array size: 33554432 with 16 streams
+Testing array size: 33554432 with 16 streams
+### 33554432 16 0.00209452
+Testing array size: 33554432 with 32 streams
+Testing array size: 33554432 with 32 streams
+### 33554432 32 0.00227493
+Testing array size: 33554432 with 64 streams
+Testing array size: 33554432 with 64 streams
+### 33554432 64 0.00264575
+Testing array size: 33554432 with 128 streams
+Testing array size: 33554432 with 128 streams
+### 33554432 128 0.00295341
+Testing array size: 33554432 with 256 streams
+Testing array size: 33554432 with 256 streams
+### 33554432 256 0.00337766
+Testing array size: 33554432 with 512 streams
+Testing array size: 33554432 with 512 streams
+### 33554432 512 0.00410366
+Testing array size: 134217728 with 1 streams
+Testing array size: 134217728 with 1 streams
+### 134217728 1 0.0126431
+Testing array size: 134217728 with 2 streams
+Testing array size: 134217728 with 2 streams
+### 134217728 2 0.00964582
+Testing array size: 134217728 with 4 streams
+Testing array size: 134217728 with 4 streams
+### 134217728 4 0.00842735
+Testing array size: 134217728 with 8 streams
+Testing array size: 134217728 with 8 streams
+### 134217728 8 0.00763703
+Testing array size: 134217728 with 16 streams
+Testing array size: 134217728 with 16 streams
+### 134217728 16 0.00742277
+Testing array size: 134217728 with 32 streams
+Testing array size: 134217728 with 32 streams
+### 134217728 32 0.00747222
+Testing array size: 134217728 with 64 streams
+Testing array size: 134217728 with 64 streams
+### 134217728 64 0.00768874
+Testing array size: 134217728 with 128 streams
+Testing array size: 134217728 with 128 streams
+### 134217728 128 0.0083697
+Testing array size: 134217728 with 256 streams
+Testing array size: 134217728 with 256 streams
+### 134217728 256 0.0101335
+Testing array size: 134217728 with 512 streams
+Testing array size: 134217728 with 512 streams
+### 134217728 512 0.011377
+Testing array size: 536870912 with 1 streams
+Testing array size: 536870912 with 1 streams
+### 536870912 1 0.050282
+Testing array size: 536870912 with 2 streams
+Testing array size: 536870912 with 2 streams
+### 536870912 2 0.0382721
+Testing array size: 536870912 with 4 streams
+Testing array size: 536870912 with 4 streams
+### 536870912 4 0.0325202
+Testing array size: 536870912 with 8 streams
+Testing array size: 536870912 with 8 streams
+### 536870912 8 0.029848
+Testing array size: 536870912 with 16 streams
+Testing array size: 536870912 with 16 streams
+### 536870912 16 0.028718
+Testing array size: 536870912 with 32 streams
+Testing array size: 536870912 with 32 streams
+### 536870912 32 0.028477
+Testing array size: 536870912 with 64 streams
+Testing array size: 536870912 with 64 streams
+### 536870912 64 0.028608
+Testing array size: 536870912 with 128 streams
+Testing array size: 536870912 with 128 streams
+### 536870912 128 0.0294584
+Testing array size: 536870912 with 256 streams
+Testing array size: 536870912 with 256 streams
+### 536870912 256 0.0303152
+Testing array size: 536870912 with 512 streams
+Testing array size: 536870912 with 512 streams
+### 536870912 512 0.0324697
+Reading from: ../measurements/perf_test_cuda_257136.out
+          Size  NUM_STREAMS         Time
+0            8            1 3.776500e-05
+1            8            2 4.160180e-05
+2            8            4 5.307000e-05
+3            8            8 7.228540e-05
+4           32            1 3.837000e-05
+..         ...          ...          ...
+123  536870912           32 2.847700e-02
+124  536870912           64 2.860800e-02
+125  536870912          128 2.945840e-02
+126  536870912          256 3.031520e-02
+127  536870912          512 3.246970e-02
+
+[128 rows x 3 columns]
+Saving CSV to: ../measurements/perf_test_cuda_257136.csv
+Reloaded CSV preview:
+   Size  NUM_STREAMS         Time
+0     8            1 3.776500e-05
+1     8            2 4.160180e-05
+2     8            4 5.307000e-05
+3     8            8 7.228540e-05
+4    32            1 3.837000e-05
+Job completed
