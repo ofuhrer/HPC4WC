@@ -25,7 +25,7 @@ cycler==0.11.0
 cytoolz==0.12.2
 debugpy==1.6.7.post1
 decorator==5.1.1
-deepdiff==6.3.1
+deepdiff==8.6.1
 defusedxml==0.7.1
 devtools==0.12.1
 dill==0.3.7
