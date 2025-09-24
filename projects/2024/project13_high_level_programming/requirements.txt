@@ -45,7 +45,7 @@ nvidia-nvtx-cu12==12.1.105
 opt-einsum==3.3.0
 packaging==24.1
 partd==1.4.2
-pip==24.2
+pip==25.2
 ply==3.11
 pybind11==2.6.2
 pydantic==1.7.4
