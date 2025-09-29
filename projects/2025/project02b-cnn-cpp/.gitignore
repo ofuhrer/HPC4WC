@@ -1,0 +1,68 @@
+# Object files
+*.o
+*.obj
+
+# Static/Shared libraries
+*.a
+*.so
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Build directories
+build/
+build-cpu/
+bin/
+lib/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+Testing/
+
+# IDE/Editor files
+.vscode/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter
+.ipynb_checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+**/.ipynb_checkpoints/*
+
+
+# Python virtual envs
+.venv/
+venv/
+env/
+python_env/
+cnn-bench/
+
+# Benchmarking results
+benchmarking/results/
+*.csv
+*.png
+
+# Allow only final figures
+!figs/CPU/*.png
+!figs/GPU/*.png
+!figs/*.png
+
+# Logs
+benchmarking/logs/
+*.err
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Local plotting script (not tracked)
+benchmarking/final_plot.py
