@@ -1,0 +1,83 @@
+SHELL = /bin/sh
+HOSTNAME = $(shell hostname | sed 's/[0-9]*//g' | sed 's/\..*//g')
+
+VERSION ?= orig
+
+TARGET = stencil2d-$(VERSION).x
+
+SRCS = m_utils.F90 \
+       stencil2d-$(VERSION).F90
+
+# create object file list
+OBJS := $(SRCS:.F90=.o)
+
+ifeq "$(HOSTNAME)" "daint"
+  F90 = ftn
+  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm
+ifdef NOOPT
+  FFLAGS = -O0 -hfp0 -Oipa0 -Ovector0 -ffree -N255 -ec -eC -eI -eF -rm
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
+endif
+ifeq "$(HOSTNAME)" "nid"
+  F90 = mpif90 -ffree-line-length-none #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-optimize-sibling-calls -fno-omit-frame-pointer -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+  #FFLAGS = -g1 -O1 -fno-tree-sra -fno-tree-loop-optimize -fno-tree-vectorize -march=native -fno-optimize-sibling-calls -fno-omit-frame-pointer -fopenmp
+ifdef NOOPT
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
+endif
+ifeq "$(HOSTNAME)" "santis-ln"
+  F90 = mpif90 -ffree-line-length-none #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+ifdef NOOPT
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
+endif
+ifeq "$(HOSTNAME)" "mango"
+  F90 = mpif90 -ffree-line-length-none -L/opt/homebrew/lib -lprofiler #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-optimize-sibling-calls -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+ifdef NOOPT
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
+endif
+# ifndef F90
+#   $(error F90 is not set for $(HOSTNAME))
+# endif
+ifndef F90
+  F90 = mpif90 -ffree-line-length-none
+  FFLAGS = -g1 -O3 -fno-optimize-sibling-calls -fno-omit-frame-pointer -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+endif
+
+# definition of phony targets
+
+.PHONY : clean
+
+$(TARGET): $(OBJS)
+	$(F90) $(FFLAGS) $(OBJS) -o $(TARGET)
+	cp $(TARGET) stencil2d.x
+
+clean: 
+	-$(RM) -rf *~ *.o *.mod *.MOD *.i core.* *.out *.lst *.x *.x+orig *.x+[0-9]* *.dat *.report result_*.py report*.txt perf/* out*.txt
+
+clean_examples:
+	rm -f *.out weak.txt caching.txt caching2.txt out.txt out.png
+
+distclean: clean
+	-$(RM) -rf *.png *.dat *.npy *.x *.x+orig* *.x+[0-9]*
+
+%.o: %.F90
+	$(F90) $(FFLAGS) -c $*.F90
+
