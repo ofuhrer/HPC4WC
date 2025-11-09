@@ -20,7 +20,7 @@ importlib_metadata==8.4.0
 itsdangerous==1.1.0
 jax==0.4.30
 jaxlib==0.4.30
-Jinja2==3.1.4
+Jinja2==3.1.6
 llvmlite==0.43.0
 locket==1.0.0
 MarkupSafe==2.1.5
