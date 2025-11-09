@@ -269,7 +269,8 @@ def print_latex_summary_table(df: pd.DataFrame, floatfmt=".2f"):
 
         # Format and append rows for the current program block
         # Use program.replace('_', '\\_') to escape underscores for LaTeX
-        program_name_cell = f"\\multirow{{{num_metric_rows_per_program_block}}}{{*}}{{{program.replace('_', '\\_')}}}"
+        escaped_program = program.replace('_', '\\_')
+        program_name_cell = f"\\multirow{{{num_metric_rows_per_program_block}}}{{*}}{{{escaped_program}}}"
 
         # Loop through each metric type (mu, ci_lower, ci_upper, speedup)
         for row_idx, metric_label in enumerate(metrics_display_labels):

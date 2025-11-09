@@ -1,0 +1,80 @@
+======= taskset ==========
+pid 187136's current affinity list: 35
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    14,787,896,822      mem_access_rd:u                                                    
+     6,736,119,248      mem_access_wr:u                                                    
+         2,941,338      LLC-load-misses                                                    
+        77,458,140      FP_SCALE_OPS_SPEC                                                  
+     2,924,127,907      FP_FIXED_OPS_SPEC                                                  
+
+       4.417305372 seconds time elapsed
+
+       4.264372000 seconds user
+       0.149802000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 42K of event 'cpu-clock:u'
+# Event count (approx.): 10540750000
+#
+# Overhead  Symbol                                                              IPC   [IPC Coverage]
+# ........  ..................................................................  ....................
+#
+    65.49%  [.] _pmi_mmap_tmp                                                   -      -            
+    14.95%  [.] __aarch64_ldadd4_sync                                           -      -            
+     7.53%  [.] MPIDI_SHMI_progress                                             -      -            
+     5.71%  [.] MPIR_Wait_impl                                                  -      -            
+     1.75%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0                      -      -            
+     1.49%  [.] MPID_ST_progress_queue                                          -      -            
+     1.18%  [.] apply_diffusion.6._omp_fn.0                                     -      -            
+     0.87%  [.] MPIDI_CRAY_Common_lmt_progress                                  -      -            
+     0.47%  [.] __memcpy_generic                                                -      -            
+     0.20%  [.] update_halo.5.constprop.1.isra.0                                -      -            
+     0.13%  [.] MPIR_Waitall_impl                                               -      -            
+     0.05%  [.] __aarch64_cas8_sync                                             -      -            
+     0.04%  [.] _pmi_smp_barrier_join                                           -      -            
+     0.03%  [.] memcpy@plt                                                      -      -            
+     0.01%  [.] Init_shm_barrier                                                -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_complete_recv                             -      -            
+     0.01%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0                         -      -            
+     0.01%  [.] do_lookup_x                                                     -      -            
+     0.01%  [.] sched_yield                                                     -      -            
+     0.01%  [.] _pmi2_info_getnodeattr                                          -      -            
+     0.00%  [.] _dl_name_match_p                                                -      -            
+     0.00%  [.] _dl_relocate_object                                             -      -            
+     0.00%  [.] strcmp                                                          -      -            
+     0.00%  [.] GOMP_critical_name_end                                          -      -            
+     0.00%  [.] GOMP_parallel                                                   -      -            
+     0.00%  [.] MPIDIU_get_buf_safe                                             -      -            
+     0.00%  [.] MPIDI_CRAY_COMMON_mpi_init_hook                                 -      -            
+     0.00%  [.] MPIDI_CRAY_XPMEM_mpi_finalize_hook                              -      -            
+     0.00%  [.] __aarch64_swp8_acq                                              -      -            
+     0.00%  [.] __m_partitioner_MOD_get_neighbor_rank                           -      -            
+     0.00%  [.] __open64_nocancel                                               -      -            
+     0.00%  [.] _dl_cache_libcmp                                                -      -            
+     0.00%  [.] _dl_fini                                                        -      -            
+     0.00%  [.] _dl_lookup_symbol_x                                             -      -            
+     0.00%  [.] _dl_map_object_from_fd                                          -      -            
+     0.00%  [.] _pmi2_info_putnodeattr                                          -      -            
+     0.00%  [.] check_match                                                     -      -            
+     0.00%  [.] getenv                                                          -      -            
+     0.00%  [.] malloc_consolidate                                              -      -            
+     0.00%  [.] omp_fulfill_event                                               -      -            
+     0.00%  [.] open_verify.isra.5.constprop.7                                  -      -            
+     0.00%  [.] std::basic_ios<char, std::char_traits<char> >::_M_cache_locale  -      -            
+     0.00%  [.] strncmp                                                         -      -            
+     0.00%  [.] sysmalloc                                                       -      -            
+     0.00%  [.] unlink_chunk.isra.3                                             -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

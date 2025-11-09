@@ -1,0 +1,72 @@
+======= taskset ==========
+pid 187171's current affinity list: 259
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    13,208,840,347      mem_access_rd:u                                                    
+     6,870,743,447      mem_access_wr:u                                                    
+         3,220,860      LLC-load-misses                                                    
+        77,424,588      FP_SCALE_OPS_SPEC                                                  
+     2,923,334,632      FP_FIXED_OPS_SPEC                                                  
+
+       3.673100176 seconds time elapsed
+
+       3.498224000 seconds user
+       0.170400000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 14K of event 'cpu-clock:u'
+# Event count (approx.): 3712250000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    49.68%  [.] __aarch64_ldadd4_sync                       -      -            
+    19.44%  [.] MPIR_Wait_impl                              -      -            
+     9.58%  [.] MPIDI_SHMI_progress                         -      -            
+     4.92%  [.] MPID_ST_progress_queue                      -      -            
+     4.89%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     3.56%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+     2.90%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     2.00%  [.] _pmi_mmap_tmp                               -      -            
+     1.24%  [.] __memcpy_generic                            -      -            
+     0.61%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.31%  [.] MPIR_Waitall_impl                           -      -            
+     0.18%  [.] __aarch64_cas8_sync                         -      -            
+     0.11%  [.] _pmi_smp_barrier_join                       -      -            
+     0.10%  [.] memcpy@plt                                  -      -            
+     0.06%  [.] Init_shm_barrier                            -      -            
+     0.06%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.06%  [.] _pmi2_info_getnodeattr                      -      -            
+     0.06%  [.] _pmi2_info_putnodeattr                      -      -            
+     0.05%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.03%  [.] do_lookup_x                                 -      -            
+     0.03%  [.] sched_yield                                 -      -            
+     0.02%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] strncmp                                     -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_export_mem            -      -            
+     0.01%  [.] MPIDI_CRAY_XPMEM_do_attach                  -      -            
+     0.01%  [.] MPIDI_CRAY_XPMEM_mpi_finalize_hook          -      -            
+     0.01%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.01%  [.] MPIR_Cray_Memcpy_wrapper                    -      -            
+     0.01%  [.] MPIR_Waitall                                -      -            
+     0.01%  [.] MPL_cray_trInitBytesOn@plt                  -      -            
+     0.01%  [.] __open64_nocancel                           -      -            
+     0.01%  [.] __strlen_generic                            -      -            
+     0.01%  [.] _dl_name_match_p                            -      -            
+     0.01%  [.] _dl_relocate_object                         -      -            
+     0.01%  [.] apply_diffusion.6.constprop.1               -      -            
+     0.01%  [.] mpi_irecv__                                 -      -            
+     0.01%  [.] 0x0000000000045394                          -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

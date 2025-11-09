@@ -1,0 +1,76 @@
+======= taskset ==========
+pid 184306's current affinity list: 16-23
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    20,313,604,617      mem_access_rd:u                                                    
+     7,628,056,063      mem_access_wr:u                                                    
+        46,926,421      LLC-load-misses                                                    
+       541,166,024      FP_SCALE_OPS_SPEC                                                  
+    22,964,923,237      FP_FIXED_OPS_SPEC                                                  
+
+       3.771603639 seconds time elapsed
+
+       5.363194000 seconds user
+       0.100059000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 21K of event 'cpu-clock:u'
+# Event count (approx.): 5385000000
+#
+# Overhead  Symbol                                                         IPC   [IPC Coverage]
+# ........  .............................................................  ....................
+#
+    30.53%  [.] __aarch64_ldadd4_sync                                      -      -            
+    18.44%  [.] apply_diffusion.6._omp_fn.0                                -      -            
+    14.82%  [.] omp_get_num_procs                                          -      -            
+    12.97%  [.] MPIR_Wait_impl                                             -      -            
+     6.00%  [.] MPIDI_SHMI_progress                                        -      -            
+     4.36%  [.] __memcpy_generic                                           -      -            
+     3.45%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0                 -      -            
+     3.21%  [.] MPID_ST_progress_queue                                     -      -            
+     2.08%  [.] _pmi_mmap_tmp                                              -      -            
+     1.82%  [.] MPIDI_CRAY_Common_lmt_progress                             -      -            
+     1.61%  [.] update_halo.5.constprop.1.isra.0                           -      -            
+     0.29%  [.] MPIR_Waitall_impl                                          -      -            
+     0.11%  [.] memcpy@plt                                                 -      -            
+     0.07%  [.] __aarch64_cas8_sync                                        -      -            
+     0.03%  [.] 0x0000000000045394                                         -      -            
+     0.03%  [.] do_lookup_x                                                -      -            
+     0.02%  [.] Init_shm_barrier                                           -      -            
+     0.02%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0                    -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_complete_recv                        -      -            
+     0.01%  [.] PMPI_Irecv                                                 -      -            
+     0.01%  [.] GOMP_parallel                                              -      -            
+     0.01%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0                      -      -            
+     0.01%  [.] __m_partitioner_MOD_right                                  -      -            
+     0.01%  [.] sched_yield                                                -      -            
+     0.00%  [.] _IO_fgets                                                  -      -            
+     0.00%  [.] __GI_memset                                                -      -            
+     0.00%  [.] __aarch64_swp4_rel                                         -      -            
+     0.00%  [.] __m_partitioner_MOD_get_neighbor_rank                      -      -            
+     0.00%  [.] __m_partitioner_MOD_left                                   -      -            
+     0.00%  [.] _dl_check_map_versions                                     -      -            
+     0.00%  [.] _dl_lookup_symbol_x                                        -      -            
+     0.00%  [.] _int_free                                                  -      -            
+     0.00%  [.] _int_malloc                                                -      -            
+     0.00%  [.] _pmi2_info_getnodeattr                                     -      -            
+     0.00%  [.] _pmi_smp_barrier_join                                      -      -            
+     0.00%  [.] check_match                                                -      -            
+     0.00%  [.] free@plt                                                   -      -            
+     0.00%  [.] omp_fulfill_event                                          -      -            
+     0.00%  [.] std::moneypunct<wchar_t, false>::_M_initialize_moneypunct  -      -            
+     0.00%  [.] strcmp                                                     -      -            
+     0.00%  [.] update_halo.5.constprop.0                                  -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

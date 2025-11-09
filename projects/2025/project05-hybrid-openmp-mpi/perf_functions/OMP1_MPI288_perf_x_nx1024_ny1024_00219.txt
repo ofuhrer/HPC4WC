@@ -1,0 +1,70 @@
+======= taskset ==========
+pid 187216's current affinity list: 270
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    13,092,986,431      mem_access_rd:u                                                    
+     6,727,251,507      mem_access_wr:u                                                    
+         3,146,002      LLC-load-misses                                                    
+        77,416,872      FP_SCALE_OPS_SPEC                                                  
+     2,923,286,860      FP_FIXED_OPS_SPEC                                                  
+
+       3.705496340 seconds time elapsed
+
+       3.570771000 seconds user
+       0.130393000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 14K of event 'cpu-clock:u'
+# Event count (approx.): 3697250000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    48.41%  [.] __aarch64_ldadd4_sync                       -      -            
+    20.81%  [.] MPIR_Wait_impl                              -      -            
+     9.41%  [.] MPIDI_SHMI_progress                         -      -            
+     5.38%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     4.81%  [.] MPID_ST_progress_queue                      -      -            
+     3.39%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+     2.98%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     1.74%  [.] _pmi_mmap_tmp                               -      -            
+     1.35%  [.] __memcpy_generic                            -      -            
+     0.63%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.38%  [.] MPIR_Waitall_impl                           -      -            
+     0.18%  [.] __aarch64_cas8_sync                         -      -            
+     0.09%  [.] _pmi_smp_barrier_join                       -      -            
+     0.07%  [.] memcpy@plt                                  -      -            
+     0.05%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.04%  [.] Init_shm_barrier                            -      -            
+     0.04%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.04%  [.] _pmi2_info_getnodeattr                      -      -            
+     0.04%  [.] do_lookup_x                                 -      -            
+     0.02%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.02%  [.] sched_yield                                 -      -            
+     0.02%  [.] strncmp                                     -      -            
+     0.02%  [.] xpmem_seglist_lookup                        -      -            
+     0.01%  [.] MPIDI_CRAY_XPMEM_do_attach                  -      -            
+     0.01%  [.] MPIR_Request_create                         -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] PMPI_Waitall@plt                            -      -            
+     0.01%  [.] __aarch64_swp8_acq                          -      -            
+     0.01%  [.] __m_partitioner_MOD_right                   -      -            
+     0.01%  [.] _dl_lookup_symbol_x                         -      -            
+     0.01%  [.] _int_malloc                                 -      -            
+     0.01%  [.] _pmi2_info_putnodeattr                      -      -            
+     0.01%  [.] check_match                                 -      -            
+     0.01%  [.] strncmp@plt                                 -      -            
+     0.01%  [.] 0x00000000000db584                          -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

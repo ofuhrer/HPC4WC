@@ -1,0 +1,74 @@
+======= taskset ==========
+pid 187261's current affinity list: 66
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    14,843,989,905      mem_access_rd:u                                                    
+     6,910,293,224      mem_access_wr:u                                                    
+         3,108,910      LLC-load-misses                                                    
+        77,431,612      FP_SCALE_OPS_SPEC                                                  
+     2,923,801,806      FP_FIXED_OPS_SPEC                                                  
+
+       4.307493702 seconds time elapsed
+
+       4.154837000 seconds user
+       0.149813000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 30K of event 'cpu-clock:u'
+# Event count (approx.): 7606750000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    52.22%  [.] _pmi_mmap_tmp                               -      -            
+    23.24%  [.] __aarch64_ldadd4_sync                       -      -            
+    10.17%  [.] MPIR_Wait_impl                              -      -            
+     4.65%  [.] MPIDI_SHMI_progress                         -      -            
+     2.55%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     2.49%  [.] MPID_ST_progress_queue                      -      -            
+     1.78%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+     1.32%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     0.64%  [.] __memcpy_generic                            -      -            
+     0.45%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.19%  [.] MPIR_Waitall_impl                           -      -            
+     0.06%  [.] __aarch64_cas8_sync                         -      -            
+     0.04%  [.] Init_shm_barrier                            -      -            
+     0.04%  [.] _pmi_smp_barrier_join                       -      -            
+     0.03%  [.] memcpy@plt                                  -      -            
+     0.02%  [.] _pmi2_info_getnodeattr                      -      -            
+     0.01%  [.] sched_yield                                 -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.01%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] do_lookup_x                                 -      -            
+     0.00%  [.] MPIDIU_get_buf_safe                         -      -            
+     0.00%  [.] MPIDIU_get_buf_safe                         -      -            
+     0.00%  [.] MPIDI_CRAY_XPMEM_do_attach                  -      -            
+     0.00%  [.] MPIDI_CRAY_XPMEM_mpi_finalize_hook          -      -            
+     0.00%  [.] MPIDI_CRAY_XPMEM_mpi_init_hook              -      -            
+     0.00%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.00%  [.] MPIR_Cray_Memcpy_wrapper                    -      -            
+     0.00%  [.] _IO_str_init_static_internal                -      -            
+     0.00%  [.] _dl_lookup_symbol_x                         -      -            
+     0.00%  [.] _dl_relocate_object                         -      -            
+     0.00%  [.] _int_malloc                                 -      -            
+     0.00%  [.] mpi_isend                                   -      -            
+     0.00%  [.] open_verify.isra.5.constprop.7              -      -            
+     0.00%  [.] std::locale::_Impl::_Impl                   -      -            
+     0.00%  [.] strcmp                                      -      -            
+     0.00%  [.] strncmp                                     -      -            
+     0.00%  [.] unlink_chunk.isra.3                         -      -            
+     0.00%  [.] xpmem_seglist_lookup                        -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

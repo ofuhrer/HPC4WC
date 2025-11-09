@@ -1,0 +1,74 @@
+======= taskset ==========
+pid 187036's current affinity list: 10
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    20,972,601,733      mem_access_rd:u                                                    
+     6,910,212,369      mem_access_wr:u                                                    
+         3,679,093      LLC-load-misses                                                    
+        77,421,704      FP_SCALE_OPS_SPEC                                                  
+     2,923,462,852      FP_FIXED_OPS_SPEC                                                  
+
+       6.897489357 seconds time elapsed
+
+       6.734472000 seconds user
+       0.160106000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 18K of event 'cpu-clock:u'
+# Event count (approx.): 4609750000
+#
+# Overhead  Symbol                                              IPC   [IPC Coverage]
+# ........  ..................................................  ....................
+#
+    39.43%  [.] __aarch64_ldadd4_sync                           -      -            
+    21.19%  [.] _pmi_mmap_tmp                                   -      -            
+    16.39%  [.] MPIR_Wait_impl                                  -      -            
+     7.36%  [.] MPIDI_SHMI_progress                             -      -            
+     4.45%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0      -      -            
+     3.86%  [.] MPID_ST_progress_queue                          -      -            
+     2.66%  [.] apply_diffusion.6._omp_fn.0                     -      -            
+     2.24%  [.] MPIDI_CRAY_Common_lmt_progress                  -      -            
+     0.94%  [.] __memcpy_generic                                -      -            
+     0.56%  [.] update_halo.5.constprop.1.isra.0                -      -            
+     0.40%  [.] MPIR_Waitall_impl                               -      -            
+     0.10%  [.] __aarch64_cas8_sync                             -      -            
+     0.10%  [.] _pmi_smp_barrier_join                           -      -            
+     0.05%  [.] memcpy@plt                                      -      -            
+     0.04%  [.] Init_shm_barrier                                -      -            
+     0.04%  [.] MPIDI_CRAY_Common_lmt_complete_recv             -      -            
+     0.03%  [.] do_lookup_x                                     -      -            
+     0.02%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0         -      -            
+     0.01%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0           -      -            
+     0.01%  [.] MPIR_Waitall                                    -      -            
+     0.01%  [.] _dl_lookup_symbol_x                             -      -            
+     0.01%  [.] _pmi2_info_getnodeattr                          -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_ctrl_send_rts_cb          -      -            
+     0.01%  [.] MPIDI_CRAY_XPMEM_do_attach                      -      -            
+     0.01%  [.] MPIDI_CRAY_XPMEM_mpi_finalize_hook              -      -            
+     0.01%  [.] MPIDI_CRAY_init                                 -      -            
+     0.01%  [.] __m_partitioner_MOD_cyclic_offset               -      -            
+     0.01%  [.] __m_partitioner_MOD_shape_f.constprop.0.isra.0  -      -            
+     0.01%  [.] __strlen_generic                                -      -            
+     0.01%  [.] __vfprintf_internal                             -      -            
+     0.01%  [.] _dl_map_object_from_fd                          -      -            
+     0.01%  [.] _dl_relocate_object                             -      -            
+     0.01%  [.] _int_malloc                                     -      -            
+     0.01%  [.] check_match                                     -      -            
+     0.01%  [.] memcpy                                          -      -            
+     0.01%  [.] omp_display_env_8_                              -      -            
+     0.01%  [.] omp_get_num_procs                               -      -            
+     0.01%  [.] strncmp                                         -      -            
+     0.01%  [.] xpmem_seglist_lookup                            -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

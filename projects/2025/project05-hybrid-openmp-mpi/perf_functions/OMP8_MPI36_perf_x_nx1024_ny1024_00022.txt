@@ -1,0 +1,74 @@
+======= taskset ==========
+pid 184320's current affinity list: 184-191
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    29,172,598,518      mem_access_rd:u                                                    
+     7,604,227,875      mem_access_wr:u                                                    
+        46,499,954      LLC-load-misses                                                    
+       541,162,256      FP_SCALE_OPS_SPEC                                                  
+    22,964,849,309      FP_FIXED_OPS_SPEC                                                  
+
+       7.187197155 seconds time elapsed
+
+       8.815204000 seconds user
+       0.050627000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 21K of event 'cpu-clock:u'
+# Event count (approx.): 5393000000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    31.02%  [.] __aarch64_ldadd4_sync                       -      -            
+    17.71%  [.] omp_get_num_procs                           -      -            
+    16.86%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+    13.13%  [.] MPIR_Wait_impl                              -      -            
+     5.89%  [.] MPIDI_SHMI_progress                         -      -            
+     3.99%  [.] __memcpy_generic                            -      -            
+     3.51%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     3.05%  [.] MPID_ST_progress_queue                      -      -            
+     1.76%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     1.30%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.87%  [.] _pmi_mmap_tmp                               -      -            
+     0.45%  [.] MPIR_Waitall_impl                           -      -            
+     0.14%  [.] memcpy@plt                                  -      -            
+     0.07%  [.] __aarch64_cas8_sync                         -      -            
+     0.06%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.04%  [.] 0x0000000000045394                          -      -            
+     0.02%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.01%  [.] free                                        -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] _dl_lookup_symbol_x                         -      -            
+     0.00%  [.] Init_shm_barrier                            -      -            
+     0.00%  [.] MPIDI_CRAY_XPMEM_do_attach                  -      -            
+     0.00%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.00%  [.] PMPI_Waitall                                -      -            
+     0.00%  [.] _IO_old_init                                -      -            
+     0.00%  [.] __m_partitioner_MOD_get_neighbor_rank       -      -            
+     0.00%  [.] __m_partitioner_MOD_left                    -      -            
+     0.00%  [.] __m_partitioner_MOD_position_to_rank        -      -            
+     0.00%  [.] __strcasestr                                -      -            
+     0.00%  [.] __strlen_generic                            -      -            
+     0.00%  [.] _dl_fixup                                   -      -            
+     0.00%  [.] _dl_relocate_object                         -      -            
+     0.00%  [.] _int_free                                   -      -            
+     0.00%  [.] _pmi2_info_getnodeattr                      -      -            
+     0.00%  [.] apply_diffusion.6.constprop.1               -      -            
+     0.00%  [.] check_match                                 -      -            
+     0.00%  [.] do_lookup_x                                 -      -            
+     0.00%  [.] omp_fulfill_event                           -      -            
+     0.00%  [.] sched_yield                                 -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
