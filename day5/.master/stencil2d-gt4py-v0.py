@@ -19,31 +19,50 @@ J = gtx.Dimension("J")
 K = gtx.Dimension("K")
 
 IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
+OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
+
+
+# hpc4wc:student-begin
+# hpc4wc:student | # TODO - insert Laplacian
+# hpc4wc:student |
+# hpc4wc:student | # TODO - implement a single timestep
+# hpc4wc:student |
+# hpc4wc:student | # TODO - implement ijk-ordered halo-update
+# hpc4wc:student | # Make sure to use field.ndarray here
+# hpc4wc:student |
+# hpc4wc:student | # TODO - define apply_diffusion() function
+# hpc4wc:student |
+# hpc4wc:student-end
+# hpc4wc:solution-begin
+@gtx.field_operator
+def laplacian(in_field: IJKField) -> IJKField:
+    lap_field = (
+        -4.0 * in_field
+        + in_field(I - 1)
+        + in_field(I + 1)
+        + in_field(J - 1)
+        + in_field(J + 1)
+    )
+    return lap_field
 
 
 @gtx.field_operator
-def diffusion(
+def diffusion(in_field: IJKField, alpha: gtx.float64) -> IJKField:
+    lap1 = laplacian(in_field)
+    lap2 = laplacian(lap1)
+    return in_field - alpha * lap2
+
+
+@gtx.program
+def diffusion_program(
     in_field: IJKField,
-    a1: float,
-    a2: float,
-    a8: float,
-    a20: float,
-) -> IJKField:
-    return (
-        a1 * in_field(J - 2)
-        + a2 * in_field(I - 1, J - 1)
-        + a8 * in_field(J - 1)
-        + a2 * in_field(I + 1, J - 1)
-        + a1 * in_field(I - 2)
-        + a8 * in_field(I - 1)
-        + a20 * in_field
-        + a8 * in_field(I + 1)
-        + a1 * in_field(I + 2)
-        + a2 * in_field(I - 1, J + 1)
-        + a8 * in_field(J + 1)
-        + a2 * in_field(I + 1, J + 1)
-        + a1 * in_field(J + 2)
-    )
+    out_field: IJKField,
+    alpha: gtx.float64,
+    nx: gtx.int32,
+    ny: gtx.int32,
+    nz: gtx.int32,
+):
+    diffusion(in_field, alpha, out=out_field, domain={I: (0, nx), J: (0, ny), K: (0, nz)})
 
 
 def update_halo(field: IJKField, num_halo: int):
@@ -75,13 +94,9 @@ def apply_diffusion(
     num_halo: int,
     num_iter: int = 1,
 ):
-    interior = gtx.domain(
-        {
-            I: (0, in_field.shape[0] - 2 * num_halo),
-            J: (0, in_field.shape[1] - 2 * num_halo),
-            K: (0, in_field.shape[2]),
-        }
-    )
+    nx = in_field.shape[0] - 2 * num_halo
+    ny = in_field.shape[1] - 2 * num_halo
+    nz = in_field.shape[2]
 
     for n in range(num_iter):
         # halo update
@@ -89,13 +104,13 @@ def apply_diffusion(
 
         # run the stencil
         diffusion_stencil(
-            in_field=in_field,
-            out=out_field,
-            a1=-alpha,
-            a2=-2 * alpha,
-            a8=8 * alpha,
-            a20=1 - 20 * alpha,
-            domain=interior,
+            in_field,
+            out_field,
+            alpha,
+            nx,
+            ny,
+            nz,
+            offset_provider=OFFSET_PROVIDER,
         )
 
         if n < num_iter - 1:
@@ -104,6 +119,7 @@ def apply_diffusion(
         else:
             # halo update
             update_halo(out_field, num_halo)
+# hpc4wc:solution-end
 
 
 @click.command()
@@ -158,22 +174,38 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     alpha = 1.0 / 32.0
 
     # define domain
+    # hpc4wc:student-begin
+    # hpc4wc:student | field_domain = None  # TODO
+    # hpc4wc:student-end
+    # hpc4wc:solution-begin
     field_domain = {
         I: (-num_halo, nx + num_halo),
         J: (-num_halo, ny + num_halo),
         K: (0, nz),
     }
+    # hpc4wc:solution-end
 
     # allocate input and output fields
+    # hpc4wc:student-begin
+    # hpc4wc:student | in_field = None  # TODO
+    # hpc4wc:student | out_field = None  # TODO
+    # hpc4wc:student-end
+    # hpc4wc:solution-begin
     in_field = gtx.zeros(field_domain, dtype=gtx.float64, allocator=actual_backend)
     out_field = gtx.zeros(field_domain, dtype=gtx.float64, allocator=actual_backend)
+    # hpc4wc:solution-end
 
     # prepare input field
+    # hpc4wc:student-begin
+    # hpc4wc:student | in_field = None  # TODO
+    # hpc4wc:student-end
+    # hpc4wc:solution-begin
     in_field[
         num_halo + nx // 4 : num_halo + 3 * nx // 4,
         num_halo + ny // 4 : num_halo + 3 * ny // 4,
         nz // 4 : 3 * nz // 4,
     ] = 1.0
+    # hpc4wc:solution-end
 
     # write input field to file
     # swap first and last axes for compatibility with day1/stencil2d.py
@@ -187,8 +219,14 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
         plt.savefig("in_field.png")
         plt.close()
 
+    # hpc4wc:student-begin
+    # hpc4wc:student | # TODO - use the selected backend
+    # hpc4wc:student | diffusion_stencil = None  # TODO
+    # hpc4wc:student-end
+    # hpc4wc:solution-begin
     # select backend
-    diffusion_stencil = diffusion.with_backend(actual_backend)
+    diffusion_stencil = diffusion_program.with_backend(actual_backend)
+    # hpc4wc:solution-end
 
     # warmup caches
     apply_diffusion(diffusion_stencil, in_field, out_field, alpha, num_halo)

@@ -19,6 +19,7 @@ J = gtx.Dimension("J")
 K = gtx.Dimension("K")
 
 IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
+OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
 
 
 @gtx.field_operator
@@ -38,6 +39,18 @@ def diffusion(in_field: IJKField, alpha: gtx.float64) -> IJKField:
     lap1 = laplacian(in_field)
     lap2 = laplacian(lap1)
     return in_field - alpha * lap2
+
+
+@gtx.program
+def diffusion_program(
+    in_field: IJKField,
+    out_field: IJKField,
+    alpha: gtx.float64,
+    nx: gtx.int32,
+    ny: gtx.int32,
+    nz: gtx.int32,
+):
+    diffusion(in_field, alpha, out=out_field, domain={I: (0, nx), J: (0, ny), K: (0, nz)})
 
 
 def update_halo(field: IJKField, num_halo: int):
@@ -69,13 +82,9 @@ def apply_diffusion(
     num_halo: int,
     num_iter: int = 1,
 ):
-    interior = gtx.domain(
-        {
-            I: (0, in_field.shape[0] - 2 * num_halo),
-            J: (0, in_field.shape[1] - 2 * num_halo),
-            K: (0, in_field.shape[2]),
-        }
-    )
+    nx = in_field.shape[0] - 2 * num_halo
+    ny = in_field.shape[1] - 2 * num_halo
+    nz = in_field.shape[2]
 
     for n in range(num_iter):
         # halo update
@@ -83,10 +92,13 @@ def apply_diffusion(
 
         # run the stencil
         diffusion_stencil(
-            in_field=in_field,
-            alpha=alpha,
-            out=out_field,
-            domain=interior,
+            in_field,
+            out_field,
+            alpha,
+            nx,
+            ny,
+            nz,
+            offset_provider=OFFSET_PROVIDER,
         )
 
         if n < num_iter - 1:
@@ -179,7 +191,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
         plt.close()
 
     # select backend
-    diffusion_stencil = diffusion.with_backend(actual_backend)
+    diffusion_stencil = diffusion_program.with_backend(actual_backend)
 
     # warmup caches
     apply_diffusion(diffusion_stencil, in_field, out_field, alpha, num_halo)

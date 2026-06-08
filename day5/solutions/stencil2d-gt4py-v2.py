@@ -22,15 +22,111 @@ IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
 OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
 
 
-# TODO - insert Laplacian
+@gtx.field_operator
+def diffusion(
+    in_field: IJKField,
+    a1: float,
+    a2: float,
+    a8: float,
+    a20: float,
+) -> IJKField:
+    return (
+        a1 * in_field(J - 2)
+        + a2 * in_field(I - 1, J - 1)
+        + a8 * in_field(J - 1)
+        + a2 * in_field(I + 1, J - 1)
+        + a1 * in_field(I - 2)
+        + a8 * in_field(I - 1)
+        + a20 * in_field
+        + a8 * in_field(I + 1)
+        + a1 * in_field(I + 2)
+        + a2 * in_field(I - 1, J + 1)
+        + a8 * in_field(J + 1)
+        + a2 * in_field(I + 1, J + 1)
+        + a1 * in_field(J + 2)
+    )
 
-# TODO - implement a single timestep
 
-# TODO - implement ijk-ordered halo-update
-# Make sure to use field.ndarray here
+@gtx.program
+def diffusion_program(
+    in_field: IJKField,
+    out_field: IJKField,
+    a1: gtx.float64,
+    a2: gtx.float64,
+    a8: gtx.float64,
+    a20: gtx.float64,
+    nx: gtx.int32,
+    ny: gtx.int32,
+    nz: gtx.int32,
+):
+    diffusion(
+        in_field,
+        out=out_field,
+        a1=a1,
+        a2=a2,
+        a8=a8,
+        a20=a20,
+        domain={I: (0, nx), J: (0, ny), K: (0, nz)},
+    )
 
-# TODO - define apply_diffusion() function
 
+def update_halo(field: IJKField, num_halo: int):
+
+    # Make sure to use field.ndarray here
+    
+    # bottom edge (without corners)
+    field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
+        num_halo:-num_halo, -2 * num_halo : -num_halo
+    ]
+
+    # top edge (without corners)
+    field.ndarray[num_halo:-num_halo, -num_halo:] = field.ndarray[
+        num_halo:-num_halo, num_halo : 2 * num_halo
+    ]
+
+    # left edge (including corners)
+    field.ndarray[:num_halo, :] = field.ndarray[-2 * num_halo : -num_halo, :]
+
+    # right edge (including corners)
+    field.ndarray[-num_halo:, :] = field.ndarray[num_halo : 2 * num_halo]
+
+
+def apply_diffusion(
+    diffusion_stencil: Callable,
+    in_field: IJKField,
+    out_field: IJKField,
+    alpha: gtx.float64,
+    num_halo: int,
+    num_iter: int = 1,
+):
+    nx = in_field.shape[0] - 2 * num_halo
+    ny = in_field.shape[1] - 2 * num_halo
+    nz = in_field.shape[2]
+
+    for n in range(num_iter):
+        # halo update
+        update_halo(in_field, num_halo)
+
+        # run the stencil
+        diffusion_stencil(
+            in_field,
+            out_field,
+            -alpha,
+            -2 * alpha,
+            8 * alpha,
+            1 - 20 * alpha,
+            nx,
+            ny,
+            nz,
+            offset_provider=OFFSET_PROVIDER,
+        )
+
+        if n < num_iter - 1:
+            # swap input and output fields
+            in_field, out_field = out_field, in_field
+        else:
+            # halo update
+            update_halo(out_field, num_halo)
 
 
 @click.command()
@@ -85,14 +181,22 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     alpha = 1.0 / 32.0
 
     # define domain
-    field_domain = None  # TODO
+    field_domain = {
+        I: (-num_halo, nx + num_halo),
+        J: (-num_halo, ny + num_halo),
+        K: (0, nz),
+    }
 
     # allocate input and output fields
-    in_field = None  # TODO
-    out_field = None  # TODO
+    in_field = gtx.zeros(field_domain, dtype=gtx.float64, allocator=actual_backend)
+    out_field = gtx.zeros(field_domain, dtype=gtx.float64, allocator=actual_backend)
 
     # prepare input field
-    in_field = None  # TODO
+    in_field[
+        num_halo + nx // 4 : num_halo + 3 * nx // 4,
+        num_halo + ny // 4 : num_halo + 3 * ny // 4,
+        nz // 4 : 3 * nz // 4,
+    ] = 1.0
 
     # write input field to file
     # swap first and last axes for compatibility with day1/stencil2d.py
@@ -106,8 +210,8 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
         plt.savefig("in_field.png")
         plt.close()
 
-    # TODO - use the selected backend
-    diffusion_stencil = None  # TODO
+    # select backend
+    diffusion_stencil = diffusion_program.with_backend(actual_backend)
 
     # warmup caches
     apply_diffusion(diffusion_stencil, in_field, out_field, alpha, num_halo)

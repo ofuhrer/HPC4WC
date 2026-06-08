@@ -1,0 +1,27 @@
+name: Material checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  day5:
+    name: Day 5
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install check dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install nbformat ipython numpy click matplotlib
+
+      - name: Check Day 5 material
+        run: PYTHONDONTWRITEBYTECODE=1 python tools/check_material.py day5
