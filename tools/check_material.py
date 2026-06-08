@@ -31,6 +31,9 @@ class Checker:
         self.failures: dict[str, list[str]] = defaultdict(list)
         self.transformer = TransformerManager()
 
+    def log(self, message: str) -> None:
+        print(message)
+
     def fail(self, group: str, message: str) -> None:
         self.failures[group].append(message)
 
@@ -49,6 +52,7 @@ class Checker:
         return 1
 
     def check_day(self, day: Path) -> None:
+        self.log(f"checking {self.rel(day)}")
         if day.name != "day5":
             self.fail("configuration", f"unsupported day for initial checker: {day}")
             return
@@ -58,15 +62,21 @@ class Checker:
 
         self.check_generated_outputs(day)
         notebooks = list(self.notebooks(day))
+        self.log(f"  notebooks: validating {len(notebooks)} notebook(s)")
         self.check_notebooks(notebooks)
+        self.log("  generated notebooks: checking metadata cleanup")
         self.check_generated_notebooks_are_clean(day)
+        self.log("  generated files: checking source markers are absent")
         self.check_generated_files_have_no_markers(day)
         self.check_python_files(day)
         self.check_shell_files(day)
+        self.log("  notebook assets: checking local image links")
         self.check_notebook_assets(notebooks)
+        self.log("  smoke tests: running lightweight script checks")
         self.check_smoke_scripts(day)
 
     def check_generated_outputs(self, day: Path) -> None:
+        self.log("  generation: checking student and solution outputs are current")
         command = [
             sys.executable,
             str(self.repo_root / "tools" / "generate_from_master.py"),
@@ -155,11 +165,11 @@ class Checker:
                     )
 
     def check_python_files(self, day: Path) -> None:
+        python_files = [path for path in sorted(day.rglob("*.py")) if not self.should_skip(path)]
+        self.log(f"  python: compiling {len(python_files)} file(s)")
         with tempfile.TemporaryDirectory(prefix="hpc4wc-pycompile-") as tmp:
             bytecode_dir = Path(tmp)
-            for index, path in enumerate(sorted(day.rglob("*.py"))):
-                if self.should_skip(path):
-                    continue
+            for index, path in enumerate(python_files):
                 try:
                     py_compile.compile(
                         str(path),
@@ -171,9 +181,9 @@ class Checker:
                     self.fail("python syntax", f"{self.rel(path)}: {exc.msg}")
 
     def check_shell_files(self, day: Path) -> None:
-        for path in sorted(day.rglob("*.sh")):
-            if self.should_skip(path):
-                continue
+        shell_files = [path for path in sorted(day.rglob("*.sh")) if not self.should_skip(path)]
+        self.log(f"  shell: checking {len(shell_files)} script(s)")
+        for path in shell_files:
             completed = subprocess.run(
                 ["bash", "-n", str(path)],
                 cwd=self.repo_root,
