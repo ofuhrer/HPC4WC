@@ -14,14 +14,14 @@
 // not working properly on personal machine).
 
 // TODO: Specify the precision here before compiling: long double; double; float
-using precision_t = float;
+using precision_t = long double;
 
 // TODO: Specify the precision here before compiling:
 // long double 	-> longdouble
 // double 		-> double
 // float 		-> single
 // __fp16 		-> half
-std:: string precision_str = "single";
+std:: string precision_str = "long double";
 
 // ===========================================================================
 // Function to write fields to disk
