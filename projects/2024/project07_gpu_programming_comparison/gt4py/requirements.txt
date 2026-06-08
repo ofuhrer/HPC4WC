@@ -1,5 +1,0 @@
-click
-numpy
-matplotlib
-cupy-cuda12x
-gt4py

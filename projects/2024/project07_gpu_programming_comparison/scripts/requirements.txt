@@ -1,4 +1,0 @@
-prettytable
-numpy
-matplotlib
-pandas
