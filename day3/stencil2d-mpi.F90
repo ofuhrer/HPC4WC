@@ -25,6 +25,9 @@ program main
 
     real (kind=wp), allocatable :: in_field(:, :, :), f_in(:, :, :)
     real (kind=wp), allocatable :: out_field(:, :, :), f_out(:, :, :)
+#ifdef GNU_MPI_WORKAROUND
+    real (kind=wp), allocatable :: dummy_field(:, :, :)
+#endif
 
     integer :: timer_work
     real (kind=8) :: runtime
@@ -58,15 +61,29 @@ program main
             global_ny = ny_setups( cur_setup / size(ny_setups) + 1 )
         end if
 
-        if ( is_master() ) &
+        if ( is_master() ) then
             call setup()
+#ifdef GNU_MPI_WORKAROUND
+        else
+            if ( .not. allocated(dummy_field) ) &
+                allocate( dummy_field(1, 1, 1) )
+#endif
+        end if
 
         if ( .not. scan .and. is_master() ) &
             call write_field_to_file( in_field, num_halo, "in_field.dat" )
 
         p = Partitioner(MPI_COMM_WORLD, (/global_nx, global_ny, global_nz/), num_halo, periodic=(/.true., .true./))
 
+#ifdef GNU_MPI_WORKAROUND
+        if ( is_master() ) then
+            f_in = p%scatter(in_field, root=0)
+        else
+            f_in = p%scatter(dummy_field, root=0)
+        end if
+#else
         f_in = p%scatter(in_field, root=0)
+#endif
         allocate(f_out, source=f_in)
 
         ! warmup caches

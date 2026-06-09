@@ -30,10 +30,21 @@ endif
 endif
 ifeq "$(HOSTNAME)" "papaya"
   F90 = mpif90 -cpp 
-  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  FFLAGS = -DGNU_MPI_WORKAROUND -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
     -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
     -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
     -finit-integer=9999999 -finit-logical=true -finit-character=35
+endif
+ifeq "$(HOSTNAME)" "mango"
+  F90 = mpif90 -L/opt/homebrew/lib -lprofiler #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -cpp -DGNU_MPI_WORKAROUND -g1 -O3 -fno-inline -fno-optimize-sibling-calls -march=native -funroll-loops -fno-openmp -flto -fno-math-errno
+ifdef NOOPT
+  FFLAGS = -cpp -DGNU_MPI_WORKAROUND -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35 -fno-openmp
+  TARGET = stencil2d-$(VERSION)-noopt.x
+endif
 endif
 ifndef F90
   $(error F90 is not set for $(HOSTNAME))

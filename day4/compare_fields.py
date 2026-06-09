@@ -25,7 +25,7 @@ def main(src, trg, rtol=1e-5, atol=1e-8):
     if np.allclose(src_f, trg_f, rtol=rtol, atol=atol, equal_nan=True):
         print(f"HOORAY! '{src}' and '{trg}' are equal!")
     else:
-        print(f"{src} and {trg} are not equal.")
+        raise click.ClickException(f"{src} and {trg} are not equal.")
 
 
 if __name__ == "__main__":

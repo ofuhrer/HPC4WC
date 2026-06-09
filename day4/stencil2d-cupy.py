@@ -52,7 +52,7 @@ def update_halo(field, num_halo):
         Input/output field (nz x ny x nx with halo in x- and y-direction).
     num_halo : int
         Number of halo points.
-    
+
     Note
     ----
         Corners are updated in the left/right phase of the halo-update.

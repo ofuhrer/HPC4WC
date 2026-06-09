@@ -24,7 +24,29 @@ MARKER_BYTES = (b"hpc4wc:", b'"hpc4wc"')
 SKIP_DIRS = {".ipynb_checkpoints", "__pycache__", ".gt4py_cache"}
 IMAGE_LINK_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 HTML_IMAGE_RE = re.compile(r"<img\b[^>]*\bsrc=[\"']([^\"']+)[\"']", re.IGNORECASE)
-SUPPORTED_DAYS = {"day1", "day2", "day5"}
+SUPPORTED_DAYS = {"day1", "day2", "day3", "day4", "day5"}
+CODESPELL_IGNORE_WORDS = ("inout", "totalY", "yAU")
+CODESPELL_SKIP = (
+    "*.dat",
+    "*.dSYM",
+    "*.DS_Store",
+    "*.mod",
+    "*.o",
+    "*.out",
+    "*.pdf",
+    "*.png",
+    "*.so",
+    "*.txt",
+    "*.x",
+    ".gt4py_cache",
+    ".ipynb_checkpoints",
+    "__pycache__",
+    "*/solutions/*",
+)
+FORTRAN_COMPILE_SKIP = {
+    "day4/.master/m_partitioner.F90",
+    "day4/.master/stencil2d-openacc.F90",
+}
 
 
 class Checker:
@@ -80,6 +102,7 @@ class Checker:
         self.check_shell_files(day)
         self.log("  notebook assets: checking local image links")
         self.check_notebook_assets(notebooks)
+        self.check_spelling(day)
         self.log("  smoke tests: running lightweight script checks")
         self.check_smoke_scripts(day)
 
@@ -216,7 +239,13 @@ class Checker:
                 self.fail("shell syntax", f"{self.rel(path)}: {detail}")
 
     def check_fortran_files(self, day: Path) -> None:
-        fortran_files = [path for path in sorted(day.rglob("*.F90")) if not self.should_skip(path)]
+        fortran_files = [
+            path
+            for path in sorted(day.rglob("*"))
+            if path.name.endswith(".F90")
+            and not self.should_skip(path)
+            and not self.should_skip_fortran_compile(path)
+        ]
         compiler = shutil.which("mpif90") or shutil.which("mpifort")
         if not compiler:
             self.log(f"  fortran: skipping {len(fortran_files)} file(s), no mpif90/mpifort found")
@@ -232,7 +261,10 @@ class Checker:
                 completed = subprocess.run(
                     [
                         compiler,
+                        "-x",
+                        "f95-cpp-input",
                         "-cpp",
+                        "-DGNU_MPI_WORKAROUND",
                         "-ffree-line-length-none",
                         "-fopenmp",
                         "-J",
@@ -305,11 +337,46 @@ class Checker:
                             f"{self.rel(path)} cell {index}: missing image {link}",
                         )
 
+    def check_spelling(self, day: Path) -> None:
+        codespell = self.codespell_executable()
+        if not codespell:
+            self.log("  spelling: skipping, codespell not found")
+            return
+
+        targets = [day]
+        for source_dir_name in (".master", ".solutions"):
+            source_dir = day / source_dir_name
+            if source_dir.is_dir():
+                targets.append(source_dir)
+
+        self.log(f"  spelling: checking with {Path(codespell).name}")
+        completed = subprocess.run(
+            [
+                codespell,
+                "--builtin=clear",
+                f"--ignore-words-list={','.join(CODESPELL_IGNORE_WORDS)}",
+                f"--skip={','.join(CODESPELL_SKIP)}",
+                *map(str, targets),
+            ],
+            cwd=self.repo_root,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if completed.returncode != 0:
+            detail = (completed.stdout or completed.stderr).strip()
+            self.fail("spelling", detail or "codespell found spelling issues")
+
     def check_smoke_scripts(self, day: Path) -> None:
         if day.name == "day1":
             self.check_day1_smoke_scripts(day)
         elif day.name == "day2":
             self.check_day2_smoke_scripts(day)
+        elif day.name == "day3":
+            self.check_day3_smoke_scripts(day)
+        elif day.name == "day4":
+            self.check_day4_smoke_scripts(day)
         elif day.name == "day5":
             self.check_day5_smoke_scripts(day)
 
@@ -400,6 +467,63 @@ class Checker:
             )
             if different.returncode == 0:
                 self.fail("smoke", f"{self.rel(script)} mismatch arrays exited with 0")
+
+    def check_day3_smoke_scripts(self, day: Path) -> None:
+        with tempfile.TemporaryDirectory(prefix="hpc4wc-day3-") as tmp:
+            tmpdir = Path(tmp)
+            baseline = subprocess.run(
+                [
+                    sys.executable,
+                    str(day / "stencil2d.py"),
+                    "--nx=8",
+                    "--ny=8",
+                    "--nz=4",
+                    "--num_iter=1",
+                ],
+                cwd=tmpdir,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            if baseline.returncode != 0:
+                detail = (baseline.stderr or baseline.stdout).strip()
+                self.fail("smoke", f"{self.rel(day / 'stencil2d.py')}: {detail}")
+            for name in ("in_field.npy", "out_field.npy"):
+                if not (tmpdir / name).is_file():
+                    self.fail("smoke", f"{self.rel(day / 'stencil2d.py')}: missing {name}")
+
+        self.check_compare_fields(day / "compare_fields.py")
+
+    def check_day4_smoke_scripts(self, day: Path) -> None:
+        with tempfile.TemporaryDirectory(prefix="hpc4wc-day4-") as tmp:
+            tmpdir = Path(tmp)
+            baseline = subprocess.run(
+                [
+                    sys.executable,
+                    str(day / "stencil2d-original.py"),
+                    "--nx=8",
+                    "--ny=8",
+                    "--nz=4",
+                    "--num_iter=1",
+                ],
+                cwd=tmpdir,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            if baseline.returncode != 0:
+                detail = (baseline.stderr or baseline.stdout).strip()
+                self.fail("smoke", f"{self.rel(day / 'stencil2d-original.py')}: {detail}")
+            for name in ("in_field.npy", "out_field.npy"):
+                if not (tmpdir / name).is_file():
+                    self.fail("smoke", f"{self.rel(day / 'stencil2d-original.py')}: missing {name}")
+
+        self.check_compare_fields(day / "compare_fields.py")
+        solution_compare = day / "solutions" / "compare_fields.py"
+        if solution_compare.exists():
+            self.check_compare_fields(solution_compare)
 
     def check_day2_smoke_scripts(self, day: Path) -> None:
         compiler = shutil.which("mpif90") or shutil.which("mpifort")
@@ -537,6 +661,20 @@ class Checker:
 
     def should_skip(self, path: Path) -> bool:
         return any(part in SKIP_DIRS for part in path.parts)
+
+    def should_skip_fortran_compile(self, path: Path) -> bool:
+        return self.rel(path) in FORTRAN_COMPILE_SKIP
+
+    def codespell_executable(self) -> str | None:
+        executable = shutil.which("codespell")
+        if executable:
+            return executable
+
+        sibling = Path(sys.executable).with_name("codespell")
+        if sibling.is_file():
+            return str(sibling)
+
+        return None
 
     def cpp_compiler(self) -> str | None:
         for candidate in ("g++-15", "g++-14", "g++-13", "g++-12", "g++"):

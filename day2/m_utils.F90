@@ -4,7 +4,7 @@
 !       Email: oliver.fuhrer@vulcan.com
 !        Date: 09.09.2010
 ! Description: Collection of utility routines for
-!              program flow managment and timing.
+!              program flow management and timing.
 ! ******************************************************
 
 module m_utils

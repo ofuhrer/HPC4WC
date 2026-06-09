@@ -45,9 +45,6 @@ scripts. The check is intentionally lightweight; full performance runs and
 GPU/cluster-specific exercises should still be validated in the appropriate
 course environment.
 
-Generated solution bundles in `day*/solutions/` are ignored while preparing the
-course. Generate them locally only when the solutions should be published.
-
 ## Pre-commit Checks
 
 The repository provides conservative pre-commit checks for course preparation:
