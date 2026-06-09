@@ -62,12 +62,14 @@ class Checker:
             self.fail("configuration", f"missing day directory: {day}")
             return
 
-        if day.name == "day5":
+        has_master = (day / ".master").is_dir()
+
+        if has_master:
             self.check_generated_outputs(day)
         notebooks = list(self.notebooks(day))
         self.log(f"  notebooks: validating {len(notebooks)} notebook(s)")
         self.check_notebooks(notebooks)
-        if day.name == "day5":
+        if has_master:
             self.log("  generated notebooks: checking metadata cleanup")
             self.check_generated_notebooks_are_clean(day)
             self.log("  generated files: checking source markers are absent")
@@ -153,6 +155,12 @@ class Checker:
                             "generated notebooks",
                             f"{self.rel(path)} cell {index}: contains hpc4wc metadata",
                         )
+                metadata = notebook.get("metadata", {})
+                if isinstance(metadata, dict) and "hpc4wc" in metadata:
+                    self.fail(
+                        "generated notebooks",
+                        f"{self.rel(path)}: contains top-level hpc4wc metadata",
+                    )
 
     def check_generated_files_have_no_markers(self, day: Path) -> None:
         for path in sorted(day.rglob("*")):

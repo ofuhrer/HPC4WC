@@ -40,14 +40,33 @@ def strip_hpc4wc_metadata(cell: dict[str, Any]) -> None:
         cell["metadata"] = {}
 
 
+def strip_top_level_hpc4wc_metadata(notebook: dict[str, Any]) -> None:
+    metadata = notebook.get("metadata")
+    if not isinstance(metadata, dict):
+        return
+
+    metadata.pop(HPC4WC_METADATA_KEY, None)
+
+
 def strip_execution_state(cell: dict[str, Any]) -> None:
     if cell.get("cell_type") == "code":
         cell["execution_count"] = None
         cell["outputs"] = []
 
 
+def notebook_student_mode(notebook: dict[str, Any]) -> str | None:
+    metadata = notebook.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    hpc4wc = metadata.get(HPC4WC_METADATA_KEY) or {}
+    if not isinstance(hpc4wc, dict):
+        return None
+    return hpc4wc.get("student")
+
+
 def generate_student_notebook(master: dict[str, Any]) -> dict[str, Any]:
     student = copy.deepcopy(master)
+    strip_top_level_hpc4wc_metadata(student)
     generated_cells = []
 
     for cell in student.get("cells", []):
@@ -75,6 +94,7 @@ def generate_student_notebook(master: dict[str, Any]) -> dict[str, Any]:
 
 def generate_solution_notebook(master: dict[str, Any]) -> dict[str, Any]:
     solution = copy.deepcopy(master)
+    strip_top_level_hpc4wc_metadata(solution)
     for cell in solution.get("cells", []):
         strip_hpc4wc_metadata(cell)
     return solution
@@ -98,6 +118,8 @@ def student_payload(line: str) -> str:
     prefix, suffix = split
     if "#" in prefix:
         prefix = prefix[: prefix.rfind("#")]
+    elif "!" in prefix:
+        prefix = prefix[: prefix.rfind("!")]
     if suffix.startswith(" "):
         suffix = suffix[1:]
     return prefix + suffix
@@ -268,6 +290,8 @@ def expected_student_outputs(day: Path) -> tuple[dict[Path, bytes], set[Path]]:
 
         if master_path.suffix == ".ipynb":
             master_notebook = load_notebook(master_path)
+            if notebook_student_mode(master_notebook) == "remove":
+                continue
             outputs[day / relative_path] = notebook_bytes(
                 generate_student_notebook(master_notebook)
             )
