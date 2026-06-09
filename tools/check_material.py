@@ -24,7 +24,7 @@ MARKER_BYTES = (b"hpc4wc:", b'"hpc4wc"')
 SKIP_DIRS = {".ipynb_checkpoints", "__pycache__", ".gt4py_cache"}
 IMAGE_LINK_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 HTML_IMAGE_RE = re.compile(r"<img\b[^>]*\bsrc=[\"']([^\"']+)[\"']", re.IGNORECASE)
-SUPPORTED_DAYS = {"day1", "day2", "day3", "day4", "day5"}
+DAY_DIR_RE = re.compile(r"day\d+$")
 CODESPELL_IGNORE_WORDS = ("inout", "totalY", "yAU")
 CODESPELL_SKIP = (
     "*.dat",
@@ -77,8 +77,8 @@ class Checker:
 
     def check_day(self, day: Path) -> None:
         self.log(f"checking {self.rel(day)}")
-        if day.name not in SUPPORTED_DAYS:
-            self.fail("configuration", f"unsupported day for checker: {day}")
+        if not DAY_DIR_RE.fullmatch(day.name):
+            self.fail("configuration", f"not a day<n> directory: {day}")
             return
         if not day.is_dir():
             self.fail("configuration", f"missing day directory: {day}")
@@ -723,17 +723,31 @@ class Checker:
 
 def main(argv: list[str] | None = None) -> int:
     args = argv if argv is not None else sys.argv[1:]
-    if not args:
-        print("Usage: check_material.py <day> [<day> ...]", file=sys.stderr)
-        return 2
-
     repo_root = Path(__file__).resolve().parents[1]
-    days = []
-    for arg in args:
-        path = Path(arg)
-        if not path.is_absolute():
-            path = repo_root / path
-        days.append(path.resolve())
+    cwd = Path.cwd().resolve()
+
+    if args:
+        days = []
+        for arg in args:
+            path = Path(arg)
+            if not path.is_absolute():
+                path = cwd / path
+            days.append(path.resolve())
+    elif cwd.name.startswith("day") and DAY_DIR_RE.fullmatch(cwd.name):
+        days = [cwd]
+    elif cwd == repo_root:
+        days = sorted(
+            path
+            for path in repo_root.iterdir()
+            if path.is_dir() and DAY_DIR_RE.fullmatch(path.name)
+        )
+    else:
+        print(
+            "Usage: check_material.py <day> [<day> ...]\n"
+            "       or run without arguments from the repo root or a day<n> directory",
+            file=sys.stderr,
+        )
+        return 2
 
     return Checker(repo_root).run(days)
 

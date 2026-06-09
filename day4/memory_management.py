@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import time
 import gc
 
+
 def warmup_cupy():
     """Perform initial CuPy operations to initialize CUDA context and JIT compilation."""
     print("Warming up CuPy and CUDA runtime...")
@@ -39,6 +40,7 @@ def warmup_cupy():
     print(f"CuPy Version: {cp.__version__}")
     print("-" * 60)
 
+
 def clear_memory_pools():
     """Clear both device and pinned memory pools."""
     mempool = cp.get_default_memory_pool()
@@ -50,8 +52,9 @@ def clear_memory_pools():
     # Force garbage collection
     gc.collect()
 
+
 class AtmosphericModel:
-    def __init__(self, nx=128, ny=128, nz=64, memory_type='device'):
+    def __init__(self, nx=128, ny=128, nz=64, memory_type="device"):
         """Initialize atmospheric model with specified memory type."""
         self.nx, self.ny, self.nz = nx, ny, nz
         self.memory_type = memory_type
@@ -63,27 +66,29 @@ class AtmosphericModel:
         self.size_gb = self.size_mb / 1024
 
         # Initialize arrays based on memory type
-        if memory_type == 'device':
+        if memory_type == "device":
             # Standard device memory allocation
             self.temperature = cp.random.random(self.shape, dtype=cp.float32)
 
-        elif memory_type == 'system':
+        elif memory_type == "system":
             # Create on CPU and transfer to GPU
             temp_cpu = np.random.rand(*self.shape).astype(np.float32)
             self.temperature = cp.asarray(temp_cpu)
 
-        elif memory_type == 'managed':
+        elif memory_type == "managed":
             # Allocate true CUDA Unified Memory through CuPy's managed allocator.
             self.managed_mempool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
             with cp.cuda.using_allocator(self.managed_mempool.malloc):
                 self.temperature = cp.random.random(self.shape, dtype=cp.float32)
 
-        elif memory_type == 'pinned':
+        elif memory_type == "pinned":
             # Use pinned memory for host array
             # Allocate pinned memory using CuPy's memory pool
             mem_size = self.size_bytes
             temp_mem = cp.cuda.alloc_pinned_memory(mem_size)
-            temp_cpu = np.frombuffer(temp_mem, dtype=np.float32, count=self.nx*self.ny*self.nz).reshape(self.shape)
+            temp_cpu = np.frombuffer(
+                temp_mem, dtype=np.float32, count=self.nx * self.ny * self.nz
+            ).reshape(self.shape)
             temp_cpu[:] = np.random.rand(*self.shape)
             self.temperature_cpu = temp_cpu
             self.temperature = cp.asarray(self.temperature_cpu)
@@ -137,6 +142,7 @@ class AtmosphericModel:
 
         return result, avg_time, avg_bandwidth
 
+
 def run_benchmark():
     """Run the full benchmark and return results."""
     # Initialize CUDA context and JIT compilation before benchmarking
@@ -144,19 +150,14 @@ def run_benchmark():
 
     # Benchmark configuration - reduced grid sizes to avoid crashes
     grid_sizes = [128, 256, 512, 1024]
-    memory_types = ['device', 'system', 'managed', 'pinned']
+    memory_types = ["device", "system", "managed", "pinned"]
     transfer_times = {mem_type: [] for mem_type in memory_types}
     bandwidths = {mem_type: [] for mem_type in memory_types}
     array_sizes_mb = []
     array_sizes_gb = []
 
     # Calculate number of repeats needed for each grid size
-    repeats = {
-        128: 32,
-        256: 16,
-        512: 8,
-        1024: 4
-    }
+    repeats = {128: 32, 256: 16, 512: 8, 1024: 4}
 
     # Run benchmarks
     for nx in grid_sizes:
@@ -213,6 +214,8 @@ def run_benchmark():
             time.sleep(1)
 
     return grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths
+
+
 def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
     """Plot the benchmark results with simplified formatting."""
     plt.figure(figsize=(12, 8))
@@ -223,15 +226,18 @@ def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
         bw_data = bandwidths[mem_type]
 
         # Plot the data with default styling
-        plt.plot(grid_sizes, bw_data,
-                 marker='o',  # Keep just a simple marker
-                 linewidth=2,
-                 label=f"{mem_type} memory")
+        plt.plot(
+            grid_sizes,
+            bw_data,
+            marker="o",  # Keep just a simple marker
+            linewidth=2,
+            label=f"{mem_type} memory",
+        )
 
     # Add labels and title
-    plt.xlabel('Grid Size (N for NxNx4)', fontsize=14)
-    plt.ylabel('Transfer Bandwidth (GB/s)', fontsize=14)
-    plt.title('GPU-to-CPU Data Transfer Bandwidth vs Grid Size', fontsize=16)
+    plt.xlabel("Grid Size (N for NxNx4)", fontsize=14)
+    plt.ylabel("Transfer Bandwidth (GB/s)", fontsize=14)
+    plt.title("GPU-to-CPU Data Transfer Bandwidth vs Grid Size", fontsize=16)
 
     # Add grid and legend
     plt.grid(True, which="both", ls="--", alpha=0.7)
@@ -241,31 +247,39 @@ def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
     plt.xticks(grid_sizes, [str(size) for size in grid_sizes])
 
     plt.tight_layout()
-    plt.savefig('gpu_transfer_bandwidth.png', dpi=300)
+    plt.savefig("gpu_transfer_bandwidth.png", dpi=300)
     plt.show()
+
 
 def print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types):
     """Print a summary table of the benchmark results."""
     print("\nSummary of Transfer Bandwidths (GB/s):")
     print("-" * 80)
-    print(f"{'Grid Size':<15} | {'Array Size (MB)':<15} | " + " | ".join(f"{mem_type:<10}" for mem_type in memory_types))
+    print(
+        f"{'Grid Size':<15} | {'Array Size (MB)':<15} | "
+        + " | ".join(f"{mem_type:<10}" for mem_type in memory_types)
+    )
     print("-" * 80)
 
     for i, nx in enumerate(grid_sizes):
         size_mb = array_sizes_mb[i]
-        bandwidths_str = " | ".join(f"{bandwidths[mem_type][i]:<10.2f}" for mem_type in memory_types)
+        bandwidths_str = " | ".join(
+            f"{bandwidths[mem_type][i]:<10.2f}" for mem_type in memory_types
+        )
         print(f"{f'{nx}×{nx}×4':<15} | {size_mb:<15.2f} | {bandwidths_str}")
+
 
 def main():
     """Main function to run the benchmark."""
     grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths = run_benchmark()
-    memory_types = ['device', 'system', 'managed', 'pinned']
+    memory_types = ["device", "system", "managed", "pinned"]
 
     # Plot results
     plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types)
 
     # Print summary
     print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types)
+
 
 if __name__ == "__main__":
     main()

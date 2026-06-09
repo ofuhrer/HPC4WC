@@ -30,8 +30,9 @@ import time
 import cupy as cp
 from mpi4py import MPI
 
+
 def laplacian(in_field, lap_field, num_halo, extend=0):
-    """ Compute the Laplacian using 2nd-order centered differences.
+    """Compute the Laplacian using 2nd-order centered differences.
 
     Parameters
     ----------
@@ -59,7 +60,7 @@ def laplacian(in_field, lap_field, num_halo, extend=0):
 
 
 def update_halo(field, num_halo, comm):
-    """ Update halo regions of the field using MPI communication.
+    """Update halo regions of the field using MPI communication.
 
     Parameters
     ----------
@@ -104,7 +105,7 @@ def update_halo(field, num_halo, comm):
 
 
 def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter, comm):
-    """ Apply diffusion to the input field for a given number of iterations.
+    """Apply diffusion to the input field for a given number of iterations.
 
     Parameters
     ----------
@@ -139,16 +140,11 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter, comm):
         else:
             update_halo(out_field, num_halo, comm)
 
+
 @click.command()
-@click.option(
-    "--nx", type=int, required=True, help="Number of gridpoints in x-direction"
-)
-@click.option(
-    "--ny", type=int, required=True, help="Number of gridpoints in y-direction"
-)
-@click.option(
-    "--nz", type=int, required=True, help="Number of gridpoints in z-direction"
-)
+@click.option("--nx", type=int, required=True, help="Number of gridpoints in x-direction")
+@click.option("--ny", type=int, required=True, help="Number of gridpoints in y-direction")
+@click.option("--nz", type=int, required=True, help="Number of gridpoints in z-direction")
 @click.option("--num_iter", type=int, required=True, help="Number of iterations")
 @click.option(
     "--num_halo",
@@ -158,7 +154,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter, comm):
 )
 @click.option("--plot_result", type=bool, default=False, help="Make a plot of the result?")
 def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
-    """ Main function to run the diffusion simulation.
+    """Main function to run the diffusion simulation.
 
     Parameters
     ----------
@@ -184,9 +180,9 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     assert 0 < nz <= 1024, "You have to specify a reasonable value for nz"
     assert 0 < num_iter <= 1024 * 1024, "You have to specify a reasonable value for num_iter"
     assert 2 <= num_halo <= 256, "You have to specify a reasonable number of halo points"
-    assert (
-        nz % size == 0
-    ), "This simple z-decomposition requires nz to be divisible by the number of MPI ranks"
+    assert nz % size == 0, (
+        "This simple z-decomposition requires nz to be divisible by the number of MPI ranks"
+    )
     alpha = 1.0 / 32.0
 
     local_nz = nz // size
@@ -195,9 +191,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     cp.cuda.Device(rank % cp.cuda.runtime.getDeviceCount()).use()
 
-    in_field = cp.zeros(
-        (local_nz, ny + 2 * num_halo, nx + 2 * num_halo), dtype=cp.float64
-    )
+    in_field = cp.zeros((local_nz, ny + 2 * num_halo, nx + 2 * num_halo), dtype=cp.float64)
     if (
         nz // 4 <= start_z < 3 * nz // 4
         or nz // 4 < end_z <= 3 * nz // 4

@@ -35,7 +35,7 @@ run locally and in GitHub Actions without those systems.
 Run the material check for all course days with:
 
 ```bash
-python tools/check_material.py day1 day2 day3 day4 day5
+python tools/check_material.py
 ```
 
 This validates notebooks and course files, checks Python and shell syntax,

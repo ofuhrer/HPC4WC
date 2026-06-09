@@ -10,6 +10,7 @@
 # hpc4wc:student | import time
 # hpc4wc:student | import gc
 # hpc4wc:student |
+# hpc4wc:student |
 # hpc4wc:student | def warmup_cupy():
 # hpc4wc:student |     """Perform initial CuPy operations to initialize CUDA context and JIT compilation."""
 # hpc4wc:student |     print("Warming up CuPy and CUDA runtime...")
@@ -40,6 +41,7 @@
 # hpc4wc:student |     print(f"CuPy Version: {cp.__version__}")
 # hpc4wc:student |     print("-" * 60)
 # hpc4wc:student |
+# hpc4wc:student |
 # hpc4wc:student | def clear_memory_pools():
 # hpc4wc:student |     """Clear both device and pinned memory pools."""
 # hpc4wc:student |     mempool = cp.get_default_memory_pool()
@@ -51,8 +53,9 @@
 # hpc4wc:student |     # Force garbage collection
 # hpc4wc:student |     gc.collect()
 # hpc4wc:student |
+# hpc4wc:student |
 # hpc4wc:student | class AtmosphericModel:
-# hpc4wc:student |     def __init__(self, nx=128, ny=128, nz=64, memory_type='device'):
+# hpc4wc:student |     def __init__(self, nx=128, ny=128, nz=64, memory_type="device"):
 # hpc4wc:student |         """Initialize atmospheric model with specified memory type."""
 # hpc4wc:student |         self.nx, self.ny, self.nz = nx, ny, nz
 # hpc4wc:student |         self.memory_type = memory_type
@@ -64,27 +67,29 @@
 # hpc4wc:student |         self.size_gb = self.size_mb / 1024
 # hpc4wc:student |
 # hpc4wc:student |         # Initialize arrays based on memory type
-# hpc4wc:student |         if memory_type == 'device':
+# hpc4wc:student |         if memory_type == "device":
 # hpc4wc:student |             # Standard device memory allocation
 # hpc4wc:student |             self.temperature = cp.random.random(self.shape, dtype=cp.float32)
 # hpc4wc:student |
-# hpc4wc:student |         elif memory_type == 'system':
+# hpc4wc:student |         elif memory_type == "system":
 # hpc4wc:student |             # Create on CPU and transfer to GPU
 # hpc4wc:student |             temp_cpu = np.random.rand(*self.shape).astype(np.float32)
 # hpc4wc:student |             self.temperature = cp.asarray(temp_cpu)
 # hpc4wc:student |
-# hpc4wc:student |         elif memory_type == 'managed':
+# hpc4wc:student |         elif memory_type == "managed":
 # hpc4wc:student |             # Allocate true CUDA Unified Memory through CuPy's managed allocator.
 # hpc4wc:student |             self.managed_mempool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
 # hpc4wc:student |             with cp.cuda.using_allocator(self.managed_mempool.malloc):
 # hpc4wc:student |                 self.temperature = cp.random.random(self.shape, dtype=cp.float32)
 # hpc4wc:student |
-# hpc4wc:student |         elif memory_type == 'pinned':
+# hpc4wc:student |         elif memory_type == "pinned":
 # hpc4wc:student |             # Use pinned memory for host array
 # hpc4wc:student |             # Allocate pinned memory using CuPy's memory pool
 # hpc4wc:student |             mem_size = self.size_bytes
 # hpc4wc:student |             temp_mem = cp.cuda.alloc_pinned_memory(mem_size)
-# hpc4wc:student |             temp_cpu = np.frombuffer(temp_mem, dtype=np.float32, count=self.nx*self.ny*self.nz).reshape(self.shape)
+# hpc4wc:student |             temp_cpu = np.frombuffer(
+# hpc4wc:student |                 temp_mem, dtype=np.float32, count=self.nx * self.ny * self.nz
+# hpc4wc:student |             ).reshape(self.shape)
 # hpc4wc:student |             temp_cpu[:] = np.random.rand(*self.shape)
 # hpc4wc:student |             self.temperature_cpu = temp_cpu
 # hpc4wc:student |             self.temperature = cp.asarray(self.temperature_cpu)
@@ -138,6 +143,7 @@
 # hpc4wc:student |
 # hpc4wc:student |         return result, avg_time, avg_bandwidth
 # hpc4wc:student |
+# hpc4wc:student |
 # hpc4wc:student | def run_benchmark():
 # hpc4wc:student |     """Run the full benchmark and return results."""
 # hpc4wc:student |     # Initialize CUDA context and JIT compilation before benchmarking
@@ -145,19 +151,14 @@
 # hpc4wc:student |
 # hpc4wc:student |     # Benchmark configuration - reduced grid sizes to avoid crashes
 # hpc4wc:student |     grid_sizes = [128, 256, 512, 1024]
-# hpc4wc:student |     memory_types = ['device', 'system', 'managed', 'pinned']
+# hpc4wc:student |     memory_types = ["device", "system", "managed", "pinned"]
 # hpc4wc:student |     transfer_times = {mem_type: [] for mem_type in memory_types}
 # hpc4wc:student |     bandwidths = {mem_type: [] for mem_type in memory_types}
 # hpc4wc:student |     array_sizes_mb = []
 # hpc4wc:student |     array_sizes_gb = []
 # hpc4wc:student |
 # hpc4wc:student |     # Calculate number of repeats needed for each grid size
-# hpc4wc:student |     repeats = {
-# hpc4wc:student |         128: 32,
-# hpc4wc:student |         256: 16,
-# hpc4wc:student |         512: 8,
-# hpc4wc:student |         1024: 4
-# hpc4wc:student |     }
+# hpc4wc:student |     repeats = {128: 32, 256: 16, 512: 8, 1024: 4}
 # hpc4wc:student |
 # hpc4wc:student |     # Run benchmarks
 # hpc4wc:student |     for nx in grid_sizes:
@@ -214,6 +215,8 @@
 # hpc4wc:student |             time.sleep(1)
 # hpc4wc:student |
 # hpc4wc:student |     return grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths
+# hpc4wc:student |
+# hpc4wc:student |
 # hpc4wc:student | def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
 # hpc4wc:student |     """Plot the benchmark results with simplified formatting."""
 # hpc4wc:student |     plt.figure(figsize=(12, 8))
@@ -224,15 +227,18 @@
 # hpc4wc:student |         bw_data = bandwidths[mem_type]
 # hpc4wc:student |
 # hpc4wc:student |         # Plot the data with default styling
-# hpc4wc:student |         plt.plot(grid_sizes, bw_data,
-# hpc4wc:student |                  marker='o',  # Keep just a simple marker
-# hpc4wc:student |                  linewidth=2,
-# hpc4wc:student |                  label=f"{mem_type} memory")
+# hpc4wc:student |         plt.plot(
+# hpc4wc:student |             grid_sizes,
+# hpc4wc:student |             bw_data,
+# hpc4wc:student |             marker="o",  # Keep just a simple marker
+# hpc4wc:student |             linewidth=2,
+# hpc4wc:student |             label=f"{mem_type} memory",
+# hpc4wc:student |         )
 # hpc4wc:student |
 # hpc4wc:student |     # Add labels and title
-# hpc4wc:student |     plt.xlabel('Grid Size (N for NxNx4)', fontsize=14)
-# hpc4wc:student |     plt.ylabel('Transfer Bandwidth (GB/s)', fontsize=14)
-# hpc4wc:student |     plt.title('GPU-to-CPU Data Transfer Bandwidth vs Grid Size', fontsize=16)
+# hpc4wc:student |     plt.xlabel("Grid Size (N for NxNx4)", fontsize=14)
+# hpc4wc:student |     plt.ylabel("Transfer Bandwidth (GB/s)", fontsize=14)
+# hpc4wc:student |     plt.title("GPU-to-CPU Data Transfer Bandwidth vs Grid Size", fontsize=16)
 # hpc4wc:student |
 # hpc4wc:student |     # Add grid and legend
 # hpc4wc:student |     plt.grid(True, which="both", ls="--", alpha=0.7)
@@ -242,31 +248,39 @@
 # hpc4wc:student |     plt.xticks(grid_sizes, [str(size) for size in grid_sizes])
 # hpc4wc:student |
 # hpc4wc:student |     plt.tight_layout()
-# hpc4wc:student |     plt.savefig('gpu_transfer_bandwidth.png', dpi=300)
+# hpc4wc:student |     plt.savefig("gpu_transfer_bandwidth.png", dpi=300)
 # hpc4wc:student |     plt.show()
+# hpc4wc:student |
 # hpc4wc:student |
 # hpc4wc:student | def print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types):
 # hpc4wc:student |     """Print a summary table of the benchmark results."""
 # hpc4wc:student |     print("\nSummary of Transfer Bandwidths (GB/s):")
 # hpc4wc:student |     print("-" * 80)
-# hpc4wc:student |     print(f"{'Grid Size':<15} | {'Array Size (MB)':<15} | " + " | ".join(f"{mem_type:<10}" for mem_type in memory_types))
+# hpc4wc:student |     print(
+# hpc4wc:student |         f"{'Grid Size':<15} | {'Array Size (MB)':<15} | "
+# hpc4wc:student |         + " | ".join(f"{mem_type:<10}" for mem_type in memory_types)
+# hpc4wc:student |     )
 # hpc4wc:student |     print("-" * 80)
 # hpc4wc:student |
 # hpc4wc:student |     for i, nx in enumerate(grid_sizes):
 # hpc4wc:student |         size_mb = array_sizes_mb[i]
-# hpc4wc:student |         bandwidths_str = " | ".join(f"{bandwidths[mem_type][i]:<10.2f}" for mem_type in memory_types)
+# hpc4wc:student |         bandwidths_str = " | ".join(
+# hpc4wc:student |             f"{bandwidths[mem_type][i]:<10.2f}" for mem_type in memory_types
+# hpc4wc:student |         )
 # hpc4wc:student |         print(f"{f'{nx}×{nx}×4':<15} | {size_mb:<15.2f} | {bandwidths_str}")
+# hpc4wc:student |
 # hpc4wc:student |
 # hpc4wc:student | def main():
 # hpc4wc:student |     """Main function to run the benchmark."""
 # hpc4wc:student |     grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths = run_benchmark()
-# hpc4wc:student |     memory_types = ['device', 'system', 'managed', 'pinned']
+# hpc4wc:student |     memory_types = ["device", "system", "managed", "pinned"]
 # hpc4wc:student |
 # hpc4wc:student |     # Plot results
 # hpc4wc:student |     plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types)
 # hpc4wc:student |
 # hpc4wc:student |     # Print summary
 # hpc4wc:student |     print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types)
+# hpc4wc:student |
 # hpc4wc:student |
 # hpc4wc:student | if __name__ == "__main__":
 # hpc4wc:student |     main()
@@ -282,6 +296,7 @@ import cupy as cp
 import matplotlib.pyplot as plt
 import time
 import gc
+
 
 def warmup_cupy():
     """Perform initial CuPy operations to initialize CUDA context and JIT compilation."""
@@ -313,6 +328,7 @@ def warmup_cupy():
     print(f"CuPy Version: {cp.__version__}")
     print("-" * 60)
 
+
 def clear_memory_pools():
     """Clear both device and pinned memory pools."""
     mempool = cp.get_default_memory_pool()
@@ -324,8 +340,9 @@ def clear_memory_pools():
     # Force garbage collection
     gc.collect()
 
+
 class AtmosphericModel:
-    def __init__(self, nx=128, ny=128, nz=64, memory_type='device'):
+    def __init__(self, nx=128, ny=128, nz=64, memory_type="device"):
         """Initialize atmospheric model with specified memory type."""
         self.nx, self.ny, self.nz = nx, ny, nz
         self.memory_type = memory_type
@@ -337,27 +354,29 @@ class AtmosphericModel:
         self.size_gb = self.size_mb / 1024
 
         # Initialize arrays based on memory type
-        if memory_type == 'device':
+        if memory_type == "device":
             # Standard device memory allocation
             self.temperature = cp.random.random(self.shape, dtype=cp.float32)
 
-        elif memory_type == 'system':
+        elif memory_type == "system":
             # Create on CPU and transfer to GPU
             temp_cpu = np.random.rand(*self.shape).astype(np.float32)
             self.temperature = cp.asarray(temp_cpu)
 
-        elif memory_type == 'managed':
+        elif memory_type == "managed":
             # Allocate true CUDA Unified Memory through CuPy's managed allocator.
             self.managed_mempool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
             with cp.cuda.using_allocator(self.managed_mempool.malloc):
                 self.temperature = cp.random.random(self.shape, dtype=cp.float32)
 
-        elif memory_type == 'pinned':
+        elif memory_type == "pinned":
             # Use pinned memory for host array
             # Allocate pinned memory using CuPy's memory pool
             mem_size = self.size_bytes
             temp_mem = cp.cuda.alloc_pinned_memory(mem_size)
-            temp_cpu = np.frombuffer(temp_mem, dtype=np.float32, count=self.nx*self.ny*self.nz).reshape(self.shape)
+            temp_cpu = np.frombuffer(
+                temp_mem, dtype=np.float32, count=self.nx * self.ny * self.nz
+            ).reshape(self.shape)
             temp_cpu[:] = np.random.rand(*self.shape)
             self.temperature_cpu = temp_cpu
             self.temperature = cp.asarray(self.temperature_cpu)
@@ -411,6 +430,7 @@ class AtmosphericModel:
 
         return result, avg_time, avg_bandwidth
 
+
 def run_benchmark():
     """Run the full benchmark and return results."""
     # Initialize CUDA context and JIT compilation before benchmarking
@@ -418,19 +438,14 @@ def run_benchmark():
 
     # Benchmark configuration - reduced grid sizes to avoid crashes
     grid_sizes = [128, 256, 512, 1024]
-    memory_types = ['device', 'system', 'managed', 'pinned']
+    memory_types = ["device", "system", "managed", "pinned"]
     transfer_times = {mem_type: [] for mem_type in memory_types}
     bandwidths = {mem_type: [] for mem_type in memory_types}
     array_sizes_mb = []
     array_sizes_gb = []
 
     # Calculate number of repeats needed for each grid size
-    repeats = {
-        128: 32,
-        256: 16,
-        512: 8,
-        1024: 4
-    }
+    repeats = {128: 32, 256: 16, 512: 8, 1024: 4}
 
     # Run benchmarks
     for nx in grid_sizes:
@@ -487,6 +502,8 @@ def run_benchmark():
             time.sleep(1)
 
     return grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths
+
+
 def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
     """Plot the benchmark results with simplified formatting."""
     plt.figure(figsize=(12, 8))
@@ -497,15 +514,18 @@ def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
         bw_data = bandwidths[mem_type]
 
         # Plot the data with default styling
-        plt.plot(grid_sizes, bw_data,
-                 marker='o',  # Keep just a simple marker
-                 linewidth=2,
-                 label=f"{mem_type} memory")
+        plt.plot(
+            grid_sizes,
+            bw_data,
+            marker="o",  # Keep just a simple marker
+            linewidth=2,
+            label=f"{mem_type} memory",
+        )
 
     # Add labels and title
-    plt.xlabel('Grid Size (N for NxNx4)', fontsize=14)
-    plt.ylabel('Transfer Bandwidth (GB/s)', fontsize=14)
-    plt.title('GPU-to-CPU Data Transfer Bandwidth vs Grid Size', fontsize=16)
+    plt.xlabel("Grid Size (N for NxNx4)", fontsize=14)
+    plt.ylabel("Transfer Bandwidth (GB/s)", fontsize=14)
+    plt.title("GPU-to-CPU Data Transfer Bandwidth vs Grid Size", fontsize=16)
 
     # Add grid and legend
     plt.grid(True, which="both", ls="--", alpha=0.7)
@@ -515,31 +535,39 @@ def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
     plt.xticks(grid_sizes, [str(size) for size in grid_sizes])
 
     plt.tight_layout()
-    plt.savefig('gpu_transfer_bandwidth.png', dpi=300)
+    plt.savefig("gpu_transfer_bandwidth.png", dpi=300)
     plt.show()
+
 
 def print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types):
     """Print a summary table of the benchmark results."""
     print("\nSummary of Transfer Bandwidths (GB/s):")
     print("-" * 80)
-    print(f"{'Grid Size':<15} | {'Array Size (MB)':<15} | " + " | ".join(f"{mem_type:<10}" for mem_type in memory_types))
+    print(
+        f"{'Grid Size':<15} | {'Array Size (MB)':<15} | "
+        + " | ".join(f"{mem_type:<10}" for mem_type in memory_types)
+    )
     print("-" * 80)
 
     for i, nx in enumerate(grid_sizes):
         size_mb = array_sizes_mb[i]
-        bandwidths_str = " | ".join(f"{bandwidths[mem_type][i]:<10.2f}" for mem_type in memory_types)
+        bandwidths_str = " | ".join(
+            f"{bandwidths[mem_type][i]:<10.2f}" for mem_type in memory_types
+        )
         print(f"{f'{nx}×{nx}×4':<15} | {size_mb:<15.2f} | {bandwidths_str}")
+
 
 def main():
     """Main function to run the benchmark."""
     grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths = run_benchmark()
-    memory_types = ['device', 'system', 'managed', 'pinned']
+    memory_types = ["device", "system", "managed", "pinned"]
 
     # Plot results
     plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types)
 
     # Print summary
     print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types)
+
 
 if __name__ == "__main__":
     main()

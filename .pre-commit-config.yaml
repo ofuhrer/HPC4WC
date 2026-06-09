@@ -7,11 +7,11 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: ruff-format-tools
-        name: Ruff format tools
-        entry: ruff format --check
+      - id: ruff-format-python-material
+        name: Ruff format Python material
+        entry: bash -c 'ruff format --check $(git ls-files "day*/.master/*.py" "day*/*.py" "tools/*.py")'
         language: python
         additional_dependencies:
           - ruff==0.13.3
-        files: ^tools/.*\.py$
-
+        pass_filenames: false
+        files: ^(day[1-5]/.*\.py|tools/.*\.py)$

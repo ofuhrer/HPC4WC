@@ -15,9 +15,8 @@
 # hpc4wc:student | import time
 # hpc4wc:student |
 # hpc4wc:student |
-# hpc4wc:student |
 # hpc4wc:student | def laplacian(in_field, lap_field, num_halo, extend=0):
-# hpc4wc:student |     """ Compute the Laplacian using 2nd-order centered differences.
+# hpc4wc:student |     """Compute the Laplacian using 2nd-order centered differences.
 # hpc4wc:student |
 # hpc4wc:student |     Parameters
 # hpc4wc:student |     ----------
@@ -45,7 +44,7 @@
 # hpc4wc:student |
 # hpc4wc:student |
 # hpc4wc:student | def update_halo(field, num_halo):
-# hpc4wc:student |     """ Update the halo-zone using an up/down and left/right strategy.
+# hpc4wc:student |     """Update the halo-zone using an up/down and left/right strategy.
 # hpc4wc:student |
 # hpc4wc:student |     Parameters
 # hpc4wc:student |     ----------
@@ -64,9 +63,7 @@
 # hpc4wc:student |     ]
 # hpc4wc:student |
 # hpc4wc:student |     # top edge (without corners)
-# hpc4wc:student |     field[:, -num_halo:, num_halo:-num_halo] = field[
-# hpc4wc:student |         :, num_halo : 2 * num_halo, num_halo:-num_halo
-# hpc4wc:student |     ]
+# hpc4wc:student |     field[:, -num_halo:, num_halo:-num_halo] = field[:, num_halo : 2 * num_halo, num_halo:-num_halo]
 # hpc4wc:student |
 # hpc4wc:student |     # left edge (including corners)
 # hpc4wc:student |     field[:, :, :num_halo] = field[:, :, -2 * num_halo : -num_halo]
@@ -76,7 +73,7 @@
 # hpc4wc:student |
 # hpc4wc:student |
 # hpc4wc:student | def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
-# hpc4wc:student |     """ Integrate 4th-order diffusion equation by a certain number of iterations.
+# hpc4wc:student |     """Integrate 4th-order diffusion equation by a certain number of iterations.
 # hpc4wc:student |
 # hpc4wc:student |     Parameters
 # hpc4wc:student |     ----------
@@ -109,15 +106,9 @@
 # hpc4wc:student |
 # hpc4wc:student |
 # hpc4wc:student | @click.command()
-# hpc4wc:student | @click.option(
-# hpc4wc:student |     "--nx", type=int, required=True, help="Number of gridpoints in x-direction"
-# hpc4wc:student | )
-# hpc4wc:student | @click.option(
-# hpc4wc:student |     "--ny", type=int, required=True, help="Number of gridpoints in y-direction"
-# hpc4wc:student | )
-# hpc4wc:student | @click.option(
-# hpc4wc:student |     "--nz", type=int, required=True, help="Number of gridpoints in z-direction"
-# hpc4wc:student | )
+# hpc4wc:student | @click.option("--nx", type=int, required=True, help="Number of gridpoints in x-direction")
+# hpc4wc:student | @click.option("--ny", type=int, required=True, help="Number of gridpoints in y-direction")
+# hpc4wc:student | @click.option("--nz", type=int, required=True, help="Number of gridpoints in z-direction")
 # hpc4wc:student | @click.option("--num_iter", type=int, required=True, help="Number of iterations")
 # hpc4wc:student | @click.option(
 # hpc4wc:student |     "--num_halo",
@@ -125,21 +116,15 @@
 # hpc4wc:student |     default=2,
 # hpc4wc:student |     help="Number of halo points in x- and y-direction",
 # hpc4wc:student | )
-# hpc4wc:student | @click.option(
-# hpc4wc:student |     "--plot_result", type=bool, default=False, help="Make a plot of the result?"
-# hpc4wc:student | )
+# hpc4wc:student | @click.option("--plot_result", type=bool, default=False, help="Make a plot of the result?")
 # hpc4wc:student | def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 # hpc4wc:student |     """Driver for apply_diffusion that sets up fields and does timings"""
 # hpc4wc:student |
 # hpc4wc:student |     assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx"
 # hpc4wc:student |     assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny"
 # hpc4wc:student |     assert 0 < nz <= 1024, "You have to specify a reasonable value for nz"
-# hpc4wc:student |     assert (
-# hpc4wc:student |         0 < num_iter <= 1024 * 1024
-# hpc4wc:student |     ), "You have to specify a reasonable value for num_iter"
-# hpc4wc:student |     assert (
-# hpc4wc:student |         2 <= num_halo <= 256
-# hpc4wc:student |     ), "You have to specify a reasonable number of halo points"
+# hpc4wc:student |     assert 0 < num_iter <= 1024 * 1024, "You have to specify a reasonable value for num_iter"
+# hpc4wc:student |     assert 2 <= num_halo <= 256, "You have to specify a reasonable number of halo points"
 # hpc4wc:student |     alpha = 1.0 / 32.0
 # hpc4wc:student |
 # hpc4wc:student |     in_field = np.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))
@@ -211,7 +196,7 @@ def get_asnumpy(z):
 
 
 def laplacian(in_field, lap_field, num_halo, extend=0):
-    """ Compute the Laplacian using 2nd-order centered differences.
+    """Compute the Laplacian using 2nd-order centered differences.
 
     Parameters
     ----------
@@ -239,7 +224,7 @@ def laplacian(in_field, lap_field, num_halo, extend=0):
 
 
 def halo_update(field, num_halo):
-    """ Update the halo-zone using an up/down and left/right strategy.
+    """Update the halo-zone using an up/down and left/right strategy.
 
     Parameters
     ----------
@@ -258,9 +243,7 @@ def halo_update(field, num_halo):
     ]
 
     # top edge (without corners)
-    field[:, -num_halo:, num_halo:-num_halo] = field[
-        :, num_halo : 2 * num_halo, num_halo:-num_halo
-    ]
+    field[:, -num_halo:, num_halo:-num_halo] = field[:, num_halo : 2 * num_halo, num_halo:-num_halo]
 
     # left edge (including corners)
     field[:, :, :num_halo] = field[:, :, -2 * num_halo : -num_halo]
@@ -270,7 +253,7 @@ def halo_update(field, num_halo):
 
 
 def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
-    """ Integrate 4th-order diffusion equation by a certain number of iterations.
+    """Integrate 4th-order diffusion equation by a certain number of iterations.
 
     Parameters
     ----------
@@ -303,15 +286,9 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
 
 
 @click.command()
-@click.option(
-    "--nx", type=int, required=True, help="Number of gridpoints in x-direction"
-)
-@click.option(
-    "--ny", type=int, required=True, help="Number of gridpoints in y-direction"
-)
-@click.option(
-    "--nz", type=int, required=True, help="Number of gridpoints in z-direction"
-)
+@click.option("--nx", type=int, required=True, help="Number of gridpoints in x-direction")
+@click.option("--ny", type=int, required=True, help="Number of gridpoints in y-direction")
+@click.option("--nz", type=int, required=True, help="Number of gridpoints in z-direction")
 @click.option("--num_iter", type=int, required=True, help="Number of iterations")
 @click.option(
     "--num_halo",
@@ -319,21 +296,15 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     default=2,
     help="Number of halo points in x- and y-direction",
 )
-@click.option(
-    "--plot_result", type=bool, default=False, help="Make a plot of the result?"
-)
+@click.option("--plot_result", type=bool, default=False, help="Make a plot of the result?")
 def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     """Driver for apply_diffusion that sets up fields and does timings"""
 
     assert 0 < nx <= 1024 * 1024, "You have to specify a reasonable value for nx"
     assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny"
     assert 0 < nz <= 1024, "You have to specify a reasonable value for nz"
-    assert (
-        0 < num_iter <= 1024 * 1024
-    ), "You have to specify a reasonable value for num_iter"
-    assert (
-        2 <= num_halo <= 256
-    ), "You have to specify a reasonable number of halo points"
+    assert 0 < num_iter <= 1024 * 1024, "You have to specify a reasonable value for num_iter"
+    assert 2 <= num_halo <= 256, "You have to specify a reasonable number of halo points"
     alpha = 1.0 / 32.0
 
     in_field = xp.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))

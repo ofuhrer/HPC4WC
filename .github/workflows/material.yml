@@ -28,8 +28,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install nbformat ipython numpy click matplotlib codespell ruff==0.13.3
 
-      - name: Check tool formatting
-        run: ruff format --check tools
+      - name: Check Python formatting
+        run: ruff format --check $(git ls-files "day*/.master/*.py" "day*/*.py" "tools/*.py")
 
       - name: Check course material
-        run: PYTHONDONTWRITEBYTECODE=1 python tools/check_material.py day1 day2 day3 day4 day5
+        run: PYTHONDONTWRITEBYTECODE=1 python tools/check_material.py

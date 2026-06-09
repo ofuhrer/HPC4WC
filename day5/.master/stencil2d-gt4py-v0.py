@@ -32,16 +32,13 @@ OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
 # hpc4wc:student |
 # hpc4wc:student | # TODO - define apply_diffusion() function
 # hpc4wc:student |
+# hpc4wc:student |
 # hpc4wc:student-end
 # hpc4wc:solution-begin
 @gtx.field_operator
 def laplacian(in_field: IJKField) -> IJKField:
     lap_field = (
-        -4.0 * in_field
-        + in_field(I - 1)
-        + in_field(I + 1)
-        + in_field(J - 1)
-        + in_field(J + 1)
+        -4.0 * in_field + in_field(I - 1) + in_field(I + 1) + in_field(J - 1) + in_field(J + 1)
     )
     return lap_field
 
@@ -66,9 +63,8 @@ def diffusion_program(
 
 
 def update_halo(field: IJKField, num_halo: int):
-
     # Make sure to use field.ndarray here
-    
+
     # bottom edge (without corners)
     field.ndarray[num_halo:-num_halo, :num_halo] = field.ndarray[
         num_halo:-num_halo, -2 * num_halo : -num_halo
@@ -119,19 +115,13 @@ def apply_diffusion(
         else:
             # halo update
             update_halo(out_field, num_halo)
+
+
 # hpc4wc:solution-end
-
-
 @click.command()
-@click.option(
-    "--nx", type=int, required=True, help="Number of gridpoints in x-direction"
-)
-@click.option(
-    "--ny", type=int, required=True, help="Number of gridpoints in y-direction"
-)
-@click.option(
-    "--nz", type=int, required=True, help="Number of gridpoints in z-direction"
-)
+@click.option("--nx", type=int, required=True, help="Number of gridpoints in x-direction")
+@click.option("--ny", type=int, required=True, help="Number of gridpoints in y-direction")
+@click.option("--nz", type=int, required=True, help="Number of gridpoints in z-direction")
 @click.option("--num_iter", type=int, required=True, help="Number of iterations")
 @click.option(
     "--num_halo",
@@ -139,12 +129,8 @@ def apply_diffusion(
     default=2,
     help="Number of halo-points in x- and y-direction",
 )
-@click.option(
-    "--backend", type=str, required=False, default="None", help="GT4Py backend."
-)
-@click.option(
-    "--plot_result", type=bool, default=False, help="Make a plot of the result?"
-)
+@click.option("--backend", type=str, required=False, default="None", help="GT4Py backend.")
+@click.option("--plot_result", type=bool, default=False, help="Make a plot of the result?")
 def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     """Driver for apply_diffusion that sets up fields and does timings."""
 
@@ -154,9 +140,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     assert 0 < ny <= 1024 * 1024, (
         "You have to specify a reasonable value for ny (0 < ny <= 1024*1024)"
     )
-    assert 0 < nz <= 1024, (
-        "You have to specify a reasonable value for nz (0 < nz <= 1024)"
-    )
+    assert 0 < nz <= 1024, "You have to specify a reasonable value for nz (0 < nz <= 1024)"
     assert 0 < num_iter <= 1024 * 1024, (
         "You have to specify a reasonable value for num_iter (0 < num_iter <= 1024*1024)"
     )

@@ -12,12 +12,8 @@ import numpy as np
 @click.command()
 @click.option("--src", type=str, required=True, help="Path to the first field.")
 @click.option("--trg", type=str, required=True, help="Path to the second field.")
-@click.option(
-    "--rtol", type=float, required=False, default=1e-5, help="Relative tolerance."
-)
-@click.option(
-    "--atol", type=float, required=False, default=1e-8, help="Absolute tolerance."
-)
+@click.option("--rtol", type=float, required=False, default=1e-5, help="Relative tolerance.")
+@click.option("--atol", type=float, required=False, default=1e-8, help="Absolute tolerance.")
 def main(src, trg, rtol=1e-5, atol=1e-8):
     src_f = np.load(src)
     trg_f = np.load(trg)
