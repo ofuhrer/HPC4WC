@@ -32,18 +32,18 @@ Some course exercises require specific HPC hardware, compilers, MPI, GPUs, or a
 CSCS/Alps environment. The repository also contains lightweight checks that can
 run locally and in GitHub Actions without those systems.
 
-The current automated material check covers Day 1, Day 2, and Day 5:
+Run the material check for all course days with:
 
 ```bash
-python tools/check_material.py day1 day2 day5
+python tools/check_material.py day1 day2 day3 day4 day5
 ```
 
 This validates notebooks and course files, checks Python and shell syntax,
 compiles selected Fortran/C++ material when suitable compilers are available,
 verifies local notebook image references, and runs small smoke tests for selected
-scripts. The check is intentionally lightweight; full performance runs and
-GPU/cluster-specific exercises should still be validated in the appropriate
-course environment.
+scripts. The same check runs in GitHub Actions. It is intentionally lightweight;
+full performance runs and GPU/cluster-specific exercises should still be
+validated in the appropriate course environment.
 
 ## Pre-commit Checks
 
