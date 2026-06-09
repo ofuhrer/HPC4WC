@@ -6,6 +6,7 @@ from __future__ import annotations
 import ast
 import py_compile
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -23,6 +24,7 @@ MARKER_BYTES = (b"hpc4wc:", b'"hpc4wc"')
 SKIP_DIRS = {".ipynb_checkpoints", "__pycache__", ".gt4py_cache"}
 IMAGE_LINK_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 HTML_IMAGE_RE = re.compile(r"<img\b[^>]*\bsrc=[\"']([^\"']+)[\"']", re.IGNORECASE)
+SUPPORTED_DAYS = {"day1", "day5"}
 
 
 class Checker:
@@ -53,22 +55,25 @@ class Checker:
 
     def check_day(self, day: Path) -> None:
         self.log(f"checking {self.rel(day)}")
-        if day.name != "day5":
-            self.fail("configuration", f"unsupported day for initial checker: {day}")
+        if day.name not in SUPPORTED_DAYS:
+            self.fail("configuration", f"unsupported day for checker: {day}")
             return
         if not day.is_dir():
             self.fail("configuration", f"missing day directory: {day}")
             return
 
-        self.check_generated_outputs(day)
+        if day.name == "day5":
+            self.check_generated_outputs(day)
         notebooks = list(self.notebooks(day))
         self.log(f"  notebooks: validating {len(notebooks)} notebook(s)")
         self.check_notebooks(notebooks)
-        self.log("  generated notebooks: checking metadata cleanup")
-        self.check_generated_notebooks_are_clean(day)
-        self.log("  generated files: checking source markers are absent")
-        self.check_generated_files_have_no_markers(day)
+        if day.name == "day5":
+            self.log("  generated notebooks: checking metadata cleanup")
+            self.check_generated_notebooks_are_clean(day)
+            self.log("  generated files: checking source markers are absent")
+            self.check_generated_files_have_no_markers(day)
         self.check_python_files(day)
+        self.check_fortran_files(day)
         self.check_shell_files(day)
         self.log("  notebook assets: checking local image links")
         self.check_notebook_assets(notebooks)
@@ -108,6 +113,10 @@ class Checker:
                 nbformat.validate(notebook)
             except Exception as exc:
                 self.fail("notebooks", f"{self.rel(path)}: invalid notebook: {exc}")
+                continue
+
+            language = notebook.get("metadata", {}).get("language_info", {}).get("name")
+            if language and language != "python":
                 continue
 
             for index, cell in enumerate(notebook.get("cells", [])):
@@ -196,6 +205,46 @@ class Checker:
                 detail = (completed.stderr or completed.stdout).strip()
                 self.fail("shell syntax", f"{self.rel(path)}: {detail}")
 
+    def check_fortran_files(self, day: Path) -> None:
+        fortran_files = [path for path in sorted(day.rglob("*.F90")) if not self.should_skip(path)]
+        compiler = shutil.which("mpif90") or shutil.which("mpifort")
+        if not compiler:
+            self.log(
+                f"  fortran: skipping {len(fortran_files)} file(s), no mpif90/mpifort found"
+            )
+            return
+
+        self.log(f"  fortran: compiling {len(fortran_files)} file(s) with {Path(compiler).name}")
+        with tempfile.TemporaryDirectory(prefix="hpc4wc-fortran-") as tmp:
+            build_dir = Path(tmp)
+            module_sources = [path for path in fortran_files if path.name == "m_utils.F90"]
+            other_sources = [path for path in fortran_files if path.name != "m_utils.F90"]
+            for index, path in enumerate([*module_sources, *other_sources]):
+                object_path = build_dir / f"{index}-{path.stem}.o"
+                completed = subprocess.run(
+                    [
+                        compiler,
+                        "-cpp",
+                        "-ffree-line-length-none",
+                        "-J",
+                        str(build_dir),
+                        "-I",
+                        str(build_dir),
+                        "-c",
+                        str(path),
+                        "-o",
+                        str(object_path),
+                    ],
+                    cwd=self.repo_root,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+                if completed.returncode != 0:
+                    detail = (completed.stderr or completed.stdout).strip()
+                    self.fail("fortran syntax", f"{self.rel(path)}: {detail}")
+
     def check_notebook_assets(self, notebooks: Iterable[Path]) -> None:
         for path in notebooks:
             try:
@@ -214,6 +263,37 @@ class Checker:
                         )
 
     def check_smoke_scripts(self, day: Path) -> None:
+        if day.name == "day1":
+            self.check_day1_smoke_scripts(day)
+        elif day.name == "day5":
+            self.check_day5_smoke_scripts(day)
+
+    def check_day1_smoke_scripts(self, day: Path) -> None:
+        with tempfile.TemporaryDirectory(prefix="hpc4wc-day1-") as tmp:
+            tmpdir = Path(tmp)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(day / "stencil2d.py"),
+                    "--nx=8",
+                    "--ny=8",
+                    "--nz=4",
+                    "--num_iter=1",
+                ],
+                cwd=tmpdir,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            if completed.returncode != 0:
+                detail = (completed.stderr or completed.stdout).strip()
+                self.fail("smoke", f"{self.rel(day / 'stencil2d.py')}: {detail}")
+            for name in ("in_field.npy", "out_field.npy"):
+                if not (tmpdir / name).is_file():
+                    self.fail("smoke", f"{self.rel(day / 'stencil2d.py')}: missing {name}")
+
+    def check_day5_smoke_scripts(self, day: Path) -> None:
         with tempfile.TemporaryDirectory(prefix="hpc4wc-day5-") as tmp:
             tmpdir = Path(tmp)
             baseline = subprocess.run(

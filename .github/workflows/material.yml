@@ -5,8 +5,8 @@ on:
   pull_request:
 
 jobs:
-  day5:
-    name: Day 5
+  material:
+    name: Day 1 and Day 5
     runs-on: ubuntu-latest
 
     steps:
@@ -23,5 +23,5 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install nbformat ipython numpy click matplotlib
 
-      - name: Check Day 5 material
-        run: PYTHONDONTWRITEBYTECODE=1 python tools/check_material.py day5
+      - name: Check course material
+        run: PYTHONDONTWRITEBYTECODE=1 python tools/check_material.py day1 day5
