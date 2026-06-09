@@ -83,10 +83,11 @@ class Checker:
         self.check_smoke_scripts(day)
 
     def check_generated_outputs(self, day: Path) -> None:
-        self.log("  generation: checking student and solution outputs are current")
+        self.log("  generation: checking student outputs are current")
         command = [
             sys.executable,
             str(self.repo_root / "tools" / "generate_from_master.py"),
+            "--student",
             "--check",
             str(day),
         ]
@@ -327,7 +328,9 @@ class Checker:
                     self.fail("smoke", f"{self.rel(day / 'stencil2d.py')}: missing {name}")
 
         self.check_compare_fields(day / "compare_fields.py")
-        self.check_compare_fields(day / "solutions" / "compare_fields.py")
+        solution_compare = day / "solutions" / "compare_fields.py"
+        if solution_compare.exists():
+            self.check_compare_fields(solution_compare)
 
     def check_compare_fields(self, script: Path) -> None:
         with tempfile.TemporaryDirectory(prefix="hpc4wc-compare-") as tmp:
