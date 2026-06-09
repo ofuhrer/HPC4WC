@@ -146,7 +146,7 @@ contains
                 end do
                 end do
 
-                ! copy out to in in caes this is not the last iteration
+                ! copy out to in in case this is not the last iteration
                 if ( iter /= num_iter ) then
                     do j = 1 + num_halo, ny + num_halo
                     do i = 1 + num_halo, nx + num_halo

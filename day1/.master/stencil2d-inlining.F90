@@ -148,16 +148,18 @@ contains
                     laplap = -4._wp * tmp1_field(i, j)       &
                         + tmp1_field(i - 1, j) + tmp1_field(i + 1, j)  &
                         + tmp1_field(i, j - 1) + tmp1_field(i, j + 1)
-                        
-                    in_field(i, j, k)  = in_field(i, j, k) - alpha * laplap
 
+                    if ( iter == num_iter ) then
+                        out_field(i, j, k) = in_field(i, j, k) - alpha * laplap
+                    else
+                        in_field(i, j, k) = in_field(i, j, k) - alpha * laplap
+                    end if
+                    
                 end do
                 end do
 
             end do
         end do
-        
-        out_field(:,:,:) = in_field(:,:,:)
             
     end subroutine apply_diffusion
 

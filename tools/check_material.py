@@ -218,9 +218,7 @@ class Checker:
         fortran_files = [path for path in sorted(day.rglob("*.F90")) if not self.should_skip(path)]
         compiler = shutil.which("mpif90") or shutil.which("mpifort")
         if not compiler:
-            self.log(
-                f"  fortran: skipping {len(fortran_files)} file(s), no mpif90/mpifort found"
-            )
+            self.log(f"  fortran: skipping {len(fortran_files)} file(s), no mpif90/mpifort found")
             return
 
         self.log(f"  fortran: compiling {len(fortran_files)} file(s) with {Path(compiler).name}")

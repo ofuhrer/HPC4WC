@@ -29,7 +29,7 @@ export MPICH_GNI_NDREG_ENTRIES=0
 export MPICH_CH3_NOLOCAL=1
 
 echo "======= taskset ==========" >> ${outf}
-taskset -cp $$ > ${outf} 2>&1
+taskset -cp $$ >> ${outf} 2>&1
 
 echo "======= perf stat ==========" >> ${outf}
 perf stat -e mem_access_rd:u,mem_access_wr:u,LLC-load-misses:u "$@" 2>> ${outf}

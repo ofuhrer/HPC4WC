@@ -378,7 +378,10 @@ def generate_day(
 
     if solution:
         conflicts.extend(output_conflicts(solution_outputs))
-        conflicts.extend(f"would remove stale solution file: {path}" for path in solution_extra_files(day, solution_outputs))
+        conflicts.extend(
+            f"would remove stale solution file: {path}"
+            for path in solution_extra_files(day, solution_outputs)
+        )
 
     if conflicts and not force:
         print_conflicts(conflicts)
@@ -423,7 +426,10 @@ def check_day(day: Path, *, student: bool, solution: bool) -> bool:
         student_outputs, _ = expected_student_outputs(day)
         ok = compare_expected_outputs("student", student_outputs) and ok
         if not solution and (day / "solutions").exists():
-            print(f"solutions directory exists for student-only tree: {day / 'solutions'}", file=sys.stderr)
+            print(
+                f"solutions directory exists for student-only tree: {day / 'solutions'}",
+                file=sys.stderr,
+            )
             ok = False
 
     if solution:

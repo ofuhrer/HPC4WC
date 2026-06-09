@@ -1,9 +1,9 @@
 # ******************************************************
-#     Program: stencil2d-cupy
+#     Program: stencil2d
 #      Author: Stefano Ubbiali, Oliver Fuhrer
 #       Email: subbiali@phys.ethz.ch, ofuhrer@ethz.ch
 #        Date: 04.06.2020
-# Description: CuPy implementation of 4th-order diffusion
+# Description: NumPy implementation of 4th-order diffusion
 # ******************************************************
 import click
 import matplotlib
@@ -81,7 +81,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     ----------
     in_field : array-like
         Input field (nz x ny x nx with halo in x- and y-direction).
-    lap_field : array-like
+    out_field : array-like
         Result (must be same size as ``in_field``).
     alpha : float
         Diffusion coefficient (dimensionless).
@@ -122,7 +122,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     "--num_halo",
     type=int,
     default=2,
-    help="Number of halo-pointers in x- and y-direction",
+    help="Number of halo points in x- and y-direction",
 )
 @click.option(
     "--plot_result", type=bool, default=False, help="Make a plot of the result?"
@@ -138,7 +138,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     ), "You have to specify a reasonable value for num_iter"
     assert (
         2 <= num_halo <= 256
-    ), "Your have to specify a reasonable number of halo points"
+    ), "You have to specify a reasonable number of halo points"
     alpha = 1.0 / 32.0
 
     in_field = np.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))

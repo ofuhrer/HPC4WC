@@ -21,7 +21,10 @@ jobs:
       - name: Install check dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install nbformat ipython numpy click matplotlib
+          python -m pip install nbformat ipython numpy click matplotlib ruff==0.13.3
+
+      - name: Check tool formatting
+        run: ruff format --check tools
 
       - name: Check course material
         run: PYTHONDONTWRITEBYTECODE=1 python tools/check_material.py day1 day5

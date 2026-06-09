@@ -29,10 +29,10 @@ Some course exercises require specific HPC hardware, compilers, MPI, GPUs, or a
 CSCS/Alps environment. The repository also contains lightweight checks that can
 run locally and in GitHub Actions without those systems.
 
-The current automated material check focuses on Day 5:
+The current automated material check covers Day 1 and Day 5:
 
 ```bash
-python tools/check_material.py day5
+python tools/check_material.py day1 day5
 ```
 
 This validates notebooks and course files, checks Python and shell syntax,
@@ -40,3 +40,20 @@ verifies local notebook image references, and runs small smoke tests for selecte
 scripts. The check is intentionally lightweight; full performance runs and
 GPU/cluster-specific exercises should still be validated in the appropriate
 course environment.
+
+Generated solution bundles in `day*/solutions/` are ignored while preparing the
+course. Generate them locally only when the solutions should be published.
+
+## Pre-commit Checks
+
+The repository provides conservative pre-commit checks for course preparation:
+
+```bash
+python -m pip install pre-commit
+pre-commit install
+```
+
+The hooks block generated solution bundles from being committed, verify that
+generated student material is current for Day 1 and Day 5, and check formatting
+for Python tooling in `tools/`. They intentionally do not auto-format notebooks
+or Fortran course material.
