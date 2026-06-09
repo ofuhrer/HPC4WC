@@ -121,7 +121,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1, p=None):
 @click.option("--ny", type=int, required=True, help="Number of gridpoints in y-direction")
 @click.option("--nz", type=int, required=True, help="Number of gridpoints in z-direction")
 @click.option("--num_iter", type=int, required=True, help="Number of iterations")
-@click.option("--num_halo", type=int, default=2, help="Number of halo-pointers in x- and y-direction")
+@click.option("--num_halo", type=int, default=2, help="Number of halo points in x- and y-direction")
 @click.option("--plot_result", type=bool, default=False, help="Make a plot of the result?")
 def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     """Driver for apply_diffusion that sets up fields and does timings"""
@@ -130,7 +130,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny"
     assert 0 < nz <= 1024, "You have to specify a reasonable value for nz"
     assert 0 < num_iter <= 1024 * 1024, "You have to specify a reasonable value for num_iter"
-    assert 0 < num_halo <= 256, "Your have to specify a reasonable number of halo points"
+    assert 0 < num_halo <= 256, "You have to specify a reasonable number of halo points"
     alpha = 1. / 32.
     
     comm = MPI.COMM_WORLD
@@ -186,5 +186,4 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 if __name__ == "__main__":
     main()
     
-
 

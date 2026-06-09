@@ -234,6 +234,36 @@ contains
     end subroutine laplacian
 
 
+! hpc4wc:student-begin
+! hpc4wc:student |     ! Update the halo-zone using an up/down and left/right strategy.
+! hpc4wc:student |     !
+! hpc4wc:student |     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
+! hpc4wc:student |     !
+! hpc4wc:student |     !  Note: corners are updated in the left/right phase of the halo-update
+! hpc4wc:student |     !
+! hpc4wc:student |     subroutine update_halo( field, p )
+! hpc4wc:student |         implicit none
+! hpc4wc:student |
+! hpc4wc:student |         ! argument
+! hpc4wc:student |         real (kind=wp), intent(inout) :: field(:, :, :)
+! hpc4wc:student |         type(Partitioner), intent(in) :: p
+! hpc4wc:student |
+! hpc4wc:student |         ! TODO: Implement the parallel halo exchange.
+! hpc4wc:student |         !
+! hpc4wc:student |         ! Useful Partitioner methods:
+! hpc4wc:student |         !   p%left(), p%right(), p%top(), p%bottom()  - neighboring ranks
+! hpc4wc:student |         !   p%comm()                                  - MPI communicator
+! hpc4wc:student |         !   p%shape()                                 - local field shape including halo points
+! hpc4wc:student |         !   p%num_halo()                              - halo width
+! hpc4wc:student |         !
+! hpc4wc:student |         ! Exchange top/bottom halo regions first, then exchange left/right
+! hpc4wc:student |         ! halo regions including the corners. This placeholder intentionally
+! hpc4wc:student |         ! leaves the halo unchanged so the file compiles but validation fails.
+! hpc4wc:student |
+! hpc4wc:student |     end subroutine update_halo
+! hpc4wc:student |
+! hpc4wc:student-end
+    ! hpc4wc:solution-begin
     ! Update the halo-zone using an up/down and left/right strategy.
     !
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
@@ -241,26 +271,134 @@ contains
     !  Note: corners are updated in the left/right phase of the halo-update
     !
     subroutine update_halo( field, p )
+        use mpi, only : MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, MPI_STATUS_SIZE
+        use m_utils, only : error
         implicit none
 
         ! argument
         real (kind=wp), intent(inout) :: field(:, :, :)
         type(Partitioner), intent(in) :: p
 
-        ! TODO: Implement the parallel halo exchange.
-        !
-        ! Useful Partitioner methods:
-        !   p%left(), p%right(), p%top(), p%bottom()  - neighboring ranks
-        !   p%comm()                                  - MPI communicator
-        !   p%shape()                                 - local field shape including halo points
-        !   p%num_halo()                              - halo width
-        !
-        ! Exchange top/bottom halo regions first, then exchange left/right
-        ! halo regions including the corners. This placeholder intentionally
-        ! leaves the halo unchanged so the file compiles but validation fails.
+        ! local
+        integer :: i, j, k
+        integer :: dims(3), nx, ny, nz
+        integer :: lr_size, tb_size, dtype
+        integer :: tb_req(4), lr_req(4)
+        integer :: ierror, status(MPI_STATUS_SIZE, 4), icount
+        real (kind=wp), save, allocatable :: sndbuf_l(:), sndbuf_r(:), sndbuf_t(:), sndbuf_b(:)
+        real (kind=wp), save, allocatable :: rcvbuf_l(:), rcvbuf_r(:), rcvbuf_t(:), rcvbuf_b(:)
+
+        ! set datatype
+        if (wp == 4) then
+            dtype = MPI_FLOAT
+        else
+            dtype = MPI_DOUBLE
+        end if
+
+        ! get dimensions
+        dims = p%shape()
+        nx = dims(1) - 2 * p%num_halo()
+        ny = dims(2) - 2 * p%num_halo()
+        nz = dims(3)
+
+        ! compute sizes of buffers
+        tb_size = nz * num_halo * nx
+        lr_size = nz * num_halo * (ny + 2 * num_halo)
+
+        ! this is only done the first time this subroutine is called (warmup)
+        ! or when the dimensions of the fields change
+        if ( allocated(sndbuf_l) .and. &
+            ( ( size(sndbuf_l) /= lr_size ) .or. ( size(sndbuf_t) /= tb_size ) ) ) then
+            deallocate( sndbuf_l, sndbuf_r, sndbuf_t, sndbuf_b )
+            deallocate( rcvbuf_l, rcvbuf_r, rcvbuf_t, rcvbuf_b )
+        end if
+        if ( .not. allocated(sndbuf_l) ) then
+            allocate( sndbuf_l(lr_size), sndbuf_r(lr_size), sndbuf_t(tb_size), sndbuf_b(tb_size) )
+            allocate( rcvbuf_l(lr_size), rcvbuf_r(lr_size), rcvbuf_t(tb_size), rcvbuf_b(tb_size) )
+            sndbuf_l = 0.0_wp; sndbuf_r = 0.0_wp; sndbuf_t = 0.0_wp; sndbuf_b = 0.0_wp
+            rcvbuf_l = 0.0_wp; rcvbuf_r = 0.0_wp; rcvbuf_t = 0.0_wp; rcvbuf_b = 0.0_wp
+        end if
+
+        ! pre-post the receives
+        call MPI_Irecv(rcvbuf_b, tb_size, dtype, p%bottom(), 1000, p%comm(), tb_req(1), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(bottom)', code=ierror)
+        call MPI_Irecv(rcvbuf_t, tb_size, dtype, p%top(), 1001, p%comm(), tb_req(2), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(top)', code=ierror)
+        call MPI_Irecv(rcvbuf_l, lr_size, dtype, p%left(), 1002, p%comm(), lr_req(1), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(left)', code=ierror)
+        call MPI_Irecv(rcvbuf_r, lr_size, dtype, p%right(), 1003, p%comm(), lr_req(2), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Irecv(right)', code=ierror)
+
+        ! pack the tb-buffers (without corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, num_halo
+        do i = 1 + num_halo, nx + num_halo
+            icount = icount + 1
+            sndbuf_t(icount) = field(i, j + ny, k)
+            sndbuf_b(icount) = field(i, j + num_halo, k)
+        end do
+        end do
+        end do
+
+        ! send lr-buffers
+        call MPI_Isend(sndbuf_t, tb_size, dtype, p%top(), 1000, p%comm(), tb_req(3), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(top)', code=ierror)
+        call MPI_Isend(sndbuf_b, tb_size, dtype, p%bottom(), 1001, p%comm(), tb_req(4), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(bottom)', code=ierror)
+
+        ! wait for lr-comm to finish
+        call MPI_Waitall(4, tb_req, status, ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Waitall(tb)', code=ierror)
+
+        ! pack the lr-buffers (including corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, ny + 2 * num_halo
+        do i = 1, num_halo
+            icount = icount + 1
+            sndbuf_r(icount) = field(i + nx, j, k)
+            sndbuf_l(icount) = field(i + num_halo, j, k)
+        end do
+        end do
+        end do
+
+        call MPI_Isend(sndbuf_r, lr_size, dtype, p%right(), 1002, p%comm(), lr_req(3), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(right)', code=ierror)
+        call MPI_Isend(sndbuf_l, lr_size, dtype, p%left(), 1003, p%comm(), lr_req(4), ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(left)', code=ierror)
+
+        ! unpack the tb-buffers (without corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, num_halo
+        do i = 1 + num_halo, nx + num_halo
+            icount = icount + 1
+            field(i, j, k) = rcvbuf_b(icount)
+            field(i, j + num_halo + ny, k) = rcvbuf_t(icount)
+        end do
+        end do
+        end do
+
+        ! wait for tb-comm to finish
+        call MPI_Waitall(4, lr_req, status, ierror)
+        call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Waitall(lr)', code=ierror)
+
+        ! unpack the lr-buffers (with corners)
+        icount = 0
+        do k = 1, nz
+        do j = 1, ny + 2 * num_halo
+        do i = 1, num_halo
+            icount = icount + 1
+            field(i, j, k) = rcvbuf_l(icount)
+            field(i + num_halo + nx, j, k) = rcvbuf_r(icount)
+        end do
+        end do
+        end do
 
     end subroutine update_halo
 
+    ! hpc4wc:solution-end
 
     ! initialize at program start
     ! (init MPI, read command line arguments)
