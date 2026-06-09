@@ -9,6 +9,11 @@
 # hpc4wc:student |   python stencil2d.py --nx=128 --ny=128 --nz=64 --num_iter=${num_iter} && \
 # hpc4wc:student |   cd ../day4 || exit
 # hpc4wc:student |
+# hpc4wc:student | if ! grep -q "^[[:space:]]*import cupy" stencil2d-cupy.py; then
+# hpc4wc:student |   echo "stencil2d-cupy.py still does not import CuPy; finish Exercise 10 before validating."
+# hpc4wc:student |   exit 1
+# hpc4wc:student | fi
+# hpc4wc:student |
 # hpc4wc:student | # run the program to validate
 # hpc4wc:student | echo "running stencil2d-cupy.py ..."
 # hpc4wc:student | python stencil2d-cupy.py --nx=128 --ny=128 --nz=64 --num_iter=${num_iter}

@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+# TODO: make this file run with CuPy when available and NumPy otherwise.
+
 
 
 def laplacian(in_field, lap_field, num_halo, extend=0):
@@ -52,7 +54,7 @@ def update_halo(field, num_halo):
         Input/output field (nz x ny x nx with halo in x- and y-direction).
     num_halo : int
         Number of halo points.
-    
+
     Note
     ----
         Corners are updated in the left/right phase of the halo-update.

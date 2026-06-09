@@ -102,7 +102,7 @@ contains
         if (coords(2) < mod(ny, dims(2))) local_ny = local_ny + 1
         if (coords(3) < mod(nz, dims(3))) local_nz = local_nz + 1
     end subroutine setup_domain_decomposition
-    
+
     ! Allocates memory for input and output fields.
     ! Includes halo regions in the allocation.
     subroutine allocate_fields()
@@ -151,8 +151,8 @@ contains
 
             !$acc parallel loop collapse(3)
             do k = num_halo, local_nz+num_halo-1
-                do j = num_halo, local_ny+num_halo-1
-                    do i = num_halo, local_nx+num_halo-1
+                do j = num_halo-1, local_ny+num_halo
+                    do i = num_halo-1, local_nx+num_halo
                         tmp_field(i,j,k) = -4.0_wp * in_field(i,j,k) + &
                                            in_field(i-1,j,k) + in_field(i+1,j,k) + &
                                            in_field(i,j-1,k) + in_field(i,j+1,k)
@@ -164,7 +164,10 @@ contains
             do k = num_halo, local_nz+num_halo-1
                 do j = num_halo, local_ny+num_halo-1
                     do i = num_halo, local_nx+num_halo-1
-                        out_field(i,j,k) = in_field(i,j,k) - alpha * tmp_field(i,j,k)
+                        out_field(i,j,k) = -4.0_wp * tmp_field(i,j,k) + &
+                                           tmp_field(i-1,j,k) + tmp_field(i+1,j,k) + &
+                                           tmp_field(i,j-1,k) + tmp_field(i,j+1,k)
+                        out_field(i,j,k) = in_field(i,j,k) - alpha * out_field(i,j,k)
                     end do
                 end do
             end do

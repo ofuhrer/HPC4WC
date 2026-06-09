@@ -123,7 +123,7 @@
 # hpc4wc:student |     "--num_halo",
 # hpc4wc:student |     type=int,
 # hpc4wc:student |     default=2,
-# hpc4wc:student |     help="Number of halo-pointers in x- and y-direction",
+# hpc4wc:student |     help="Number of halo points in x- and y-direction",
 # hpc4wc:student | )
 # hpc4wc:student | @click.option(
 # hpc4wc:student |     "--plot_result", type=bool, default=False, help="Make a plot of the result?"
@@ -139,7 +139,7 @@
 # hpc4wc:student |     ), "You have to specify a reasonable value for num_iter"
 # hpc4wc:student |     assert (
 # hpc4wc:student |         2 <= num_halo <= 256
-# hpc4wc:student |     ), "Your have to specify a reasonable number of halo points"
+# hpc4wc:student |     ), "You have to specify a reasonable number of halo points"
 # hpc4wc:student |     alpha = 1.0 / 32.0
 # hpc4wc:student |
 # hpc4wc:student |     in_field = np.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))
@@ -198,12 +198,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-try:
-    import cupy as xp
-    print("Running on GPU with cupy")
-except ImportError:
-    xp = np
-    print("Running on CPU with numpy")
+import cupy as xp
+
+print("Running on GPU with CuPy")
 
 
 def get_asnumpy(z):
@@ -320,7 +317,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     "--num_halo",
     type=int,
     default=2,
-    help="Number of halo-pointers in x- and y-direction",
+    help="Number of halo points in x- and y-direction",
 )
 @click.option(
     "--plot_result", type=bool, default=False, help="Make a plot of the result?"
@@ -336,7 +333,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     ), "You have to specify a reasonable value for num_iter"
     assert (
         2 <= num_halo <= 256
-    ), "Your have to specify a reasonable number of halo points"
+    ), "You have to specify a reasonable number of halo points"
     alpha = 1.0 / 32.0
 
     in_field = xp.zeros((nz, ny + 2 * num_halo, nx + 2 * num_halo))

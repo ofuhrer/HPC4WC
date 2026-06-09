@@ -1,3 +1,18 @@
+# hpc4wc:student-begin
+# hpc4wc:student | #!/usr/bin/env python3
+# hpc4wc:student | """Bonus 13 scaffold: combine the Day 3 MPI stencil with the Day 4 CuPy stencil."""
+# hpc4wc:student |
+# hpc4wc:student |
+# hpc4wc:student | def main():
+# hpc4wc:student |     # TODO: start from your Day 3 MPI implementation and replace the local
+# hpc4wc:student |     # NumPy work arrays and stencil kernels with CuPy arrays/kernels.
+# hpc4wc:student |     raise SystemExit("TODO: implement the MPI + CuPy stencil bonus")
+# hpc4wc:student |
+# hpc4wc:student |
+# hpc4wc:student | if __name__ == "__main__":
+# hpc4wc:student |     main()
+# hpc4wc:student-end
+# hpc4wc:solution-begin
 # ******************************************************
 #     Program: stencil2d-cupy
 #      Author: Stefano Ubbiali, Oliver Fuhrer
@@ -7,6 +22,7 @@
 # ******************************************************
 import click
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,6 +57,7 @@ def laplacian(in_field, lap_field, num_halo, extend=0):
         + in_field[:, jb + 1 : je + 1 if je != -1 else None, ib:ie]
     )
 
+
 def update_halo(field, num_halo, comm):
     """ Update halo regions of the field using MPI communication.
 
@@ -58,20 +75,33 @@ def update_halo(field, num_halo, comm):
 
     if size > 1:
         if rank > 0:
-            send_buf = cp.asnumpy(field[:, num_halo:2*num_halo, :])
+            send_buf = cp.asnumpy(field[:, num_halo : 2 * num_halo, :])
             recv_buf = np.empty_like(send_buf)
-            comm.Sendrecv(send_buf, dest=rank-1, sendtag=0,
-                          recvbuf=recv_buf, source=rank-1, recvtag=1)
+            comm.Sendrecv(
+                send_buf,
+                dest=rank - 1,
+                sendtag=0,
+                recvbuf=recv_buf,
+                source=rank - 1,
+                recvtag=1,
+            )
             field[:, :num_halo, :] = cp.asarray(recv_buf)
         if rank < size - 1:
-            send_buf = cp.asnumpy(field[:, -2*num_halo:-num_halo, :])
+            send_buf = cp.asnumpy(field[:, -2 * num_halo : -num_halo, :])
             recv_buf = np.empty_like(send_buf)
-            comm.Sendrecv(send_buf, dest=rank+1, sendtag=1,
-                          recvbuf=recv_buf, source=rank+1, recvtag=0)
+            comm.Sendrecv(
+                send_buf,
+                dest=rank + 1,
+                sendtag=1,
+                recvbuf=recv_buf,
+                source=rank + 1,
+                recvtag=0,
+            )
             field[:, -num_halo:, :] = cp.asarray(recv_buf)
 
     field[:, :, :num_halo] = field[:, :, -2 * num_halo : -num_halo]
     field[:, :, -num_halo:] = field[:, :, num_halo : 2 * num_halo]
+
 
 def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter, comm):
     """ Apply diffusion to the input field for a given number of iterations.
@@ -110,11 +140,22 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter, comm):
             update_halo(out_field, num_halo, comm)
 
 @click.command()
-@click.option("--nx", type=int, required=True, help="Number of gridpoints in x-direction")
-@click.option("--ny", type=int, required=True, help="Number of gridpoints in y-direction")
-@click.option("--nz", type=int, required=True, help="Number of gridpoints in z-direction")
+@click.option(
+    "--nx", type=int, required=True, help="Number of gridpoints in x-direction"
+)
+@click.option(
+    "--ny", type=int, required=True, help="Number of gridpoints in y-direction"
+)
+@click.option(
+    "--nz", type=int, required=True, help="Number of gridpoints in z-direction"
+)
 @click.option("--num_iter", type=int, required=True, help="Number of iterations")
-@click.option("--num_halo", type=int, default=2, help="Number of halo-pointers in x- and y-direction")
+@click.option(
+    "--num_halo",
+    type=int,
+    default=2,
+    help="Number of halo points in x- and y-direction",
+)
 @click.option("--plot_result", type=bool, default=False, help="Make a plot of the result?")
 def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     """ Main function to run the diffusion simulation.
@@ -130,7 +171,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     num_iter : int
         Number of iterations to perform.
     num_halo : int, optional
-        Number of halo-pointers in x- and y-direction.
+        Number of halo points in x- and y-direction.
     plot_result : bool, optional
         Whether to plot the result.
     """
@@ -142,7 +183,10 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     assert 0 < ny <= 1024 * 1024, "You have to specify a reasonable value for ny"
     assert 0 < nz <= 1024, "You have to specify a reasonable value for nz"
     assert 0 < num_iter <= 1024 * 1024, "You have to specify a reasonable value for num_iter"
-    assert 2 <= num_halo <= 256, "Your have to specify a reasonable number of halo points"
+    assert 2 <= num_halo <= 256, "You have to specify a reasonable number of halo points"
+    assert (
+        nz % size == 0
+    ), "This simple z-decomposition requires nz to be divisible by the number of MPI ranks"
     alpha = 1.0 / 32.0
 
     local_nz = nz // size
@@ -151,13 +195,21 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     cp.cuda.Device(rank % cp.cuda.runtime.getDeviceCount()).use()
 
-    in_field = cp.zeros((local_nz, ny + 2 * num_halo, nx + 2 * num_halo), dtype=cp.float64)
-    if nz // 4 <= start_z < 3 * nz // 4 or nz // 4 < end_z <= 3 * nz // 4 or (start_z < nz // 4 and end_z > 3 * nz // 4):
+    in_field = cp.zeros(
+        (local_nz, ny + 2 * num_halo, nx + 2 * num_halo), dtype=cp.float64
+    )
+    if (
+        nz // 4 <= start_z < 3 * nz // 4
+        or nz // 4 < end_z <= 3 * nz // 4
+        or (start_z < nz // 4 and end_z > 3 * nz // 4)
+    ):
         z_start = max(0, nz // 4 - start_z)
         z_end = min(local_nz, 3 * nz // 4 - start_z)
-        in_field[z_start:z_end,
-                 num_halo + ny // 4 : num_halo + 3 * ny // 4,
-                 num_halo + nx // 4 : num_halo + 3 * nx // 4] = 1.0
+        in_field[
+            z_start:z_end,
+            num_halo + ny // 4 : num_halo + 3 * ny // 4,
+            num_halo + nx // 4 : num_halo + 3 * nx // 4,
+        ] = 1.0
 
     out_field = cp.copy(in_field)
 
@@ -181,10 +233,12 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     if rank == 0:
         # Pad the full_out_field with zeros
-        padded_out_field = np.pad(full_out_field, 
-                                  ((0, 0), (num_halo, num_halo), (num_halo, num_halo)),
-                                  mode='constant', 
-                                  constant_values=0)
+        padded_out_field = np.pad(
+            full_out_field,
+            ((0, 0), (num_halo, num_halo), (num_halo, num_halo)),
+            mode="constant",
+            constant_values=0,
+        )
 
         np.save("out_field", padded_out_field)
         if plot_result:
@@ -193,5 +247,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
             plt.savefig("out_field.png")
             plt.close()
 
+
 if __name__ == "__main__":
     main()
+# hpc4wc:solution-end
