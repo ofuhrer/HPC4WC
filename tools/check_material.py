@@ -24,7 +24,7 @@ MARKER_BYTES = (b"hpc4wc:", b'"hpc4wc"')
 SKIP_DIRS = {".ipynb_checkpoints", "__pycache__", ".gt4py_cache"}
 IMAGE_LINK_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 HTML_IMAGE_RE = re.compile(r"<img\b[^>]*\bsrc=[\"']([^\"']+)[\"']", re.IGNORECASE)
-SUPPORTED_DAYS = {"day1", "day5"}
+SUPPORTED_DAYS = {"day1", "day2", "day5"}
 
 
 class Checker:
@@ -76,6 +76,7 @@ class Checker:
             self.check_generated_files_have_no_markers(day)
         self.check_python_files(day)
         self.check_fortran_files(day)
+        self.check_cpp_files(day)
         self.check_shell_files(day)
         self.log("  notebook assets: checking local image links")
         self.check_notebook_assets(notebooks)
@@ -233,6 +234,7 @@ class Checker:
                         compiler,
                         "-cpp",
                         "-ffree-line-length-none",
+                        "-fopenmp",
                         "-J",
                         str(build_dir),
                         "-I",
@@ -251,6 +253,40 @@ class Checker:
                 if completed.returncode != 0:
                     detail = (completed.stderr or completed.stdout).strip()
                     self.fail("fortran syntax", f"{self.rel(path)}: {detail}")
+
+    def check_cpp_files(self, day: Path) -> None:
+        cpp_files = [path for path in sorted(day.rglob("*.cpp")) if not self.should_skip(path)]
+        compiler = self.cpp_compiler()
+        if not compiler:
+            self.log(f"  c++: skipping {len(cpp_files)} file(s), no OpenMP-capable compiler found")
+            return
+
+        self.log(f"  c++: compiling {len(cpp_files)} file(s) with {Path(compiler).name}")
+        with tempfile.TemporaryDirectory(prefix="hpc4wc-cpp-") as tmp:
+            build_dir = Path(tmp)
+            for index, path in enumerate(cpp_files):
+                object_path = build_dir / f"{index}-{path.stem}.o"
+                completed = subprocess.run(
+                    [
+                        compiler,
+                        "-std=c++17",
+                        "-fopenmp",
+                        "-I",
+                        str(path.parent),
+                        "-c",
+                        str(path),
+                        "-o",
+                        str(object_path),
+                    ],
+                    cwd=self.repo_root,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+                if completed.returncode != 0:
+                    detail = (completed.stderr or completed.stdout).strip()
+                    self.fail("c++ syntax", f"{self.rel(path)}: {detail}")
 
     def check_notebook_assets(self, notebooks: Iterable[Path]) -> None:
         for path in notebooks:
@@ -272,6 +308,8 @@ class Checker:
     def check_smoke_scripts(self, day: Path) -> None:
         if day.name == "day1":
             self.check_day1_smoke_scripts(day)
+        elif day.name == "day2":
+            self.check_day2_smoke_scripts(day)
         elif day.name == "day5":
             self.check_day5_smoke_scripts(day)
 
@@ -363,6 +401,127 @@ class Checker:
             if different.returncode == 0:
                 self.fail("smoke", f"{self.rel(script)} mismatch arrays exited with 0")
 
+    def check_day2_smoke_scripts(self, day: Path) -> None:
+        compiler = shutil.which("mpif90") or shutil.which("mpifort")
+        if not compiler:
+            self.log("    day2 stencil smoke: skipping, no mpif90/mpifort found")
+            return
+
+        solution_source_root = day / ".master"
+        if not solution_source_root.is_dir():
+            solution_source_root = day / ".solutions"
+
+        variants = ["base", "kparallel", "jparallel", "fusion", "kparallel-halo"]
+        with tempfile.TemporaryDirectory(prefix="hpc4wc-day2-") as tmp:
+            tmpdir = Path(tmp)
+            module_object = tmpdir / "m_utils.o"
+            module_compile = subprocess.run(
+                [
+                    compiler,
+                    "-cpp",
+                    "-ffree-line-length-none",
+                    "-fopenmp",
+                    "-J",
+                    str(tmpdir),
+                    "-I",
+                    str(tmpdir),
+                    "-c",
+                    str(day / "m_utils.F90"),
+                    "-o",
+                    str(module_object),
+                ],
+                cwd=tmpdir,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            if module_compile.returncode != 0:
+                detail = (module_compile.stderr or module_compile.stdout).strip()
+                self.fail("smoke", f"{self.rel(day / 'm_utils.F90')} compile failed: {detail}")
+                return
+
+            outputs: dict[str, tuple[int, np.ndarray]] = {}
+            for variant in variants:
+                source = solution_source_root / f"stencil2d-{variant}.F90"
+                executable = tmpdir / f"stencil2d-{variant}.x"
+                completed = subprocess.run(
+                    [
+                        compiler,
+                        "-cpp",
+                        "-ffree-line-length-none",
+                        "-fopenmp",
+                        "-J",
+                        str(tmpdir),
+                        "-I",
+                        str(tmpdir),
+                        str(source),
+                        str(module_object),
+                        "-o",
+                        str(executable),
+                    ],
+                    cwd=tmpdir,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+                if completed.returncode != 0:
+                    detail = (completed.stderr or completed.stdout).strip()
+                    self.fail("smoke", f"{self.rel(source)} compile failed: {detail}")
+                    continue
+
+                run = subprocess.run(
+                    [
+                        str(executable),
+                        "--nx",
+                        "8",
+                        "--ny",
+                        "8",
+                        "--nz",
+                        "4",
+                        "--num_iter",
+                        "2",
+                    ],
+                    cwd=tmpdir,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+                if run.returncode != 0:
+                    detail = (run.stderr or run.stdout).strip()
+                    self.fail("smoke", f"{self.rel(source)} run failed: {detail}")
+                    continue
+
+                output_path = tmpdir / "out_field.dat"
+                if not output_path.is_file():
+                    self.fail("smoke", f"{self.rel(source)} did not write out_field.dat")
+                    continue
+                try:
+                    outputs[variant] = self.read_fortran_field(output_path)
+                except Exception as exc:
+                    self.fail("smoke", f"{self.rel(source)} output unreadable: {exc}")
+                output_path.unlink(missing_ok=True)
+                (tmpdir / "in_field.dat").unlink(missing_ok=True)
+
+            baseline = outputs.get("base")
+            if baseline is None:
+                return
+            baseline_halo, baseline_field = baseline
+            interior = (
+                slice(None),
+                slice(baseline_halo, -baseline_halo),
+                slice(baseline_halo, -baseline_halo),
+            )
+            for variant, output in outputs.items():
+                if variant == "base":
+                    continue
+                _halo, field = output
+                if not np.allclose(field[interior], baseline_field[interior], rtol=1e-6, atol=1e-7):
+                    diff = float(np.max(np.abs(field[interior] - baseline_field[interior])))
+                    self.fail("smoke", f"day2 stencil2d-{variant}.F90 differs from base: {diff}")
+
     def local_image_links(self, source: str) -> Iterable[str]:
         for raw_link in IMAGE_LINK_RE.findall(source) + HTML_IMAGE_RE.findall(source):
             link = raw_link.strip().strip("<>")
@@ -378,6 +537,44 @@ class Checker:
 
     def should_skip(self, path: Path) -> bool:
         return any(part in SKIP_DIRS for part in path.parts)
+
+    def cpp_compiler(self) -> str | None:
+        for candidate in ("g++-15", "g++-14", "g++-13", "g++-12", "g++"):
+            compiler = shutil.which(candidate)
+            if not compiler:
+                continue
+            with tempfile.TemporaryDirectory(prefix="hpc4wc-openmp-cpp-") as tmp:
+                tmpdir = Path(tmp)
+                source = tmpdir / "openmp.cpp"
+                source.write_text("#include <omp.h>\nint main(){return omp_get_max_threads()<1;}\n")
+                completed = subprocess.run(
+                    [
+                        compiler,
+                        "-std=c++17",
+                        "-fopenmp",
+                        str(source),
+                        "-o",
+                        str(tmpdir / "openmp"),
+                    ],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    check=False,
+                )
+                if completed.returncode == 0:
+                    return compiler
+        return None
+
+    def read_fortran_field(self, path: Path) -> tuple[int, np.ndarray]:
+        header = np.fromfile(path, dtype=np.int32, count=6)
+        if header.size != 6:
+            raise ValueError("missing binary field header")
+        rank, nbits, num_halo, nx, ny, nz = header
+        dtype = np.float32 if nbits == 32 else np.float64
+        data = np.fromfile(path, dtype=dtype)
+        offset = (3 + int(rank)) * 32 // int(nbits)
+        field = data[offset:].reshape((int(nz), int(ny), int(nx)))
+        return int(num_halo), field
 
     def rel(self, path: Path) -> str:
         try:

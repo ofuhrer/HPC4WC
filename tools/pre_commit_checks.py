@@ -54,6 +54,7 @@ def check_generated_students(repo_root: Path) -> bool:
             "--student",
             "--check",
             "day1",
+            "day2",
             "day5",
         ],
         cwd=repo_root,

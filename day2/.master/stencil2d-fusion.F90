@@ -13,11 +13,11 @@ program main
 
     ! constants
     integer, parameter :: wp = 4
-    
+
     ! local
     integer :: nx, ny, nz, num_iter
     logical :: scan
-    
+
     integer :: num_halo = 2
     real (kind=wp) :: alpha = 1.0_wp / 32.0_wp
 
@@ -68,7 +68,7 @@ program main
         call timer_start('work', timer_work)
 
         call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter )
-        
+
         call timer_end( timer_work )
 #ifdef CRAYPAT
         call PAT_record( PAT_STATE_OFF, istat )
@@ -103,31 +103,71 @@ contains
     !  alpha             -- diffusion coefficient (dimensionless)
     !  num_iter          -- number of iterations to execute
     !
+! hpc4wc:student-begin
+! hpc4wc:student |     subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
+! hpc4wc:student |         implicit none
+! hpc4wc:student |
+! hpc4wc:student |         ! arguments
+! hpc4wc:student |         real (kind=wp), intent(inout) :: in_field(:, :, :)
+! hpc4wc:student |         real (kind=wp), intent(inout) :: out_field(:, :, :)
+! hpc4wc:student |         real (kind=wp), intent(in) :: alpha
+! hpc4wc:student |         integer, intent(in) :: num_iter
+! hpc4wc:student |
+! hpc4wc:student |         ! local
+! hpc4wc:student |         integer :: iter, i, j, k
+! hpc4wc:student |
+! hpc4wc:student |         do iter = 1, num_iter
+! hpc4wc:student |
+! hpc4wc:student |             call update_halo( in_field )
+! hpc4wc:student |
+! hpc4wc:student |             do k = 1, nz
+! hpc4wc:student |
+! hpc4wc:student |                 do j = 1,2! loopbounds here ...
+! hpc4wc:student |                 do i = 1,2! loopbounds here ...
+! hpc4wc:student |                     ! implementation here .......
+! hpc4wc:student |                 end do
+! hpc4wc:student |                 end do
+! hpc4wc:student |
+! hpc4wc:student |                 do j = 1 + num_halo, ny + num_halo
+! hpc4wc:student |                 do i = 1 + num_halo, nx + num_halo
+! hpc4wc:student |                     if ( iter == num_iter ) then
+! hpc4wc:student |                         out_field(i, j, k) = 0 ! one variable here...
+! hpc4wc:student |                     else
+! hpc4wc:student |                         in_field(i, j, k)  = 0 ! one variable here...
+! hpc4wc:student |                     end if
+! hpc4wc:student |                 end do
+! hpc4wc:student |                 end do
+! hpc4wc:student |
+! hpc4wc:student |             end do
+! hpc4wc:student |         end do
+! hpc4wc:student |
+! hpc4wc:student |     end subroutine apply_diffusion
+! hpc4wc:student-end
+! hpc4wc:solution-begin
     subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
         implicit none
-        
+
         ! arguments
         real (kind=wp), intent(inout) :: in_field(:, :, :)
         real (kind=wp), intent(inout) :: out_field(:, :, :)
         real (kind=wp), intent(in) :: alpha
         integer, intent(in) :: num_iter
-        
+
         ! constants
         real (kind=wp) :: a1, a2, a8, a20
-        
+
         ! local
-        real (kind=wp) :: laplap
         integer :: iter, i, j, k
-        
+
         a1  =        -  1._wp * alpha
         a2  =        -  2._wp * alpha
         a8  =           8._wp * alpha
         a20 = 1.0_wp - 20._wp * alpha
-        
+
         do iter = 1, num_iter
-                    
+
             call update_halo( in_field )
-        
+
             do k = 1, nz
 
                 do j = 1 + num_halo, ny + num_halo
@@ -160,24 +200,25 @@ contains
             end do
         end do
     end subroutine apply_diffusion
+! hpc4wc:solution-end
 
 
-    
+
     ! Update the halo-zone using an up/down and left/right strategy.
-    !    
+    !
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
     subroutine update_halo( field )
         implicit none
-            
+
         ! argument
         real (kind=wp), intent(inout) :: field(:, :, :)
-        
+
         ! local
         integer :: i, j, k
-            
+
         ! bottom edge (without corners)
         do k = 1, nz
         do j = 1, num_halo
@@ -186,7 +227,7 @@ contains
         end do
         end do
         end do
-            
+
         ! top edge (without corners)
         do k = 1, nz
         do j = ny + num_halo + 1, ny + 2 * num_halo
@@ -195,7 +236,7 @@ contains
         end do
         end do
         end do
-        
+
         ! left edge (including corners)
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
@@ -204,7 +245,7 @@ contains
         end do
         end do
         end do
-                
+
         ! right edge (including corners)
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
@@ -213,9 +254,9 @@ contains
         end do
         end do
         end do
-        
+
     end subroutine update_halo
-        
+
 
     ! initialize at program start
     ! (init MPI, read command line arguments)
@@ -341,7 +382,7 @@ contains
     ! (report timers, free memory)
     subroutine cleanup()
         implicit none
-        
+
         deallocate(in_field, out_field)
 
     end subroutine cleanup

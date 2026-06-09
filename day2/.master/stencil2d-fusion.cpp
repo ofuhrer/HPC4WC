@@ -50,6 +50,40 @@ void updateHalo(Storage3D<double> &inField) {
   }
 }
 
+// hpc4wc:student-begin
+// hpc4wc:student | void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
+// hpc4wc:student |                      double alpha, unsigned numIter, int x, int y, int z,
+// hpc4wc:student |                      int halo) {
+// hpc4wc:student |
+// hpc4wc:student |   Storage3D<double> tmp1Field(x, y, z, halo);
+// hpc4wc:student |
+// hpc4wc:student |   for (std::size_t iter = 0; iter < numIter; ++iter) {
+// hpc4wc:student |
+// hpc4wc:student |     updateHalo(inField);
+// hpc4wc:student |
+// hpc4wc:student |     for (std::size_t k = 0; k < inField.zMax(); ++k) {
+// hpc4wc:student |
+// hpc4wc:student |       // apply the full diffusion
+// hpc4wc:student |       for (std::size_t j = inField.yMin(); j < inField.yMin(); ++j) { // TODO: fix loop bounds
+// hpc4wc:student |         for (std::size_t i = inField.xMin(); i < inField.xMin(); ++i) { // TODO: fix loop bounds
+// hpc4wc:student |           // TODO: implement the fused diffusion update
+// hpc4wc:student |         }
+// hpc4wc:student |       }
+// hpc4wc:student |
+// hpc4wc:student |       // update the field
+// hpc4wc:student |       for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
+// hpc4wc:student |         for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
+// hpc4wc:student |           if (iter != numIter - 1) {
+// hpc4wc:student |             inField(i, j, k) = outField(i, j, k);
+// hpc4wc:student |           }
+// hpc4wc:student |         }
+// hpc4wc:student |       }
+// hpc4wc:student |     }
+// hpc4wc:student |   }
+// hpc4wc:student | }
+// hpc4wc:student |
+// hpc4wc:student-end
+// hpc4wc:solution-begin
 void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
                      double alpha, unsigned numIter, int x, int y, int z,
                      int halo) {
@@ -93,6 +127,8 @@ void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
     }
   }
 }
+
+// hpc4wc:solution-end
 
 void reportTime(const Storage3D<double> &storage, int nIter, double diff) {
   std::cout << "# ranks nx ny nz num_iter time\ndata = np.array( [ \\\n";

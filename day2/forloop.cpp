@@ -17,7 +17,7 @@ int main(int argc, char const* argv[]) {
     int rank, iteration;
 
     rank = 1;      // rank = YOUR IMPLEMENTATION
-    iteration = i; // iteartion = YOUR IMPLEMENTATION
+    iteration = i; // iteration = YOUR IMPLEMENTATION
     values[iteration] = rank;
     std::string output = "Thread " + std::to_string(rank) + " executed loop iteration " +
                          std::to_string(iteration) + "\n";

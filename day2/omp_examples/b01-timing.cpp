@@ -10,7 +10,7 @@ int main(int argc, char const* argv[]) {
   double tic = omp_get_wtime();
 
   int steps = 10000000;
-  double sum;
+  double sum = 0.0;
 #pragma omp parallel for reduction(+ : sum)
   for(std::size_t t = 0; t < steps; ++t) {
     sum += (1.0 - 2 * (t % 2)) / (2 * t + 1);

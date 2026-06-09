@@ -120,6 +120,8 @@ def student_payload(line: str) -> str:
         prefix = prefix[: prefix.rfind("#")]
     elif "!" in prefix:
         prefix = prefix[: prefix.rfind("!")]
+    elif "//" in prefix:
+        prefix = prefix[: prefix.rfind("//")]
     if suffix.startswith(" "):
         suffix = suffix[1:]
     return prefix + suffix

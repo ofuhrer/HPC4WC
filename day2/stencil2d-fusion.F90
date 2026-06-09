@@ -13,11 +13,11 @@ program main
 
     ! constants
     integer, parameter :: wp = 4
-    
+
     ! local
     integer :: nx, ny, nz, num_iter
     logical :: scan
-    
+
     integer :: num_halo = 2
     real (kind=wp) :: alpha = 1.0_wp / 32.0_wp
 
@@ -68,7 +68,7 @@ program main
         call timer_start('work', timer_work)
 
         call apply_diffusion( in_field, out_field, alpha, num_iter=num_iter )
-        
+
         call timer_end( timer_work )
 #ifdef CRAYPAT
         call PAT_record( PAT_STATE_OFF, istat )
@@ -105,33 +105,20 @@ contains
     !
     subroutine apply_diffusion( in_field, out_field, alpha, num_iter )
         implicit none
-        
+
         ! arguments
         real (kind=wp), intent(inout) :: in_field(:, :, :)
         real (kind=wp), intent(inout) :: out_field(:, :, :)
         real (kind=wp), intent(in) :: alpha
         integer, intent(in) :: num_iter
-        
+
         ! local
-        real (kind=wp), save, allocatable :: tmp1_field(:, :)
-        real (kind=wp) :: laplap
         integer :: iter, i, j, k
-        
-        ! this is only done the first time this subroutine is called (warmup)
-        ! or when the dimensions of the fields change
-        if ( allocated(tmp1_field) .and. &
-            any( shape(tmp1_field) /= (/nx + 2 * num_halo, ny + 2 * num_halo/) ) ) then
-            deallocate( tmp1_field )
-        end if
-        if ( .not. allocated(tmp1_field) ) then
-            allocate( tmp1_field(nx + 2 * num_halo, ny + 2 * num_halo) )
-            tmp1_field = 0.0_wp
-        end if
-        
+
         do iter = 1, num_iter
-                    
+
             call update_halo( in_field )
-        
+
             do k = 1, nz
 
                 do j = 1,2! loopbounds here ...
@@ -146,32 +133,32 @@ contains
                         out_field(i, j, k) = 0 ! one variable here...
                     else
                         in_field(i, j, k)  = 0 ! one variable here...
-                    
+                    end if
                 end do
                 end do
 
             end do
         end do
-            
+
     end subroutine apply_diffusion
 
 
-    
+
     ! Update the halo-zone using an up/down and left/right strategy.
-    !    
+    !
     !  field             -- input/output field (nz x ny x nx with halo in x- and y-direction)
     !
     !  Note: corners are updated in the left/right phase of the halo-update
     !
     subroutine update_halo( field )
         implicit none
-            
+
         ! argument
         real (kind=wp), intent(inout) :: field(:, :, :)
-        
+
         ! local
         integer :: i, j, k
-            
+
         ! bottom edge (without corners)
         do k = 1, nz
         do j = 1, num_halo
@@ -180,7 +167,7 @@ contains
         end do
         end do
         end do
-            
+
         ! top edge (without corners)
         do k = 1, nz
         do j = ny + num_halo + 1, ny + 2 * num_halo
@@ -189,7 +176,7 @@ contains
         end do
         end do
         end do
-        
+
         ! left edge (including corners)
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
@@ -198,7 +185,7 @@ contains
         end do
         end do
         end do
-                
+
         ! right edge (including corners)
         do k = 1, nz
         do j = 1, ny + 2 * num_halo
@@ -207,9 +194,9 @@ contains
         end do
         end do
         end do
-        
+
     end subroutine update_halo
-        
+
 
     ! initialize at program start
     ! (init MPI, read command line arguments)
@@ -335,7 +322,7 @@ contains
     ! (report timers, free memory)
     subroutine cleanup()
         implicit none
-        
+
         deallocate(in_field, out_field)
 
     end subroutine cleanup

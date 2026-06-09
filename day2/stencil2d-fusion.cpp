@@ -63,9 +63,9 @@ void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
     for (std::size_t k = 0; k < inField.zMax(); ++k) {
 
       // apply the full diffusion
-      for (/* loopbounds here */;;) {
-        for (/* loopbounds here */;;) {
-          // implementation here...
+      for (std::size_t j = inField.yMin(); j < inField.yMin(); ++j) { // TODO: fix loop bounds
+        for (std::size_t i = inField.xMin(); i < inField.xMin(); ++i) { // TODO: fix loop bounds
+          // TODO: implement the fused diffusion update
         }
       }
 
@@ -81,8 +81,9 @@ void apply_diffusion(Storage3D<double> &inField, Storage3D<double> &outField,
   }
 }
 
+
 void reportTime(const Storage3D<double> &storage, int nIter, double diff) {
-  std::cout << "# ranks nx ny ny nz num_iter time\ndata = np.array( [ \\\n";
+  std::cout << "# ranks nx ny nz num_iter time\ndata = np.array( [ \\\n";
   int size;
 #pragma omp parallel
   {

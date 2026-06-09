@@ -6,7 +6,7 @@ int main(int argc, char const* argv[]) {
 
   int nThreads = atoi(argv[1]);
   int steps = 10000000 * nThreads;
-  double sum;
+  double sum = 0.0;
 
   omp_set_num_threads(nThreads);
 
