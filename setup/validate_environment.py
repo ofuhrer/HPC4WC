@@ -12,6 +12,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import warnings
 from collections.abc import Callable
 from functools import partial
 
@@ -193,14 +194,25 @@ def _run_gt4py_backend(backend: object, label: str) -> None:
     in_field = gtx.as_field(domain, data, allocator=backend)
     out_field = gtx.zeros(domain, dtype=gtx.float64, allocator=backend)
 
-    add_one_program.with_backend(backend)(
-        in_field,
-        out_field,
-        nx,
-        ny,
-        nz,
-        offset_provider={},
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=r"Field View Program 'add_one_program': Using Python execution.*",
+            category=UserWarning,
+        )
+        warnings.filterwarnings(
+            "ignore",
+            message=r"Python is not running in optimized mode.*",
+            category=UserWarning,
+        )
+        add_one_program.with_backend(backend)(
+            in_field,
+            out_field,
+            nx,
+            ny,
+            nz,
+            offset_provider={},
+        )
     if backend is gtx.gtfn_gpu:
         import cupy as cp
 
