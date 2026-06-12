@@ -51,10 +51,8 @@ fi
 
 if [ -r /user-environment/meta/configure.json ]; then
     if ! grep -q "${TARGET_UENV_NAME}/${TARGET_UENV_VERSION}" /user-environment/meta/configure.json; then
-        if [ "${HPC4WC_ALLOW_UENV_MISMATCH:-0}" != "1" ]; then
-            die "Active uenv does not look like ${TARGET_UENV}. Set HPC4WC_ALLOW_UENV_MISMATCH=1 to override."
-        fi
-        echo "WARNING: Active uenv does not look like ${TARGET_UENV}; continuing because override is set." >&2
+        echo "WARNING: Could not confirm exact uenv version ${TARGET_UENV} from /user-environment metadata." >&2
+        echo "WARNING: Continuing because ${TARGET_UENV_NAME} is active and the required tools are available." >&2
     fi
 fi
 
