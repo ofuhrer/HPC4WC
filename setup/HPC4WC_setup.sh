@@ -60,8 +60,12 @@ python - <<'PY'
 import sys
 
 version = sys.version_info
-if version < (3, 12):
-    raise SystemExit(f"Python >= 3.12 is required, found {sys.version}")
+if version[:2] != (3, 14):
+    raise SystemExit(
+        "Python 3.14 from prgenv-gnu/26.3:v1 is required, "
+        f"found {sys.version.split()[0]}. "
+        "Stop this JupyterHub server and relaunch it with prgenv-gnu/26.3:v1."
+    )
 print(f"Python: {sys.version.split()[0]}")
 PY
 
@@ -73,6 +77,9 @@ echo "mpicc:  $(command -v mpicc)"
 echo "mpif90: $(command -v mpif90)"
 echo "nvcc:   $(command -v nvcc)"
 nvcc --version | tail -4 || true
+if ! nvcc --version | grep -q "release 13.1"; then
+    die "CUDA 13.1 from ${TARGET_UENV} is required. Stop this JupyterHub server and relaunch it with ${TARGET_UENV}."
+fi
 
 if [ -e "${HPC4WC_VENV_DIR}" ] || [ -L "${HPC4WC_VENV_LINK}" ] || [ -e "${HPC4WC_VENV_LINK}" ]; then
     if [ "${HPC4WC_FORCE}" != "1" ]; then
