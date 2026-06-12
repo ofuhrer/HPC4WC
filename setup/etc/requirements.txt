@@ -1,8 +1,9 @@
-gt4py==1.0.4
-cupy-cuda12x==13.4.1
-mpi4py==4.0.3
-jupyter==1.1.1
-ipykernel==6.29.5
-matplotlib==3.10.3
+gt4py==1.1.10
+cupy-cuda13x==14.1.1
+mpi4py==4.1.2
+numpy==2.4.6
+matplotlib==3.11.0
+ipykernel==7.3.0
+ipyparallel==9.2.0
 ipcmagic-cscs==1.1.0
 bash_kernel==0.10.0
