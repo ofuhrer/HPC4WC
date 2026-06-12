@@ -35,7 +35,7 @@ cd "$HOME/HPC4WC"
 ./setup/HPC4WC_setup.sh
 ```
 
-The script creates a Python virtual environment under `$SCRATCH`, symlinks it as `$HOME/HPC4WC_venv`, registers the `HPC4WC_kernel` Jupyter kernel, and validates the CPU-side Python stack. It does not modify `.bashrc`.
+The script creates a Python virtual environment under `$SCRATCH`, symlinks it as `$HOME/HPC4WC_venv`, registers the `HPC4WC_kernel` Jupyter kernel, and validates the CPU-side Python stack. It also installs a small `srun` wrapper inside the virtual environment so nested `srun -n ...` commands and `%ipcluster start -n ...` work from the single-task JupyterHub allocation. It does not modify `.bashrc`.
 
 If you need to recreate the environment, or if an older course setup already exists, run:
 

@@ -116,6 +116,39 @@ python -m pip install setuptools wheel
 export MPICC="${MPICC:-$(command -v mpicc)}"
 python -m pip install --no-binary=mpi4py -r "${HPC4WC_ROOT}/setup/etc/requirements.txt"
 
+log "Installing JupyterHub srun wrapper"
+REAL_SRUN="$(command -v srun || true)"
+[ -n "${REAL_SRUN}" ] || die "Missing required command: srun"
+cat > "${HPC4WC_VENV_DIR}/bin/srun" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+REAL_SRUN="${REAL_SRUN}"
+
+if [ "\${SLURM_JOB_PARTITION:-}" = "jupyterhub" ] || [ "\${SLURM_JOB_NAME:-}" = "spawner-jupyterhub" ]; then
+    has_overlap=0
+    has_overcommit=0
+    for arg in "\$@"; do
+        case "\${arg}" in
+            --overlap|--overlap=*) has_overlap=1 ;;
+            --overcommit|--overcommit=*) has_overcommit=1 ;;
+        esac
+    done
+
+    extra_args=()
+    if [ "\${has_overlap}" = "0" ]; then
+        extra_args+=(--overlap)
+    fi
+    if [ "\${has_overcommit}" = "0" ]; then
+        extra_args+=(--overcommit)
+    fi
+    exec "\${REAL_SRUN}" "\${extra_args[@]}" "\$@"
+fi
+
+exec "\${REAL_SRUN}" "\$@"
+EOF
+chmod +x "${HPC4WC_VENV_DIR}/bin/srun"
+
 log "Creating compatibility symlink ${HPC4WC_VENV_LINK}"
 ln -sfn "${HPC4WC_VENV_DIR}" "${HPC4WC_VENV_LINK}"
 
