@@ -9,6 +9,7 @@ import importlib.metadata
 import os
 import platform
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -193,9 +194,16 @@ def check_cupy(skip_gpu: bool, require_gpu: bool) -> bool:
     return True
 
 
+def unblock_sigchld_for_cmake() -> None:
+    if hasattr(signal, "pthread_sigmask"):
+        signal.pthread_sigmask(signal.SIG_UNBLOCK, {signal.SIGCHLD})
+
+
 def _run_gt4py_backend(backend: object, label: str) -> None:
     if gtx is None:
         raise CheckFailed("gt4py.next could not be imported")
+
+    unblock_sigchld_for_cmake()
 
     nx, ny, nz = 4, 3, 2
     domain = gtx.domain({I: (0, nx), J: (0, ny), K: (0, nz)})
