@@ -116,6 +116,15 @@ python -m pip install setuptools wheel
 export MPICC="${MPICC:-$(command -v mpicc)}"
 python -m pip install --no-binary=mpi4py -r "${HPC4WC_ROOT}/setup/etc/requirements.txt"
 
+log "Using Santis CMake for GT4Py builds"
+python -m pip uninstall -y cmake >/dev/null 2>&1 || true
+rm -f "${VIRTUAL_ENV}/bin/cmake" "${VIRTUAL_ENV}/bin/cpack" "${VIRTUAL_ENV}/bin/ctest"
+hash -r
+require_command cmake
+require_command ninja
+echo "cmake: $(command -v cmake) ($(cmake --version | head -1))"
+echo "ninja: $(command -v ninja) ($(ninja --version))"
+
 log "Creating compatibility symlink ${HPC4WC_VENV_LINK}"
 ln -sfn "${HPC4WC_VENV_DIR}" "${HPC4WC_VENV_LINK}"
 

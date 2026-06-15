@@ -96,7 +96,16 @@ def check_summary() -> None:
     print(f"PYTHONPATH: {os.environ.get('PYTHONPATH', '<unset>')}")
     print(f"uenv status:\n{command_output(['uenv', 'status'])}")
 
-    for command in ("gcc", "gfortran", "mpicc", "mpif90", "nvcc", "nvidia-smi"):
+    for command in (
+        "gcc",
+        "gfortran",
+        "mpicc",
+        "mpif90",
+        "cmake",
+        "ninja",
+        "nvcc",
+        "nvidia-smi",
+    ):
         path = shutil.which(command)
         print(f"{command}: {path or '<not found>'}")
 
