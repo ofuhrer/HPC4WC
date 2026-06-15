@@ -29,7 +29,7 @@ cd "$HOME/HPC4WC"
 ./setup/HPC4WC_setup.sh
 ```
 
-The script creates a Python virtual environment under `$SCRATCH`, symlinks it as `$HOME/HPC4WC_venv`, registers the `HPC4WC_kernel` Jupyter kernel, and validates the CPU-side Python stack. It does not modify `.bashrc`.
+The script creates a Python virtual environment under `$SCRATCH`, symlinks it as `$HOME/HPC4WC_venv`, registers the `HPC4WC_kernel` Jupyter kernel, and validates the CPU-side Python stack. The registered kernel normalizes the `SIGCHLD` signal mask before starting Python so subprocess-based tools such as CMake work reliably from notebooks. It does not modify `.bashrc`.
 
 If you need to access the environment from a terminal, activate the environment with:
 

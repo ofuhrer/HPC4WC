@@ -128,6 +128,28 @@ echo "ninja: $(command -v ninja) ($(ninja --version))"
 log "Creating compatibility symlink ${HPC4WC_VENV_LINK}"
 ln -sfn "${HPC4WC_VENV_DIR}" "${HPC4WC_VENV_LINK}"
 
+KERNEL_LAUNCHER="${VIRTUAL_ENV}/bin/hpc4wc_kernel_launcher.py"
+log "Installing ${HPC4WC_KERNEL_NAME} kernel launcher"
+cat > "${KERNEL_LAUNCHER}" <<'EOF'
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import os
+import signal
+import sys
+
+
+def main() -> None:
+    if hasattr(signal, "pthread_sigmask"):
+        signal.pthread_sigmask(signal.SIG_UNBLOCK, {signal.SIGCHLD})
+    os.execv(sys.executable, [sys.executable, "-m", "ipykernel_launcher", *sys.argv[1:]])
+
+
+if __name__ == "__main__":
+    main()
+EOF
+chmod +x "${KERNEL_LAUNCHER}"
+
 log "Creating ${HPC4WC_KERNEL_NAME} Jupyter kernel"
 python -m ipykernel install \
     --user \
@@ -140,6 +162,21 @@ python -m ipykernel install \
 if [ ! -d "${HOME}/.local/share/jupyter/kernels/${HPC4WC_KERNEL_NAME,,}" ]; then
     die "Problem installing the Jupyter kernel."
 fi
+
+KERNEL_JSON="${HOME}/.local/share/jupyter/kernels/${HPC4WC_KERNEL_NAME,,}/kernel.json"
+python - "${KERNEL_JSON}" "${VIRTUAL_ENV}/bin/python" "${KERNEL_LAUNCHER}" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+kernel_json = Path(sys.argv[1])
+python_bin = sys.argv[2]
+launcher = sys.argv[3]
+
+spec = json.loads(kernel_json.read_text())
+spec["argv"] = [python_bin, launcher, "-f", "{connection_file}"]
+kernel_json.write_text(json.dumps(spec, indent=2) + "\n")
+PY
 
 log "Installing Bash kernel"
 python -m bash_kernel.install
