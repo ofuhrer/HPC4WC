@@ -181,6 +181,30 @@ PY
 log "Installing Bash kernel"
 python -m bash_kernel.install
 
+BASH_KERNEL_JSON="${HOME}/.local/share/jupyter/kernels/bash/kernel.json"
+[ -f "${BASH_KERNEL_JSON}" ] || die "Problem installing the Bash kernel."
+
+log "Configuring Bash kernel environment"
+python - "${BASH_KERNEL_JSON}" "${VIRTUAL_ENV}/bin/python" "${PATH}" "${VIRTUAL_ENV}" "${PYTHONPATH}" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+kernel_json = Path(sys.argv[1])
+python_bin = sys.argv[2]
+path = sys.argv[3]
+virtual_env = sys.argv[4]
+pythonpath = sys.argv[5]
+
+spec = json.loads(kernel_json.read_text())
+spec["argv"] = [python_bin, "-m", "bash_kernel", "-f", "{connection_file}"]
+env = spec.setdefault("env", {})
+env["PATH"] = path
+env["VIRTUAL_ENV"] = virtual_env
+env["PYTHONPATH"] = pythonpath
+kernel_json.write_text(json.dumps(spec, indent=2) + "\n")
+PY
+
 log "Writing terminal activation helper"
 cat > "${HOME}/activate_hpc4wc.sh" <<EOF
 #!/usr/bin/env bash

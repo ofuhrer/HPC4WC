@@ -26,6 +26,7 @@ EXPECTED_PACKAGES = {
     "mpi4py": "4.1.2",
     "numpy": "2.4.6",
     "matplotlib": "3.11.0",
+    "Pygments": "2.20.0",
     "ipykernel": "7.3.0",
     "ipyparallel": "9.2.0",
     "ipcmagic-cscs": "1.1.0",
@@ -103,6 +104,7 @@ def check_summary() -> None:
         "mpif90",
         "cmake",
         "ninja",
+        "pygmentize",
         "nvcc",
         "nvidia-smi",
     ):
@@ -141,6 +143,23 @@ def check_numpy_matplotlib() -> None:
     ax.imshow(result)
     fig.canvas.draw()
     plt.close(fig)
+
+
+def check_pygmentize() -> None:
+    command = shutil.which("pygmentize")
+    if command is None:
+        raise CheckFailed("pygmentize is not on PATH")
+    result = subprocess.run(
+        [command, "-l", "fortran", "-f", "terminal", "-O", "style=default"],
+        input="program hello\nend program hello\n",
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise CheckFailed(f"pygmentize failed: {result.stderr.strip()}")
+    print(f"pygmentize: {command}")
 
 
 def check_mpi(required_size: int | None) -> None:
@@ -329,6 +348,7 @@ def main() -> int:
 
     section("CPU Python stack")
     results.append(run_check("NumPy and Matplotlib", check_numpy_matplotlib))
+    results.append(run_check("Pygments command-line highlighter", check_pygmentize))
 
     section("MPI")
     results.append(run_check("mpi4py", lambda: check_mpi(args.require_mpi_size)))
