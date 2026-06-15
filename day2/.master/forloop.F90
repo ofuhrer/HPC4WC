@@ -14,15 +14,15 @@
 ! hpc4wc:student |   values = -1
 ! hpc4wc:student |
 ! hpc4wc:student |   ! Pragmas here?
-! hpc4wc:student |       do i = 1, N
-! hpc4wc:student |         ! Pragmas here?
-! hpc4wc:student |           rank = 1 ! YOUR IMPLEMENTATION HERE
-! hpc4wc:student |           iteration = 1 ! YOUR IMPLEMENTATION HERE
-! hpc4wc:student |           values(iteration) = rank
-! hpc4wc:student |           write(output, '(A, I0, A, I0)') "Thread ", rank, " executed loop iteration ", iteration
-! hpc4wc:student |           write(*, '(A)') trim(output)
-! hpc4wc:student |         ! Pragmas here?
-! hpc4wc:student |       end do
+! hpc4wc:student |   do i = 1, N
+! hpc4wc:student |     ! Pragmas here?
+! hpc4wc:student |     rank = 1 ! YOUR IMPLEMENTATION HERE
+! hpc4wc:student |     iteration = i ! YOUR IMPLEMENTATION HERE
+! hpc4wc:student |     values(iteration) = rank
+! hpc4wc:student |     write(output, '(A, I0, A, I0)') "Thread ", rank, " executed loop iteration ", iteration
+! hpc4wc:student |     write(*, '(A)') trim(output)
+! hpc4wc:student |     ! Pragmas here?
+! hpc4wc:student |   end do
 ! hpc4wc:student |   ! Pragmas here?
 ! hpc4wc:student |
 ! hpc4wc:student |   deallocate(values)
@@ -45,17 +45,17 @@ program omp_example
   values = -1
 
   !$omp parallel num_threads(10)
-    !$omp single
-      do i = 1, N
-        !$omp task default(none) firstprivate(i) private(rank,iteration, output) shared(values)
-          rank = omp_get_thread_num()
-          iteration = i
-          values(iteration) = rank
-          write(output, '(A, I0, A, I0)') "Thread ", rank, " executed loop iteration ", iteration
-          write(*, '(A)') trim(output)
-        !$omp end task
-      end do
-    !$omp end single
+  !$omp single
+  do i = 1, N
+    !$omp task default(none) firstprivate(i) private(rank, iteration, output) shared(values)
+    rank = omp_get_thread_num()
+    iteration = i
+    values(iteration) = rank
+    write(output, '(A, I0, A, I0)') "Thread ", rank, " executed loop iteration ", iteration
+    write(*, '(A)') trim(output)
+    !$omp end task
+  end do
+  !$omp end single
   !$omp end parallel
 
   deallocate(values)

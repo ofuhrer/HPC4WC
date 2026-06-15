@@ -2,15 +2,16 @@
 #include <omp.h>
 #include <vector>
 
-int main(int argc, char const* argv[]) {
+int main(int argc, char const *argv[]) {
 
-  int N = atoi(argv[1]);
+  (void)argc;
+  std::size_t N = static_cast<std::size_t>(atoi(argv[1]));
   std::vector<int> values(N, -1);
 
   //
   // Pragmas here?
   //
-  for(std::size_t i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i) {
     //
     // Pragmas here?
     //

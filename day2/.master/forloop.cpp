@@ -3,15 +3,16 @@
 // hpc4wc:student | #include <omp.h>
 // hpc4wc:student | #include <vector>
 // hpc4wc:student |
-// hpc4wc:student | int main(int argc, char const* argv[]) {
+// hpc4wc:student | int main(int argc, char const *argv[]) {
 // hpc4wc:student |
-// hpc4wc:student |   int N = atoi(argv[1]);
+// hpc4wc:student |   (void)argc;
+// hpc4wc:student |   std::size_t N = static_cast<std::size_t>(atoi(argv[1]));
 // hpc4wc:student |   std::vector<int> values(N, -1);
 // hpc4wc:student |
 // hpc4wc:student |   //
 // hpc4wc:student |   // Pragmas here?
 // hpc4wc:student |   //
-// hpc4wc:student |   for(std::size_t i = 0; i < N; ++i) {
+// hpc4wc:student |   for (std::size_t i = 0; i < N; ++i) {
 // hpc4wc:student |     //
 // hpc4wc:student |     // Pragmas here?
 // hpc4wc:student |     //
@@ -38,7 +39,8 @@
 
 int main(int argc, char const *argv[]) {
 
-  int N = atoi(argv[1]);
+  (void)argc;
+  std::size_t N = static_cast<std::size_t>(atoi(argv[1]));
   std::vector<int> values(N, -1);
 
 #pragma omp parallel num_threads(10)

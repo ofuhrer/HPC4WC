@@ -1,12 +1,14 @@
 #!/bin/bash -l
 #SBATCH --job-name="stencil2d.$USER"
-#SBATCH --time=00:10:00
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-core=1
-#SBATCH --ntasks-per-node=72
-#SBATCH --cpus-per-task=1
+#SBATCH --account=hpc4wc-course2026-ethz
 #SBATCH --partition=debug
+#SBATCH --nodes=1
+#SBATCH --ntasks=72
+#SBATCH --cpus-per-task=1
+#SBATCH --time=00:10:00
 #SBATCH --hint=nomultithread
+#SBATCH --uenv=prgenv-gnu/26.3:v1
+#SBATCH --view=default
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
