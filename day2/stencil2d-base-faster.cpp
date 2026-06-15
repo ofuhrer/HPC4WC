@@ -12,22 +12,21 @@ namespace {
 
 template <typename T>
 void updateHalo(T* inField, int x, int y, int z, int halo) {
-  const int xDimTotal = x + 2 * halo;
-  const int yDimTotal = y + 2 * halo;
-  const int zDimTotal = z + 2 * halo;
+  const std::size_t xDimTotal = static_cast<std::size_t>(x + 2 * halo);
+  const std::size_t yDimTotal = static_cast<std::size_t>(y + 2 * halo);
 
-  const std::size_t xyDimTotal = static_cast<std::size_t>(xDimTotal) * yDimTotal;
+  const std::size_t xyDimTotal = xDimTotal * yDimTotal;
 
-  const int xMin = halo;
-  const int xMax = x + halo;
-  const int yMin = halo;
-  const int yMax = y + halo;
+  const std::size_t xMin = static_cast<std::size_t>(halo);
+  const std::size_t xMax = static_cast<std::size_t>(x + halo);
+  const std::size_t yMin = static_cast<std::size_t>(halo);
+  const std::size_t yMax = static_cast<std::size_t>(y + halo);
 
-  const int xInterior = x;
-  const int yInterior = y;
+  const std::size_t xInterior = static_cast<std::size_t>(x);
+  const std::size_t yInterior = static_cast<std::size_t>(y);
 
   // Iterate over z-slices
-  for (std::size_t k = halo; k < z + halo; ++k) {
+  for (std::size_t k = 0; k < static_cast<std::size_t>(z); ++k) {
     const std::size_t k_offset = k * xyDimTotal;
 
     // Update top halo (along y-dimension)
@@ -68,24 +67,25 @@ void apply_diffusion(T* __restrict__ inField, T* __restrict__ outField,
 
   const int xDim = x + 2 * halo;
   const int yDim = y + 2 * halo;
-  const int zDim = z + 2 * halo;
   const std::size_t xyDim = static_cast<std::size_t>(xDim) * yDim;
   const std::size_t tmp1_size = static_cast<std::size_t>(xDim) * yDim;
 
-  const int xMin = halo;
-  const int xMax = x + halo;
-  const int yMin = halo;
-  const int yMax = y + halo;
-  const int zMin = halo;
-  const int zMax = z + halo;
+  const std::size_t xMin = static_cast<std::size_t>(halo);
+  const std::size_t xMax = static_cast<std::size_t>(x + halo);
+  const std::size_t yMin = static_cast<std::size_t>(halo);
+  const std::size_t yMax = static_cast<std::size_t>(y + halo);
 
   constexpr std::size_t alignment = 64;
-  T* tmp1Field = static_cast<T*>(std::aligned_alloc(alignment, tmp1_size * sizeof(T)));
+  const std::size_t tmp1_bytes = tmp1_size * sizeof(T);
+  const std::size_t tmp1_alloc_bytes =
+      ((tmp1_bytes + alignment - 1) / alignment) * alignment;
+  T* tmp1Field = static_cast<T*>(std::aligned_alloc(alignment, tmp1_alloc_bytes));
+  assert(tmp1Field != nullptr);
 
   for (std::size_t iter = 0; iter < numIter; ++iter) {
     updateHalo<T>(inField, x, y, z, halo);
 
-    for (std::size_t k = zMin; k < zMax; ++k) {
+    for (std::size_t k = 0; k < static_cast<std::size_t>(z); ++k) {
       const std::size_t k_offset = k * xyDim;
       for (std::size_t j = yMin - 1; j < yMax + 1; ++j) {
         const std::size_t j_offset = j * xDim;
@@ -146,30 +146,31 @@ void reportTime(int x, int y, int z, int nIter, T diff) {
 }
 
 template <typename T>
-void initializeField(T* field, int xDim, int yDim, int zDim_total, int halo) {
-  const int zInterior = zDim_total - 2 * halo;
+void initializeField(T* field, int xDim, int yDim, int zDim, int halo) {
+  const int xInterior = xDim - 2 * halo;
+  const int yInterior = yDim - 2 * halo;
   const std::size_t xyDim = static_cast<std::size_t>(xDim) * yDim;
-  const std::size_t total_elements = static_cast<std::size_t>(xDim) * yDim * zDim_total;
+  const std::size_t total_elements = static_cast<std::size_t>(xDim) * yDim * zDim;
 
   for (std::size_t i = 0; i < total_elements; ++i) {
-        field[i] = static_cast<T>(0.0);
-   }
+    field[i] = static_cast<T>(0.0);
+  }
 
-  std::size_t k_start_storage3d = static_cast<std::size_t>(halo + zInterior / 4.0);
-  std::size_t k_end_storage3d = static_cast<std::size_t>(halo + 3.0 * zInterior / 4.0);
+  std::size_t k_start = static_cast<std::size_t>(zDim / 4);
+  std::size_t k_end = static_cast<std::size_t>(3 * zDim / 4);
 
-  std::size_t j_start = static_cast<std::size_t>(halo + yDim / 4.0);
-  std::size_t j_end = static_cast<std::size_t>(halo + 3.0 * yDim / 4.0);
+  std::size_t j_start = static_cast<std::size_t>(halo + yInterior / 4);
+  std::size_t j_end = static_cast<std::size_t>(halo + 3 * yInterior / 4);
 
-  std::size_t i_start = static_cast<std::size_t>(halo + xDim / 4.0);
-  std::size_t i_end = static_cast<std::size_t>(halo + 3.0 * xDim / 4.0);
+  std::size_t i_start = static_cast<std::size_t>(halo + xInterior / 4);
+  std::size_t i_end = static_cast<std::size_t>(halo + 3 * xInterior / 4);
 
-  for (std::size_t k = k_start_storage3d; k < k_end_storage3d; ++k) {
-      for (std::size_t j = j_start; j < j_end; ++j) {
-          for (std::size_t i = i_start; i < i_end; ++i) {
-              field[k * xyDim + j * xDim + i] =  static_cast<T>(1.0);
-          }
+  for (std::size_t k = k_start; k < k_end; ++k) {
+    for (std::size_t j = j_start; j < j_end; ++j) {
+      for (std::size_t i = i_start; i < i_end; ++i) {
+        field[k * xyDim + j * xDim + i] = static_cast<T>(1.0);
       }
+    }
   }
 }
 
@@ -199,6 +200,7 @@ void writeFieldToFile(const T* field, int xDim, int yDim, int zDim, int halo, st
 } // namespace
 
 int main(int argc, char const *argv[]) {
+  (void)argc;
 #ifdef CRAYPAT
   PAT_record(PAT_STATE_OFF);
 #endif
@@ -206,21 +208,26 @@ int main(int argc, char const *argv[]) {
   int y = atoi(argv[4]);
   int z = atoi(argv[6]);
   int iter = atoi(argv[8]);
-  int nHalo = 3;
+  int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
 
-  // Define the precision type to use (e.g., float or double)
-  using precision_t = float;
+  using precision_t = double;
 
   int totalX, totalY, totalZ;
   totalX = x + 2 * nHalo;
   totalY = y + 2 * nHalo;
-  totalZ = z + 2 * nHalo;
+  totalZ = z;
 
   constexpr std::size_t alignment = 64;
   std::size_t size = static_cast<std::size_t>(totalX) * totalY * totalZ;
-  precision_t* input = static_cast<precision_t*>(std::aligned_alloc(alignment, size * sizeof(precision_t)));
-  precision_t* output = static_cast<precision_t*>(std::aligned_alloc(alignment, size * sizeof(precision_t)));
+  const std::size_t bytes = size * sizeof(precision_t);
+  const std::size_t alloc_bytes =
+      ((bytes + alignment - 1) / alignment) * alignment;
+  precision_t* input =
+      static_cast<precision_t*>(std::aligned_alloc(alignment, alloc_bytes));
+  precision_t* output =
+      static_cast<precision_t*>(std::aligned_alloc(alignment, alloc_bytes));
+  assert(input != nullptr && output != nullptr);
 
   initializeField<precision_t>(input, totalX, totalY, totalZ, nHalo);
   initializeField<precision_t>(output, totalX, totalY, totalZ, nHalo);

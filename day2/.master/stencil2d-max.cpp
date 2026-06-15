@@ -16,7 +16,7 @@ void updateHalo(Storage3D<double> &inField) {
   const int yInterior = inField.yMax() - inField.yMin();
 
   // bottom edge (without corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
+  for (std::size_t k = 0; k < inField.zMax(); ++k) {
     for (std::size_t j = 0; j < inField.yMin(); ++j) {
       for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
         inField(i, j, k) = inField(i, j + yInterior, k);
@@ -25,7 +25,7 @@ void updateHalo(Storage3D<double> &inField) {
   }
 
   // top edge (without corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
+  for (std::size_t k = 0; k < inField.zMax(); ++k) {
     for (std::size_t j = inField.yMax(); j < inField.ySize(); ++j) {
       for (std::size_t i = inField.xMin(); i < inField.xMax(); ++i) {
         inField(i, j, k) = inField(i, j - yInterior, k);
@@ -34,8 +34,8 @@ void updateHalo(Storage3D<double> &inField) {
   }
 
   // left edge (including corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
-    for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
+  for (std::size_t k = 0; k < inField.zMax(); ++k) {
+    for (std::size_t j = 0; j < inField.ySize(); ++j) {
       for (std::size_t i = 0; i < inField.xMin(); ++i) {
         inField(i, j, k) = inField(i + xInterior, j, k);
       }
@@ -43,8 +43,8 @@ void updateHalo(Storage3D<double> &inField) {
   }
 
   // right edge (including corners)
-  for (std::size_t k = 0; k < inField.zMin(); ++k) {
-    for (std::size_t j = inField.yMin(); j < inField.yMax(); ++j) {
+  for (std::size_t k = 0; k < inField.zMax(); ++k) {
+    for (std::size_t j = 0; j < inField.ySize(); ++j) {
       for (std::size_t i = inField.xMax(); i < inField.xSize(); ++i) {
         inField(i, j, k) = inField(i - xInterior, j, k);
       }
@@ -127,7 +127,7 @@ int main(int argc, char const *argv[]) {
   int y = atoi(argv[4]);
   int z = atoi(argv[6]);
   int iter = atoi(argv[8]);
-  int nHalo = 3;
+  int nHalo = 2;
   assert(x > 0 && y > 0 && z > 0 && iter > 0);
   Storage3D<double> input(x, y, z, nHalo);
   input.initialize();

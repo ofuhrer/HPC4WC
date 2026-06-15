@@ -50,11 +50,14 @@ public:
   }
 
   void initialize() {
+    const std::size_t xInterior = xMax() - xMin();
+    const std::size_t yInterior = yMax() - yMin();
+
     for (std::size_t k = zsize_ / 4; k < 3 * zsize_ / 4; ++k) {
-      for (std::size_t j = halosize_ + xsize_ / 4;
-           j < halosize_ + 3 * xsize_ / 4; ++j) {
-        for (std::size_t i = halosize_ + xsize_ / 4;
-             i < halosize_ + 3 * xsize_ / 4; ++i) {
+      for (std::size_t j = halosize_ + yInterior / 4;
+           j < halosize_ + 3 * yInterior / 4; ++j) {
+        for (std::size_t i = halosize_ + xInterior / 4;
+             i < halosize_ + 3 * xInterior / 4; ++i) {
           operator()(i, j, k) = 1;
         }
       }
