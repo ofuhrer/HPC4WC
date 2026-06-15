@@ -17,7 +17,6 @@ fi
 
 HPC4WC_VENV_DIR="${HPC4WC_VENV_DIR:-${SCRATCH}/HPC4WC_venv-${TARGET_UENV_NAME}-${TARGET_UENV_VERSION}}"
 HPC4WC_VENV_LINK="${HPC4WC_VENV_LINK:-${HOME}/HPC4WC_venv}"
-HPC4WC_CACHE_DIR="${HPC4WC_CACHE_DIR:-${SCRATCH}/.cache/hpc4wc}"
 
 log() {
     echo "==> $*"
@@ -30,6 +29,16 @@ die() {
 
 require_command() {
     command -v "$1" >/dev/null 2>&1 || die "Missing required command: $1"
+}
+
+remove_stale_srun_wrapper() {
+    local candidate
+    for candidate in "${HPC4WC_VENV_DIR}/bin/srun" "${HPC4WC_VENV_LINK}/bin/srun"; do
+        if [ -f "${candidate}" ] && grep -q "spawner-jupyterhub" "${candidate}"; then
+            log "Removing stale HPC4WC srun wrapper at ${candidate}"
+            rm -f "${candidate}"
+        fi
+    done
 }
 
 log "Checking repository and Santis uenv environment"
@@ -82,6 +91,7 @@ if ! nvcc --version | grep -q "release 13.1"; then
 fi
 
 if [ -e "${HPC4WC_VENV_DIR}" ] || [ -L "${HPC4WC_VENV_LINK}" ] || [ -e "${HPC4WC_VENV_LINK}" ]; then
+    remove_stale_srun_wrapper
     if [ "${HPC4WC_FORCE}" != "1" ]; then
         die "HPC4WC venv already exists. Set HPC4WC_FORCE=1 to recreate it."
     fi
@@ -90,17 +100,7 @@ if [ -e "${HPC4WC_VENV_DIR}" ] || [ -L "${HPC4WC_VENV_LINK}" ] || [ -e "${HPC4WC
     rm -rf "${HPC4WC_VENV_LINK}"
 fi
 
-log "Creating cache directories under ${HPC4WC_CACHE_DIR}"
-mkdir -p \
-    "${HPC4WC_CACHE_DIR}/pip" \
-    "${HPC4WC_CACHE_DIR}/cupy" \
-    "${HPC4WC_CACHE_DIR}/gt4py" \
-    "$(dirname "${HPC4WC_VENV_DIR}")"
-
-export XDG_CACHE_HOME="${HPC4WC_CACHE_DIR}"
-export PIP_CACHE_DIR="${HPC4WC_CACHE_DIR}/pip"
-export CUPY_CACHE_DIR="${HPC4WC_CACHE_DIR}/cupy"
-export GT4PY_CACHE_DIR="${HPC4WC_CACHE_DIR}/gt4py"
+mkdir -p "$(dirname "${HPC4WC_VENV_DIR}")"
 
 log "Creating Python virtual environment at ${HPC4WC_VENV_DIR}"
 python -m venv --system-site-packages "${HPC4WC_VENV_DIR}"
@@ -116,39 +116,6 @@ python -m pip install setuptools wheel
 export MPICC="${MPICC:-$(command -v mpicc)}"
 python -m pip install --no-binary=mpi4py -r "${HPC4WC_ROOT}/setup/etc/requirements.txt"
 
-log "Installing JupyterHub srun wrapper"
-REAL_SRUN="$(command -v srun || true)"
-[ -n "${REAL_SRUN}" ] || die "Missing required command: srun"
-cat > "${HPC4WC_VENV_DIR}/bin/srun" <<EOF
-#!/usr/bin/env bash
-set -euo pipefail
-
-REAL_SRUN="${REAL_SRUN}"
-
-if [ "\${SLURM_JOB_PARTITION:-}" = "jupyterhub" ] || [ "\${SLURM_JOB_NAME:-}" = "spawner-jupyterhub" ]; then
-    has_overlap=0
-    has_overcommit=0
-    for arg in "\$@"; do
-        case "\${arg}" in
-            --overlap|--overlap=*) has_overlap=1 ;;
-            --overcommit|--overcommit=*) has_overcommit=1 ;;
-        esac
-    done
-
-    extra_args=()
-    if [ "\${has_overlap}" = "0" ]; then
-        extra_args+=(--overlap)
-    fi
-    if [ "\${has_overcommit}" = "0" ]; then
-        extra_args+=(--overcommit)
-    fi
-    exec "\${REAL_SRUN}" "\${extra_args[@]}" "\$@"
-fi
-
-exec "\${REAL_SRUN}" "\$@"
-EOF
-chmod +x "${HPC4WC_VENV_DIR}/bin/srun"
-
 log "Creating compatibility symlink ${HPC4WC_VENV_LINK}"
 ln -sfn "${HPC4WC_VENV_DIR}" "${HPC4WC_VENV_LINK}"
 
@@ -159,11 +126,7 @@ python -m ipykernel install \
     --display-name="${HPC4WC_KERNEL_DISPLAY_NAME}" \
     --env PATH "${PATH}" \
     --env VIRTUAL_ENV "${VIRTUAL_ENV}" \
-    --env PYTHONPATH "${PYTHONPATH}" \
-    --env XDG_CACHE_HOME "${XDG_CACHE_HOME}" \
-    --env PIP_CACHE_DIR "${PIP_CACHE_DIR}" \
-    --env CUPY_CACHE_DIR "${CUPY_CACHE_DIR}" \
-    --env GT4PY_CACHE_DIR "${GT4PY_CACHE_DIR}"
+    --env PYTHONPATH "${PYTHONPATH}"
 
 if [ ! -d "${HOME}/.local/share/jupyter/kernels/${HPC4WC_KERNEL_NAME,,}" ]; then
     die "Problem installing the Jupyter kernel."
@@ -176,10 +139,6 @@ log "Writing terminal activation helper"
 cat > "${HOME}/activate_hpc4wc.sh" <<EOF
 #!/usr/bin/env bash
 source "${HPC4WC_VENV_DIR}/bin/activate"
-export XDG_CACHE_HOME="${XDG_CACHE_HOME}"
-export PIP_CACHE_DIR="${PIP_CACHE_DIR}"
-export CUPY_CACHE_DIR="${CUPY_CACHE_DIR}"
-export GT4PY_CACHE_DIR="${GT4PY_CACHE_DIR}"
 export PYTHONPATH="\$(python -c 'import site; print(site.getsitepackages()[0])'):\${PYTHONPATH:-}"
 EOF
 chmod +x "${HOME}/activate_hpc4wc.sh"
