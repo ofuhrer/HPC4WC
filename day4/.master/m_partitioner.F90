@@ -6,7 +6,11 @@
 !> @author Oliver Fuhrer
 !> @date 2020-06-15
 module m_partitioner
+#ifdef GNU_MPI_WORKAROUND
+  use, intrinsic :: iso_fortran_env, only: REAL32, error_unit
+#else
   use, intrinsic :: iso_fortran_env, only: REAL32, REAL64, error_unit
+#endif
   use mpi, only: &
     MPI_FLOAT, MPI_DOUBLE, MPI_SUCCESS, &
     MPI_Comm_Rank, MPI_Comm_Size, MPI_Barrier
@@ -49,14 +53,23 @@ module m_partitioner
     procedure, public :: right
     procedure, public :: top
     procedure, public :: bottom
+#ifdef GNU_MPI_WORKAROUND
+    generic,   public :: scatter => scatter_f32
+    generic,   public :: gather => gather_f32
+#else
     generic,   public :: scatter => scatter_f32, scatter_f64
     generic,   public :: gather => gather_f32, gather_f64
+#endif
     procedure, public :: compute_domain
 
     procedure         :: scatter_f32
+#ifndef GNU_MPI_WORKAROUND
     procedure         :: scatter_f64
+#endif
     procedure         :: gather_f32
+#ifndef GNU_MPI_WORKAROUND
     procedure         :: gather_f64
+#endif
     procedure         :: setup_grid
     procedure         :: get_neighbor_rank
     procedure, nopass :: cyclic_offset
@@ -175,7 +188,7 @@ end function
     rank = this%rank_
   end function
 
-  !> @brief Returns the numer of ranks that have been distributed by this partitioner
+  !> @brief Returns the number of ranks that have been distributed by this partitioner
   integer pure function num_ranks(this)
     class(Partitioner), intent(in) :: this
 
@@ -310,6 +323,7 @@ end function
     r = recvbuf(:i_end - i_start + 1, :j_end - j_start + 1, :)
   end function
 
+#ifndef GNU_MPI_WORKAROUND
   !> @brief Scatter a global field from a root rank to the workers (f64)
   function scatter_f64(this, field, root) result(r)
     class(Partitioner), intent(in) :: this
@@ -373,6 +387,7 @@ end function
 
     r = recvbuf(:i_end - i_start + 1, :j_end - j_start + 1, :)
   end function
+#endif
 
   !> @brief Gather a distributed field from workers to a single global field on a root rank (f32)
   function gather_f32(this, field, root) result(r)
@@ -453,6 +468,7 @@ end function
     end if
   end function
 
+#ifndef GNU_MPI_WORKAROUND
   !> @brief Gather a distributed field from workers to a single global field on a root rank (f64)
   function gather_f64(this, field, root) result(r)
     class(Partitioner), intent(in) :: this
@@ -531,8 +547,9 @@ end function
       allocate(r(0, 0, 0))
     end if
   end function
+#endif
 
-  !> @brief Return position of subdomain withoug halo on the global domain
+  !> @brief Return position of subdomain without halo on the global domain
   pure function compute_domain(this) result(subdomain)
     class(Partitioner), intent(in) :: this
     integer :: subdomain(4)
@@ -543,7 +560,7 @@ end function
     subdomain(4) = this%domain_(4) - this%num_halo_
   end function
 
-  !> @brief Distribute ranks onto a Cartesion grid of workers
+  !> @brief Distribute ranks onto a Cartesian grid of workers
   subroutine setup_grid(this)
     class(Partitioner), intent(inout) :: this
 
@@ -597,7 +614,7 @@ end function
 
   end function
 
-  !> @brief Distribute the points of the computational grid onto the Cartesion grid of workers
+  !> @brief Distribute the points of the computational grid onto the Cartesian grid of workers
   subroutine setup_domain(this, shape, num_halo)
     class(Partitioner), intent(inout) :: this
     integer, intent(in) :: shape(3)

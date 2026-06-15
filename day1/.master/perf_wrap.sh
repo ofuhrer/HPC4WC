@@ -28,7 +28,7 @@ export MPICH_RMA_OVER_DMAPP=0
 export MPICH_GNI_NDREG_ENTRIES=0
 export MPICH_CH3_NOLOCAL=1
 
-echo "======= taskset ==========" >> ${outf}
+echo "======= taskset ==========" > ${outf}
 taskset -cp $$ >> ${outf} 2>&1
 
 echo "======= perf stat ==========" >> ${outf}
