@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -19,6 +20,7 @@ STUDENT_LINE = "hpc4wc:student |"
 STUDENT_END = "hpc4wc:student-end"
 SOLUTION_BEGIN = "hpc4wc:solution-begin"
 SOLUTION_END = "hpc4wc:solution-end"
+DAY_DIR_RE = re.compile(r"day\d+$")
 
 
 def load_notebook(path: Path) -> dict[str, Any]:
@@ -211,6 +213,18 @@ def resolve_day(day: Path) -> Path:
         return cwd
 
     raise FileNotFoundError(f"missing master directory: {day / '.master'}")
+
+
+def discover_days() -> list[Path]:
+    repo_root = Path(__file__).resolve().parents[1]
+    days = [
+        path
+        for path in repo_root.iterdir()
+        if path.is_dir() and DAY_DIR_RE.fullmatch(path.name) and (path / ".master").is_dir()
+    ]
+    if not days:
+        raise FileNotFoundError(f"no day<n> directories with .master found in {repo_root}")
+    return sorted(days)
 
 
 def is_executable(path: Path) -> bool:
@@ -450,7 +464,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Generate student files and visible solutions from .master."
     )
-    parser.add_argument("days", nargs="+", type=Path, help="Day directories to process.")
+    parser.add_argument(
+        "days",
+        nargs="*",
+        type=Path,
+        help="Day directories to process. Defaults to all day<n> directories with .master.",
+    )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
         "--student",
@@ -479,7 +498,7 @@ def main() -> int:
     args = parse_args()
     student = args.student or not args.solution
     solution = args.solution or not args.student
-    days = [resolve_day(day) for day in args.days]
+    days = [resolve_day(day) for day in args.days] if args.days else discover_days()
 
     if args.check:
         ok = True

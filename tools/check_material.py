@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import ast
+import argparse
+import importlib
 import py_compile
 import re
 import shutil
@@ -14,10 +16,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
 from urllib.parse import unquote, urlparse
-
-import nbformat
-import numpy as np
-from IPython.core.inputtransformer2 import TransformerManager
 
 
 MARKER_BYTES = (b"hpc4wc:", b'"hpc4wc"')
@@ -47,6 +45,42 @@ FORTRAN_COMPILE_SKIP = {
     "day4/.master/m_partitioner.F90",
     "day4/.master/stencil2d-openacc.F90",
 }
+REQUIRED_PYTHON_PACKAGES = (
+    ("nbformat", "nbformat"),
+    ("IPython", "IPython"),
+    ("numpy", "numpy"),
+)
+
+
+def load_required_python_packages() -> bool:
+    missing = []
+    for package_name, import_name in REQUIRED_PYTHON_PACKAGES:
+        try:
+            importlib.import_module(import_name)
+        except ImportError:
+            missing.append(package_name)
+
+    if missing:
+        print(
+            "ERROR: Missing Python package(s) required by tools/check_material.py: "
+            + ", ".join(missing),
+            file=sys.stderr,
+        )
+        print(f"Python executable: {sys.executable}", file=sys.stderr)
+        print(
+            "Activate the course environment first, for example:\n"
+            "  source ~/activate_hpc4wc.sh\n"
+            "or install the check dependencies into this Python environment.",
+            file=sys.stderr,
+        )
+        return False
+
+    globals()["nbformat"] = importlib.import_module("nbformat")
+    globals()["np"] = importlib.import_module("numpy")
+    globals()["TransformerManager"] = importlib.import_module(
+        "IPython.core.inputtransformer2"
+    ).TransformerManager
+    return True
 
 
 class Checker:
@@ -721,15 +755,30 @@ class Checker:
             return str(path)
 
 
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Check generated course material without requiring the full course runtime stack."
+    )
+    parser.add_argument(
+        "days",
+        nargs="*",
+        type=Path,
+        help=(
+            "Day directories to check. Defaults to the current day<n> directory, "
+            "or all day<n> directories when run from the repository root."
+        ),
+    )
+    return parser.parse_args(argv)
+
+
 def main(argv: list[str] | None = None) -> int:
-    args = argv if argv is not None else sys.argv[1:]
+    args = parse_args(argv)
     repo_root = Path(__file__).resolve().parents[1]
     cwd = Path.cwd().resolve()
 
-    if args:
+    if args.days:
         days = []
-        for arg in args:
-            path = Path(arg)
+        for path in args.days:
             if not path.is_absolute():
                 path = cwd / path
             days.append(path.resolve())
@@ -747,6 +796,9 @@ def main(argv: list[str] | None = None) -> int:
             "       or run without arguments from the repo root or a day<n> directory",
             file=sys.stderr,
         )
+        return 2
+
+    if not load_required_python_packages():
         return 2
 
     return Checker(repo_root).run(days)
