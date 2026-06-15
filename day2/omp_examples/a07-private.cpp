@@ -1,11 +1,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <omp.h>
-#include <vector>
 
 int main(int argc, char const* argv[]) {
 
-  int myvar = -1;
+  int myvar = 42;
 #pragma omp parallel for private(myvar)
   for(std::size_t i = 0; i < 10; ++i) {
 #pragma omp critical(output)
