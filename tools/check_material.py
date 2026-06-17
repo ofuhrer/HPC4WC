@@ -142,10 +142,16 @@ class Checker:
 
     def check_generated_outputs(self, day: Path) -> None:
         self.log("  generation: checking student outputs are current")
+        self.check_generated_mode(day, "--student", "student")
+        if (day / "solution").is_dir():
+            self.log("  generation: checking published solution output is current")
+            self.check_generated_mode(day, "--solution", "solution")
+
+    def check_generated_mode(self, day: Path, mode: str, label: str) -> None:
         command = [
             sys.executable,
             str(self.repo_root / "tools" / "generate_from_master.py"),
-            "--student",
+            mode,
             "--check",
             str(day),
         ]
@@ -159,7 +165,7 @@ class Checker:
         )
         if completed.returncode != 0:
             detail = (completed.stderr or completed.stdout).strip()
-            self.fail("generation", detail or "generated outputs are stale")
+            self.fail("generation", detail or f"generated {label} outputs are stale")
 
     def notebooks(self, day: Path) -> Iterable[Path]:
         for path in sorted(day.rglob("*.ipynb")):

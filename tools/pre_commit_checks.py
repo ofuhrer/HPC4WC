@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 
-SOLUTION_RE = re.compile(r"^day\d+/solution/")
+DAY_SOLUTION_RE = re.compile(r"^(day\d+)/solution/")
 
 
 def run(command: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -34,15 +34,41 @@ def staged_paths(repo_root: Path) -> list[str]:
     return [line for line in completed.stdout.splitlines() if line]
 
 
-def block_staged_solution(repo_root: Path) -> bool:
-    solution_paths = [path for path in staged_paths(repo_root) if SOLUTION_RE.match(path)]
-    if not solution_paths:
+def indexed_paths(repo_root: Path, pathspec: str) -> list[str]:
+    completed = run(["git", "ls-files", pathspec], cwd=repo_root)
+    if completed.returncode != 0:
+        print(completed.stderr or completed.stdout, file=sys.stderr)
+        raise SystemExit(completed.returncode)
+    return [line for line in completed.stdout.splitlines() if line]
+
+
+def published_solution_days(repo_root: Path) -> list[str]:
+    paths = [*indexed_paths(repo_root, "day*/solution/*"), *staged_paths(repo_root)]
+    days = {match.group(1) for path in paths if (match := DAY_SOLUTION_RE.match(path)) is not None}
+    return sorted(days)
+
+
+def check_published_solutions(repo_root: Path) -> bool:
+    days = published_solution_days(repo_root)
+    if not days:
         return True
 
-    print("Do not commit generated solution bundles during course preparation:", file=sys.stderr)
-    for path in solution_paths:
-        print(f"  - {path}", file=sys.stderr)
-    print("Generate them locally only when publishing the solution bundle.", file=sys.stderr)
+    completed = run(
+        [
+            sys.executable,
+            str(repo_root / "tools" / "generate_from_master.py"),
+            "--solution",
+            "--check",
+            *days,
+        ],
+        cwd=repo_root,
+    )
+    if completed.returncode == 0:
+        return True
+
+    print("Published solution bundles are stale:", file=sys.stderr)
+    print(completed.stdout, end="", file=sys.stderr)
+    print(completed.stderr, end="", file=sys.stderr)
     return False
 
 
@@ -72,7 +98,7 @@ def check_generated_students(repo_root: Path) -> bool:
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[1]
     checks = [
-        block_staged_solution(repo_root),
+        check_published_solutions(repo_root),
         check_generated_students(repo_root),
     ]
     return 0 if all(checks) else 1

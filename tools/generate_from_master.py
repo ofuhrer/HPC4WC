@@ -362,11 +362,6 @@ def solution_extra_files(day: Path, outputs: dict[Path, bytes]) -> list[Path]:
     return sorted(set(existing) - set(outputs))
 
 
-def solution_dir_matches(day: Path, outputs: dict[Path, bytes]) -> bool:
-    existing = collect_files(day / "solution")
-    return existing == outputs
-
-
 def print_conflicts(conflicts: list[str]) -> None:
     for conflict in conflicts:
         print(conflict, file=sys.stderr)
@@ -388,9 +383,6 @@ def generate_day(
 
     if student:
         conflicts.extend(output_conflicts(student_outputs))
-        solution_dir = day / "solution"
-        if solution_dir.exists() and not solution_dir_matches(day, solution_outputs):
-            conflicts.append(f"would remove modified solution directory: {solution_dir}")
 
     if solution:
         conflicts.extend(output_conflicts(solution_outputs))
@@ -404,9 +396,6 @@ def generate_day(
         return False
 
     if student:
-        solution_dir = day / "solution"
-        if solution_dir.exists() and not solution:
-            shutil.rmtree(solution_dir)
         write_outputs(student_outputs, student_executables)
 
     if solution:
@@ -441,12 +430,6 @@ def check_day(day: Path, *, student: bool, solution: bool) -> bool:
     if student:
         student_outputs, _ = expected_student_outputs(day)
         ok = compare_expected_outputs("student", student_outputs) and ok
-        if not solution and (day / "solution").exists():
-            print(
-                f"solution directory exists for student-only tree: {day / 'solution'}",
-                file=sys.stderr,
-            )
-            ok = False
 
     if solution:
         solution_outputs, _ = expected_solution_outputs(day)
@@ -474,7 +457,7 @@ def parse_args() -> argparse.Namespace:
     mode.add_argument(
         "--student",
         action="store_true",
-        help="Generate the student tree and remove a matching solution/ directory.",
+        help="Generate only the student tree.",
     )
     mode.add_argument(
         "--solution",
@@ -489,7 +472,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite generated targets and remove stale solution/ files.",
+        help="Overwrite generated targets and, with --solution, remove stale solution/ files.",
     )
     return parser.parse_args()
 
