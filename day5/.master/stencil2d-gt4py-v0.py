@@ -145,7 +145,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
         "You have to specify a reasonable value for num_iter (0 < num_iter <= 1024*1024)"
     )
     assert 2 <= num_halo <= 256, (
-        "You have to specify a reasonable number of halo points (2 < num_halo <= 256)"
+        "You have to specify a reasonable number of halo points (2 <= num_halo <= 256)"
     )
     assert backend in (
         "None",

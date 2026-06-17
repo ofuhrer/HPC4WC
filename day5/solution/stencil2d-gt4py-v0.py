@@ -23,51 +23,30 @@ OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
 
 
 @gtx.field_operator
-def diffusion(
-    in_field: IJKField,
-    a1: float,
-    a2: float,
-    a8: float,
-    a20: float,
-) -> IJKField:
-    return (
-        a1 * in_field(J - 2)
-        + a2 * in_field(I - 1, J - 1)
-        + a8 * in_field(J - 1)
-        + a2 * in_field(I + 1, J - 1)
-        + a1 * in_field(I - 2)
-        + a8 * in_field(I - 1)
-        + a20 * in_field
-        + a8 * in_field(I + 1)
-        + a1 * in_field(I + 2)
-        + a2 * in_field(I - 1, J + 1)
-        + a8 * in_field(J + 1)
-        + a2 * in_field(I + 1, J + 1)
-        + a1 * in_field(J + 2)
+def laplacian(in_field: IJKField) -> IJKField:
+    lap_field = (
+        -4.0 * in_field + in_field(I - 1) + in_field(I + 1) + in_field(J - 1) + in_field(J + 1)
     )
+    return lap_field
+
+
+@gtx.field_operator
+def diffusion(in_field: IJKField, alpha: gtx.float64) -> IJKField:
+    lap1 = laplacian(in_field)
+    lap2 = laplacian(lap1)
+    return in_field - alpha * lap2
 
 
 @gtx.program
 def diffusion_program(
     in_field: IJKField,
     out_field: IJKField,
-    a1: gtx.float64,
-    a2: gtx.float64,
-    a8: gtx.float64,
-    a20: gtx.float64,
+    alpha: gtx.float64,
     nx: gtx.int32,
     ny: gtx.int32,
     nz: gtx.int32,
 ):
-    diffusion(
-        in_field,
-        out=out_field,
-        a1=a1,
-        a2=a2,
-        a8=a8,
-        a20=a20,
-        domain={I: (0, nx), J: (0, ny), K: (0, nz)},
-    )
+    diffusion(in_field, alpha, out=out_field, domain={I: (0, nx), J: (0, ny), K: (0, nz)})
 
 
 def update_halo(field: IJKField, num_halo: int):
@@ -110,10 +89,7 @@ def apply_diffusion(
         diffusion_stencil(
             in_field,
             out_field,
-            -alpha,
-            -2 * alpha,
-            8 * alpha,
-            1 - 20 * alpha,
+            alpha,
             nx,
             ny,
             nz,
