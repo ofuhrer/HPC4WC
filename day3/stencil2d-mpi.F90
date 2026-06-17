@@ -247,7 +247,7 @@ contains
         real (kind=wp), intent(inout) :: field(:, :, :)
         type(Partitioner), intent(in) :: p
 
-        ! TODO: Implement the parallel halo exchange.
+        ! TODO: implement the parallel halo exchange.
         !
         ! Useful Partitioner methods:
         !   p%left(), p%right(), p%top(), p%bottom()  - neighboring ranks

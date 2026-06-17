@@ -79,7 +79,7 @@ target/
 **/.ipynb_checkpoints/
 
 # Generated course solution bundles are published manually when needed.
-day*/solutions/
+day*/solution/
 
 # IPython
 profile_default/

@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 
-SOLUTION_RE = re.compile(r"^day\d+/solutions/")
+SOLUTION_RE = re.compile(r"^day\d+/solution/")
 
 
 def run(command: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -34,7 +34,7 @@ def staged_paths(repo_root: Path) -> list[str]:
     return [line for line in completed.stdout.splitlines() if line]
 
 
-def block_staged_solutions(repo_root: Path) -> bool:
+def block_staged_solution(repo_root: Path) -> bool:
     solution_paths = [path for path in staged_paths(repo_root) if SOLUTION_RE.match(path)]
     if not solution_paths:
         return True
@@ -42,7 +42,7 @@ def block_staged_solutions(repo_root: Path) -> bool:
     print("Do not commit generated solution bundles during course preparation:", file=sys.stderr)
     for path in solution_paths:
         print(f"  - {path}", file=sys.stderr)
-    print("Generate them locally only when publishing solutions.", file=sys.stderr)
+    print("Generate them locally only when publishing the solution bundle.", file=sys.stderr)
     return False
 
 
@@ -72,7 +72,7 @@ def check_generated_students(repo_root: Path) -> bool:
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[1]
     checks = [
-        block_staged_solutions(repo_root),
+        block_staged_solution(repo_root),
         check_generated_students(repo_root),
     ]
     return 0 if all(checks) else 1

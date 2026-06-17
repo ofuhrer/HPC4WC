@@ -248,7 +248,7 @@ contains
 ! hpc4wc:student |         real (kind=wp), intent(inout) :: field(:, :, :)
 ! hpc4wc:student |         type(Partitioner), intent(in) :: p
 ! hpc4wc:student |
-! hpc4wc:student |         ! TODO: Implement the parallel halo exchange.
+! hpc4wc:student |         ! TODO: implement the parallel halo exchange.
 ! hpc4wc:student |         !
 ! hpc4wc:student |         ! Useful Partitioner methods:
 ! hpc4wc:student |         !   p%left(), p%right(), p%top(), p%bottom()  - neighboring ranks
@@ -341,13 +341,13 @@ contains
         end do
         end do
 
-        ! send lr-buffers
+        ! send tb-buffers
         call MPI_Isend(sndbuf_t, tb_size, dtype, p%top(), 1000, p%comm(), tb_req(3), ierror)
         call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(top)', code=ierror)
         call MPI_Isend(sndbuf_b, tb_size, dtype, p%bottom(), 1001, p%comm(), tb_req(4), ierror)
         call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Isend(bottom)', code=ierror)
 
-        ! wait for lr-comm to finish
+        ! wait for tb-comm to finish
         call MPI_Waitall(4, tb_req, status, ierror)
         call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Waitall(tb)', code=ierror)
 
@@ -380,7 +380,7 @@ contains
         end do
         end do
 
-        ! wait for tb-comm to finish
+        ! wait for lr-comm to finish
         call MPI_Waitall(4, lr_req, status, ierror)
         call error(ierror /= MPI_SUCCESS, 'Problem with MPI_Waitall(lr)', code=ierror)
 

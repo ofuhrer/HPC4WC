@@ -285,7 +285,7 @@ def expected_solution_outputs(day: Path) -> tuple[dict[Path, bytes], set[Path]]:
     master_dir = master_dir_for(day)
     outputs: dict[Path, bytes] = {}
     executable_paths: set[Path] = set()
-    target_root = day / "solutions"
+    target_root = day / "solution"
 
     for master_path in sorted(master_dir.iterdir()):
         relative_path = master_path.relative_to(master_dir)
@@ -357,13 +357,13 @@ def output_conflicts(outputs: dict[Path, bytes]) -> list[str]:
 
 
 def solution_extra_files(day: Path, outputs: dict[Path, bytes]) -> list[Path]:
-    solutions_dir = day / "solutions"
-    existing = collect_files(solutions_dir)
+    solution_dir = day / "solution"
+    existing = collect_files(solution_dir)
     return sorted(set(existing) - set(outputs))
 
 
-def solutions_dir_matches(day: Path, outputs: dict[Path, bytes]) -> bool:
-    existing = collect_files(day / "solutions")
+def solution_dir_matches(day: Path, outputs: dict[Path, bytes]) -> bool:
+    existing = collect_files(day / "solution")
     return existing == outputs
 
 
@@ -388,9 +388,9 @@ def generate_day(
 
     if student:
         conflicts.extend(output_conflicts(student_outputs))
-        solutions_dir = day / "solutions"
-        if solutions_dir.exists() and not solutions_dir_matches(day, solution_outputs):
-            conflicts.append(f"would remove modified solutions directory: {solutions_dir}")
+        solution_dir = day / "solution"
+        if solution_dir.exists() and not solution_dir_matches(day, solution_outputs):
+            conflicts.append(f"would remove modified solution directory: {solution_dir}")
 
     if solution:
         conflicts.extend(output_conflicts(solution_outputs))
@@ -404,15 +404,15 @@ def generate_day(
         return False
 
     if student:
-        solutions_dir = day / "solutions"
-        if solutions_dir.exists() and not solution:
-            shutil.rmtree(solutions_dir)
+        solution_dir = day / "solution"
+        if solution_dir.exists() and not solution:
+            shutil.rmtree(solution_dir)
         write_outputs(student_outputs, student_executables)
 
     if solution:
-        solutions_dir = day / "solutions"
-        if solutions_dir.exists():
-            shutil.rmtree(solutions_dir)
+        solution_dir = day / "solution"
+        if solution_dir.exists():
+            shutil.rmtree(solution_dir)
         write_outputs(solution_outputs, solution_executables)
 
     mode = "student and solution" if student and solution else "student" if student else "solution"
@@ -441,9 +441,9 @@ def check_day(day: Path, *, student: bool, solution: bool) -> bool:
     if student:
         student_outputs, _ = expected_student_outputs(day)
         ok = compare_expected_outputs("student", student_outputs) and ok
-        if not solution and (day / "solutions").exists():
+        if not solution and (day / "solution").exists():
             print(
-                f"solutions directory exists for student-only tree: {day / 'solutions'}",
+                f"solution directory exists for student-only tree: {day / 'solution'}",
                 file=sys.stderr,
             )
             ok = False
@@ -462,7 +462,7 @@ def check_day(day: Path, *, student: bool, solution: bool) -> bool:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate student files and visible solutions from .master."
+        description="Generate student files and visible solution bundles from .master."
     )
     parser.add_argument(
         "days",
@@ -474,12 +474,12 @@ def parse_args() -> argparse.Namespace:
     mode.add_argument(
         "--student",
         action="store_true",
-        help="Generate the student tree and remove a matching solutions/ directory.",
+        help="Generate the student tree and remove a matching solution/ directory.",
     )
     mode.add_argument(
         "--solution",
         action="store_true",
-        help="Generate only the visible solutions/ directory.",
+        help="Generate only the visible solution/ directory.",
     )
     parser.add_argument(
         "--check",
@@ -489,7 +489,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite generated targets and remove stale solutions/ files.",
+        help="Overwrite generated targets and remove stale solution/ files.",
     )
     return parser.parse_args()
 

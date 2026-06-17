@@ -9,7 +9,7 @@ repos:
 
       - id: ruff-format-python-material
         name: Ruff format Python material
-        entry: bash -c 'ruff format --check $(git ls-files "day*/.master/*.py" "day*/*.py" "setup/*.py" "tools/*.py")'
+        entry: bash -c 'files=(); while IFS= read -r file; do [ -f "$file" ] && files+=("$file"); done < <(git ls-files "day*/.master/*.py" "day*/*.py" "setup/*.py" "tools/*.py"); [ ${#files[@]} -eq 0 ] || ruff format --check "${files[@]}"'
         language: python
         additional_dependencies:
           - ruff==0.13.3

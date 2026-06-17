@@ -39,7 +39,7 @@ CODESPELL_SKIP = (
     ".gt4py_cache",
     ".ipynb_checkpoints",
     "__pycache__",
-    "*/solutions/*",
+    "*/solution/*",
 )
 FORTRAN_COMPILE_SKIP = {
     "day4/.master/m_partitioner.F90",
@@ -200,7 +200,7 @@ class Checker:
                     )
 
     def check_generated_notebooks_are_clean(self, day: Path) -> None:
-        generated_roots = [day, day / "solutions"]
+        generated_roots = [day, day / "solution"]
         for root in generated_roots:
             for path in sorted(root.glob("*.ipynb")):
                 try:
@@ -465,7 +465,7 @@ class Checker:
                     self.fail("smoke", f"{self.rel(day / 'stencil2d.py')}: missing {name}")
 
         self.check_compare_fields(day / "compare_fields.py")
-        solution_compare = day / "solutions" / "compare_fields.py"
+        solution_compare = day / "solution" / "compare_fields.py"
         if solution_compare.exists():
             self.check_compare_fields(solution_compare)
 
@@ -555,7 +555,7 @@ class Checker:
                     self.fail("smoke", f"{self.rel(day / 'stencil2d-original.py')}: missing {name}")
 
         self.check_compare_fields(day / "compare_fields.py")
-        solution_compare = day / "solutions" / "compare_fields.py"
+        solution_compare = day / "solution" / "compare_fields.py"
         if solution_compare.exists():
             self.check_compare_fields(solution_compare)
 
