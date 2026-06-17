@@ -209,9 +209,11 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
 
     apply_diffusion(in_field, out_field, alpha, num_halo, 1, comm)
 
+    cp.cuda.Device().synchronize()
     comm.Barrier()
     tic = time.time()
     apply_diffusion(in_field, out_field, alpha, num_halo, num_iter, comm)
+    cp.cuda.Device().synchronize()
     comm.Barrier()
     toc = time.time()
 

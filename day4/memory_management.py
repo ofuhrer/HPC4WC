@@ -1,284 +1,170 @@
-# Phind ai-assistant (405B; 06-2025) was used for the development of this Python script.
-# Especially the different meanings of memory management types and how they relate to CuPy-settings was prompted.
-# The code has been adapted and reviewed before publication. The verification of the results was carried out
-# using visual aids and summary statistics. An in-depth analysis with an expert from CSCS/NVIDIA/CuPy is still outstanding.
+#!/usr/bin/env python3
+"""Measure explicit CuPy host/device transfer cases on one GPU.
 
-import numpy as np
-import cupy as cp
-import matplotlib.pyplot as plt
+This script is used by the Day 4 bonus exercise. It intentionally keeps the
+benchmark narrow: pageable and pinned host buffers are measured for explicit
+host-to-device and device-to-host copies. Managed memory is shown separately as
+an allocation mode, not as another transfer-bandwidth result.
+"""
+
+from __future__ import annotations
+
+import argparse
 import time
-import gc
+from collections.abc import Callable, Sequence
+
+import cupy as cp
+import numpy as np
 
 
-def warmup_cupy():
-    """Perform initial CuPy operations to initialize CUDA context and JIT compilation."""
-    print("Warming up CuPy and CUDA runtime...")
+DTYPE = np.float32
 
-    # Initialize CUDA context and trigger JIT compilation
-    a = cp.array([1, 2, 3])
-    b = cp.array([4, 5, 6])
-    cp.add(a, b)
-    cp.multiply(a, b)
-    cp.sum(a)
 
-    # Trigger random number generation
-    cp.random.random((100, 100))
-
-    # Force synchronization
+def synchronize() -> None:
     cp.cuda.Device().synchronize()
 
-    # Print device information
-    device_id = cp.cuda.Device().id
-    try:
-        device_props = cp.cuda.runtime.getDeviceProperties(device_id)
-        print(f"CUDA Device ID: {device_id}")
-        print(f"CUDA Device Name: {device_props['name'].decode()}")
-    except:
-        print(f"CUDA Device ID: {device_id}")
-        print("CUDA Device Name: Unable to determine")
 
-    print(f"CuPy Version: {cp.__version__}")
-    print("-" * 60)
+def pinned_empty(shape: tuple[int, ...], dtype: np.dtype) -> tuple[np.ndarray, object]:
+    nbytes = int(np.prod(shape)) * np.dtype(dtype).itemsize
+    memory = cp.cuda.alloc_pinned_memory(nbytes)
+    array = np.frombuffer(memory, dtype=dtype, count=int(np.prod(shape))).reshape(shape)
+    return array, memory
 
 
-def clear_memory_pools():
-    """Clear both device and pinned memory pools."""
-    mempool = cp.get_default_memory_pool()
-    pinned_mempool = cp.get_default_pinned_memory_pool()
+def best_time(action: Callable[[], object], repeat: int) -> float:
+    action()
+    synchronize()
 
-    mempool.free_all_blocks()
-    pinned_mempool.free_all_blocks()
+    timings = []
+    for _ in range(repeat):
+        synchronize()
+        start = time.perf_counter()
+        result = action()
+        synchronize()
+        timings.append(time.perf_counter() - start)
 
-    # Force garbage collection
-    gc.collect()
+        # Keep temporary arrays alive until after synchronization.
+        del result
 
-
-class AtmosphericModel:
-    def __init__(self, nx=128, ny=128, nz=64, memory_type="device"):
-        """Initialize atmospheric model with specified memory type."""
-        self.nx, self.ny, self.nz = nx, ny, nz
-        self.memory_type = memory_type
-        self.shape = (nz, ny, nx)
-
-        # Calculate exact size in bytes (float32 = 4 bytes)
-        self.size_bytes = nx * ny * nz * 4
-        self.size_mb = self.size_bytes / (1024 * 1024)
-        self.size_gb = self.size_mb / 1024
-
-        # Initialize arrays based on memory type
-        if memory_type == "device":
-            # Standard device memory allocation
-            self.temperature = cp.random.random(self.shape, dtype=cp.float32)
-
-        elif memory_type == "system":
-            # Create on CPU and transfer to GPU
-            temp_cpu = np.random.rand(*self.shape).astype(np.float32)
-            self.temperature = cp.asarray(temp_cpu)
-
-        elif memory_type == "managed":
-            # Allocate true CUDA Unified Memory through CuPy's managed allocator.
-            self.managed_mempool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
-            with cp.cuda.using_allocator(self.managed_mempool.malloc):
-                self.temperature = cp.random.random(self.shape, dtype=cp.float32)
-
-        elif memory_type == "pinned":
-            # Use pinned memory for host array
-            # Allocate pinned memory using CuPy's memory pool
-            mem_size = self.size_bytes
-            temp_mem = cp.cuda.alloc_pinned_memory(mem_size)
-            temp_cpu = np.frombuffer(
-                temp_mem, dtype=np.float32, count=self.nx * self.ny * self.nz
-            ).reshape(self.shape)
-            temp_cpu[:] = np.random.rand(*self.shape)
-            self.temperature_cpu = temp_cpu
-            self.temperature = cp.asarray(self.temperature_cpu)
-
-        # Ensure all initialization is complete
-        cp.cuda.Device().synchronize()
-
-    def get_cpu_data(self, n_repeat=1):
-        """
-        Transfer temperature data from GPU to CPU multiple times and return average time.
-        Uses simple but reliable timing approach.
-        """
-        # Warm-up transfers to ensure JIT compilation is complete
-        for _ in range(3):
-            _ = self.temperature.get()
-            cp.cuda.Device().synchronize()
-
-        # Measure multiple transfers
-        times = []
-        for i in range(n_repeat):
-            # Force garbage collection to minimize interference
-            gc.collect()
-
-            # Ensure GPU is idle before starting measurement
-            cp.cuda.Device().synchronize()
-
-            # Start timing
-            start_time = time.perf_counter()
-
-            # Perform the transfer
-            result = self.temperature.get()
-
-            # Ensure transfer is complete
-            cp.cuda.Device().synchronize()
-
-            # End timing
-            end_time = time.perf_counter()
-
-            # Calculate elapsed time
-            elapsed_sec = end_time - start_time
-            times.append(elapsed_sec)
-
-        # Calculate statistics
-        avg_time = sum(times) / len(times)
-        min_time = min(times)
-        max_time = max(times)
-
-        # Calculate bandwidth
-        avg_bandwidth = self.size_gb / avg_time if avg_time > 0 else 0
-        max_bandwidth = self.size_gb / min_time if min_time > 0 else 0
-
-        return result, avg_time, avg_bandwidth
+    return min(timings)
 
 
-def run_benchmark():
-    """Run the full benchmark and return results."""
-    # Initialize CUDA context and JIT compilation before benchmarking
-    warmup_cupy()
-
-    # Benchmark configuration - reduced grid sizes to avoid crashes
-    grid_sizes = [128, 256, 512, 1024]
-    memory_types = ["device", "system", "managed", "pinned"]
-    transfer_times = {mem_type: [] for mem_type in memory_types}
-    bandwidths = {mem_type: [] for mem_type in memory_types}
-    array_sizes_mb = []
-    array_sizes_gb = []
-
-    # Calculate number of repeats needed for each grid size
-    repeats = {128: 32, 256: 16, 512: 8, 1024: 4}
-
-    # Run benchmarks
-    for nx in grid_sizes:
-        ny = nx
-        nz = 4
-        print(f"Benchmarking grid size: {nx}x{ny}x{nz}")
-
-        # Calculate array size
-        size_bytes = nx * ny * nz * 4  # float32 = 4 bytes
-        size_mb = size_bytes / (1024 * 1024)
-        size_gb = size_mb / 1024
-        array_sizes_mb.append(size_mb)
-        array_sizes_gb.append(size_gb)
-
-        for mem_type in memory_types:
-            print(f"  Testing {mem_type} memory...")
-
-            try:
-                # Clear memory pools before each test
-                clear_memory_pools()
-
-                # Create model
-                model = AtmosphericModel(nx=nx, ny=ny, nz=nz, memory_type=mem_type)
-
-                n_repeat = repeats[nx]
-
-                # Measure GPU->CPU transfer time with multiple repetitions
-                _, t_time, bandwidth = model.get_cpu_data(n_repeat=n_repeat)
-                transfer_times[mem_type].append(t_time)
-                bandwidths[mem_type].append(bandwidth)
-
-                # Clean up GPU memory
-                del model
-
-                # Clear memory pools after each test
-                clear_memory_pools()
-
-            except Exception as e:
-                print(f"    ERROR: {e}")
-                print(f"    Skipping this test and recording zero bandwidth")
-                transfer_times[mem_type].append(0)
-                bandwidths[mem_type].append(0)
-
-                # Try to clean up
-                try:
-                    del model
-                except:
-                    pass
-
-                # Force memory cleanup
-                clear_memory_pools()
-
-            # Small delay between tests
-            time.sleep(1)
-
-    return grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths
+def gb_per_second(nbytes: int, elapsed: float) -> float:
+    return nbytes / 1000**3 / elapsed
 
 
-def plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types):
-    """Plot the benchmark results with simplified formatting."""
-    plt.figure(figsize=(12, 8))
+def benchmark_transfers(
+    sizes: Sequence[int], nz: int, repeat: int
+) -> list[tuple[str, float, float, float, float, float]]:
+    rows = []
 
-    # Plot each memory type with default styling
-    for mem_type in memory_types:
-        # Get the bandwidth data for this memory type
-        bw_data = bandwidths[mem_type]
+    for nxy in sizes:
+        shape = (nz, nxy, nxy)
+        nbytes = int(np.prod(shape)) * np.dtype(DTYPE).itemsize
+        size_mb = nbytes / 1000**2
 
-        # Plot the data with default styling
-        plt.plot(
-            grid_sizes,
-            bw_data,
-            marker="o",  # Keep just a simple marker
-            linewidth=2,
-            label=f"{mem_type} memory",
+        pageable_in = np.full(shape, 1.0, dtype=DTYPE)
+        pageable_out = np.empty_like(pageable_in)
+        pinned_in, pinned_in_memory = pinned_empty(shape, DTYPE)
+        pinned_out, pinned_out_memory = pinned_empty(shape, DTYPE)
+        pinned_in[...] = pageable_in
+
+        device_buffer = cp.empty(shape, dtype=cp.float32)
+        device_source = cp.full(shape, 2.0, dtype=cp.float32)
+        synchronize()
+
+        pageable_h2d = best_time(lambda: device_buffer.set(pageable_in), repeat)
+        pageable_d2h = best_time(lambda: device_source.get(out=pageable_out), repeat)
+        pinned_h2d = best_time(lambda: device_buffer.set(pinned_in), repeat)
+        pinned_d2h = best_time(lambda: device_source.get(out=pinned_out), repeat)
+
+        rows.append(
+            (
+                f"{nxy}x{nxy}x{nz}",
+                size_mb,
+                gb_per_second(nbytes, pageable_h2d),
+                gb_per_second(nbytes, pageable_d2h),
+                gb_per_second(nbytes, pinned_h2d),
+                gb_per_second(nbytes, pinned_d2h),
+            )
         )
 
-    # Add labels and title
-    plt.xlabel("Grid Size (N for NxNx4)", fontsize=14)
-    plt.ylabel("Transfer Bandwidth (GB/s)", fontsize=14)
-    plt.title("GPU-to-CPU Data Transfer Bandwidth vs Grid Size", fontsize=16)
+        del pageable_in, pageable_out, pinned_in, pinned_out
+        del pinned_in_memory, pinned_out_memory
+        del device_buffer, device_source
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
 
-    # Add grid and legend
-    plt.grid(True, which="both", ls="--", alpha=0.7)
-    plt.legend(fontsize=12)
-
-    # Set x-ticks to show the actual grid sizes
-    plt.xticks(grid_sizes, [str(size) for size in grid_sizes])
-
-    plt.tight_layout()
-    plt.savefig("gpu_transfer_bandwidth.png", dpi=300)
-    plt.show()
+    return rows
 
 
-def print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types):
-    """Print a summary table of the benchmark results."""
-    print("\nSummary of Transfer Bandwidths (GB/s):")
-    print("-" * 80)
+def managed_memory_smoke(shape: tuple[int, ...], repeat: int) -> tuple[float, float, float]:
+    nbytes = int(np.prod(shape)) * np.dtype(DTYPE).itemsize
+    pool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
+
+    with cp.cuda.using_allocator(pool.malloc):
+        managed = cp.empty(shape, dtype=cp.float32)
+
+    elapsed = best_time(lambda: managed.fill(1.0), repeat)
+    checksum = float(cp.asnumpy(managed[:1, :1, :1]).sum())
+    pool.free_all_blocks()
+    return nbytes / 1000**2, elapsed, checksum
+
+
+def print_transfer_table(rows: list[tuple[str, float, float, float, float, float]]) -> None:
+    print("\nExplicit copy bandwidths")
+    print("H2D = host to device, D2H = device to host")
+    print("Pinned copies use explicit pinned NumPy output/input buffers.")
+    print()
     print(
-        f"{'Grid Size':<15} | {'Array Size (MB)':<15} | "
-        + " | ".join(f"{mem_type:<10}" for mem_type in memory_types)
+        f"{'shape':>14} {'size':>12} "
+        f"{'page H2D':>14} {'page D2H':>14} "
+        f"{'pinned H2D':>14} {'pinned D2H':>14}"
     )
-    print("-" * 80)
-
-    for i, nx in enumerate(grid_sizes):
-        size_mb = array_sizes_mb[i]
-        bandwidths_str = " | ".join(
-            f"{bandwidths[mem_type][i]:<10.2f}" for mem_type in memory_types
+    for shape, size_mb, page_h2d, page_d2h, pinned_h2d, pinned_d2h in rows:
+        print(
+            shape.rjust(14),
+            f"{size_mb:8.1f} MB",
+            f"{page_h2d:9.1f} GB/s",
+            f"{page_d2h:9.1f} GB/s",
+            f"{pinned_h2d:9.1f} GB/s",
+            f"{pinned_d2h:9.1f} GB/s",
         )
-        print(f"{f'{nx}×{nx}×4':<15} | {size_mb:<15.2f} | {bandwidths_str}")
 
 
-def main():
-    """Main function to run the benchmark."""
-    grid_sizes, array_sizes_mb, array_sizes_gb, transfer_times, bandwidths = run_benchmark()
-    memory_types = ["device", "system", "managed", "pinned"]
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--sizes", nargs="+", type=int, default=[128, 256, 512, 1024])
+    parser.add_argument("--nz", type=int, default=4)
+    parser.add_argument("--repeat", type=int, default=10)
+    return parser.parse_args()
 
-    # Plot results
-    plot_results(grid_sizes, array_sizes_mb, bandwidths, memory_types)
 
-    # Print summary
-    print_summary(grid_sizes, array_sizes_mb, array_sizes_gb, bandwidths, memory_types)
+def main() -> None:
+    args = parse_args()
+
+    device = cp.cuda.Device()
+    props = cp.cuda.runtime.getDeviceProperties(device.id)
+    print(f"GPU: {props['name'].decode()} (device {device.id})")
+    print(f"CuPy: {cp.__version__}")
+
+    rows = benchmark_transfers(args.sizes, args.nz, args.repeat)
+    print_transfer_table(rows)
+
+    managed_size_mb, managed_elapsed, checksum = managed_memory_smoke(
+        (args.nz, args.sizes[-1], args.sizes[-1]), args.repeat
+    )
+    print("\nManaged-memory check")
+    print(
+        "Allocated CUDA managed memory and timed a GPU fill. "
+        "This is not a host/device copy bandwidth measurement."
+    )
+    print(
+        f"shape={args.sizes[-1]}x{args.sizes[-1]}x{args.nz}, "
+        f"size={managed_size_mb:.1f} MB, "
+        f"best fill time={managed_elapsed * 1e3:.3f} ms, "
+        f"checksum={checksum:.1f}"
+    )
 
 
 if __name__ == "__main__":

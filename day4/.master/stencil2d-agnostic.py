@@ -201,6 +201,13 @@ def get_asnumpy(z):
         return z
 
 
+def synchronize():
+    try:
+        xp.cuda.Device().synchronize()
+    except AttributeError:
+        pass
+
+
 def laplacian(in_field, lap_field, num_halo, extend=0):
     """Compute the Laplacian using 2nd-order centered differences.
 
@@ -229,7 +236,7 @@ def laplacian(in_field, lap_field, num_halo, extend=0):
     )
 
 
-def halo_update(field, num_halo):
+def update_halo(field, num_halo):
     """Update the halo-zone using an up/down and left/right strategy.
 
     Parameters
@@ -275,7 +282,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
     tmp_field = xp.empty_like(in_field)
 
     for n in range(num_iter):
-        halo_update(in_field, num_halo)
+        update_halo(in_field, num_halo)
 
         laplacian(in_field, tmp_field, num_halo=num_halo, extend=1)
         laplacian(tmp_field, out_field, num_halo=num_halo, extend=0)
@@ -288,7 +295,7 @@ def apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=1):
         if n < num_iter - 1:
             in_field, out_field = out_field, in_field
         else:
-            halo_update(out_field, num_halo)
+            update_halo(out_field, num_halo)
 
 
 @click.command()
@@ -335,8 +342,10 @@ def main(nx, ny, nz, num_iter, num_halo=2, plot_result=False):
     apply_diffusion(in_field, out_field, alpha, num_halo)
 
     # time the actual work
+    synchronize()
     tic = time.time()
     apply_diffusion(in_field, out_field, alpha, num_halo, num_iter=num_iter)
+    synchronize()
     toc = time.time()
 
     print(f"Elapsed time for work = {toc - tic} s")
