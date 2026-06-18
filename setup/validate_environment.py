@@ -29,7 +29,7 @@ EXPECTED_PACKAGES = {
     "Pygments": "2.20.0",
     "ipykernel": "7.3.0",
     "ipyparallel": "9.2.0",
-    "ipcmagic-cscs": "1.1.0",
+    "ipcmagic-cscs": "1.2.0",
     "bash_kernel": "0.10.0",
 }
 

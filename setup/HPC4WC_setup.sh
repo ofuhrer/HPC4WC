@@ -53,8 +53,11 @@ require_command mpicc
 require_command mpif90
 require_command nvcc
 
-uenv status || true
-if ! uenv status 2>/dev/null | grep -q "${TARGET_UENV_NAME}:/user-environment"; then
+uenv_status="$(uenv status 2>/dev/null || true)"
+printf "%s\n" "${uenv_status}"
+if ! printf "%s\n" "${uenv_status}" | grep -q "${TARGET_UENV_NAME}:/user-environment" \
+    && ! { printf "%s\n" "${uenv_status}" | grep -Eq "^uenv[[:space:]]+${TARGET_UENV_NAME}([[:space:]]|$)" \
+        && printf "%s\n" "${uenv_status}" | grep -Eq "^[[:space:]]*mount[[:space:]]+/user-environment([[:space:]]|$)"; }; then
     die "The ${TARGET_UENV_NAME} uenv is not active. Launch JupyterHub with ${TARGET_UENV}."
 fi
 
