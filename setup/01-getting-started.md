@@ -5,9 +5,12 @@ These instructions set up the Python environment used by the HPC4WC course on CS
 ## Launch JupyterHub
 
 1. Open <https://jupyter-santis.cscs.ch>.
-2. Sign in with your CSCS account.
-3. Choose the Santis JupyterLab environment with the `prgenv-gnu/26.3:v1` uenv.
-4. Start the server and wait until JupyterLab opens.
+2. Sign in with your CSCS account (course_XXXXX).
+3. Click on "Start My Server"
+4. Enter the details according to the image below.
+5. Start the server and wait until JupyterLab opens.
+
+![JupyterHub launch settings](img/launch.png)
 
 JupyterHub sessions run inside a Slurm job on Santis compute nodes. This is different from `ssh santis`, which logs in to a login node. The login node is useful for repository work and Slurm submission, but GPU, CUDA, and `srun` behavior must be checked on compute nodes.
 
@@ -29,9 +32,9 @@ cd "$HOME/HPC4WC"
 ./setup/HPC4WC_setup.sh
 ```
 
-The script creates a Python virtual environment under `$SCRATCH`, symlinks it as `$HOME/HPC4WC_venv`, registers the `HPC4WC_kernel` Jupyter kernel, and validates the CPU-side Python stack. The registered kernel normalizes the `SIGCHLD` signal mask before starting Python so subprocess-based tools such as CMake work reliably from notebooks. It does not modify `.bashrc`.
+The script creates a Python virtual environment under `$SCRATCH`, symlinks it as `$HOME/HPC4WC_venv`, registers the `HPC4WC_kernel` Jupyter kernel, and validates the CPU-side Python stack.
 
-If you need to access the environment from a terminal, activate the environment with:
+Note: If you need to access the environment from a terminal, activate the environment with:
 
 ```bash
 source "$HOME/activate_hpc4wc.sh"
@@ -39,7 +42,8 @@ source "$HOME/activate_hpc4wc.sh"
 
 ## Restart JupyterHub
 
-After the setup finishes, stop and restart your JupyterHub server. Then open notebooks with the `HPC4WC_kernel` kernel.
+After the setup finishes, select File -> Hub Control Panel.
+Stop the JupyterHub server. Then restart your JupyterHub server using the settings in the image above.
 
 ## Test the Setup
 
@@ -49,4 +53,6 @@ Run the notebook:
 setup/02-test-setup.ipynb
 ```
 
-It checks NumPy, Matplotlib, MPI through `ipyparallel`, CuPy, GT4Py, and the package versions expected for the course.
+It checks the basic functionalities required for the course, namely NumPy, Matplotlib, MPI through `ipyparallel`, CuPy, GT4Py, and the package versions expected for the course.
+
+You are all set and ready to go!

@@ -53,8 +53,8 @@ cd HPC4WC-overlapping
 ```
 
 Create conda environment.
-Please follow the environment creation of the course under 
-https://github.com/ofuhrer/HPC4WC/blob/main/setup/01-getting-started.pdf
+Please follow the environment creation of the course under
+https://github.com/ofuhrer/HPC4WC/blob/main/setup/01-getting-started.md
 
 Please make sure that the environment is activated and then install the required packages for this project
 
