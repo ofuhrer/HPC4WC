@@ -26,6 +26,11 @@ The course material is organized by day:
 - [Day 5](day5): high-level programming models, domain-specific languages,
   GT4Py, performance portability, and abstractions for stencil computations.
 
+## Setup
+
+Follow the [getting started guide](setup/01-getting-started.md) to set up the
+course environment.
+
 ## Running Checks
 
 Some course exercises require specific HPC hardware, compilers, MPI, GPUs, or a
