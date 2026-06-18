@@ -10,7 +10,7 @@ cd ../day1 && \
 
 # run the program to validate
 echo "running stencil2d-mpi.py ..."
-srun -n 12 python stencil2d-mpi.py --nx=128 --ny=128 --nz=64 --num_iter=${num_iter}
+srun -n 12 -c 1 python stencil2d-mpi.py --nx=128 --ny=128 --nz=64 --num_iter=${num_iter}
 
 # compare output against control data
 echo "running compare_fields.py ..."

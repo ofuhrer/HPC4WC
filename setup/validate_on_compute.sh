@@ -4,6 +4,7 @@
 #SBATCH --partition=debug
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
+#SBATCH --cpus-per-task=1
 #SBATCH --time=00:20:00
 #SBATCH --uenv=prgenv-gnu/26.3:v1
 #SBATCH --view=default
@@ -68,7 +69,7 @@ echo "==> Single-process GT4Py GPU validation"
 
 echo
 echo "==> MPI validation via srun"
-srun -n "${SLURM_NTASKS:-4}" \
+srun -n "${SLURM_NTASKS:-4}" -c 1 \
     "${PYTHON_BIN}" -u "${HPC4WC_ROOT}/setup/validate_environment.py" \
     --mpi-only \
     --require-mpi-size "${SLURM_NTASKS:-4}"

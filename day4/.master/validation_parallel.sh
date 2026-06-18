@@ -17,7 +17,7 @@
 # hpc4wc:student |   gpus_per_node=1
 # hpc4wc:student | fi
 # hpc4wc:student | num_ranks=$((num_nodes * gpus_per_node))
-# hpc4wc:student | srun -n ${num_ranks} python stencil2d-parallel.py --nx=512 --ny=512 --nz=64 --num_iter=${num_iter} --plot_result true
+# hpc4wc:student | srun -n ${num_ranks} -c 1 python stencil2d-parallel.py --nx=512 --ny=512 --nz=64 --num_iter=${num_iter} --plot_result true
 # hpc4wc:student |
 # hpc4wc:student | # compare output against control data
 # hpc4wc:student | echo "running compare_fields.py ..."
@@ -42,7 +42,7 @@ if [ "${gpus_per_node}" -lt 1 ]; then
   gpus_per_node=1
 fi
 num_ranks=$((num_nodes * gpus_per_node))
-srun -n ${num_ranks} python stencil2d-parallel.py --nx=512 --ny=512 --nz=64 --num_iter=${num_iter} --plot_result true
+srun -n ${num_ranks} -c 1 python stencil2d-parallel.py --nx=512 --ny=512 --nz=64 --num_iter=${num_iter} --plot_result true
 
 # compare output against control data
 echo "running compare_fields.py ..."
