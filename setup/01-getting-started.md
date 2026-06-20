@@ -10,7 +10,7 @@ These instructions set up the Python environment used by the HPC4WC course on CS
 4. Enter the details according to the image below.
 5. Start the server and wait until JupyterLab opens.
 
-![JupyterHub launch settings](img/launch.png)
+<img src="img/launch.png" alt="JupyterHub launch settings" width="50%">
 
 | Setting | Value |
 |---|---|
