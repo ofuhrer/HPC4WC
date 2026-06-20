@@ -56,12 +56,8 @@ Stop the JupyterHub server. Then restart your JupyterHub server using the settin
 
 ## Test the Setup
 
-Run the notebook:
+In the sidebar on the left, open the `HPC4WC` folder and inside it the `setup` folder. Run the notebook `02-test-setup.ipynb`.
 
-```text
-setup/02-test-setup.ipynb
-```
-
-It checks the basic functionalities required for the course, namely NumPy, Matplotlib, MPI through `ipyparallel`, CuPy, GT4Py, and the package versions expected for the course.
+It checks the basic functionalities required for the course, namely NumPy, Matplotlib, MPI, CuPy, GT4Py, and the package versions expected for the course. The GT4Py tests will issue some warnings which you can ignore.
 
 You are all set and ready to go!
