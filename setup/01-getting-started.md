@@ -12,6 +12,13 @@ These instructions set up the Python environment used by the HPC4WC course on CS
 
 ![JupyterHub launch settings](img/launch.png)
 
+GPUs: `1`
+Account: `hpc4wc-course2026-ethz`
+Job Duration: `8 hours`
+Custom uenv: `prgenv-gnu/26.3:v1`
+Uenv view: `default`
+Custom Reservation: `hpc4wc-course2026`
+
 JupyterHub sessions run inside a Slurm job on Santis compute nodes. This is different from `ssh santis`, which logs in to a login node. The login node is useful for repository work and Slurm submission, but GPU, CUDA, and `srun` behavior must be checked on compute nodes.
 
 ## Clone the Course Repository
