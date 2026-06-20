@@ -13,7 +13,6 @@ These instructions set up the Python environment used by the HPC4WC course on CS
 ![JupyterHub launch settings](img/launch.png)
 
 | Setting | Value |
-
 |---|---|
 | GPUs | `1` |
 | Account | `hpc4wc-course2026-ethz` |
