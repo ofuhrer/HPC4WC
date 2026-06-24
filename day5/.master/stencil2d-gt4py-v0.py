@@ -19,7 +19,6 @@ J = gtx.Dimension("J")
 K = gtx.Dimension("K")
 
 IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
-OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
 
 
 # hpc4wc:student-begin
@@ -106,7 +105,6 @@ def apply_diffusion(
             nx,
             ny,
             nz,
-            offset_provider=OFFSET_PROVIDER,
         )
 
         if n < num_iter - 1:
@@ -181,7 +179,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
 
     # prepare input field
     # hpc4wc:student-begin
-    # hpc4wc:student | in_field = None  # TODO
+    # hpc4wc:student | # TODO - set the interior quarter of in_field to 1.0
     # hpc4wc:student-end
     # hpc4wc:solution-begin
     in_field[

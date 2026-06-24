@@ -19,7 +19,6 @@ J = gtx.Dimension("J")
 K = gtx.Dimension("K")
 
 IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
-OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
 
 
 # TODO - insert Laplacian
@@ -79,7 +78,7 @@ def main(nx, ny, nz, num_iter, num_halo=2, backend="None", plot_result=False):
     out_field = None  # TODO
 
     # prepare input field
-    in_field = None  # TODO
+    # TODO - set the interior quarter of in_field to 1.0
 
     # write input field to file
     # swap first and last axes for compatibility with day1/stencil2d.py
