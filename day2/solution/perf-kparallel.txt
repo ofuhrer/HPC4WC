@@ -1,0 +1,56 @@
+pid 263252's current affinity list: 0-287
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel.x --nx 128 --ny 128 --nz 64 --num_iter 1024':
+
+    29,979,754,307      mem_access_rd:u                                                    
+       626,968,198      mem_access_wr:u                                                    
+        31,087,441      LLC-load-misses                                                    
+
+       0.206089967 seconds time elapsed
+
+       9.896640000 seconds user
+       1.003860000 seconds sys
+
+
+======= perf record ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 37K of event 'cpu-clock:u'
+# Event count (approx.): 9375000000
+#
+# Overhead  Command          Shared Object             Symbol                         
+# ........  ...............  ........................  ...............................
+#
+    90.73%  stencil2d-kpara  libgomp.so.1.0.0          [.] omp_get_num_procs
+     6.15%  stencil2d-kpara  stencil2d-kparallel.x     [.] apply_diffusion.6._omp_fn.0
+     1.76%  stencil2d-kpara  libgomp.so.1.0.0          [.] 0x0000000000045394
+     1.01%  stencil2d-kpara  stencil2d-kparallel.x     [.] update_halo.5
+     0.11%  stencil2d-kpara  libgomp.so.1.0.0          [.] omp_fulfill_event
+     0.10%  stencil2d-kpara  libc-2.31.so              [.] __aarch64_swp4_rel
+     0.02%  stencil2d-kpara  libc-2.31.so              [.] __aarch64_cas4_acq
+     0.02%  stencil2d-kpara  libc-2.31.so              [.] syscall
+     0.02%  stencil2d-kpara  ld-2.31.so                [.] do_lookup_x
+     0.01%  stencil2d-kpara  libgomp.so.1.0.0          [.] GOMP_single_copy_end
+     0.01%  stencil2d-kpara  ld-2.31.so                [.] _dl_lookup_symbol_x
+     0.01%  stencil2d-kpara  ld-2.31.so                [.] _dl_relocate_object
+     0.01%  stencil2d-kpara  ld-2.31.so                [.] check_match
+     0.01%  stencil2d-kpara  libc-2.31.so              [.] __memcpy_generic
+     0.01%  stencil2d-kpara  libc-2.31.so              [.] _int_free
+     0.01%  stencil2d-kpara  libc-2.31.so              [.] malloc
+     0.00%  stencil2d-kpara  ld-2.31.so                [.] _dl_fixup
+     0.00%  stencil2d-kpara  libc-2.31.so              [.] __aarch64_cas8_acq
+     0.00%  stencil2d-kpara  libc-2.31.so              [.] free
+     0.00%  stencil2d-kpara  libcudart.so.12.6.77      [.] 0x000000000007a4c0
+     0.00%  stencil2d-kpara  libgfortran.so.5.0.0      [.] _gfortran_st_open
+     0.00%  stencil2d-kpara  libmpi_gnu_123.so.12.0.0  [.] MPIR_T_cat_add_cvar
+     0.00%  stencil2d-kpara  libmpi_gnu_123.so.12.0.0  [.] MPIR_T_cvar_init
+     0.00%  stencil2d-kpara  stencil2d-kparallel.x     [.] setup.3
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
