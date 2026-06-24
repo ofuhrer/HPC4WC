@@ -19,7 +19,6 @@ J = gtx.Dimension("J")
 K = gtx.Dimension("K")
 
 IJKField = gtx.Field[gtx.Dims[I, J, K], gtx.float64]
-OFFSET_PROVIDER = {"_IOff": I, "_JOff": J}
 
 
 @gtx.field_operator
@@ -86,7 +85,7 @@ def apply_diffusion(
             nx,
             ny,
             nz,
-            offset_provider=OFFSET_PROVIDER,
+            offset_provider={},
         )
 
         if n < num_iter - 1:
