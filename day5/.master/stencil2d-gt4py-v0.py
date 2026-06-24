@@ -105,7 +105,6 @@ def apply_diffusion(
             nx,
             ny,
             nz,
-            offset_provider={},
         )
 
         if n < num_iter - 1:
