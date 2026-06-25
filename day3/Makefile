@@ -21,10 +21,14 @@ ifdef NOOPT
 endif
 endif
 ifeq "$(HOSTNAME)" "nid"
-  F90 = ftn
-  FFLAGS = -O3 -hfp3 -eZ -ffree -N255 -ec -eC -eI -eF -rm
+  F90 = mpif90 -ffree-line-length-none #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -march=native -funroll-loops -fopenmp -flto -fno-math-errno
+  #FFLAGS = -g1 -O1 -fno-tree-sra -fno-tree-loop-optimize -fno-tree-vectorize -march=native -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -fopenmp
 ifdef NOOPT
-  FFLAGS = -O0 -hfp0 -Oipa0 -Ovector0 -ffree -N255 -ec -eC -eI -eF -rm
+  FFLAGS = -O0 -g -fbacktrace -fno-fast-math -ffree-line-length-none -fno-backslash \
+  -pedantic -Waliasing -Wampersand -Wline-truncation -Wsurprising -Wtabs -Wunderflow \
+  -fdump-core -ffpe-trap=invalid,zero,overflow -fbounds-check -finit-real=nan \
+  -finit-integer=9999999 -finit-logical=true -finit-character=35
   TARGET = stencil2d-$(VERSION)-noopt.x
 endif
 endif
