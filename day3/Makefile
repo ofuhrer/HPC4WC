@@ -21,7 +21,7 @@ ifdef NOOPT
 endif
 endif
 ifeq "$(HOSTNAME)" "nid"
-  F90 = mpif90 -ffree-line-length-none #-L/user-tools/env/forge/lib/64 -lmap-sampler
+  F90 = mpif90 -DGNU_MPI_WORKAROUND -ffree-line-length-none #-L/user-tools/env/forge/lib/64 -lmap-sampler
   FFLAGS = -g1 -O3 -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -march=native -funroll-loops -fopenmp -flto -fno-math-errno
   #FFLAGS = -g1 -O1 -fno-tree-sra -fno-tree-loop-optimize -fno-tree-vectorize -march=native -fno-inline -fno-optimize-sibling-calls -fno-omit-frame-pointer -fopenmp
 ifdef NOOPT
