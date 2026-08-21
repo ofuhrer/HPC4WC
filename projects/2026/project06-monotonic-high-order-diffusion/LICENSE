@@ -1,0 +1,18 @@
+This project derives from the HPC4WC course code,
+github.com/ofuhrer/HPC4WC, which is licensed under the GNU General
+Public License version 3. As a derivative work it is distributed under
+the same terms.
+
+Copyright (C) 2026 Stefanie Boersig, Boaz Ko, Ben Bullinger
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of version 3 of the GNU General Public License as
+published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+Full text: the LICENSE file at the root of github.com/ofuhrer/HPC4WC,
+or https://www.gnu.org/licenses/gpl-3.0.html
