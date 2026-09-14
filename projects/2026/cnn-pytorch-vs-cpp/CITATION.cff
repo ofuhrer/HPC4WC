@@ -1,0 +1,21 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  HPC4WC 26FS Project - Performance Comparison of CNN
+  Inference on MNIST: C++ vs PyTorch
+message: ' '
+type: software
+authors:
+  - given-names: Matteo
+    family-names: Meciani
+    email: mmeciani@ethz.ch
+  - given-names: Ari
+    family-names: Hölscher
+    email: hantje@ethz.ch
+  - given-names: Nicola
+    family-names: Rupf
+    email: nirupf@ethz.ch
+repository-code: 'https://github.com/matteomeciani/cnn-hpc4wc'
+license: MIT

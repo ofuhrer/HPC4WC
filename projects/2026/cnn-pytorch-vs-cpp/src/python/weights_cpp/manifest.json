@@ -1,0 +1,76 @@
+{
+  "model.0.weight": {
+    "shape": [
+      32,
+      1,
+      3,
+      3
+    ],
+    "count": 288,
+    "dtype": "float32",
+    "file": "model_0_weight.bin"
+  },
+  "model.0.bias": {
+    "shape": [
+      32
+    ],
+    "count": 32,
+    "dtype": "float32",
+    "file": "model_0_bias.bin"
+  },
+  "model.3.weight": {
+    "shape": [
+      64,
+      32,
+      3,
+      3
+    ],
+    "count": 18432,
+    "dtype": "float32",
+    "file": "model_3_weight.bin"
+  },
+  "model.3.bias": {
+    "shape": [
+      64
+    ],
+    "count": 64,
+    "dtype": "float32",
+    "file": "model_3_bias.bin"
+  },
+  "model.6.weight": {
+    "shape": [
+      128,
+      64,
+      3,
+      3
+    ],
+    "count": 73728,
+    "dtype": "float32",
+    "file": "model_6_weight.bin"
+  },
+  "model.6.bias": {
+    "shape": [
+      128
+    ],
+    "count": 128,
+    "dtype": "float32",
+    "file": "model_6_bias.bin"
+  },
+  "model.10.weight": {
+    "shape": [
+      10,
+      128
+    ],
+    "count": 1280,
+    "dtype": "float32",
+    "file": "model_10_weight.bin"
+  },
+  "model.10.bias": {
+    "shape": [
+      10
+    ],
+    "count": 10,
+    "dtype": "float32",
+    "file": "model_10_bias.bin"
+  }
+}

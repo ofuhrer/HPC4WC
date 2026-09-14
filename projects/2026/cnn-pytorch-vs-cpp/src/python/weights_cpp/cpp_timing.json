@@ -1,0 +1,11 @@
+[
+  {"name": "Baseline Nested-Loop", "median_time_sec": 0.00690275, "median_cycles": 0},
+  {"name": "Baseline w. blocking", "median_time_sec": 0.00157308, "median_cycles": 0},
+  {"name": "Baseline w. im2col matrix multiplication", "median_time_sec": 0.00114063, "median_cycles": 0},
+  {"name": "Restructured Nested-Loop", "median_time_sec": 0.00526571, "median_cycles": 0},
+  {"name": "Hoisted Vars + restrict", "median_time_sec": 0.00526279, "median_cycles": 0},
+  {"name": "Reordered Nested-Loop", "median_time_sec": 0.00466108, "median_cycles": 0},
+  {"name": "Specialized Implementation", "median_time_sec": 0.00286313, "median_cycles": 0},
+  {"name": "NEON Blocked Implementation", "median_time_sec": 0.000459625, "median_cycles": 0},
+  {"name": "Specialized MaxPool2D", "median_time_sec": 0.000416834, "median_cycles": 0}
+]
