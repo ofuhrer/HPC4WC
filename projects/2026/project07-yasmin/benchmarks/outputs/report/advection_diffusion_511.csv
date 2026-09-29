@@ -1,0 +1,10 @@
+implementation,nx,ny,threads,runtime_ms,correct
+yasmin_numpy,511,511,,14.626935,true
+numpy,511,511,,12.673809,true
+yasmin_cpp,511,511,,1.850282,true
+cpp,511,511,,2.227903,true
+yasmin_openmp,511,511,8,0.345110,true
+cpp_openmp,511,511,8,0.281240,true
+gt4py_cpu,511,511,1,2.056932,true
+gt4py_cpu,511,511,8,0.281144,true
+gt4py_numpy,511,511,,18.509895,true
