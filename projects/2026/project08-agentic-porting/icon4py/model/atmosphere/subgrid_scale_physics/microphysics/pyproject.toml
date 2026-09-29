@@ -1,0 +1,82 @@
+# -- Build system requirements (PEP 518) --
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0", "wheel>=0.40.0"]
+
+# -- Standard project description options (PEP 621) --
+[project]
+authors = [{email = "gridtools@cscs.ch", name = "ETH Zurich"}]
+classifiers = [
+  'Development Status :: 4 - Beta',
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: BSD License',
+  'Operating System :: POSIX',
+  'Programming Language :: Python',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.13',
+  'Programming Language :: Python :: 3.14',
+  'Programming Language :: Python :: Implementation :: CPython',
+  'Topic :: Scientific/Engineering :: Atmospheric Science',
+  'Topic :: Scientific/Engineering :: Mathematics',
+  'Topic :: Scientific/Engineering :: Physics'
+]
+dependencies = [
+  # workspace members
+  "icon4py-common~=0.2.0",
+  # external dependencies
+  "gt4py==1.1.11",
+  'packaging>=20.0'
+]
+description = "ICON microphysics."
+license = {text = "BSD-3 License"}
+name = "icon4py-atmosphere-microphysics"
+readme = "README.md"
+requires-python = ">=3.12"
+# managed by bump-my-version:
+version = "0.2.0"
+
+[project.urls]
+Homepage = "https://github.com/C2SM/icon4py"
+
+# -- bumpversion --
+[tool.bumpversion]
+allow_dirty = false
+commit = false
+current_version = "0.2.0"
+ignore_missing_version = false
+message = 'Bump icon4py-atmosphere-microphysics version: {current_version} → {new_version}'
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(?:(?P<pre_l>a|b|rc)(?P<pre_n>\\d+))?"
+serialize = ["{major}.{minor}.{patch}{pre_l}{pre_n}", "{major}.{minor}.{patch}"]
+tag = false
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+replace = '''
+# managed by bump-my-version:
+version = "{new_version}"
+'''
+search = '''
+# managed by bump-my-version:
+version = "{current_version}"
+'''
+
+[[tool.bumpversion.files]]
+filename = "src/icon4py/model/atmosphere/subgrid_scale_physics/microphysics/__init__.py"
+
+# --ruff --
+[tool.ruff]
+extend = "../../../../pyproject.toml"
+
+[tool.ruff.lint.isort]
+known-first-party = ['icon4py']
+known-third-party = ['gt4py']
+
+# -- setuptools --
+[tool.setuptools.package-data]
+'*' = ['*.in', '*.md', '*.rst', '*.txt', 'LICENSE', 'py.typed']
+
+[tool.setuptools.packages]
+find = {namespaces = true, where = ['src']}

@@ -1,0 +1,242 @@
+include:
+  - remote: 'https://gitlab.com/cscs-ci/recipes/-/raw/master/templates/v2/.ci-ext.yml'
+
+stages:
+  - baseimage
+  - venv
+  - image
+  - generate_test
+  - trigger_test
+  - test
+  - benchmark
+
+variables:
+  PYVERSION: 3.13.13
+  PYVERSION_SHORT: 3.13
+  ICON4PY_NOX_UV_CUSTOM_SESSION_EXTRAS: "cuda12"
+
+# Base image build step with SHA256 checksum for caching
+.build_baseimage:
+  stage: baseimage
+  before_script:
+    # include build arguments in hash since we use a parameterized Docker file
+    - DOCKER_TAG=`echo "$(cat $DOCKERFILE) $DOCKER_BUILD_ARGS" | sha256sum | head -c 16`
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/public/$ARCH/base/icon4py:$DOCKER_TAG
+    - echo "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> build.env
+  artifacts:
+    reports:
+      dotenv: build.env
+  variables:
+    DOCKERFILE: ci/docker/base.Dockerfile
+    # change to 'always' if you want to rebuild, even if target tag exists already (if-not-exists is the default, i.e. we could also skip the variable)
+    CSCS_REBUILD_POLICY: if-not-exists
+    DOCKER_BUILD_ARGS: '["ARCH=$ARCH", "HPC_SDK_VERSION=$HPC_SDK_VERSION", "HPC_SDK_NAME=$HPC_SDK_NAME"]'
+    KUBERNETES_MEMORY_REQUEST: 128Gi
+    KUBERNETES_MEMORY_LIMIT: 128Gi
+
+.build_baseimage_aarch64:
+  extends: [.container-builder-cscs-gh200, .build_baseimage]
+  variables:
+    HPC_SDK_VERSION: 24.11
+    HPC_SDK_NAME: "nvhpc_2024_2411_Linux_${ARCH}_cuda_12.6"
+
+.build_venv:
+  stage: venv
+  before_script:
+    - VENV_TAG=`echo "$(cat $DOCKERFILE) $DOCKER_BUILD_ARGS $(cat uv.lock)" | sha256sum | head -c 16`
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/public/$ARCH/icon4py/icon4py-venv:$VENV_TAG-$PYVERSION
+    - echo "VENV_IMAGE=$PERSIST_IMAGE_NAME" >> build.env
+  artifacts:
+    reports:
+      dotenv: build.env
+  variables:
+    DOCKERFILE: ci/docker/venv.Dockerfile
+    DOCKER_BUILD_ARGS: '["PYVERSION=$PYVERSION", "BASE_IMAGE=$BASE_IMAGE", "ICON4PY_NOX_UV_CUSTOM_SESSION_EXTRAS=$ICON4PY_NOX_UV_CUSTOM_SESSION_EXTRAS"]'
+
+.build_venv_aarch64:
+  extends: [.container-builder-cscs-gh200, .build_venv]
+  needs: [build_baseimage_aarch64]
+
+.build_image:
+  stage: image
+  variables:
+      # Unique image name based on commit SHA
+    PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/public/$ARCH/icon4py/icon4py-ci:$CI_COMMIT_SHA-$PYVERSION
+    DOCKERFILE: ci/docker/checkout.Dockerfile
+    DOCKER_BUILD_ARGS: '["VENV_IMAGE=${VENV_IMAGE}"]'
+.build_image_aarch64:
+  extends: [.container-builder-cscs-gh200, .build_image]
+  needs: [build_venv_aarch64]
+
+
+.test_runner_base:
+  stage: test
+  timeout: 8h
+  variables:
+    SLURM_JOB_NUM_NODES: 1
+    SLURM_GPUS_PER_NODE: 1
+    SLURM_PARTITION: "shared"
+    SLURM_CPU_BIND: "verbose"
+    SLURM_TIMELIMIT: '00:30:00'
+    SLURM_MPI_TYPE: pmix
+    USE_MPI: NO
+    PMIX_MCA_psec: native
+    FI_PROVIDER: cxi
+    OMPI_MCA_pml: cm
+    OMPI_MCA_mtl: ofi
+    # The default without MPS is 8 for both max connection variables. With MPS
+    # they are lowered to 2 by default, so we set them back to their non-MPS
+    # defaults for potentially increased concurrency on the GPU.
+    CUDA_DEVICE_MAX_CONNECTIONS: 8
+    CUDA_DEVICE_MAX_COPY_CONNECTIONS: 8
+    ICON4PY_TEST_DATA_PATH: "/icon4py/testdata"
+    ICON4PY_ENABLE_GRID_DOWNLOAD: true
+    ICON4PY_ENABLE_TESTDATA_DOWNLOAD: true
+    ICON4PY_CI_GT4PY_BUILD_CACHE_BASE_DIR: /gt4py_cache
+    ICON4PY_DALLCLOSE_PRINT_INSTEAD_OF_FAIL: false
+    ICON4PY_DRIVER_LOGGING_LEVEL: critical
+    PYTEST_ADDOPTS: "--durations=0"
+
+.test_template_aarch64:
+  extends: [.container-runner-santis-gh200, .test_runner_base]
+  before_script:
+    - cd /icon4py
+    - source .venv/bin/activate # For nox etc. not for the testing venv itself
+    - source ci/scripts/start-cuda-mps.sh
+    - source ci/scripts/gt4py-cache.sh
+  variables:
+    RUNNER: "ci-runner"
+    SYSTEM_TAG: "${FIRECREST_SYSTEM}-gh200"
+    CSCS_ADDITIONAL_MOUNTS: '["/capstor/store/cscs/userlab/cwci02/icon4py/ci/testdata:$ICON4PY_TEST_DATA_PATH","/iopsstor/scratch/cscs/svc_cwci02_cicd_ext:$ICON4PY_CI_GT4PY_BUILD_CACHE_BASE_DIR"]'
+    # Grace-Hopper gpu architecture is not enabled by default in CUDA build
+    CUDAARCHS: "90"
+    # Creating more pytest workers speeds up testing, but pytest startup time
+    # also scales with number of workers; 32 is a balance between these for jobs
+    # that don't run many tests.
+    NUM_PROCESSES: 32
+    GT4PY_BUILD_JOBS: 8
+    GT4PY_BUILD_CACHE_LIFETIME: "persistent"
+    PY2F_GPU_TESTS: 1
+    CUDACXX: "${HPC_SDK_PATH}/compilers/bin/nvcc"
+    HPC_SDK_PATH: "/opt/nvidia/hpc_sdk/Linux_${ARCH}/24.11"
+    NVFORTRAN_COMPILER: "${HPC_SDK_PATH}/compilers/bin/nvfortran"
+
+.test_runner_serial:
+  extends: .test_runner_base
+  image: $CSCS_REGISTRY_PATH/public/$ARCH/icon4py/icon4py-ci:$CI_COMMIT_SHA-$PYVERSION
+  variables:
+    SLURM_NTASKS: 1
+
+.test_runner_mpi:
+  extends: .test_runner_base
+  image: $CSCS_REGISTRY_PATH/public/$ARCH/icon4py/icon4py-ci:$CI_COMMIT_SHA-$PYVERSION
+  variables:
+    SLURM_NTASKS: 12
+    ICON4PY_TEST_MPI_SUBCOMM_SIZE: 4
+    SLURM_LABELIO: 1
+    # Use this to reduce memory requirements from having one venv per rank.
+    # Generally this is not recommended but in CI the cache will not get wiped
+    # so this can be used safely.
+    UV_LINK_MODE: symlink
+
+.test_model_aarch64:
+  extends: [.test_runner_serial, .test_template_aarch64]
+  script:
+    - |
+      PYTEST_ARGS="--backend=$BACKEND"
+      if [ -n "${GRID:-}" ]; then PYTEST_ARGS="$PYTEST_ARGS --grid=$GRID"; fi
+      if [ -n "${LEVEL:-}" ]; then PYTEST_ARGS="$PYTEST_ARGS --level=$LEVEL"; fi
+      nox -s "test_model-${PYVERSION_SHORT}($MODEL_SUBSET, $MODEL_SUBPACKAGE)" -- $PYTEST_ARGS
+  rules:
+    - if: $BACKEND == 'dace_gpu' || $BACKEND == 'gtfn_gpu'
+      variables:
+        NUM_PROCESSES: 8
+        SLURM_TIMELIMIT: '01:00:00'
+    - if: $MODEL_SUBPACKAGE == 'standalone_driver'
+      variables:
+        SLURM_TIMELIMIT: '00:50:00'
+    - if: $MODEL_SUBPACKAGE == 'driver' || $MODEL_SUBPACKAGE == 'dycore' || $MODEL_SUBPACKAGE == 'muphys'
+      variables:
+        SLURM_TIMELIMIT: '00:30:00'
+    - when: on_success
+      variables:
+        SLURM_TIMELIMIT: '00:30:00'
+
+.test_tools_aarch64:
+  extends: [.test_runner_serial, .test_template_aarch64]
+  script:
+    - nox -s "test_tools_and_bindings-${PYVERSION_SHORT}($SELECTION)"
+
+.test_model_mpi_aarch64:
+  extends: [.test_runner_mpi, .test_template_aarch64]
+  script:
+    - ci/scripts/ci-mpi-wrapper.sh nox -s "test_model_mpi-${PYVERSION_SHORT}($SELECTION, $MODEL_MPI_SUBPACKAGE)" -- --backend=$BACKEND --level=$LEVEL
+  rules:
+    - if: $MODEL_MPI_SUBPACKAGE == 'standalone_driver' && $LEVEL == 'validation'
+      variables:
+        # Signal to (selected) tests that they should expect bitwise identical
+        # results between single- and multi-rank runs. This goes hand-in-hand with
+        # compiler flags like -ffp-contract=off and others that may be required to
+        # actually get bitwise identical results.
+        ICON4PY_TEST_EXPECT_MPI_REPRODUCIBLE: "1"
+        CXXFLAGS: "-ffp-contract=off"
+        # TODO(msimberg): Decrease this when there's more parallelism for compilation.
+        SLURM_TIMELIMIT: '02:00:00'
+        # TODO(msimberg): Use shared partition when time limit can be set to at
+        # most an hour. The shared partition only accepts jobs maximum an hour long.
+        SLURM_PARTITION: "normal"
+    - if: ($MODEL_MPI_SUBPACKAGE == 'standalone_driver' || $MODEL_MPI_SUBPACKAGE == 'common') && ($BACKEND == 'dace_gpu' || $BACKEND == 'gtfn_gpu')
+      variables:
+        # TODO(msimberg): Decrease this when there's more parallelism for compilation.
+        SLURM_TIMELIMIT: '02:00:00'
+        # TODO(msimberg): Use shared partition when time limit can be set to at
+        # most an hour. The shared partition only accepts jobs maximum an hour long.
+        SLURM_PARTITION: "normal"
+    - if: $MODEL_MPI_SUBPACKAGE == 'common' || $MODEL_MPI_SUBPACKAGE == 'standalone_driver'
+      variables:
+        SLURM_TIMELIMIT: '00:55:00'
+    - when: on_success
+      variables:
+        SLURM_TIMELIMIT: '00:30:00'
+  artifacts:
+    when: always
+    paths:
+      - pytest-log-rank-*.txt
+
+.generate_test_child_pipeline:
+  stage: generate_test
+  # Run the generator on a GH200 container runner so it can use more than the
+  # CPU/memory limits of the lightweight K8s runner.
+  extends: .container-runner-santis-gh200
+  image: $CSCS_REGISTRY_PATH/public/$ARCH/icon4py/icon4py-ci:$CI_COMMIT_SHA-$PYVERSION
+  needs: [build_image_aarch64]
+  timeout: 8h
+  variables:
+    ICON4PY_NOX_COLLECTION_WORKERS: "128"
+    ICON4PY_COLLECTION_VENV: "/icon4py/.venv"
+    # MPI is initialized during test discovery, but disable GPU-aware
+    # MPI since it's not necessary for test discovery. This avoids
+    # initializing CUDA on each worker.
+    OMPI_MCA_opal_cuda_support: "0"
+    OMPI_MCA_mpi_cuda_support: "0"
+    SLURM_NTASKS: "1"
+    SLURM_GPUS_PER_TASK: "1"
+    SLURM_PARTITION: "shared"
+    SLURM_TIMELIMIT: "00:10:00"
+  script:
+    - cd /icon4py
+    - scripts/python/generate_ci_pipeline.py > $CI_PROJECT_DIR/test.yml
+    - cat $CI_PROJECT_DIR/test.yml
+  artifacts:
+    paths: [test.yml]
+
+.trigger_test_child_pipeline:
+  stage: trigger_test
+  needs: [generate_test_child_pipeline, build_image_aarch64]
+  trigger:
+    include:
+      - artifact: test.yml
+        job: generate_test_child_pipeline
+    strategy: depend
+    forward:
+      pipeline_variables: true

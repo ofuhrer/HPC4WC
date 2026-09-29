@@ -1,0 +1,5 @@
+ARG VENV_IMAGE
+FROM $VENV_IMAGE
+
+COPY . /icon4py
+WORKDIR /icon4py

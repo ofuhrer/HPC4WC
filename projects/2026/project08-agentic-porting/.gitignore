@@ -1,0 +1,75 @@
+# ==========================================
+# 1. Project, AI Tools & HPC-specific Outputs
+# ==========================================
+.claude/
+.clinerules
+build/
+logs/
+*.nc
+# Driver outputs: both the Fortran's and the port's are build products, written by
+# running a driver. satad_only's two were committed before these rules existed and
+# stay tracked (git keeps tracking what it already tracks).
+**/output_fields.csv
+**/output_fields_gt4py.csv
+
+# Slurm log files from the cluster scheduler
+slurm-*.out
+slurm-*.err
+
+# ==========================================
+# 2. Python Bytecode & Caches
+# ==========================================
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+*.dist-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cffi_cache/
+
+# ==========================================
+# 3. Python Distributions & Build Artifacts
+# ==========================================
+*.egg
+*.egg-info/
+.eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.so
+
+# ==========================================
+# 4. GT4Py & JIT-Compiler Caches
+# ==========================================
+.cache/
+.gt_cache/
+.gt4py_cache/
+gt4py_cache/
+.gridtools_cache/
+dace_cache/
+.cupy/
+
+# ==========================================
+# 5. Virtual Environments
+# ==========================================
+.venv/
+venv/
+ENV/
+*venv*/
+
+# ==========================================
+# 6. IDEs & Editors
+# ==========================================
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+.DS_Store

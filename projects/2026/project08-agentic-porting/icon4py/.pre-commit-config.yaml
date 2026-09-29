@@ -1,0 +1,115 @@
+# NOTE: pre-commit runs all hooks from the root folder of the repository,
+# as regular git hooks do.
+
+minimum_pre_commit_version: 3.8.0
+
+repos:
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
+
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.15.0
+    hooks:
+      - id: pretty-format-toml
+        args: [--autofix, --indent, "2"]
+        exclude: tach.toml
+      - id: pretty-format-yaml
+        args: [--autofix, --preserve-quotes, --indent, "2", --offset, "2"]
+
+  - repo: https://github.com/hukkin/mdformat
+    rev: 0.7.22
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-frontmatter
+          - mdformat-gfm
+          - mdformat-gfm-alerts
+          - mdformat-myst
+          - mdformat-ruff
+          - mdformat-tables
+        args: [--number]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+        args: [--unsafe]
+      - id: debug-statements
+      - id: end-of-file-fixer
+        exclude: ^bindings/tests/bindings/references/
+      - id: pretty-format-json
+        args: [--autofix, --indent, "2"]
+
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.5
+    hooks:
+      - id: insert-license
+        name: add license for all ICON4Py Python source files
+        types: [python]
+        args: [--comment-style, "|#|", --license-filepath, ./HEADER.txt, --fuzzy-match-generates-todo]
+        exclude: ^bindings/tests/bindings/references/
+
+  # The following hooks use development tools which are already managed by 'uv'.
+  # To avoid inconsistencies between the development and the pre-commit
+  # environments, we run them as local hooks so we can make sure they use
+  # exactly the same versions without duplicating the version info.
+  - repo: local
+    hooks:
+      - &uv-managed-hook
+        id: uv-managed-base-hook
+        name: uv managed hook
+        entry: uv --version
+        language: python
+        additional_dependencies: [uv>=0.6.10]
+        stages: [pre-commit]
+
+      - <<: *uv-managed-hook
+        id: uv-lock
+        name: uv-lock
+        description: "Automatically run 'uv lock' on your project dependencies"
+        entry: uv lock
+        files: ^(uv\.lock|pyproject\.toml|uv\.toml)$
+        pass_filenames: false
+
+      - <<: *uv-managed-hook
+        id: ruff-check
+        name: ruff checker
+        entry: uv run --group dev --frozen --isolated ruff check --force-exclude --fix
+        types_or: [python, pyi, jupyter]
+        exclude: "^(.*/docs/.*|.*/examples/.*)" # TODO(egparedes): remove the exclusions
+        require_serial: true
+
+      - <<: *uv-managed-hook
+        id: ruff-format
+        name: ruff formatter
+        entry: uv run --group dev --frozen --isolated ruff format --force-exclude
+        types_or: [python, pyi, jupyter]
+        require_serial: true
+
+      - <<: *uv-managed-hook
+        id: tach
+        name: tach module dependency checker
+        entry: uv run --group dev --frozen --isolated tach check-external
+        pass_filenames: false
+
+      - <<: *uv-managed-hook
+        id: mypy
+        name: mypy static type checker
+        entry: uv run --group typing-distributed --frozen --isolated mypy
+        types_or: [python, pyi]
+        pass_filenames: false
+
+      - <<: *uv-managed-hook
+        id: validate
+        name: validate pyproject.toml
+        entry: uv run --group dev --frozen --isolated validate-pyproject pyproject.toml
+        files: ^pyproject\.toml$
+        pass_filenames: false

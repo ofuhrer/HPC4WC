@@ -1,0 +1,31 @@
+.benchmark_model_base_variables:
+  variables:
+    ICON4PY_ENABLE_GRID_DOWNLOAD: true
+    ICON4PY_ENABLE_TESTDATA_DOWNLOAD: true
+    PYTHONOPTIMIZE: 2
+    STENCIL_TEST_SELECTION: "test_Test and compile_time_domain"
+    GRANULE_TEST_SELECTION: "test_diffusion_benchmark or test_benchmark_solve_nonhydro"
+
+.benchmark_nox_job:
+  stage: benchmark
+  script:
+    - nox -s ${NOX_SESSION} -- --backend=$BACKEND --grid=$GRID -k "${TEST_SELECTION}"
+  parallel:
+    matrix:
+      - BACKEND: [dace_cpu, dace_gpu, gtfn_cpu, gtfn_gpu]
+        GRID: [icon_benchmark_regional, icon_benchmark_global]
+  extends: [.benchmark_model_base_variables]
+  variables:
+    SLURM_JOB_NUM_NODES: 1
+    SLURM_PARTITION: "normal"
+    SLURM_TIMELIMIT: '01:30:00'
+
+
+build_baseimage_aarch64:
+  extends: [.build_baseimage_aarch64]
+
+build_venv_aarch64:
+  extends: [.build_venv_aarch64]
+
+build_image_aarch64:
+  extends: [.build_image_aarch64]

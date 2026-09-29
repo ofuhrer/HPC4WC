@@ -1,0 +1,30 @@
+include:
+  - local: 'ci/base.yml'
+  - local: 'ci/benchmark_bencher_common.yml'
+
+.bencher_feature_tests:
+  extends: [.benchmark_nox_job]
+  script:
+    - export PR_ID=$(echo "${CI_COMMIT_BRANCH}" | grep -o 'pr[0-9]*' | grep -o '[0-9]*')
+    - export FEATURE_BRANCH=$(curl -s https://api.github.com/repos/C2SM/icon4py/pulls/$PR_ID | jq -r '.head.ref')
+    - export GITHUB_ACTIONS=true
+    - export GITHUB_EVENT_NAME=pull_request
+    - export GITHUB_STEP_SUMMARY=$CI_PROJECT_DIR/step_summary.log
+    - export GITHUB_SHA=$CI_COMMIT_SHA
+    - export GITHUB_EVENT_PATH=$CI_PROJECT_DIR/event.json
+    - |
+      echo "{\"pull_request\": {\"head\": {\"repo\": {\"full_name\": \"C2SM/icon4py\"}}}, \"repository\": {\"full_name\": \"C2SM/icon4py\"}, \"number\": $PR_ID}" > $CI_PROJECT_DIR/event.json
+    - !reference [.benchmark_nox_job, script]
+  variables:
+    NOX_SESSION: "__bencher_feature_branch_CI-${PYVERSION_SHORT}"
+
+benchmark_bencher_stencils_feature_aarch64:
+  extends: [.test_runner_serial, .test_template_aarch64, .bencher_feature_tests]
+  variables:
+    TEST_SELECTION: "${STENCIL_TEST_SELECTION}"
+    GT4PY_COLLECT_METRICS_LEVEL: 10
+
+benchmark_bencher_granules_feature_aarch64:
+  extends: [.test_runner_serial, .test_template_aarch64, .bencher_feature_tests]
+  variables:
+    TEST_SELECTION: "${GRANULE_TEST_SELECTION}"
