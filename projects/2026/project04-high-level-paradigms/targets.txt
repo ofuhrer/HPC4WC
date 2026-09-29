@@ -1,0 +1,10 @@
+array/test_field_gt4py_cpu_64_64_64_1024.npy
+array/test_field_numpy_cpu_64_64_64_1024.npy
+array/test_field_cupy_gpu_64_64_64_1024.npy
+array/test_field_jax_cpu_64_64_64_1024.npy
+array/test_field_jax_gpu_64_64_64_1024.npy
+array/test_field_numba_cpu_64_64_64_1024.npy
+array/test_field_torch_cpu_64_64_64_1024.npy
+array/test_field_torch_gpu_64_64_64_1024.npy
+
+

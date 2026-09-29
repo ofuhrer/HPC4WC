@@ -1,0 +1,22 @@
+*.zip
+.env
+.env*
+.*env
+.venv
+.venv/
+*.tar
+*.swp
+venv/
+env/
+ENV/
+*.pyc
+__pycache__/
+*.png
+*.jpg
+*.tif
+*.npy
+*plot*/
+# Exceptions
+!results/
+!results/*.png
+.ipynb_checkpoints/
