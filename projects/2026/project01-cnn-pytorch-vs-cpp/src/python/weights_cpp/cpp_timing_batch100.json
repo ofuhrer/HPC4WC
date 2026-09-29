@@ -1,0 +1,11 @@
+[
+  {"name": "Baseline Nested-Loop", "median_time_sec": 0.456917, "median_cycles": 1.47111e+09},
+  {"name": "Baseline w. blocking", "median_time_sec": 0.183829, "median_cycles": 6.02837e+08},
+  {"name": "Baseline w. im2col matrix multiplication", "median_time_sec": 0.0579225, "median_cycles": 1.89505e+08},
+  {"name": "Restructured Nested-Loop", "median_time_sec": 0.218438, "median_cycles": 7.1479e+08},
+  {"name": "Hoisted Vars + restrict", "median_time_sec": 0.217679, "median_cycles": 7.12513e+08},
+  {"name": "Reordered Nested-Loop", "median_time_sec": 0.16337, "median_cycles": 5.3422e+08},
+  {"name": "Specialized Implementation", "median_time_sec": 0.102438, "median_cycles": 3.35026e+08},
+  {"name": "NEON Blocked Implementation", "median_time_sec": 0.0319509, "median_cycles": 1.04485e+08},
+  {"name": "Specialized MaxPool2D", "median_time_sec": 0.0328422, "median_cycles": 1.07401e+08}
+]
