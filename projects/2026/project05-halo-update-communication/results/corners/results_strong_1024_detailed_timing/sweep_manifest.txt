@@ -1,0 +1,10 @@
+sweep_start   = 2026-08-31T12:44:25+02:00
+sweep_command = ./experiment_scaling_all_strategies.sh --mode strong --ranks 64\,32\,16\,8\,4\,2\,1 --nx 1024 --ny 1024 --nz 64 --num_iter 1024 --repeats 3 --results-dir results_strong_1024_detailed_timing
+git_branch    = main
+git_commit    = 5f659f41dc0b2cbd347870eaa2405c47714603f4
+git_dirty     = 1
+git_diff      = results_strong_1024_detailed_timing/code_state.diff
+git_status    = results_strong_1024_detailed_timing/code_state.status
+host          = santis-ln001
+srun_account  = hpc4wc-course2026-ethz
+srun_uenv     = prgenv-gnu/26.3:v1

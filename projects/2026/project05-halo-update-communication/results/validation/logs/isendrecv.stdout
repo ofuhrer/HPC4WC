@@ -1,0 +1,5 @@
+# ranks nx ny nz num_iter time max_comm max_compute avg_comm avg_compute
+# comm_strategy = isendrecv
+data = np.array( [ \
+[   16,  128,  128,    4,    1024,  0.2345165E-01,  0.3560676E-01,  0.3301460E-02,  0.2007144E-01,  0.2873725E-02], \
+] )

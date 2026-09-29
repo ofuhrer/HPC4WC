@@ -1,0 +1,4 @@
+# ranks nx ny nz num_iter time max_comm max_compute avg_comm avg_compute avg_pack avg_send avg_wait
+data = np.array( [ \
+[   16,  128,  128,    4,    1024,  0.2466463E-01,  0.3673054E-01,  0.3436071E-02,  0.2128537E-01,  0.3296211E-02,  0.1574980E-02,  0.8903416E-02,  0.1027845E-01], \
+] )

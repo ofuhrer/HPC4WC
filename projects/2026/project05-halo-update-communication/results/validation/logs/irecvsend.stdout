@@ -1,0 +1,5 @@
+# ranks nx ny nz num_iter time max_comm max_compute avg_comm avg_compute
+# comm_strategy = irecvsend
+data = np.array( [ \
+[   16,  128,  128,    4,    1024,  0.2540092E-01,  0.3760057E-01,  0.2905576E-02,  0.2206792E-01,  0.2825337E-02], \
+] )

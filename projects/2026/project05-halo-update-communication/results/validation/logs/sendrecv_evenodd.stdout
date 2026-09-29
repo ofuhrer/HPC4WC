@@ -1,0 +1,5 @@
+# ranks nx ny nz num_iter time max_comm max_compute avg_comm avg_compute
+# comm_strategy = sendrecv_evenodd
+data = np.array( [ \
+[   16,  128,  128,    4,    1024,  0.3367089E-01,  0.4889770E-01,  0.2876991E-02,  0.3036367E-01,  0.2800728E-02], \
+] )

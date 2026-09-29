@@ -1,0 +1,7 @@
+# LaTeX output (configured in latexmkrc)
+/build/
+
+# Editor/OS files
+*~
+.DS_Store
+*.synctex.gz

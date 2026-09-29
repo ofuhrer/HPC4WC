@@ -1,0 +1,3 @@
+max absolute difference: 6.204e-05  (float32 eps ~= 1.2e-7)
+max relative difference: 6.204e-05
+HOORAY! 'validation_results/fields/serial.dat' and 'validation_results/fields/sendrecv.dat' are equal (within rtol=0.0001, atol=0.0001)!

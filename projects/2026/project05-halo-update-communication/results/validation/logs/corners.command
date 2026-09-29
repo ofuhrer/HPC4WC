@@ -1,0 +1,1 @@
+srun -A hpc4wc-course2026-ethz --uenv=prgenv-gnu/26.3:v1 --view=default -N 4 -n 16 -c 1 --ntasks-per-node=4 --gpus-per-task=1 --cpu-bind=cores ./stencil2d-mpi-corners.x --nx 128 --ny 128 --nz 4 --num_iter 1024 

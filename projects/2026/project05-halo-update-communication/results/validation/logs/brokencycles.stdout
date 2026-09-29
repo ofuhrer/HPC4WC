@@ -1,0 +1,5 @@
+# ranks nx ny nz num_iter time max_comm max_compute avg_comm avg_compute
+# comm_strategy = brokencycles
+data = np.array( [ \
+[   16,  128,  128,    4,    1024,  0.3535421E-01,  0.4733324E-01,  0.2948953E-02,  0.3200864E-01,  0.2840273E-02], \
+] )

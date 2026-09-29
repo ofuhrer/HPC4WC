@@ -1,0 +1,6 @@
+validation_start = 2026-08-31T14:25:14+02:00
+git_commit = 5f659f41dc0b2cbd347870eaa2405c47714603f4
+git_dirty = 1
+grid = 128x128x4
+num_iter = 1024
+parallel_layout = 16 ranks, 4 nodes, 4 ranks/node, 1 GH200/rank

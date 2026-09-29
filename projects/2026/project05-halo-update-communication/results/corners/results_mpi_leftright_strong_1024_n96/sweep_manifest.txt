@@ -1,0 +1,10 @@
+sweep_start   = 2026-08-31T16:56:17+02:00
+sweep_command = ./experiment_mpi_leftright_scaling.sh --mode strong --ranks 96 --repeats 3 --results-dir results_mpi_leftright_strong_1024_n96
+git_branch    = main
+git_commit    = 6d1f1ad67bd158c18467cf72dcda5ea414627a95
+git_dirty     = 0
+git_diff      = (clean)
+git_status    = (clean)
+host          = santis-ln002
+srun_account  = hpc4wc-course2026-ethz
+srun_uenv     = prgenv-gnu/26.3:v1

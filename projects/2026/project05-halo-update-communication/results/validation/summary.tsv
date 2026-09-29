@@ -1,0 +1,12 @@
+strategy	binary	status
+brokencycles	./stencil2d-comm_strats_timer.x	PASS
+sendrecv_evenodd	./stencil2d-comm_strats_timer.x	PASS
+sendrecv	./stencil2d-comm_strats_timer.x	PASS
+irecvsend	./stencil2d-comm_strats_timer.x	PASS
+isendrecv	./stencil2d-comm_strats_timer.x	PASS
+irecvisend	./stencil2d-comm_strats_timer.x	PASS
+corners	./stencil2d-mpi-corners.x	PASS
+pipelined	./stencil2d-mpi-corners-pipelined.x	PASS
+waitany	./stencil2d-mpi-corners-waitany.x	PASS
+comm_comp	./stencil2d-comm_comp.x	PASS
+comm_comp_opt	./stencil2d-comm_comp_opt.x	PASS

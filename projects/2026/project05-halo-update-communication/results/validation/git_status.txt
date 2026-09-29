@@ -1,0 +1,643 @@
+ M README.md
+ M analyze_benchmark_results.py
+ M benchmark_times.sh
+ M experiment_async_progress.sh
+ M experiment_corners_ceiling.sh
+ M experiment_eager.sh
+ M report/Makefile
+ M report/README.md
+ M report/report.tex
+ M results_async/result_corners_N16_n16_c1_rep1.py
+ M results_async/result_corners_N16_n16_c1_rep2.py
+ M results_async/result_corners_N16_n16_c1_rep3.py
+ M results_async/result_corners_N9_n9_c1_rep1.py
+ M results_async/result_corners_N9_n9_c1_rep2.py
+ M results_async/result_corners_N9_n9_c1_rep3.py
+ M results_async/result_pipe_async_off_N16_n16_c2_rep1.py
+ M results_async/result_pipe_async_off_N16_n16_c2_rep2.py
+ M results_async/result_pipe_async_off_N16_n16_c2_rep3.py
+ M results_async/result_pipe_async_off_N9_n9_c2_rep1.py
+ M results_async/result_pipe_async_off_N9_n9_c2_rep2.py
+ M results_async/result_pipe_async_off_N9_n9_c2_rep3.py
+ M results_async/result_pipe_async_on_N16_n16_c2_rep1.py
+ M results_async/result_pipe_async_on_N16_n16_c2_rep2.py
+ M results_async/result_pipe_async_on_N16_n16_c2_rep3.py
+ M results_async/result_pipe_async_on_N9_n9_c2_rep1.py
+ M results_async/result_pipe_async_on_N9_n9_c2_rep2.py
+ M results_async/result_pipe_async_on_N9_n9_c2_rep3.py
+ M results_ceiling/result_corners_N16_n16_c1_rep1.py
+ M results_ceiling/result_corners_N16_n16_c1_rep2.py
+ M results_ceiling/result_corners_N16_n16_c1_rep3.py
+ M results_ceiling/result_corners_N9_n9_c1_rep1.py
+ M results_ceiling/result_corners_N9_n9_c1_rep2.py
+ M results_ceiling/result_corners_N9_n9_c1_rep3.py
+ M results_ceiling/result_mpi_N16_n16_c1_rep1.py
+ M results_ceiling/result_mpi_N16_n16_c1_rep2.py
+ M results_ceiling/result_mpi_N16_n16_c1_rep3.py
+ M results_ceiling/result_mpi_N9_n9_c1_rep1.py
+ M results_ceiling/result_mpi_N9_n9_c1_rep2.py
+ M results_ceiling/result_mpi_N9_n9_c1_rep3.py
+ M results_ceiling/result_pipelined_N16_n16_c1_rep1.py
+ M results_ceiling/result_pipelined_N16_n16_c1_rep2.py
+ M results_ceiling/result_pipelined_N16_n16_c1_rep3.py
+ M results_ceiling/result_pipelined_N9_n9_c1_rep1.py
+ M results_ceiling/result_pipelined_N9_n9_c1_rep2.py
+ M results_ceiling/result_pipelined_N9_n9_c1_rep3.py
+ M results_eager/result_corners_eager_N16_n16_c1_rep1.py
+ M results_eager/result_corners_eager_N16_n16_c1_rep2.py
+ M results_eager/result_corners_eager_N16_n16_c1_rep3.py
+ M results_eager/result_corners_eager_N9_n9_c1_rep1.py
+ M results_eager/result_corners_eager_N9_n9_c1_rep2.py
+ M results_eager/result_corners_eager_N9_n9_c1_rep3.py
+ M results_eager/result_corners_rndv_N16_n16_c1_rep1.py
+ M results_eager/result_corners_rndv_N16_n16_c1_rep2.py
+ M results_eager/result_corners_rndv_N16_n16_c1_rep3.py
+ M results_eager/result_corners_rndv_N9_n9_c1_rep1.py
+ M results_eager/result_corners_rndv_N9_n9_c1_rep2.py
+ M results_eager/result_corners_rndv_N9_n9_c1_rep3.py
+ M results_testall/result_corners_N9_n9_c1_rep1.py
+ M results_testall/result_corners_N9_n9_c1_rep2.py
+ M results_testall/result_corners_N9_n9_c1_rep3.py
+ M results_testall/result_interleaved_testall_N9_n9_c1_rep1.py
+ M results_testall/result_interleaved_testall_N9_n9_c1_rep2.py
+ M results_testall/result_interleaved_testall_N9_n9_c1_rep3.py
+ M results_waitany/result_corners_N16_n16_c1_rep1.py
+ M results_waitany/result_corners_N16_n16_c1_rep2.py
+ M results_waitany/result_corners_N16_n16_c1_rep3.py
+ M results_waitany/result_corners_N9_n9_c1_rep1.py
+ M results_waitany/result_corners_N9_n9_c1_rep2.py
+ M results_waitany/result_corners_N9_n9_c1_rep3.py
+ M results_waitany/result_waitany_N16_n16_c1_rep1.py
+ M results_waitany/result_waitany_N16_n16_c1_rep2.py
+ M results_waitany/result_waitany_N16_n16_c1_rep3.py
+ M results_waitany/result_waitany_N9_n9_c1_rep1.py
+ M results_waitany/result_waitany_N9_n9_c1_rep2.py
+ M results_waitany/result_waitany_N9_n9_c1_rep3.py
+ M stencil2d-comm_comp.F90
+ D stencil2d-mpi-corners-pipelined-async.F90
+ M stencil2d-mpi-corners-pipelined.F90
+ M stencil2d-mpi-corners-waitany.F90
+ M stencil2d-mpi-corners.F90
+ M stencil2d-mpi.F90
+?? experiment_comm_comp_size.sh
+?? experiment_corners_strong.sh
+?? experiment_corners_strong_all.sh
+?? experiment_mpi_leftright_scaling.sh
+?? experiment_scaling_all_strategies.sh
+?? lib_experiment.sh
+?? migrate_result_metadata.py
+?? plot_corners_scaling.sh
+?? plots/corners/aggregated.csv
+?? plots/corners/comm_vs_compute_avg.png
+?? plots/corners/runs.csv
+?? plots/corners/total_time_scaling_weak.png
+?? plots/corners/weak_scaling_efficiency.png
+?? plots_corners_and_default/aggregated.csv
+?? plots_corners_and_default/comm_relative_bars_strong.png
+?? plots_corners_and_default/comm_relative_bars_weak.png
+?? plots_corners_and_default/comm_strong_scaling_speedup.png
+?? plots_corners_and_default/comm_total_time_scaling_strong.png
+?? plots_corners_and_default/comm_total_time_scaling_weak.png
+?? plots_corners_and_default/comm_vs_compute_avg.png
+?? plots_corners_and_default/comm_weak_scaling_efficiency.png
+?? plots_corners_and_default/runs.csv
+?? plots_corners_and_default/strong_scaling_speedup.png
+?? plots_corners_and_default/total_time_scaling_strong.png
+?? plots_corners_and_default/total_time_scaling_weak.png
+?? plots_corners_and_default/weak_scaling_efficiency.png
+?? plots_strong_1024_detailed_timing/aggregated.csv
+?? plots_strong_1024_detailed_timing/comm_relative_bars_strong.png
+?? plots_strong_1024_detailed_timing/comm_vs_compute_avg.png
+?? plots_strong_1024_detailed_timing/packing_relative_bars_strong.png
+?? plots_strong_1024_detailed_timing/runs.csv
+?? plots_strong_1024_detailed_timing/sending_relative_bars_strong.png
+?? plots_strong_1024_detailed_timing/strong_scaling_speedup.png
+?? plots_strong_1024_detailed_timing/total_time_scaling_strong.png
+?? plots_strong_1024_detailed_timing/waiting_relative_bars_strong.png
+?? plots_weak_128_detailed_timing/aggregated.csv
+?? plots_weak_128_detailed_timing/comm_relative_bars_weak.png
+?? plots_weak_128_detailed_timing/comm_vs_compute_avg.png
+?? plots_weak_128_detailed_timing/packing_relative_bars_weak.png
+?? plots_weak_128_detailed_timing/runs.csv
+?? plots_weak_128_detailed_timing/sending_relative_bars_weak.png
+?? plots_weak_128_detailed_timing/total_time_scaling_weak.png
+?? plots_weak_128_detailed_timing/waiting_relative_bars_weak.png
+?? plots_weak_128_detailed_timing/weak_scaling_efficiency.png
+?? report/figures/corner_exchange_timing_model.png
+?? report/plot_corner_exchange_model.py
+?? results_comm_comp_9nodes/result_comm_comp_local128_nz1024_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local128_nz2048_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local128_nz256_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local128_nz512_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local256_nz1024_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local256_nz2048_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local256_nz256_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local256_nz512_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local64_nz1024_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local64_nz2048_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local64_nz256_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_comm_comp_local64_nz512_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local128_nz1024_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local128_nz2048_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local128_nz256_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local128_nz512_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local256_nz1024_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local256_nz2048_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local256_nz256_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local256_nz512_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local64_nz1024_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local64_nz2048_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local64_nz256_N9_n9_c1_rep1.py
+?? results_comm_comp_9nodes/result_mpi_local64_nz512_N9_n9_c1_rep1.py
+?? results_corners_strong_1024_timed/aggregated.csv
+?? results_corners_strong_1024_timed/code_state.diff
+?? results_corners_strong_1024_timed/code_state.status
+?? results_corners_strong_1024_timed/plots/comm_vs_compute_avg.png
+?? results_corners_strong_1024_timed/plots/strong_scaling_speedup.png
+?? results_corners_strong_1024_timed/plots/total_time_scaling_strong.png
+?? results_corners_strong_1024_timed/result_corners_N1_n1_c1_rep1.py
+?? results_corners_strong_1024_timed/result_corners_N1_n1_c1_rep2.py
+?? results_corners_strong_1024_timed/result_corners_N1_n1_c1_rep3.py
+?? results_corners_strong_1024_timed/result_corners_N1_n2_c1_rep1.py
+?? results_corners_strong_1024_timed/result_corners_N1_n2_c1_rep2.py
+?? results_corners_strong_1024_timed/result_corners_N1_n2_c1_rep3.py
+?? results_corners_strong_1024_timed/result_corners_N1_n4_c1_rep1.py
+?? results_corners_strong_1024_timed/result_corners_N1_n4_c1_rep2.py
+?? results_corners_strong_1024_timed/result_corners_N1_n4_c1_rep3.py
+?? results_corners_strong_1024_timed/result_corners_N2_n8_c1_rep1.py
+?? results_corners_strong_1024_timed/result_corners_N2_n8_c1_rep2.py
+?? results_corners_strong_1024_timed/result_corners_N2_n8_c1_rep3.py
+?? results_corners_strong_1024_timed/result_corners_N4_n16_c1_rep1.py
+?? results_corners_strong_1024_timed/result_corners_N4_n16_c1_rep2.py
+?? results_corners_strong_1024_timed/result_corners_N4_n16_c1_rep3.py
+?? results_corners_strong_1024_timed/result_corners_N8_n32_c1_rep1.py
+?? results_corners_strong_1024_timed/result_corners_N8_n32_c1_rep2.py
+?? results_corners_strong_1024_timed/result_corners_N8_n32_c1_rep3.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n1_c1_rep1.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n1_c1_rep2.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n1_c1_rep3.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n2_c1_rep1.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n2_c1_rep2.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n2_c1_rep3.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n4_c1_rep1.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n4_c1_rep2.py
+?? results_corners_strong_1024_timed/result_pipelined_N1_n4_c1_rep3.py
+?? results_corners_strong_1024_timed/result_pipelined_N2_n8_c1_rep1.py
+?? results_corners_strong_1024_timed/result_pipelined_N2_n8_c1_rep2.py
+?? results_corners_strong_1024_timed/result_pipelined_N2_n8_c1_rep3.py
+?? results_corners_strong_1024_timed/result_pipelined_N4_n16_c1_rep1.py
+?? results_corners_strong_1024_timed/result_pipelined_N4_n16_c1_rep2.py
+?? results_corners_strong_1024_timed/result_pipelined_N4_n16_c1_rep3.py
+?? results_corners_strong_1024_timed/result_pipelined_N8_n32_c1_rep1.py
+?? results_corners_strong_1024_timed/result_pipelined_N8_n32_c1_rep2.py
+?? results_corners_strong_1024_timed/result_pipelined_N8_n32_c1_rep3.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n1_c1_rep1.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n1_c1_rep2.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n1_c1_rep3.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n2_c1_rep1.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n2_c1_rep2.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n2_c1_rep3.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n4_c1_rep1.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n4_c1_rep2.py
+?? results_corners_strong_1024_timed/result_waitany_N1_n4_c1_rep3.py
+?? results_corners_strong_1024_timed/result_waitany_N2_n8_c1_rep1.py
+?? results_corners_strong_1024_timed/result_waitany_N2_n8_c1_rep2.py
+?? results_corners_strong_1024_timed/result_waitany_N2_n8_c1_rep3.py
+?? results_corners_strong_1024_timed/result_waitany_N4_n16_c1_rep1.py
+?? results_corners_strong_1024_timed/result_waitany_N4_n16_c1_rep2.py
+?? results_corners_strong_1024_timed/result_waitany_N4_n16_c1_rep3.py
+?? results_corners_strong_1024_timed/result_waitany_N8_n32_c1_rep1.py
+?? results_corners_strong_1024_timed/result_waitany_N8_n32_c1_rep2.py
+?? results_corners_strong_1024_timed/result_waitany_N8_n32_c1_rep3.py
+?? results_corners_strong_1024_timed/runs.csv
+?? results_corners_strong_1024_timed/sweep_manifest.txt
+?? results_mpi_leftright_strong_1024/code_state.diff
+?? results_mpi_leftright_strong_1024/code_state.status
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n1_c1_rep1.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n1_c1_rep2.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n1_c1_rep3.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n2_c1_rep1.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n2_c1_rep2.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n2_c1_rep3.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n4_c1_rep1.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n4_c1_rep2.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N1_n4_c1_rep3.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N2_n8_c1_rep1.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N2_n8_c1_rep2.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N2_n8_c1_rep3.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N4_n16_c1_rep1.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N4_n16_c1_rep2.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N4_n16_c1_rep3.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N8_n32_c1_rep1.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N8_n32_c1_rep2.py
+?? results_mpi_leftright_strong_1024/result_mpi_leftright_N8_n32_c1_rep3.py
+?? results_mpi_leftright_strong_1024/sweep_manifest.txt
+?? results_mpi_leftright_weak_128/code_state.diff
+?? results_mpi_leftright_weak_128/code_state.status
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N16_n64_c1_rep1.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N16_n64_c1_rep2.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N16_n64_c1_rep3.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n1_c1_rep1.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n1_c1_rep2.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n1_c1_rep3.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n2_c1_rep1.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n2_c1_rep2.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n2_c1_rep3.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n4_c1_rep1.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n4_c1_rep2.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N1_n4_c1_rep3.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N2_n8_c1_rep1.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N2_n8_c1_rep2.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N2_n8_c1_rep3.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N4_n16_c1_rep1.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N4_n16_c1_rep2.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N4_n16_c1_rep3.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N8_n32_c1_rep1.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N8_n32_c1_rep2.py
+?? results_mpi_leftright_weak_128/result_mpi_leftright_N8_n32_c1_rep3.py
+?? results_mpi_leftright_weak_128/sweep_manifest.txt
+?? results_strong_1024_all_strategies/code_state.diff
+?? results_strong_1024_all_strategies/code_state.status
+?? results_strong_1024_all_strategies/result_corners_N1_n1_c1_rep1.py
+?? results_strong_1024_all_strategies/result_corners_N1_n1_c1_rep2.py
+?? results_strong_1024_all_strategies/result_corners_N1_n1_c1_rep3.py
+?? results_strong_1024_all_strategies/result_corners_N1_n2_c1_rep1.py
+?? results_strong_1024_all_strategies/result_corners_N1_n2_c1_rep2.py
+?? results_strong_1024_all_strategies/result_corners_N1_n2_c1_rep3.py
+?? results_strong_1024_all_strategies/result_corners_N1_n4_c1_rep1.py
+?? results_strong_1024_all_strategies/result_corners_N1_n4_c1_rep2.py
+?? results_strong_1024_all_strategies/result_corners_N1_n4_c1_rep3.py
+?? results_strong_1024_all_strategies/result_corners_N2_n8_c1_rep1.py
+?? results_strong_1024_all_strategies/result_corners_N2_n8_c1_rep2.py
+?? results_strong_1024_all_strategies/result_corners_N2_n8_c1_rep3.py
+?? results_strong_1024_all_strategies/result_corners_N4_n16_c1_rep1.py
+?? results_strong_1024_all_strategies/result_corners_N4_n16_c1_rep2.py
+?? results_strong_1024_all_strategies/result_corners_N4_n16_c1_rep3.py
+?? results_strong_1024_all_strategies/result_corners_N8_n32_c1_rep1.py
+?? results_strong_1024_all_strategies/result_corners_N8_n32_c1_rep2.py
+?? results_strong_1024_all_strategies/result_corners_N8_n32_c1_rep3.py
+?? results_strong_1024_all_strategies/result_irecvisend_N1_n1_c1_rep1.py
+?? results_strong_1024_all_strategies/result_irecvisend_N1_n1_c1_rep2.py
+?? results_strong_1024_all_strategies/result_irecvisend_N1_n1_c1_rep3.py
+?? results_strong_1024_all_strategies/result_irecvsend_N1_n1_c1_rep1.py
+?? results_strong_1024_all_strategies/result_irecvsend_N1_n1_c1_rep2.py
+?? results_strong_1024_all_strategies/result_irecvsend_N1_n1_c1_rep3.py
+?? results_strong_1024_all_strategies/result_isendrecv_N1_n1_c1_rep1.py
+?? results_strong_1024_all_strategies/result_isendrecv_N1_n1_c1_rep2.py
+?? results_strong_1024_all_strategies/result_isendrecv_N1_n1_c1_rep3.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n1_c1_rep1.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n1_c1_rep2.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n1_c1_rep3.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n2_c1_rep1.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n2_c1_rep2.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n2_c1_rep3.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n4_c1_rep1.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n4_c1_rep2.py
+?? results_strong_1024_all_strategies/result_pipelined_N1_n4_c1_rep3.py
+?? results_strong_1024_all_strategies/result_pipelined_N2_n8_c1_rep1.py
+?? results_strong_1024_all_strategies/result_pipelined_N2_n8_c1_rep2.py
+?? results_strong_1024_all_strategies/result_pipelined_N2_n8_c1_rep3.py
+?? results_strong_1024_all_strategies/result_pipelined_N4_n16_c1_rep1.py
+?? results_strong_1024_all_strategies/result_pipelined_N4_n16_c1_rep2.py
+?? results_strong_1024_all_strategies/result_pipelined_N4_n16_c1_rep3.py
+?? results_strong_1024_all_strategies/result_pipelined_N8_n32_c1_rep1.py
+?? results_strong_1024_all_strategies/result_pipelined_N8_n32_c1_rep2.py
+?? results_strong_1024_all_strategies/result_pipelined_N8_n32_c1_rep3.py
+?? results_strong_1024_all_strategies/result_sendrecv_N1_n1_c1_rep1.py
+?? results_strong_1024_all_strategies/result_sendrecv_N1_n1_c1_rep2.py
+?? results_strong_1024_all_strategies/result_sendrecv_N1_n1_c1_rep3.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n1_c1_rep1.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n1_c1_rep2.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n1_c1_rep3.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n2_c1_rep1.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n2_c1_rep2.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n2_c1_rep3.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n4_c1_rep1.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n4_c1_rep2.py
+?? results_strong_1024_all_strategies/result_waitany_N1_n4_c1_rep3.py
+?? results_strong_1024_all_strategies/result_waitany_N2_n8_c1_rep1.py
+?? results_strong_1024_all_strategies/result_waitany_N2_n8_c1_rep2.py
+?? results_strong_1024_all_strategies/result_waitany_N2_n8_c1_rep3.py
+?? results_strong_1024_all_strategies/result_waitany_N4_n16_c1_rep1.py
+?? results_strong_1024_all_strategies/result_waitany_N4_n16_c1_rep2.py
+?? results_strong_1024_all_strategies/result_waitany_N4_n16_c1_rep3.py
+?? results_strong_1024_all_strategies/result_waitany_N8_n32_c1_rep1.py
+?? results_strong_1024_all_strategies/result_waitany_N8_n32_c1_rep2.py
+?? results_strong_1024_all_strategies/result_waitany_N8_n32_c1_rep3.py
+?? results_strong_1024_all_strategies/sweep_manifest.txt
+?? results_strong_1024_detailed_timing/code_state.diff
+?? results_strong_1024_detailed_timing/code_state.status
+?? results_strong_1024_detailed_timing/result_corners_N16_n64_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_corners_N16_n64_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_corners_N16_n64_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n1_c1_rep1.py.failed
+?? results_strong_1024_detailed_timing/result_corners_N1_n1_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n1_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n2_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n2_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n2_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n4_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n4_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_corners_N1_n4_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_corners_N2_n8_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_corners_N2_n8_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_corners_N2_n8_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_corners_N4_n16_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_corners_N4_n16_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_corners_N4_n16_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_corners_N8_n32_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_corners_N8_n32_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_corners_N8_n32_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N16_n64_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N16_n64_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N16_n64_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n1_c1_rep1.py.failed
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n1_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n1_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n2_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n2_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n2_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n4_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n4_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N1_n4_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N2_n8_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N2_n8_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N2_n8_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N4_n16_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N4_n16_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N4_n16_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N8_n32_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N8_n32_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_mpi_leftright_N8_n32_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_pipelined_N16_n64_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_pipelined_N16_n64_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_pipelined_N16_n64_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n1_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n1_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n1_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n2_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n2_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n2_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n4_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n4_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_pipelined_N1_n4_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_pipelined_N2_n8_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_pipelined_N2_n8_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_pipelined_N2_n8_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_pipelined_N4_n16_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_pipelined_N4_n16_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_pipelined_N4_n16_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_pipelined_N8_n32_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_pipelined_N8_n32_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_pipelined_N8_n32_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_waitany_N16_n64_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_waitany_N16_n64_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_waitany_N16_n64_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n1_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n1_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n1_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n2_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n2_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n2_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n4_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n4_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_waitany_N1_n4_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_waitany_N2_n8_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_waitany_N2_n8_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_waitany_N2_n8_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_waitany_N4_n16_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_waitany_N4_n16_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_waitany_N4_n16_c1_rep3.py
+?? results_strong_1024_detailed_timing/result_waitany_N8_n32_c1_rep1.py
+?? results_strong_1024_detailed_timing/result_waitany_N8_n32_c1_rep2.py
+?? results_strong_1024_detailed_timing/result_waitany_N8_n32_c1_rep3.py
+?? results_strong_1024_detailed_timing/sweep_manifest.txt
+?? results_weak_128_all_strategies/code_state.diff
+?? results_weak_128_all_strategies/code_state.status
+?? results_weak_128_all_strategies/result_corners_N16_n64_c1_rep1.py
+?? results_weak_128_all_strategies/result_corners_N16_n64_c1_rep2.py
+?? results_weak_128_all_strategies/result_corners_N16_n64_c1_rep3.py
+?? results_weak_128_all_strategies/result_corners_N1_n1_c1_rep1.py
+?? results_weak_128_all_strategies/result_corners_N1_n1_c1_rep2.py
+?? results_weak_128_all_strategies/result_corners_N1_n1_c1_rep3.py
+?? results_weak_128_all_strategies/result_corners_N1_n2_c1_rep1.py
+?? results_weak_128_all_strategies/result_corners_N1_n2_c1_rep2.py
+?? results_weak_128_all_strategies/result_corners_N1_n2_c1_rep3.py
+?? results_weak_128_all_strategies/result_corners_N1_n4_c1_rep1.py
+?? results_weak_128_all_strategies/result_corners_N1_n4_c1_rep2.py
+?? results_weak_128_all_strategies/result_corners_N1_n4_c1_rep3.py
+?? results_weak_128_all_strategies/result_corners_N2_n8_c1_rep1.py
+?? results_weak_128_all_strategies/result_corners_N2_n8_c1_rep2.py
+?? results_weak_128_all_strategies/result_corners_N2_n8_c1_rep3.py
+?? results_weak_128_all_strategies/result_corners_N4_n16_c1_rep1.py
+?? results_weak_128_all_strategies/result_corners_N4_n16_c1_rep2.py
+?? results_weak_128_all_strategies/result_corners_N4_n16_c1_rep3.py
+?? results_weak_128_all_strategies/result_corners_N8_n32_c1_rep1.py
+?? results_weak_128_all_strategies/result_corners_N8_n32_c1_rep2.py
+?? results_weak_128_all_strategies/result_corners_N8_n32_c1_rep3.py
+?? results_weak_128_all_strategies/result_pipelined_N16_n64_c1_rep1.py
+?? results_weak_128_all_strategies/result_pipelined_N16_n64_c1_rep2.py
+?? results_weak_128_all_strategies/result_pipelined_N16_n64_c1_rep3.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n1_c1_rep1.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n1_c1_rep2.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n1_c1_rep3.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n2_c1_rep1.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n2_c1_rep2.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n2_c1_rep3.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n4_c1_rep1.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n4_c1_rep2.py
+?? results_weak_128_all_strategies/result_pipelined_N1_n4_c1_rep3.py
+?? results_weak_128_all_strategies/result_pipelined_N2_n8_c1_rep1.py
+?? results_weak_128_all_strategies/result_pipelined_N2_n8_c1_rep2.py
+?? results_weak_128_all_strategies/result_pipelined_N2_n8_c1_rep3.py
+?? results_weak_128_all_strategies/result_pipelined_N4_n16_c1_rep1.py
+?? results_weak_128_all_strategies/result_pipelined_N4_n16_c1_rep2.py
+?? results_weak_128_all_strategies/result_pipelined_N4_n16_c1_rep3.py
+?? results_weak_128_all_strategies/result_pipelined_N8_n32_c1_rep1.py
+?? results_weak_128_all_strategies/result_pipelined_N8_n32_c1_rep2.py
+?? results_weak_128_all_strategies/result_pipelined_N8_n32_c1_rep3.py
+?? results_weak_128_all_strategies/result_waitany_N16_n64_c1_rep1.py
+?? results_weak_128_all_strategies/result_waitany_N16_n64_c1_rep2.py
+?? results_weak_128_all_strategies/result_waitany_N16_n64_c1_rep3.py
+?? results_weak_128_all_strategies/result_waitany_N1_n1_c1_rep1.py
+?? results_weak_128_all_strategies/result_waitany_N1_n1_c1_rep2.py
+?? results_weak_128_all_strategies/result_waitany_N1_n1_c1_rep3.py
+?? results_weak_128_all_strategies/result_waitany_N1_n2_c1_rep1.py
+?? results_weak_128_all_strategies/result_waitany_N1_n2_c1_rep2.py
+?? results_weak_128_all_strategies/result_waitany_N1_n2_c1_rep3.py
+?? results_weak_128_all_strategies/result_waitany_N1_n4_c1_rep1.py
+?? results_weak_128_all_strategies/result_waitany_N1_n4_c1_rep2.py
+?? results_weak_128_all_strategies/result_waitany_N1_n4_c1_rep3.py
+?? results_weak_128_all_strategies/result_waitany_N2_n8_c1_rep1.py
+?? results_weak_128_all_strategies/result_waitany_N2_n8_c1_rep2.py
+?? results_weak_128_all_strategies/result_waitany_N2_n8_c1_rep3.py
+?? results_weak_128_all_strategies/result_waitany_N4_n16_c1_rep1.py
+?? results_weak_128_all_strategies/result_waitany_N4_n16_c1_rep2.py
+?? results_weak_128_all_strategies/result_waitany_N4_n16_c1_rep3.py
+?? results_weak_128_all_strategies/result_waitany_N8_n32_c1_rep1.py
+?? results_weak_128_all_strategies/result_waitany_N8_n32_c1_rep2.py
+?? results_weak_128_all_strategies/result_waitany_N8_n32_c1_rep3.py
+?? results_weak_128_all_strategies/sweep_manifest.txt
+?? results_weak_128_detailed_timing/code_state.diff
+?? results_weak_128_detailed_timing/code_state.status
+?? results_weak_128_detailed_timing/result_corners_N16_n64_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N16_n64_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N16_n64_c1_rep3.py
+?? results_weak_128_detailed_timing/result_corners_N1_n1_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N1_n1_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N1_n1_c1_rep3.py
+?? results_weak_128_detailed_timing/result_corners_N1_n2_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N1_n2_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N1_n2_c1_rep3.py
+?? results_weak_128_detailed_timing/result_corners_N1_n4_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N1_n4_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N1_n4_c1_rep3.py
+?? results_weak_128_detailed_timing/result_corners_N24_n96_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N24_n96_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N24_n96_c1_rep3.py
+?? results_weak_128_detailed_timing/result_corners_N2_n8_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N2_n8_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N2_n8_c1_rep3.py
+?? results_weak_128_detailed_timing/result_corners_N4_n16_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N4_n16_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N4_n16_c1_rep3.py
+?? results_weak_128_detailed_timing/result_corners_N8_n32_c1_rep1.py
+?? results_weak_128_detailed_timing/result_corners_N8_n32_c1_rep2.py
+?? results_weak_128_detailed_timing/result_corners_N8_n32_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N16_n64_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N16_n64_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N16_n64_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n1_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n1_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n1_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n2_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n2_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n2_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n4_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n4_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N1_n4_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N24_n96_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N24_n96_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N24_n96_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N2_n8_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N2_n8_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N2_n8_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N4_n16_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N4_n16_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N4_n16_c1_rep3.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N8_n32_c1_rep1.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N8_n32_c1_rep2.py
+?? results_weak_128_detailed_timing/result_mpi_leftright_N8_n32_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N16_n64_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N16_n64_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N16_n64_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n1_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n1_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n1_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n2_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n2_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n2_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n4_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n4_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N1_n4_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N24_n96_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N24_n96_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N24_n96_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N2_n8_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N2_n8_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N2_n8_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N4_n16_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N4_n16_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N4_n16_c1_rep3.py
+?? results_weak_128_detailed_timing/result_pipelined_N8_n32_c1_rep1.py
+?? results_weak_128_detailed_timing/result_pipelined_N8_n32_c1_rep2.py
+?? results_weak_128_detailed_timing/result_pipelined_N8_n32_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N16_n64_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N16_n64_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N16_n64_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n1_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n1_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n1_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n2_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n2_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n2_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n4_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n4_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N1_n4_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N24_n96_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N24_n96_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N24_n96_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N2_n8_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N2_n8_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N2_n8_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N4_n16_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N4_n16_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N4_n16_c1_rep3.py
+?? results_weak_128_detailed_timing/result_waitany_N8_n32_c1_rep1.py
+?? results_weak_128_detailed_timing/result_waitany_N8_n32_c1_rep2.py
+?? results_weak_128_detailed_timing/result_waitany_N8_n32_c1_rep3.py
+?? results_weak_128_detailed_timing/sweep_manifest.txt
+?? validate_all_strategies.sh
+?? validation_results/code_state.diff
+?? validation_results/fields/brokencycles.dat
+?? validation_results/fields/comm_comp.dat
+?? validation_results/fields/comm_comp_opt.dat
+?? validation_results/fields/corners.dat
+?? validation_results/fields/irecvisend.dat
+?? validation_results/fields/irecvsend.dat
+?? validation_results/fields/isendrecv.dat
+?? validation_results/fields/pipelined.dat
+?? validation_results/fields/sendrecv.dat
+?? validation_results/fields/sendrecv_evenodd.dat
+?? validation_results/fields/serial.dat
+?? validation_results/fields/waitany.dat
+?? validation_results/git_status.txt
+?? validation_results/logs/brokencycles.command
+?? validation_results/logs/brokencycles.compare
+?? validation_results/logs/brokencycles.stderr
+?? validation_results/logs/brokencycles.stdout
+?? validation_results/logs/comm_comp.command
+?? validation_results/logs/comm_comp.compare
+?? validation_results/logs/comm_comp.stderr
+?? validation_results/logs/comm_comp.stdout
+?? validation_results/logs/comm_comp_opt.command
+?? validation_results/logs/comm_comp_opt.compare
+?? validation_results/logs/comm_comp_opt.stderr
+?? validation_results/logs/comm_comp_opt.stdout
+?? validation_results/logs/corners.command
+?? validation_results/logs/corners.compare
+?? validation_results/logs/corners.stderr
+?? validation_results/logs/corners.stdout
+?? validation_results/logs/irecvisend.command
+?? validation_results/logs/irecvisend.compare
+?? validation_results/logs/irecvisend.stderr
+?? validation_results/logs/irecvisend.stdout
+?? validation_results/logs/irecvsend.command
+?? validation_results/logs/irecvsend.compare
+?? validation_results/logs/irecvsend.stderr
+?? validation_results/logs/irecvsend.stdout
+?? validation_results/logs/isendrecv.command
+?? validation_results/logs/isendrecv.compare
+?? validation_results/logs/isendrecv.stderr
+?? validation_results/logs/isendrecv.stdout
+?? validation_results/logs/pipelined.command
+?? validation_results/logs/pipelined.compare
+?? validation_results/logs/pipelined.stderr
+?? validation_results/logs/pipelined.stdout
+?? validation_results/logs/sendrecv.command
+?? validation_results/logs/sendrecv.compare
+?? validation_results/logs/sendrecv.stderr
+?? validation_results/logs/sendrecv.stdout
+?? validation_results/logs/sendrecv_evenodd.command
+?? validation_results/logs/sendrecv_evenodd.compare
+?? validation_results/logs/sendrecv_evenodd.stderr
+?? validation_results/logs/sendrecv_evenodd.stdout
+?? validation_results/logs/serial.command
+?? validation_results/logs/serial.stderr
+?? validation_results/logs/serial.stdout
+?? validation_results/logs/waitany.command
+?? validation_results/logs/waitany.compare
+?? validation_results/logs/waitany.stderr
+?? validation_results/logs/waitany.stdout
+?? validation_results/manifest.txt
+?? validation_results/summary.tsv
