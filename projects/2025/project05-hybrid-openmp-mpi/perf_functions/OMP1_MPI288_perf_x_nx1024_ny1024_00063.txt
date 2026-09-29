@@ -1,0 +1,71 @@
+======= taskset ==========
+pid 187059's current affinity list: 231
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    13,362,087,407      mem_access_rd:u                                                    
+     6,841,331,755      mem_access_wr:u                                                    
+         3,118,969      LLC-load-misses                                                    
+        77,416,644      FP_SCALE_OPS_SPEC                                                  
+     2,924,003,445      FP_FIXED_OPS_SPEC                                                  
+
+       3.741447805 seconds time elapsed
+
+       3.593092000 seconds user
+       0.140120000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 14K of event 'cpu-clock:u'
+# Event count (approx.): 3638250000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    50.90%  [.] __aarch64_ldadd4_sync                       -      -            
+    19.89%  [.] MPIR_Wait_impl                              -      -            
+     9.10%  [.] MPIDI_SHMI_progress                         -      -            
+     5.35%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     4.95%  [.] MPID_ST_progress_queue                      -      -            
+     3.58%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+     3.13%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     1.37%  [.] __memcpy_generic                            -      -            
+     0.60%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.25%  [.] _pmi_mmap_tmp                               -      -            
+     0.25%  [.] MPIR_Waitall_impl                           -      -            
+     0.11%  [.] _pmi_smp_barrier_join                       -      -            
+     0.09%  [.] __aarch64_cas8_sync                         -      -            
+     0.06%  [.] _pmi2_info_getnodeattr                      -      -            
+     0.05%  [.] Init_shm_barrier                            -      -            
+     0.05%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.05%  [.] memcpy@plt                                  -      -            
+     0.04%  [.] _pmi2_info_putnodeattr                      -      -            
+     0.02%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.02%  [.] do_lookup_x                                 -      -            
+     0.01%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.01%  [.] sched_yield                                 -      -            
+     0.01%  [.] GOMP_parallel                               -      -            
+     0.01%  [.] MPIDIU_get_buf_safe                         -      -            
+     0.01%  [.] MPIDI_CRAY_XPMEM_mpi_finalize_hook          -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] __GI___tunables_init                        -      -            
+     0.01%  [.] __aarch64_swp8_acq                          -      -            
+     0.01%  [.] __open64                                    -      -            
+     0.01%  [.] _dl_check_map_versions                      -      -            
+     0.01%  [.] _dl_lookup_symbol_x                         -      -            
+     0.01%  [.] _int_malloc                                 -      -            
+     0.01%  [.] free                                        -      -            
+     0.01%  [.] getenv                                      -      -            
+     0.01%  [.] memcpy                                      -      -            
+     0.01%  [.] snprintf                                    -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

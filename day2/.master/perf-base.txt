@@ -1,0 +1,48 @@
+pid 261577's current affinity list: 0-287
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-base.x --nx 128 --ny 128 --nz 64 --num_iter 1024':
+
+     3,149,077,778      mem_access_rd:u                                                    
+       597,408,487      mem_access_wr:u                                                    
+           994,031      LLC-load-misses                                                    
+
+       0.704264213 seconds time elapsed
+
+       0.712186000 seconds user
+       0.014376000 seconds sys
+
+
+======= perf record ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 2K of event 'cpu-clock:u'
+# Event count (approx.): 702750000
+#
+# Overhead  Command          Shared Object             Symbol                                  
+# ........  ...............  ........................  ........................................
+#
+    89.79%  stencil2d-base.  stencil2d-base.x          [.] apply_diffusion.6.constprop.0.isra.0
+     7.83%  stencil2d-base.  stencil2d-base.x          [.] update_halo.5
+     1.60%  stencil2d-base.  libgomp.so.1.0.0          [.] omp_get_num_procs
+     0.18%  stencil2d-base.  ld-2.31.so                [.] _dl_relocate_object
+     0.11%  stencil2d-base.  ld-2.31.so                [.] do_lookup_x
+     0.07%  stencil2d-base.  ld-2.31.so                [.] _dl_lookup_symbol_x
+     0.07%  stencil2d-base.  libc-2.31.so              [.] __memcpy_generic
+     0.07%  stencil2d-base.  libc-2.31.so              [.] _int_malloc
+     0.04%  stencil2d-base.  ld-2.31.so                [.] __open64_nocancel
+     0.04%  stencil2d-base.  ld-2.31.so                [.] _dl_fini
+     0.04%  stencil2d-base.  ld-2.31.so                [.] check_match
+     0.04%  stencil2d-base.  libc-2.31.so              [.] _IO_enable_locks
+     0.04%  stencil2d-base.  libc-2.31.so              [.] getenv
+     0.04%  stencil2d-base.  libgfortran.so.5.0.0      [.] _gfortran_st_open
+     0.04%  stencil2d-base.  libmpi_gnu_123.so.12.0.0  [.] MPIR_pmi_init
+     0.04%  stencil2d-base.  libmpi_gnu_123.so.12.0.0  [.] PMI2_Finalize@plt
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

@@ -1,0 +1,85 @@
+======= taskset ==========
+pid 184298's current affinity list: 0-7
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+     8,858,389,660      mem_access_rd:u                                                    
+     1,488,500,239      mem_access_wr:u                                                    
+        78,724,144      LLC-load-misses                                                    
+       312,341,572      FP_SCALE_OPS_SPEC                                                  
+    22,831,222,003      FP_FIXED_OPS_SPEC                                                  
+
+       3.778034106 seconds time elapsed
+
+       2.447091000 seconds user
+       0.269076000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 10K of event 'cpu-clock:u'
+# Event count (approx.): 2581500000
+#
+# Overhead  Symbol                                                         IPC   [IPC Coverage]
+# ........  .............................................................  ....................
+#
+    36.49%  [.] apply_diffusion.6._omp_fn.0                                -      -            
+    31.44%  [.] omp_get_num_procs                                          -      -            
+    14.26%  [.] __memcpy_generic                                           -      -            
+     8.27%  [.] _pmi_mmap_tmp                                              -      -            
+     2.97%  [.] update_halo.5.constprop.1.isra.0                           -      -            
+     2.32%  [.] __aarch64_ldadd4_sync                                      -      -            
+     0.74%  [.] MPIR_Waitall_impl                                          -      -            
+     0.64%  [.] MPIDI_SHMI_progress                                        -      -            
+     0.60%  [.] MAIN__                                                     -      -            
+     0.42%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0                 -      -            
+     0.25%  [.] MPIR_Wait_impl                                             -      -            
+     0.20%  [.] MPID_ST_progress_queue                                     -      -            
+     0.19%  [.] memcpy@plt                                                 -      -            
+     0.15%  [.] __aarch64_cas8_sync                                        -      -            
+     0.13%  [.] MPIDI_CRAY_Common_lmt_progress                             -      -            
+     0.11%  [.] setup.3                                                    -      -            
+     0.11%  [.] 0x0000000000045394                                         -      -            
+     0.09%  [.] MPIDI_CRAY_Common_lmt_complete_recv                        -      -            
+     0.09%  [.] __GI_memset                                                -      -            
+     0.05%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0                      -      -            
+     0.05%  [.] do_lookup_x                                                -      -            
+     0.03%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0                    -      -            
+     0.03%  [.] _dl_relocate_object                                        -      -            
+     0.03%  [.] _gfortran_st_open                                          -      -            
+     0.03%  [.] omp_fulfill_event                                          -      -            
+     0.03%  [.] strcmp                                                     -      -            
+     0.02%  [.] PMPI_Irecv                                                 -      -            
+     0.02%  [.] __m_partitioner_MOD_get_neighbor_rank                      -      -            
+     0.02%  [.] _gfortran_st_read_done                                     -      -            
+     0.02%  [.] free@plt                                                   -      -            
+     0.02%  [.] sched_yield                                                -      -            
+     0.01%  [.] MPIDIU_get_buf_safe                                        -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_export_mem                           -      -            
+     0.01%  [.] MPIR_Waitall                                               -      -            
+     0.01%  [.] __GI___read_nocancel                                       -      -            
+     0.01%  [.] __aarch64_swp4_rel                                         -      -            
+     0.01%  [.] __m_partitioner_MOD_rank_to_position                       -      -            
+     0.01%  [.] __m_partitioner_MOD_right                                  -      -            
+     0.01%  [.] __m_partitioner_MOD_scatter_f32                            -      -            
+     0.01%  [.] _dl_lookup_symbol_x                                        -      -            
+     0.01%  [.] _dl_sort_maps                                              -      -            
+     0.01%  [.] _pmi2_info_getnodeattr                                     -      -            
+     0.01%  [.] _pmi_smp_barrier_join                                      -      -            
+     0.01%  [.] apply_diffusion.6.constprop.1                              -      -            
+     0.01%  [.] getenv                                                     -      -            
+     0.01%  [.] malloc                                                     -      -            
+     0.01%  [.] memcpy@plt                                                 -      -            
+     0.01%  [.] std::basic_ios<wchar_t, std::char_traits<wchar_t> >::init  -      -            
+     0.01%  [.] update_halo.5.constprop.0                                  -      -            
+     0.01%  [.] xpmem_seglist_lookup                                       -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

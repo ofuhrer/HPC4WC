@@ -1,0 +1,71 @@
+======= taskset ==========
+pid 183225's current affinity list: 171-179
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    21,527,604,609      mem_access_rd:u                                                    
+     7,827,761,230      mem_access_wr:u                                                    
+        36,571,295      LLC-load-misses                                                    
+       170,647,636      FP_SCALE_OPS_SPEC                                                  
+    25,976,575,131      FP_FIXED_OPS_SPEC                                                  
+
+       3.809097644 seconds time elapsed
+
+       5.744949000 seconds user
+       0.110868000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 22K of event 'cpu-clock:u'
+# Event count (approx.): 5557500000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    31.07%  [.] __aarch64_ldadd4_sync                       -      -            
+    19.51%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+    19.28%  [.] omp_get_num_procs                           -      -            
+    12.07%  [.] MPIR_Wait_impl                              -      -            
+     5.68%  [.] MPIDI_SHMI_progress                         -      -            
+     3.23%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     3.14%  [.] MPID_ST_progress_queue                      -      -            
+     2.63%  [.] __memcpy_generic                            -      -            
+     1.66%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     1.10%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.24%  [.] MPIR_Waitall_impl                           -      -            
+     0.09%  [.] memcpy@plt                                  -      -            
+     0.07%  [.] 0x0000000000045394                          -      -            
+     0.06%  [.] __aarch64_cas8_sync                         -      -            
+     0.03%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.01%  [.] do_lookup_x                                 -      -            
+     0.01%  [.] free                                        -      -            
+     0.01%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] __m_partitioner_MOD_right                   -      -            
+     0.01%  [.] check_match                                 -      -            
+     0.01%  [.] omp_fulfill_event                           -      -            
+     0.00%  [.] Init_shm_barrier                            -      -            
+     0.00%  [.] MPIDI_CRAY_Common_lmt_ctrl_send_rts_cb      -      -            
+     0.00%  [.] MPIDI_CRAY_Common_lmt_export_mem            -      -            
+     0.00%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.00%  [.] MPIR_CRAY_Reduce                            -      -            
+     0.00%  [.] PMPI_Irecv                                  -      -            
+     0.00%  [.] __aarch64_cas4_acq                          -      -            
+     0.00%  [.] _int_free                                   -      -            
+     0.00%  [.] _pmi_smp_barrier_join                       -      -            
+     0.00%  [.] getenv                                      -      -            
+     0.00%  [.] memcpy@plt                                  -      -            
+     0.00%  [.] mpi_isend                                   -      -            
+     0.00%  [.] strncmp                                     -      -            
+     0.00%  [.] syscall@plt                                 -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

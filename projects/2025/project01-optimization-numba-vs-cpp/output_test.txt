@@ -1,0 +1,155 @@
+MEASURE_SCALING is ENABLED (strong)
+
+Hardware Information:
+
+
+./CPU/cpp/include/macros.hpp
+#ifndef MACROS_HPP
+#define MACROS_HPP
+
+#define AT(arr, i, j, stride) (arr[(i) * (stride) + (j)])
+
+#define ALIGN_BYTES 64 // Default alignment for SIMD
+
+// Tile sizes for blocking
+#define TILE_I 32
+#define TILE_J 32
+
+#define T_INNER 4 // Temporal block size for inner loops
+
+#endif // MACROS_HPP
+
+Hardware CPU Topology:
+  Sockets: 1
+  Physical Cores per Socket: 8
+  Threads per Core: 1
+  Total Logical CPUs (Threads) on system: 8
+
+Starting to run programs with arguments: initial nx=ny=2000, max_iter=10, repetitions=1
+MEASURE_SCALING is ENABLED (strong) up to 8 threads.
+  srun/MPI is DISABLED. Only a single instance will be launched regardless of core utilization.
+
+---------------------------------
+Searching for and running C++ programs in ./CPU/cpp/build...
+  Attempting to detect C++ compiler information from build artifacts...
+    Detected C++ Compiler Path: /usr/bin/c++
+grep: invalid option -- P
+usage: grep [-abcdDEFGHhIiJLlMmnOopqRSsUVvwXxZz] [-A num] [-B num] [-C[num]]
+	[-e pattern] [-f file] [--binary-files=value] [--color=when]
+	[--context[=num]] [--directories=action] [--label] [--line-buffered]
+	[--null] [pattern] [file ...]
+    Compiler Name: c++
+    Compiler Version: Apple clang version 17.0.0 (clang-1700.4.4.1)
+    Compiler Flags: 
+
+find: -executable: unknown primary or operator
+Searching for and running Python programs in ./CPU/numba...
+--- Processing Python program: ./CPU/numba/split_jacobi_smoother.py ---
+Info: Using OMP thread sequence: 1 2 4 8
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=1, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=1 NUMBA_NUM_THREADS=1 python "./CPU/numba/split_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 1
+Elapsed time: 0.437340 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=2, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=2 NUMBA_NUM_THREADS=2 python "./CPU/numba/split_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 2
+Elapsed time: 0.226070 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=4, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=4 NUMBA_NUM_THREADS=4 python "./CPU/numba/split_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 4
+Elapsed time: 0.133357 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=8, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=8 NUMBA_NUM_THREADS=8 python "./CPU/numba/split_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 8
+Elapsed time: 0.117521 seconds
+
+---------------------------------
+
+--- Processing Python program: ./CPU/numba/fused_jacobi_smoother.py ---
+Info: Using OMP thread sequence: 1 2 4 8
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=1, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=1 NUMBA_NUM_THREADS=1 python "./CPU/numba/fused_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 1
+Elapsed time: 0.189486 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=2, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=2 NUMBA_NUM_THREADS=2 python "./CPU/numba/fused_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 2
+Elapsed time: 0.098666 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=4, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=4 NUMBA_NUM_THREADS=4 python "./CPU/numba/fused_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 4
+Elapsed time: 0.060870 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=8, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=8 NUMBA_NUM_THREADS=8 python "./CPU/numba/fused_jacobi_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 8
+Elapsed time: 0.077311 seconds
+
+---------------------------------
+
+--- Processing Python program: ./CPU/numba/split_rbgs_smoother.py ---
+Info: Using OMP thread sequence: 1 2 4 8
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=1, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=1 NUMBA_NUM_THREADS=1 python "./CPU/numba/split_rbgs_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 1
+Elapsed time: 0.300024 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=2, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=2 NUMBA_NUM_THREADS=2 python "./CPU/numba/split_rbgs_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 2
+Elapsed time: 0.158024 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=4, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=4 NUMBA_NUM_THREADS=4 python "./CPU/numba/split_rbgs_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 4
+Elapsed time: 0.117999 seconds
+
+Running python program (repetition 1 of 1) with OMP_NUM_THREADS=8, MPI Processes=1, NX=2000:
+  Command: OMP_PROC_BIND=close OMP_PLACES=cores OMP_NUM_THREADS=8 NUMBA_NUM_THREADS=8 python "./CPU/numba/split_rbgs_smoother.py" "2000" "2000" "10" 
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Grid size: 2000x2000
+Max iterations: 10
+Threads: 8
+Elapsed time: 0.117396 seconds
+
+---------------------------------
+
+All specified programs have been attempted.

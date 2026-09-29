@@ -1,0 +1,17 @@
+repos:
+  - repo: local
+    hooks:
+      - id: course-prep-guards
+        name: Course prep guards
+        entry: python tools/pre_commit_checks.py
+        language: system
+        pass_filenames: false
+
+      - id: ruff-format-python-material
+        name: Ruff format Python material
+        entry: bash -c 'files=(); while IFS= read -r file; do [ -f "$file" ] && files+=("$file"); done < <(git ls-files "day*/.master/*.py" "day*/*.py" "setup/*.py" "tools/*.py"); [ ${#files[@]} -eq 0 ] || ruff format --check "${files[@]}"'
+        language: python
+        additional_dependencies:
+          - ruff==0.13.3
+        pass_filenames: false
+        files: ^(day[1-5]/.*\.py|setup/.*\.py|tools/.*\.py)$

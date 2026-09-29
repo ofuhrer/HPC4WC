@@ -1,0 +1,71 @@
+======= taskset ==========
+pid 183213's current affinity list: 144-152
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    21,618,389,511      mem_access_rd:u                                                    
+     7,881,870,400      mem_access_wr:u                                                    
+        37,527,478      LLC-load-misses                                                    
+       170,642,048      FP_SCALE_OPS_SPEC                                                  
+    25,979,838,696      FP_FIXED_OPS_SPEC                                                  
+
+       3.808965393 seconds time elapsed
+
+       5.669394000 seconds user
+       0.189311000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 22K of event 'cpu-clock:u'
+# Event count (approx.): 5571250000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    25.55%  [.] __aarch64_ldadd4_sync                       -      -            
+    19.65%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+    19.26%  [.] omp_get_num_procs                           -      -            
+    11.81%  [.] MPIR_Wait_impl                              -      -            
+     7.56%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     5.64%  [.] MPIDI_SHMI_progress                         -      -            
+     3.15%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     2.99%  [.] MPID_ST_progress_queue                      -      -            
+     2.60%  [.] __memcpy_generic                            -      -            
+     1.13%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.25%  [.] MPIR_Waitall_impl                           -      -            
+     0.10%  [.] __aarch64_cas8_sync                         -      -            
+     0.09%  [.] memcpy@plt                                  -      -            
+     0.04%  [.] 0x0000000000045394                          -      -            
+     0.03%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.01%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.01%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.01%  [.] do_lookup_x                                 -      -            
+     0.01%  [.] omp_fulfill_event                           -      -            
+     0.01%  [.] PMPI_Irecv                                  -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] _dl_relocate_object                         -      -            
+     0.01%  [.] _int_free                                   -      -            
+     0.01%  [.] _pmi_mmap_tmp                               -      -            
+     0.01%  [.] free                                        -      -            
+     0.00%  [.] GOMP_single_copy_end                        -      -            
+     0.00%  [.] Init_shm_barrier                            -      -            
+     0.00%  [.] MPIDIU_get_buf_safe                         -      -            
+     0.00%  [.] __aarch64_swp4_rel                          -      -            
+     0.00%  [.] _dl_lookup_symbol_x                         -      -            
+     0.00%  [.] _pmi_smp_barrier_join                       -      -            
+     0.00%  [.] getenv                                      -      -            
+     0.00%  [.] sched_yield                                 -      -            
+     0.00%  [.] syscall                                     -      -            
+     0.00%  [.] update_halo.5.constprop.0                   -      -            
+     0.00%  [.] 0x000000000004538c                          -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

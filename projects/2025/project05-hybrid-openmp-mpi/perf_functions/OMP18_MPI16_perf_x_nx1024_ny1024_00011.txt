@@ -1,0 +1,86 @@
+======= taskset ==========
+pid 182368's current affinity list: 252-269
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    31,002,250,381      mem_access_rd:u                                                    
+     8,915,019,319      mem_access_wr:u                                                    
+        50,165,179      LLC-load-misses                                                    
+       338,719,760      FP_SCALE_OPS_SPEC                                                  
+    51,778,839,539      FP_FIXED_OPS_SPEC                                                  
+
+       3.788356152 seconds time elapsed
+
+       7.949170000 seconds user
+       0.296472000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 32K of event 'cpu-clock:u'
+# Event count (approx.): 8229000000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    34.19%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+    20.55%  [.] omp_get_num_procs                           -      -            
+    20.28%  [.] __aarch64_ldadd4_sync                       -      -            
+     8.70%  [.] MPIR_Wait_impl                              -      -            
+     3.74%  [.] MPIDI_SHMI_progress                         -      -            
+     2.77%  [.] __memcpy_generic                            -      -            
+     2.36%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     2.17%  [.] MPID_ST_progress_queue                      -      -            
+     1.60%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     1.40%  [.] _pmi_mmap_tmp                               -      -            
+     1.32%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     0.25%  [.] MPIR_Waitall_impl                           -      -            
+     0.21%  [.] 0x0000000000045394                          -      -            
+     0.15%  [.] memcpy@plt                                  -      -            
+     0.06%  [.] __aarch64_cas8_sync                         -      -            
+     0.02%  [.] do_lookup_x                                 -      -            
+     0.02%  [.] __aarch64_swp4_rel                          -      -            
+     0.02%  [.] _int_free                                   -      -            
+     0.02%  [.] free                                        -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.01%  [.] __aarch64_cas4_acq                          -      -            
+     0.01%  [.] _int_malloc                                 -      -            
+     0.01%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] _dl_lookup_symbol_x                         -      -            
+     0.01%  [.] omp_fulfill_event                           -      -            
+     0.01%  [.] MPIDIU_get_buf_safe                         -      -            
+     0.01%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.01%  [.] _dl_relocate_object                         -      -            
+     0.01%  [.] check_match                                 -      -            
+     0.01%  [.] syscall                                     -      -            
+     0.00%  [.] GOMP_single_copy_end                        -      -            
+     0.00%  [.] Init_shm_barrier                            -      -            
+     0.00%  [.] MPIDIU_get_buf_safe                         -      -            
+     0.00%  [.] MPIDI_CRAY_Common_lmt_export_mem            -      -            
+     0.00%  [.] MPIDI_CRAY_XPMEM_do_attach                  -      -            
+     0.00%  [.] MPIR_Localcopy                              -      -            
+     0.00%  [.] MPIR_Request_create                         -      -            
+     0.00%  [.] MPIR_T_cvar_init                            -      -            
+     0.00%  [.] PMPI_Irecv                                  -      -            
+     0.00%  [.] _dl_count_modids                            -      -            
+     0.00%  [.] _dl_map_object_from_fd                      -      -            
+     0.00%  [.] _pmi2_info_putnodeattr                      -      -            
+     0.00%  [.] _pmi_constructor                            -      -            
+     0.00%  [.] getenv                                      -      -            
+     0.00%  [.] malloc                                      -      -            
+     0.00%  [.] memcpy                                      -      -            
+     0.00%  [.] mpi_waitall_@plt                            -      -            
+     0.00%  [.] omp_get_num_threads@plt                     -      -            
+     0.00%  [.] strcmp                                      -      -            
+     0.00%  [.] syscall@plt                                 -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

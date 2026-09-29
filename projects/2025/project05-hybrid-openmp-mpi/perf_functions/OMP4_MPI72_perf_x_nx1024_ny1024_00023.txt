@@ -1,0 +1,73 @@
+======= taskset ==========
+pid 185433's current affinity list: 236-239
+======= perf stat ==========
+
+ Performance counter stats for './stencil2d-kparallel_mpi.x --nx 1024 --ny 1024 --nz 64 --num_iter 1024':
+
+    16,370,813,822      mem_access_rd:u                                                    
+     7,273,648,711      mem_access_wr:u                                                    
+        30,346,030      LLC-load-misses                                                    
+       152,242,460      FP_SCALE_OPS_SPEC                                                  
+    11,582,304,527      FP_FIXED_OPS_SPEC                                                  
+
+       3.764808898 seconds time elapsed
+
+       4.426062000 seconds user
+       0.058365000 seconds sys
+
+
+======= perf record (functions, rank 0) ==========
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 16K of event 'cpu-clock:u'
+# Event count (approx.): 4233500000
+#
+# Overhead  Symbol                                          IPC   [IPC Coverage]
+# ........  ..............................................  ....................
+#
+    40.41%  [.] __aarch64_ldadd4_sync                       -      -            
+    16.33%  [.] MPIR_Wait_impl                              -      -            
+    12.80%  [.] apply_diffusion.6._omp_fn.0                 -      -            
+     7.68%  [.] omp_get_num_procs                           -      -            
+     7.67%  [.] MPIDI_SHMI_progress                         -      -            
+     4.12%  [.] MPID_ST_progress_queue                      -      -            
+     3.89%  [.] MPIDU_genq_shmem_queue_dequeue.constprop.0  -      -            
+     2.71%  [.] __memcpy_generic                            -      -            
+     2.24%  [.] MPIDI_CRAY_Common_lmt_progress              -      -            
+     1.33%  [.] update_halo.5.constprop.1.isra.0            -      -            
+     0.30%  [.] MPIR_Waitall_impl                           -      -            
+     0.12%  [.] memcpy@plt                                  -      -            
+     0.11%  [.] __aarch64_cas8_sync                         -      -            
+     0.05%  [.] MPIDI_CRAY_Common_lmt_complete_recv         -      -            
+     0.03%  [.] do_lookup_x                                 -      -            
+     0.02%  [.] MPIDU_genq_shmem_queue_enqueue.isra.0       -      -            
+     0.02%  [.] Init_shm_barrier                            -      -            
+     0.02%  [.] 0x0000000000045394                          -      -            
+     0.01%  [.] MPIDU_genq_shmem_pool_cell_alloc.isra.0     -      -            
+     0.01%  [.] _pmi2_info_getnodeattr                      -      -            
+     0.01%  [.] _pmi_smp_barrier_join                       -      -            
+     0.01%  [.] omp_fulfill_event                           -      -            
+     0.01%  [.] GOMP_parallel                               -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_export_mem            -      -            
+     0.01%  [.] MPIDI_CRAY_Common_lmt_unpack                -      -            
+     0.01%  [.] MPIDI_anysrc_try_cancel_partner.isra.0      -      -            
+     0.01%  [.] MPIR_Request_free                           -      -            
+     0.01%  [.] MPL_env2bool@plt                            -      -            
+     0.01%  [.] PMPI_Isend                                  -      -            
+     0.01%  [.] PMPI_Waitall                                -      -            
+     0.01%  [.] __aarch64_cas4_acq                          -      -            
+     0.01%  [.] __aarch64_swp4_rel                          -      -            
+     0.01%  [.] __m_partitioner_MOD_bottom                  -      -            
+     0.01%  [.] _dl_relocate_object                         -      -            
+     0.01%  [.] _int_free                                   -      -            
+     0.01%  [.] _pmi2_info_putnodeattr                      -      -            
+     0.01%  [.] _pmi_mmap_tmp                               -      -            
+     0.01%  [.] mpi_isend                                   -      -            
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

@@ -1,0 +1,2769 @@
+Repetition 1 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 1024 and number of streams: 4
+Average duration: 5.37487e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 8 and number of streams: 1
+Average duration: 3.7765e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 8 and number of streams: 2
+Average duration: 4.16018e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 8 and number of streams: 4
+Average duration: 5.307e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 8 and number of streams: 8
+Average duration: 7.22854e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 16
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 32
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 64
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 128
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 256
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8 and number of streams: 512
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 32 and number of streams: 1
+Average duration: 3.837e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 32 and number of streams: 2
+Average duration: 4.21169e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 32 and number of streams: 4
+Average duration: 5.39597e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 32 and number of streams: 8
+Average duration: 7.39335e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 32 and number of streams: 16
+Average duration: 0.000114351 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 32 and number of streams: 32
+Average duration: 0.000196774 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 64
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 128
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 256
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32 and number of streams: 512
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 1
+Average duration: 3.64914e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 2
+Average duration: 4.15634e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 4
+Average duration: 5.18158e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 8
+Average duration: 7.25607e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 16
+Average duration: 0.000114809 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 32
+Average duration: 0.000194886 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 64
+Average duration: 0.000356128 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 128 and number of streams: 128
+Average duration: 0.000696664 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 256
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 128 and number of streams: 512
+Size must be divisible by number of streams.
+There were errors in the results or there was a runtime error.
+Average duration: 0 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 1
+Average duration: 3.78002e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 2
+Average duration: 4.17233e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 4
+Average duration: 5.13487e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 8
+Average duration: 7.3207e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 16
+Average duration: 0.000115967 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 32
+Average duration: 0.000192963 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 64
+Average duration: 0.000355303 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 128
+Average duration: 0.000690748 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 256
+Average duration: 0.0013408 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 512 and number of streams: 512
+Average duration: 0.00261292 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 1
+Average duration: 3.78675e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 2
+Average duration: 4.164e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 4
+Average duration: 5.28812e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 8
+Average duration: 7.1764e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 16
+Average duration: 0.000116066 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 32
+Average duration: 0.000193494 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 64
+Average duration: 0.000363655 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 128
+Average duration: 0.000689202 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 256
+Average duration: 0.00133994 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 2048 and number of streams: 512
+Average duration: 0.00263516 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 1
+Average duration: 3.69141e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 2
+Average duration: 4.34386e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 4
+Average duration: 5.20973e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 8
+Average duration: 7.20199e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 16
+Average duration: 0.000116207 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 32
+Average duration: 0.000198665 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 64
+Average duration: 0.000361114 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 128
+Average duration: 0.000688382 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 256
+Average duration: 0.00134605 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 8192 and number of streams: 512
+Average duration: 0.00261878 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 1
+Average duration: 3.90994e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 2
+Average duration: 4.9662e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 4
+Average duration: 6.26793e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 8
+Average duration: 8.19364e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 16
+Average duration: 0.00012628 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 32
+Average duration: 0.000200403 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 64
+Average duration: 0.000372512 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 128
+Average duration: 0.00070906 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 256
+Average duration: 0.00132762 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 32768 and number of streams: 512
+Average duration: 0.00266541 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 1
+Average duration: 5.36589e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 2
+Average duration: 5.78923e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 4
+Average duration: 7.25735e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 8
+Average duration: 8.93598e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 16
+Average duration: 0.000128632 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 32
+Average duration: 0.00022917 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 64
+Average duration: 0.000399676 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 128
+Average duration: 0.000733862 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 256
+Average duration: 0.00142292 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 131072 and number of streams: 512
+Average duration: 0.00278681 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 1
+Average duration: 9.21887e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 2
+Average duration: 8.79042e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 4
+Average duration: 9.09854e-05 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 8
+Average duration: 0.00010703 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 16
+Average duration: 0.000143748 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 32
+Average duration: 0.000223964 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 64
+Average duration: 0.000397519 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 128
+Average duration: 0.000828505 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 256
+Average duration: 0.00149362 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 524288 and number of streams: 512
+Average duration: 0.00292353 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 1
+Average duration: 0.000233694 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 2
+Average duration: 0.00020599 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 4
+Average duration: 0.000219868 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 8
+Average duration: 0.000221903 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 16
+Average duration: 0.000248103 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 32
+Average duration: 0.000299074 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 64
+Average duration: 0.000421486 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 128
+Average duration: 0.000767464 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 256
+Average duration: 0.0014511 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 2097152 and number of streams: 512
+Average duration: 0.00321856 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 1
+Average duration: 0.000836041 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 2
+Average duration: 0.000669122 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 4
+Average duration: 0.000624817 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 8
+Average duration: 0.000667657 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 16
+Average duration: 0.000657638 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 32
+Average duration: 0.000758572 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 64
+Average duration: 0.00088971 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 128
+Average duration: 0.00107184 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 256
+Average duration: 0.00153486 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 8388608 and number of streams: 512
+Average duration: 0.00290198 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 1
+Average duration: 0.00323107 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 2
+Average duration: 0.00249624 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 4
+Average duration: 0.00218642 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 8
+Average duration: 0.00210829 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 16
+Average duration: 0.00209452 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 32
+Average duration: 0.00227493 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 64
+Average duration: 0.00264575 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 128
+Average duration: 0.00295341 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 256
+Average duration: 0.00337766 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 33554432 and number of streams: 512
+Average duration: 0.00410366 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 1
+Average duration: 0.0126431 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 2
+Average duration: 0.00964582 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 4
+Average duration: 0.00842735 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 8
+Average duration: 0.00763703 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 16
+Average duration: 0.00742277 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 32
+Average duration: 0.00747222 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 64
+Average duration: 0.00768874 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 128
+Average duration: 0.0083697 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 256
+Average duration: 0.0101335 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 134217728 and number of streams: 512
+Average duration: 0.011377 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 1
+Average duration: 0.050282 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 2
+Average duration: 0.0382721 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 4
+Average duration: 0.0325202 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 8
+Average duration: 0.029848 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 16
+Average duration: 0.028718 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 32
+Average duration: 0.028477 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 64
+Average duration: 0.028608 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 128
+Average duration: 0.0294584 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 256
+Average duration: 0.0303152 seconds.
+Repetition 1 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 2 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 3 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 4 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 5 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 6 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 7 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 8 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 9 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Repetition 10 of 10
+Running arccos computation with size: 536870912 and number of streams: 512
+Average duration: 0.0324697 seconds.
