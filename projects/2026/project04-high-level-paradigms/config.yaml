@@ -1,0 +1,73 @@
+used_frameworks:
+  - numba
+  - jax
+  - torch
+  - gt4py
+  - cupy
+  - numpy
+  - fortran
+
+plot_folder: "plots"
+array_folder: "array"
+
+save_plots: True
+
+ignored_devices: [] #useful for skipping gpus when no gpu is available
+#  - gpu
+
+num_iter:
+  - 1024
+
+n_repeats: 10
+only_calc_squares: False #will only use nx values if set to true
+test_field_style: test_field #broad_center_spike, single_center_spike, random, test_field
+
+num_halo: 2
+
+nx:
+  # - 16
+  # - 32
+  - 64
+  # - 128
+  # - 256
+  # - 512
+
+ny:
+  # - 16
+  # - 32
+  - 64
+  # - 128
+  # - 256
+  # - 512
+
+nz:
+  # - 16
+  # - 32
+  - 64
+  #- 128
+  #- 256
+  #- 512
+
+
+frameworks:
+  numba: 
+    script_path: numba/stencil2d_numba.py
+    devices: [cpu]
+  jax: 
+    script_path: jax/stencil2d_jax.py
+    devices: [cpu, gpu]
+  torch: 
+    script_path: torch/stencil2d_torch.py
+    devices: [cpu, gpu]
+  gt4py: 
+    script_path: gt4py/stencil2d_gt4py.py
+    devices: [cpu]
+  cupy: 
+    script_path: cupy/stencil2d_cupy.py
+    devices: [gpu]
+  numpy: 
+    script_path: numpy/stencil2d_numpy.py
+    devices: [cpu]
+  fortran: 
+    script_path: fortran/stencil2d_fortran.py
+    devices: [cpu]

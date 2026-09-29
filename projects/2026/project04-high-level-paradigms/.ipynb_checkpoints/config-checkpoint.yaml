@@ -1,0 +1,65 @@
+script-paths:
+  numba: numba/stencil2d_numba.py
+  jax: jax/stencil2d_jax.py
+  torch: torch/stencil2d_torch.py
+  gt4py: gt4py/stencil2d_gt4py.py
+  cupy: cupy/stencil2d_cupy.py
+  numpy: numpy/stencil2d_numpy.py
+
+script-options:
+  numba: 
+    options: [nx, ny, nz, num_iter]
+    default_device: cpu
+  jax: 
+    options: [nx, ny, nz, num_iter, device]
+  torch: 
+    options: [nx, ny, nz, num_iter, device]
+  gt4py: 
+    options: [nx, ny, nz, num_iter, device]
+  cupy: 
+    options: [nx, ny, nz, num_iter]
+    default_device: gpu
+  numpy:
+    options: [nx, ny, nz, num_iter]
+    default_device: cpu
+
+#nx:
+  #- 16
+  #- 32
+  #- 64
+  #- 128
+  #- 256
+  #- 512
+
+#ny:
+  #- 16
+  #- 32
+  #- 64
+  #- 128
+  #- 256
+  #- 512
+
+nz:
+  #- 16
+  #- 32
+  - 64
+  #- 128
+  #- 256
+  #- 512
+
+sizes:
+  - 16
+  - 32
+  - 64
+  - 128
+  - 256
+  - 512
+
+num_iter:
+  - 1024
+
+n_repeats: 10
+
+device:
+  - "cpu"
+  - "gpu"
