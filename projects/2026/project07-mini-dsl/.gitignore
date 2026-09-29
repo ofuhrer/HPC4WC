@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Type checking /linting
+.mypy_cache/
+.ruff_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated native artifacts
+*.o
+*.obj
+*.a
+*.dll
+*.dylib
+
+# Generated benchmark outputs
+benchmarks/outputs/
+
+# GT4Py cache
+.gt_cache/
+
+# Temporary files
+*.tmp
+*.log
