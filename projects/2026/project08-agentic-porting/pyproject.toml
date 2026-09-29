@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "microphysics-sandbox"
+version = "0.0.0"
+description = "Sandbox for porting the ICON microphysics to GT4Py-next."
+# gt4py requires >=3.10, and excludes a couple of broken patch releases.
+requires-python = ">=3.12, <3.15, !=3.13.10, !=3.14.1"
+dependencies = [
+  "numpy",
+  "pandas",
+  "gt4py[next]",
+  "icon4py-common",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=7.0",
+  "pytest-cov",
+]
+
+# Resolve `gt4py` and `icon4py-common` from the local source trees instead of PyPI.
+[tool.uv.sources]
+gt4py = { path = "gt4py", editable = true }
+icon4py-common = { path = "icon4py/model/common", editable = true }
+
+# One editable install covering every variant, so imports resolve from any working
+# directory. The `include` filter is what keeps the vendored `gt4py/` and `icon4py/`
+# trees out of package discovery -- they are dependencies, not our packages.
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mcrph_common*", "satad_only*", "minimal_mcrph*", "complete_mcrph*"]
+
+[tool.pytest.ini_options]
+testpaths = ["satad_only/tests", "minimal_mcrph/tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

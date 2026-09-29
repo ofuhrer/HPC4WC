@@ -1,0 +1,36 @@
+include:
+  - local: 'ci/base.yml'
+
+variables:
+  # These variables filter jobs below. Not all variables apply to all jobs (e.g.
+  # GRIDS only applies to stencil tests, LEVELS to datatest/basic and MPI).
+  # MODEL_SUBPACKAGES uses short nox IDs; MODEL_MPI_SUBPACKAGES uses short nox
+  # IDs. These are the defaults for the pipeline and don't include all possible
+  # jobs. They are meant to be overridden with e.g.
+  #
+  # cscs-ci run default;BACKENDS=gtfn_cpu;LEVELS=unit;MODEL_SUBPACKAGES=common:standalone_driver;MODEL_MPI_SUBPACKAGES=common;SESSIONS=model;MODEL_SUBSETS=datatest
+  SESSIONS: "model:model_mpi:tools"
+  MODEL_SUBPACKAGES: "advection:diffusion:dycore:microphysics:muphys:common:driver:standalone_driver"
+  MODEL_SUBSETS: "datatest"
+  MODEL_MPI_SUBPACKAGES: "advection:diffusion:dycore:common:standalone_driver"
+  MODEL_MPI_SUBSETS: "datatest"
+  BACKENDS: "gtfn_gpu"
+  LEVELS: "unit"
+  GRIDS: "icon_regional"
+  TOOLS_SUBSETS: "unittest"
+
+
+build_baseimage_aarch64:
+  extends: [.build_baseimage_aarch64]
+
+build_venv_aarch64:
+  extends: [.build_venv_aarch64]
+
+build_image_aarch64:
+  extends: [.build_image_aarch64]
+
+generate_test_child_pipeline:
+  extends: [.generate_test_child_pipeline]
+
+trigger_test_child_pipeline:
+  extends: [.trigger_test_child_pipeline]

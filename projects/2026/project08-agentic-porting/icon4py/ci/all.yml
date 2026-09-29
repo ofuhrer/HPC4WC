@@ -1,0 +1,31 @@
+include:
+  - local: 'ci/base.yml'
+
+variables:
+  # See default.yml and generate_ci_pipeline.py for details on how these are
+  # used. This pipeline runs on a schedule to exercise all tests regularly.
+  SESSIONS: "all"
+  MODEL_SUBPACKAGES: "all"
+  MODEL_SUBSETS: "all"
+  MODEL_MPI_SUBPACKAGES: "all"
+  MODEL_MPI_SUBSETS: "all"
+  BACKENDS: "all"
+  LEVELS: "all"
+  GRIDS: "all"
+  TOOLS_SUBSETS: "all"
+
+
+build_baseimage_aarch64:
+  extends: [.build_baseimage_aarch64]
+
+build_venv_aarch64:
+  extends: [.build_venv_aarch64]
+
+build_image_aarch64:
+  extends: [.build_image_aarch64]
+
+generate_test_child_pipeline:
+  extends: [.generate_test_child_pipeline]
+
+trigger_test_child_pipeline:
+  extends: [.trigger_test_child_pipeline]

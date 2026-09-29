@@ -1,0 +1,31 @@
+include:
+  - local: 'ci/base.yml'
+
+variables:
+  # See default.yml and generate_ci_pipeline.py for details on how these are
+  # used. This pipeline gates merges and variables should not be overridden.
+  SESSIONS: "model:model_mpi:tools"
+  MODEL_SUBPACKAGES: "advection:diffusion:dycore:microphysics:muphys:common:driver:standalone_driver"
+  MODEL_SUBSETS: "stencils:datatest"
+  MODEL_MPI_SUBPACKAGES: "advection:diffusion:dycore:common:standalone_driver"
+  MODEL_MPI_SUBSETS: "datatest"
+  BACKENDS: "embedded:dace_cpu:dace_gpu:gtfn_cpu:gtfn_gpu"
+  LEVELS: "unit:integration"
+  GRIDS: "simple:icon_regional"
+  TOOLS_SUBSETS: "datatest:unittest"
+
+
+build_baseimage_aarch64:
+  extends: [.build_baseimage_aarch64]
+
+build_venv_aarch64:
+  extends: [.build_venv_aarch64]
+
+build_image_aarch64:
+  extends: [.build_image_aarch64]
+
+generate_test_child_pipeline:
+  extends: [.generate_test_child_pipeline]
+
+trigger_test_child_pipeline:
+  extends: [.trigger_test_child_pipeline]

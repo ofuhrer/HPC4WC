@@ -1,0 +1,29 @@
+# EditorConfig reference: http://EditorConfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+charset = utf-8
+
+# Source code
+[*.{c,cpp,h,hpp,js,py,pyi,f90}]
+indent_style = space
+indent_size = 4
+
+[*.{js,py,pyi}]
+insert_final_newline = true
+
+# Config and data
+[*.{json,y{a,}ml}]
+indent_style = space
+indent_size = 4
+
+# Markups
+[*.{md,rst}]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2

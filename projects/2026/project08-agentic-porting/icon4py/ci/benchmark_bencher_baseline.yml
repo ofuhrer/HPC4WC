@@ -1,0 +1,16 @@
+include:
+  - local: 'ci/base.yml'
+  - local: 'ci/benchmark_bencher_common.yml'
+
+benchmark_bencher_stencils_baseline_aarch64:
+  extends: [.test_runner_serial, .test_template_aarch64, .benchmark_nox_job]
+  variables:
+    NOX_SESSION: "__bencher_baseline_CI-${PYVERSION_SHORT}"
+    TEST_SELECTION: "${STENCIL_TEST_SELECTION}"
+    GT4PY_COLLECT_METRICS_LEVEL: 10
+
+benchmark_bencher_granules_baseline_aarch64:
+  extends: [.test_runner_serial, .test_template_aarch64, .benchmark_nox_job]
+  variables:
+    NOX_SESSION: "__bencher_baseline_CI-${PYVERSION_SHORT}"
+    TEST_SELECTION: "${GRANULE_TEST_SELECTION}"
